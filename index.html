@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nagoh Creative - Where Ideas Come to Life</title>
+    <title>Nagoh Creative - Web Development & Design</title>
     <style>
         * {
             margin: 0;
@@ -12,38 +12,68 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
+            color: #333;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a0a0a;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.1;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
 
         /* Header */
-        .header {
+        header {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 5%;
+            background: rgba(10, 10, 10, 0.9);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            padding: 1rem 0;
             transition: all 0.3s ease;
         }
 
-        .nav {
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
-            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .nav-links {
@@ -53,44 +83,55 @@
         }
 
         .nav-links a {
+            color: #fff;
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
             transition: color 0.3s ease;
+            position: relative;
         }
 
-        .nav-links a:hover {
-            color: #667eea;
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
         }
 
         /* Hero Section */
         .hero {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            color: white;
+            padding: 0 5%;
+            color: #fff;
             position: relative;
-            overflow: hidden;
         }
 
         .hero-content {
-            z-index: 2;
             max-width: 800px;
-            padding: 2rem;
             animation: fadeInUp 1s ease-out;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             margin-bottom: 1rem;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 2rem;
             opacity: 0.9;
         }
@@ -98,236 +139,149 @@
         .cta-button {
             display: inline-block;
             padding: 1rem 2rem;
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: #fff;
             text-decoration: none;
             border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
 
-        /* Floating elements */
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .shape {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .shape:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .shape:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
-        }
-
-        .shape:nth-child(3) {
-            width: 60px;
-            height: 60px;
-            top: 80%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-
-        .shape:nth-child(4) {
-            width: 100px;
-            height: 100px;
-            top: 30%;
-            right: 30%;
-            animation-delay: 1s;
-        }
-
-        /* Services Section */
-        .services {
-            padding: 5rem 0;
-            background: white;
-        }
-
-        .container {
+        /* Sections */
+        section {
+            padding: 5rem 5%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
         }
 
         .section-title {
             text-align: center;
-            font-size: 2.5rem;
-            color: #333;
             margin-bottom: 3rem;
-            position: relative;
+            color: #fff;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
             background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 2px;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .services-grid {
+        /* Skills Grid */
+        .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
-            margin-top: 4rem;
+            margin-top: 2rem;
         }
 
-        .service-card {
-            background: white;
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             padding: 2rem;
             border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            color: #fff;
         }
 
-        .service-card:hover {
+        .skill-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .service-icon {
-            width: 80px;
-            height: 80px;
+        .skill-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
             background: linear-gradient(45deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 2rem;
-            color: white;
-        }
-
-        .service-card h3 {
             font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 1rem;
         }
 
-        .service-card p {
-            color: #666;
-            line-height: 1.8;
-        }
-
-        /* About Section */
-        .about {
-            padding: 5rem 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-
-        .about-content {
+        /* Projects Grid */
+        .projects-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .project-card:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .project-image {
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
         }
 
-        .about-text h2 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 2rem;
+        .project-content {
+            padding: 1.5rem;
         }
 
-        .about-text p {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
-        .about-image {
-            position: relative;
-            text-align: center;
-        }
-
-        .about-image::before {
-            content: '🎨';
-            font-size: 10rem;
-            display: block;
-            animation: bounce 2s infinite;
+        .tech-tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
         }
 
         /* Contact Section */
         .contact {
-            padding: 5rem 0;
-            background: #333;
-            color: white;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 3rem;
             text-align: center;
-        }
-
-        .contact h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .contact p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            color: #fff;
         }
 
         .contact-info {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .contact-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .contact-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #222;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Animations */
@@ -342,15 +296,8 @@
             }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
         }
 
         /* Responsive */
@@ -358,145 +305,223 @@
             .nav-links {
                 display: none;
             }
-
-            .hero h1 {
-                font-size: 2.5rem;
+            
+            section {
+                padding: 3rem 5%;
             }
-
-            .hero p {
-                font-size: 1.1rem;
+            
+            .hero {
+                padding: 0 10%;
             }
+        }
 
-            .about-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
+        /* Scroll animations */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
 
-            .contact-info {
-                flex-direction: column;
-                gap: 2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav">
-            <a href="#" class="logo">Nagoh Creative</a>
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="logo">Nagoh Creative</div>
             <ul class="nav-links">
-                <li><a href="#services">Services</a></li>
+                <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="floating-shapes">
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
-        </div>
+    <section id="home" class="hero">
         <div class="hero-content">
-            <h1>Welcome to Nagoh Creative</h1>
-            <p>Where imagination meets innovation. We bring your creative visions to life with passion, expertise, and a touch of magic.</p>
-            <a href="#contact" class="cta-button">Let's Create Together</a>
+            <h1>Crafting Digital Experiences</h1>
+            <p>Full-Stack Web Developer & UI/UX Designer specializing in modern, responsive applications that bring ideas to life</p>
+            <a href="#projects" class="cta-button">View My Work</a>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section class="services" id="services">
-        <div class="container">
-            <h2 class="section-title">Our Creative Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🎨</div>
-                    <h3>Graphic Design</h3>
-                    <p>From logos to complete brand identities, we create visual designs that captivate and communicate your unique story.</p>
+    <section id="about" class="scroll-reveal">
+        <div class="section-title">
+            <h2>About Nagoh Creative</h2>
+            <p style="color: #ccc; max-width: 600px; margin: 0 auto;">Passionate about creating innovative digital solutions that combine cutting-edge technology with thoughtful design. I bring ideas to life through clean code and intuitive user experiences.</p>
+        </div>
+    </section>
+
+    <section id="skills" class="scroll-reveal">
+        <div class="section-title">
+            <h2>Core Skills</h2>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="skill-icon">🎨</div>
+                <h3>Frontend Development</h3>
+                <p>React, Vue.js, JavaScript (ES6+), HTML5, CSS3, Responsive Design</p>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon">⚙️</div>
+                <h3>Backend Development</h3>
+                <p>Node.js, Express, Python, REST APIs, GraphQL, Database Design</p>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon">💎</div>
+                <h3>UI/UX Design</h3>
+                <p>Figma, Adobe Creative Suite, Prototyping, User Research, Design Systems</p>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon">☁️</div>
+                <h3>Cloud & DevOps</h3>
+                <p>AWS, Docker, CI/CD, Git, Deployment Automation, Performance Optimization</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="scroll-reveal">
+        <div class="section-title">
+            <h2>Featured Projects</h2>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-image">🚀</div>
+                <div class="project-content">
+                    <h3>E-Commerce Platform</h3>
+                    <p>Full-stack e-commerce solution with real-time inventory, payment processing, and admin dashboard.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MongoDB</span>
+                        <span class="tech-tag">Stripe</span>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">💻</div>
-                    <h3>Web Design</h3>
-                    <p>Beautiful, responsive websites that not only look amazing but provide exceptional user experiences across all devices.</p>
+            </div>
+            <div class="project-card">
+                <div class="project-image">📱</div>
+                <div class="project-content">
+                    <h3>Task Management App</h3>
+                    <p>Collaborative project management tool with real-time updates, file sharing, and team analytics.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Vue.js</span>
+                        <span class="tech-tag">Firebase</span>
+                        <span class="tech-tag">PWA</span>
+                        <span class="tech-tag">Chart.js</span>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">📱</div>
-                    <h3>Digital Marketing</h3>
-                    <p>Strategic campaigns that connect with your audience and drive meaningful engagement across digital platforms.</p>
+            </div>
+            <div class="project-card">
+                <div class="project-image">🎵</div>
+                <div class="project-content">
+                    <h3>Music Streaming Platform</h3>
+                    <p>Custom music streaming service with playlist creation, social features, and audio visualization.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Express</span>
+                        <span class="tech-tag">PostgreSQL</span>
+                        <span class="tech-tag">Web Audio API</span>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">🎬</div>
-                    <h3>Video Production</h3>
-                    <p>Compelling video content that tells your story, engages your audience, and brings your brand to life.</p>
+            </div>
+            <div class="project-card">
+                <div class="project-image">🏠</div>
+                <div class="project-content">
+                    <h3>Real Estate Portal</h3>
+                    <p>Property listing platform with advanced search, virtual tours, and mortgage calculator integration.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Next.js</span>
+                        <span class="tech-tag">TypeScript</span>
+                        <span class="tech-tag">Prisma</span>
+                        <span class="tech-tag">Mapbox</span>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">📝</div>
-                    <h3>Content Creation</h3>
-                    <p>Engaging content that resonates with your audience and effectively communicates your brand message.</p>
+            </div>
+            <div class="project-card">
+                <div class="project-image">📊</div>
+                <div class="project-content">
+                    <h3>Analytics Dashboard</h3>
+                    <p>Business intelligence dashboard with real-time data visualization and custom reporting tools.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">D3.js</span>
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Redis</span>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">🚀</div>
-                    <h3>Brand Strategy</h3>
-                    <p>Comprehensive brand development that positions you uniquely in the market and drives business growth.</p>
+            </div>
+            <div class="project-card">
+                <div class="project-image">🎮</div>
+                <div class="project-content">
+                    <h3>Interactive Game Portal</h3>
+                    <p>Browser-based gaming platform with multiplayer support, leaderboards, and social features.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">Socket.io</span>
+                        <span class="tech-tag">Canvas API</span>
+                        <span class="tech-tag">WebGL</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>About Nagoh Creative</h2>
-                    <p>At Nagoh Creative, we believe that every brand has a unique story waiting to be told. Our passionate team of designers, strategists, and creative minds work together to bring your vision to life.</p>
-                    <p>With years of experience and a commitment to excellence, we've helped countless businesses and individuals express their creativity and achieve their goals through innovative design solutions.</p>
-                    <p>Whether you're a startup looking to make your mark or an established company ready to refresh your image, we're here to turn your ideas into reality.</p>
-                </div>
-                <div class="about-image">
-                </div>
+    <section id="contact" class="scroll-reveal">
+        <div class="contact">
+            <div class="section-title">
+                <h2>Let's Create Something Amazing</h2>
+                <p style="color: #ccc;">Ready to bring your ideas to life? Let's discuss your next project.</p>
             </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <h2>Ready to Create Something Amazing?</h2>
-            <p>Let's start a conversation about your next creative project</p>
-            <a href="mailto:hello@nagohcreative.com" class="cta-button">Get In Touch</a>
             <div class="contact-info">
                 <div class="contact-item">
-                    <div class="contact-icon">📧</div>
-                    <span>hello@nagohcreative.com</span>
+                    <h4>📧 Email</h4>
+                    <p>hello@nagohcreative.com</p>
                 </div>
                 <div class="contact-item">
-                    <div class="contact-icon">📱</div>
-                    <span>+1 (555) 123-4567</span>
+                    <h4>💼 LinkedIn</h4>
+                    <p>@nagohcreative</p>
                 </div>
                 <div class="contact-item">
-                    <div class="contact-icon">📍</div>
-                    <span>Creative Studio, Your City</span>
+                    <h4>🐙 GitHub</h4>
+                    <p>github.com/nagohcreative</p>
                 </div>
+                <div class="contact-item">
+                    <h4>🌐 Portfolio</h4>
+                    <p>nagohcreative.com</p>
+                </div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <a href="mailto:hello@nagohcreative.com" class="cta-button">Get In Touch</a>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Nagoh Creative. All rights reserved. Made with ❤️ and lots of creativity.</p>
-        </div>
-    </footer>
-
     <script>
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -511,36 +536,25 @@
             });
         });
 
-        // Header background opacity on scroll
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.header');
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * -0.5;
-            
-            if (scrolled > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
             } else {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.background = 'rgba(10, 10, 10, 0.9)';
             }
         });
 
-        // Service cards animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
-                }
+        // Add floating animation to project cards
+        document.querySelectorAll('.project-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
             });
-        }, observerOptions);
-
-        // Observe service cards
-        document.querySelectorAll('.service-card').forEach(card => {
-            observer.observe(card);
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
         });
     </script>
 </body>
