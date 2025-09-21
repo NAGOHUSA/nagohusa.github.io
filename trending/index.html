@@ -1,1 +1,272 @@
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Clock, ExternalLink, RefreshCw, Filter, Search, Eye, MessageCircle, Heart, Share2 } from 'lucide-react';
 
+const TrendingHub = () => {
+  const [trends, setTrends] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [lastUpdate, setLastUpdate] = useState(new Date());
+
+  // Mock trending data - in real implementation, this would fetch from APIs
+  const mockTrends = [
+    {
+      id: 1,
+      title: "AI breakthrough in medical diagnostics shows 95% accuracy",
+      source: "TechCrunch",
+      category: "Technology",
+      timestamp: "2 hours ago",
+      engagement: "15.2K",
+      trending_score: 95,
+      url: "#",
+      preview: "Revolutionary AI system outperforms doctors in early disease detection...",
+      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Climate summit reaches historic agreement on carbon reduction",
+      source: "Reuters",
+      category: "Environment",
+      timestamp: "4 hours ago",
+      engagement: "23.8K",
+      trending_score: 88,
+      url: "#",
+      preview: "World leaders commit to ambitious new targets for 2030...",
+      image: "https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop"
+    },
+    {
+      id: 3,
+      title: "Cryptocurrency market sees unexpected surge amid regulatory clarity",
+      source: "CoinDesk",
+      category: "Finance",
+      timestamp: "1 hour ago",
+      engagement: "31.5K",
+      trending_score: 92,
+      url: "#",
+      preview: "Bitcoin and major altcoins rally following SEC announcement...",
+      image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&h=200&fit=crop"
+    },
+    {
+      id: 4,
+      title: "Social media platform introduces revolutionary content moderation",
+      source: "The Verge",
+      category: "Social Media",
+      timestamp: "3 hours ago",
+      engagement: "19.7K",
+      trending_score: 85,
+      url: "#",
+      preview: "New AI-powered system promises to reduce harmful content by 90%...",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=200&fit=crop"
+    },
+    {
+      id: 5,
+      title: "Space mission discovers potentially habitable exoplanet",
+      source: "NASA",
+      category: "Science",
+      timestamp: "6 hours ago",
+      engagement: "42.1K",
+      trending_score: 97,
+      url: "#",
+      preview: "James Webb telescope identifies Earth-like planet 100 light years away...",
+      image: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=200&fit=crop"
+    },
+    {
+      id: 6,
+      title: "Major tech company announces 4-day work week permanently",
+      source: "Fortune",
+      category: "Business",
+      timestamp: "5 hours ago",
+      engagement: "28.9K",
+      trending_score: 89,
+      url: "#",
+      preview: "Employee productivity increases 40% in year-long trial...",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
+    }
+  ];
+
+  useEffect(() => {
+    fetchTrends();
+    const interval = setInterval(fetchTrends, 300000); // Update every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchTrends = async () => {
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setTrends(mockTrends);
+      setLastUpdate(new Date());
+      setLoading(false);
+    }, 1000);
+  };
+
+  const filteredTrends = trends.filter(trend => {
+    const matchesFilter = filter === 'all' || trend.category.toLowerCase() === filter;
+    const matchesSearch = trend.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         trend.preview.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const categories = ['all', 'technology', 'science', 'business', 'finance', 'environment', 'social media'];
+
+  const getTrendingIcon = (score) => {
+    if (score >= 95) return '🔥';
+    if (score >= 90) return '⚡';
+    if (score >= 85) return '📈';
+    return '💫';
+  };
+
+  const formatEngagement = (num) => {
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-purple-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-xl">
+                <TrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  TrendingHub
+                </h1>
+                <p className="text-sm text-gray-500">Real-time internet trends</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center text-sm text-gray-500">
+                <Clock className="h-4 w-4 mr-1" />
+                Last updated: {lastUpdate.toLocaleTimeString()}
+              </div>
+              <button
+                onClick={fetchTrends}
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:shadow-lg transition-all duration-200 disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search trending topics..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white/80 backdrop-blur-sm"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Trending Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-200 p-6 animate-pulse">
+                <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTrends.map(trend => (
+              <article
+                key={trend.id}
+                className="group bg-white/80 backdrop-blur-sm rounded-xl border border-purple-200 overflow-hidden hover:shadow-xl hover:border-purple-300 transition-all duration-300 cursor-pointer"
+                onClick={() => window.open(trend.url, '_blank')}
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={trend.image}
+                    alt={trend.title}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                    {trend.category}
+                  </div>
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center space-x-1">
+                    <span className="text-lg">{getTrendingIcon(trend.trending_score)}</span>
+                    <span className="text-xs font-bold text-purple-600">{trend.trending_score}</span>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-purple-600">{trend.source}</span>
+                    <span className="text-sm text-gray-500">{trend.timestamp}</span>
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                    {trend.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {trend.preview}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <Eye className="h-4 w-4" />
+                        <span>{formatEngagement(trend.engagement)}</span>
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {filteredTrends.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-lg mb-2">No trends found</div>
+            <p className="text-gray-400">Try adjusting your search or filter</p>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white/80 backdrop-blur-md border-t border-purple-200 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-gray-600">
+            <p className="mb-2">Stay ahead of the curve with real-time trending topics</p>
+            <p className="text-sm text-gray-500">Updates every 5 minutes • Powered by multiple news sources</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default TrendingHub;
