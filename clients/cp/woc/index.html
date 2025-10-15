@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WOC Training</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-color: #f4a300;
+      --dark-bg: #0e1a2b;
+      --text-color: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--dark-bg);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    header nav a {
+      color: var(--text-color);
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero {
+      background: linear-gradient(rgba(14,26,43,0.85), rgba(14,26,43,0.85)), url('https://www.woctraining.com/uploads/1/2/3/4/123456789/background.jpg') center/cover no-repeat;
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      color: var(--primary-color);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      max-width: 600px;
+      margin-inline: auto;
+    }
+
+    .section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .feature {
+      flex: 1 1 300px;
+      background: #1a2c44;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .feature img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .contact {
+      text-align: center;
+    }
+
+    .contact p {
+      margin-bottom: 10px;
+    }
+
+    .social {
+      margin-top: 20px;
+    }
+
+    .social a {
+      color: var(--primary-color);
+      margin: 0 10px;
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+
+    footer {
+      background: #0a1420;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      header nav {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="YOUR-LOGO.png" alt="WOC Training Logo" />
+    <nav>
+      <a href="#about">About</a>
+      <a href="#training">Training</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Warriors of Christ Training</h1>
+    <p>Strengthen your body, mind, and faith with our transformative Christian fitness training program.</p>
+  </section>
+
+  <section class="section" id="about">
+    <h2>Our Mission</h2>
+    <p style="text-align:center; max-width: 700px; margin:auto;">
+      We empower men to grow spiritually and physically through Bible-based training, discipline, and community support.
+      Our programs are designed to build strength and integrity from the inside out.
+    </p>
+  </section>
+
+  <section class="section" id="training">
+    <h2>Training Programs</h2>
+    <div class="features">
+      <div class="feature">
+        <img src="https://www.woctraining.com/uploads/1/2/3/4/123456789/img1.jpg" alt="Training 1">
+        <h3>Faith & Fitness</h3>
+        <p>Daily workouts infused with scripture and prayer, focused on total transformation.</p>
+      </div>
+      <div class="feature">
+        <img src="https://www.woctraining.com/uploads/1/2/3/4/123456789/img2.jpg" alt="Training 2">
+        <h3>Brotherhood & Accountability</h3>
+        <p>Train in community. Lift one another up. Forge a bond in Christ and discipline.</p>
+      </div>
+      <div class="feature">
+        <img src="https://www.woctraining.com/uploads/1/2/3/4/123456789/img3.jpg" alt="Training 3">
+        <h3>Biblical Leadership</h3>
+        <p>Learn to lead like Christ—courageously, humbly, and with unwavering strength.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact" id="contact">
+    <h2>Contact Us</h2>
+    <p>Email: <a href="mailto:woctraining@gmail.com">woctraining@gmail.com</a></p>
