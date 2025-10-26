@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SOHO Comet Hunter — Live Results</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444; --chip:#1e293b;
+    --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
+  .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+  h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
+  .sub{font-size:13px;color:var(--muted)}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  button,.sel,input[type="checkbox"]{cursor:pointer}
+  button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
+  button:hover{border-color:#33508a}
+  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text)}
+  main{padding:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .thumb{aspect-ratio:1.4/1;display:block;width:100%;background:#0b1220;object-fit:contain}
+  .meta{padding:12px}
+  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .kv{font-size:12px;color:var(--muted)}
+  .kv b{color:var(--text)}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .right{margin-left:auto}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
+  .stat b{font-size:18px}
+  .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  footer{color:var(--muted);font-size:12px;padding:20px 0}
+  .err{color:#ffb4b4}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>SOHO Comet Hunter</h1>
+    <div class="sub">Auto-pulls latest candidates from your GitHub repo and refreshes periodically.</div>
+    <div class="controls">
+      <button id="refreshBtn" title="Reload now">⟳ Refresh</button>
+      <select id="reportSelect" class="sel" title="Pick a past report"></select>
+      <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
+      <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
+      <label class="pill"><input type="checkbox" id="aiOnly" /> AI=‘comet’ only</label>
+      <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="status">
+    <div class="row">
+      <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
+      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank" rel="noopener">GitHub</a></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section id="content" style="margin-top:16px;">
+    <div class="empty" id="empty">No detections yet. The viewer will update automatically when new candidates are committed.</div>
+    <div class="grid" id="grid" hidden></div>
+  </section>
+
+  <footer>
+    <div>Tip: click a thumbnail to open the full crop on GitHub; JSON link opens the raw report. Data copyright: instruments & imagery via SOHO/LASCO providers.</div>
+  </footer>
+</main>
+
+<script>
+/*** CONFIG — EDIT THESE THREE LINES ***/
+const OWNER  = "NAGOHUSA";
+const REPO   = "ONS_SOHOHUNTER";
+const BRANCH = "main";
+/*** END CONFIG ***/
+
+// Optional URL overrides: ?branch=...&folder=...&owner=...&repo=...
+const params = new URLSearchParams(location.search);
+const FOLDER = params.get("folder") || "detections";
+
+const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
+const rawURL = (path) => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
+const ghBlobURL = (path) => `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
+
+const el = (sel) => document.querySelector(sel);
+const grid = el("#grid"), empty = el("#empty");
+const reportSelect = el("#reportSelect");
+const reportName = el("#reportName"), reportTime = el("#reportTime"), srcLink = el("#srcLink");
+const stats = el("#stats");
+const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOnly");
+
+let allReports = [];
+let currentReport = null;
+let refreshTimer = null, refreshCountdown = 0, REFRESH_SECS = 60; // check every 60s
+
+async function fetchJSON(url){
+  const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
+  if(!r.ok) throw new Error(`HTTP ${r.status} when fetching ${url}`);
+  return r.json();
+}
+
+function parseReportTime(name){
+  // candidates_YYYYmmdd_HHMMSS.json
+  const m = name.match(/(\d{8})_(\d{6})/);
+  if(!m) return null;
+  const [_, d, t] = m;
+  const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
+  const dt = new Date(iso);
+  const fmt = dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
+  return {iso, local: fmt};
+}
+
+function renderStats(items){
+  const byDet = items.reduce((acc,h)=>{
+    const k = (h.detector||'unknown').toUpperCase();
+    acc[k]=(acc[k]||0)+1; return acc;
+  },{});
+  const ai = items.reduce((acc,h)=>{
+    const l = (h.ai_label||'').toLowerCase();
+    if(!l) return acc;
+    acc[l]=(acc[l]||0)+1; return acc;
+  },{});
+  stats.innerHTML = "";
+  const add = (label, value) => {
+    const div = document.createElement("div");
+    div.className = "stat";
+    div.innerHTML = `<div class="sub">${label}</div><div><b>${value}</b></div>`;
+    stats.appendChild(div);
+  };
+  add("Candidates", items.length);
+  add("C2", byDet.C2||0);
+  add("C3", byDet.C3||0);
+  if(Object.keys(ai).length){
+    add("AI ‘comet’", ai['comet']||0);
+    add("AI ‘not_comet’", ai['not_comet']||0);
+  }
+}
+
+function applyFilters(items){
+  const useC2 = c2Filter.checked;
+  const useC3 = c3Filter.checked;
+  const needAI = aiOnly.checked;
+  return items.filter(h=>{
+    if(useC2 && (h.detector||'').toUpperCase()!=='C2') return false;
+    if(useC3 && (h.detector||'').toUpperCase()!=='C3') return false;
+    if(needAI && (h.ai_label||'').toLowerCase()!=='comet') return false;
+    return true;
+  });
+}
+
+function renderGrid(items){
+  const filtered = applyFilters(items);
+  renderStats(filtered);
+  if(!filtered.length){
+    grid.hidden = true; empty.hidden = false;
+    empty.textContent = "No matching detections for the current filters.";
+    return;
+  }
+  grid.hidden = false; empty.hidden = true;
+  grid.innerHTML = "";
+  filtered.forEach((h,i)=>{
+    const cropPath = (h.crop_path || "").replace(/^\.?\/*/,'');
+    const imgURL = rawURL(cropPath);
+    const ai = (h.ai_label ? ` • AI: ${h.ai_label} (${(h.ai_score??0).toFixed(2)})` : "");
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <a href="${ghBlobURL(cropPath)}" target="_blank" rel="noopener">
+        <img class="thumb" loading="lazy" alt="crop ${i+1}" src="${imgURL}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb',textContent:'(image unavailable)'}))">
+      </a>
+      <div class="meta">
+        <div class="row">
+          <span class="pill">${(h.detector||'').toUpperCase()||'—'}</span>
+          <span class="pill">Track #${h.track_index ?? '?'}</span>
+          <span class="right sub">${h.series_mid_frame||''}</span>
+        </div>
+        <div class="kvs">
+          <div class="kv">Timestamp (UTC): <b>${(h.timestamp_utc||'').replace('T',' ').replace('Z',' Z')}</b></div>
+          <div class="kv">AI: <b>${h.ai_label||_
