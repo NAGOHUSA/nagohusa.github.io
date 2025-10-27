@@ -52,6 +52,13 @@
   .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
   .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
   .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:12px}
+
+  /* Segmented toggle */
+  .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
+  .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:12px}
+  .seg button:last-child{border-right:0}
+  .seg button.active{background:#1b2a46;color:#e6eefc}
+  .seg button:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -122,7 +129,7 @@
   </section>
 
   <footer>
-    <div>Tip: mark promising candidates, choose a group if known, then “Export marked only” to produce a clean Sungrazer draft.</div>
+    <div>Tip: use the per-card toggle to compare the crop with the original and annotated full frame, then export your report.</div>
   </footer>
 </main>
 
@@ -255,6 +262,24 @@ function buildAllCSV(items){
 }
 function copyTextToClipboard(t){ return navigator.clipboard.writeText(t); }
 
+/* per-card image toggle helpers */
+function makeSeg(items){
+  const seg=document.createElement("div"); seg.className="seg";
+  items.forEach(({label,disabled,onClick,active})=>{
+    const b=document.createElement("button");
+    b.textContent=label;
+    if(disabled) b.disabled=true;
+    if(active) b.classList.add("active");
+    b.addEventListener("click", ()=>{
+      [...seg.children].forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      onClick?.();
+    });
+    seg.appendChild(b);
+  });
+  return seg;
+}
+
 /* grid rendering */
 const gridState = { items: [] };
 function renderGrid(items){
@@ -269,7 +294,7 @@ function renderGrid(items){
   const marks = getMarks(); const groups = getGroups();
   filtered.forEach((h,i)=>{
     const cropPath=(h.crop_path||"").replace(/^\.?\/*/,'');
-    const imgURL=rawURL(cropPath)+`?t=${Date.now()}`;
+    const cropURL=rawURL(cropPath)+`?t=${Date.now()}`;
     const det=(h.detector||'').toUpperCase();
     const imgW=(h.image_size?.[0]??1024), imgH=(h.image_size?.[1]??1024);
     const dateFirst=(h.positions?.[0]?.time_utc||"").split("T")[0]||"";
@@ -289,58 +314,82 @@ function renderGrid(items){
     const origURL = h.original_mid_path ? rawURL(h.original_mid_path) + `?t=${Date.now()}` : null;
     const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) + `?t=${Date.now()}` : null;
 
-    const html = `
-      <a href="${ghBlobURL(cropPath)}" target="_blank" rel="noopener">
-        <img class="thumb" loading="lazy" alt="crop ${i+1}" src="${imgURL}"
-             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb',textContent:'(image unavailable)'}))">
-      </a>
-      <div class="meta">
-        <div class="row">
-          <span class="pill">${det||'—'}</span>
-          <span class="pill">Track #${h.track_index ?? '?'}</span>
-          <span class="pill">PA match: ${pa}</span>
-          <span class="pill">Speed: ${speed}</span>
-          <span class="right sub">${h.series_mid_frame||''}</span>
-        </div>
-        <div class="kvs" style="margin-top:8px;">
-          <div class="kv">Image Size: <b>${imgW}×${imgH}</b></div>
-          <div class="kv">Origin: <b>Upper Left</b></div>
-          <div class="kv">Positions: <b>${(h.positions||[]).length}</b></div>
-          <div class="kv">First date: <b>${dateFirst||'—'}</b></div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <button class="sgBtn">Copy for Sungrazer</button>
-          <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
-          <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
-          ${origURL ? `<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>` : ``}
-          ${annURL  ? `<a class="pill" href="${annURL}"  target="_blank" rel="noopener">Annotated</a>` : ``}
-          <span class="right mark">
-            <select class="group">
-              <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
-              <option ${groupVal==='Kreutz'?'selected':''}>Kreutz</option>
-              <option ${groupVal==='Meyer'?'selected':''}>Meyer</option>
-              <option ${groupVal==='Marsden'?'selected':''}>Marsden</option>
-              <option ${groupVal==='Kracht'?'selected':''}>Kracht</option>
-              <option ${groupVal==='Kracht-II'?'selected':''}>Kracht-II</option>
-            </select>
-            <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
-          </span>
-        </div>
-      </div>`;
-
     const card=document.createElement("div");
     card.className="card";
-    card.innerHTML=html;
+
+    // Header image container with toggle
+    const headerLink=document.createElement("a");
+    headerLink.href=ghBlobURL(cropPath);
+    headerLink.target="_blank"; headerLink.rel="noopener";
+    const img=document.createElement("img");
+    img.className="thumb"; img.loading="lazy"; img.alt=`candidate ${i+1}`;
+    img.src=cropURL;
+    img.onerror = function(){
+      const repl=document.createElement('div');
+      repl.className='thumb'; repl.textContent='(image unavailable)';
+      img.replaceWith(repl);
+    };
+    headerLink.appendChild(img);
+    card.appendChild(headerLink);
+
+    // Segmented control
+    const segWrap=document.createElement("div");
+    segWrap.style.display="flex"; segWrap.style.justifyContent="center"; segWrap.style.padding="8px 12px 0";
+    const seg = makeSeg([
+      {label:"Crop",      active:true,  onClick:()=>{ img.src=cropURL; headerLink.href=ghBlobURL(cropPath); }},
+      {label:"Original",  disabled:!origURL, onClick:()=>{ img.src=origURL; headerLink.href=origURL; }},
+      {label:"Annotated", disabled:!annURL,  onClick:()=>{ img.src=annURL;  headerLink.href=annURL;  }},
+    ]);
+    segWrap.appendChild(seg);
+    card.appendChild(segWrap);
+
+    // Meta
+    const meta=document.createElement("div"); meta.className="meta";
+    meta.innerHTML=`
+      <div class="row">
+        <span class="pill">${det||'—'}</span>
+        <span class="pill">Track #${h.track_index ?? '?'}</span>
+        <span class="pill">PA match: ${pa}</span>
+        <span class="pill">Speed: ${speed}</span>
+        <span class="right sub">${h.series_mid_frame||''}</span>
+      </div>
+      <div class="kvs" style="margin-top:8px;">
+        <div class="kv">Image Size: <b>${imgW}×${imgH}</b></div>
+        <div class="kv">Origin: <b>Upper Left</b></div>
+        <div class="kv">Positions: <b>${(h.positions||[]).length}</b></div>
+        <div class="kv">First date: <b>${dateFirst||'—'}</b></div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <button class="sgBtn">Copy for Sungrazer</button>
+        <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
+        <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
+        ${origURL ? `<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>` : ``}
+        ${annURL  ? `<a class="pill" href="${annURL}"  target="_blank" rel="noopener">Annotated</a>` : ``}
+        <span class="right mark">
+          <select class="group">
+            <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
+            <option ${groupVal==='Kreutz'?'selected':''}>Kreutz</option>
+            <option ${groupVal==='Meyer'?'selected':''}>Meyer</option>
+            <option ${groupVal==='Marsden'?'selected':''}>Marsden</option>
+            <option ${groupVal==='Kracht'?'selected':''}>Kracht</option>
+            <option ${groupVal==='Kracht-II'?'selected':''}>Kracht-II</option>
+          </select>
+          <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
+        </span>
+      </div>
+    `;
+    card.appendChild(meta);
     grid.appendChild(card);
 
-    card.querySelector(".sgBtn").addEventListener("click", ()=>{
-      copyTextToClipboard(sgText).then(()=>{
-        const b=card.querySelector(".sgBtn");
+    // Actions
+    meta.querySelector(".sgBtn").addEventListener("click", ()=>{
+      copyTextToClipboard(buildSungrazerText(h)).then(()=>{
+        const b=meta.querySelector(".sgBtn");
         b.textContent="Copied!"; setTimeout(()=>b.textContent="Copy for Sungrazer",1200);
       }).catch(()=>alert("Copy failed"));
     });
 
-    const flag=card.querySelector(".flag");
+    const flag=meta.querySelector(".flag");
     flag.addEventListener("click", ()=>{
       const m=getMarks();
       if(m[k]) { delete m[k]; flag.classList.remove("on"); flag.textContent="Mark"; }
@@ -349,7 +398,7 @@ function renderGrid(items){
       if(markedOnly.checked){ renderGrid(items); }
     });
 
-    const sel=card.querySelector(".group");
+    const sel=meta.querySelector(".group");
     sel.addEventListener("change", ()=>{
       const g=getGroups(); g[k]=sel.value; setGroups(g);
     });
