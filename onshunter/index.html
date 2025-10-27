@@ -14,7 +14,7 @@
   .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
   h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
   .sub{font-size:13px;color:var(--muted)}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
   button,.sel,input[type="checkbox"]{cursor:pointer}
   button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
   button:hover{border-color:#33508a}
@@ -46,13 +46,16 @@
   .gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
   .gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
   .gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
+  /* Export all area */
+  .exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
+  .muted{color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter</h1>
-    <div class="sub">Live last-frame thumbnails + NASA animations + candidate crops from your GitHub repo.</div>
+    <div class="sub">Live NASA animations, last-frame thumbnails, and Sungrazer-ready exports from your GitHub repo.</div>
     <div class="controls">
       <button id="refreshBtn" title="Reload now">⟳ Refresh</button>
       <select id="reportSelect" class="sel" title="Pick a past report"></select>
@@ -60,6 +63,13 @@
       <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
       <label class="pill"><input type="checkbox" id="aiOnly" /> AI=‘comet’ only</label>
       <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
+
+      <!-- NEW: Export ALL candidates in this report -->
+      <div class="exportAll">
+        <button id="exportAllBtn">Export ALL for Sungrazer</button>
+        <a id="downloadAllLink" class="pill" href="#" download rel="noopener" style="display:none;">Download TXT</a>
+        <span id="exportAllHint" class="muted"></span>
+      </div>
     </div>
   </div>
 </header>
@@ -134,17 +144,20 @@ const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOn
 const lastFramesRow = document.querySelector("#lastFramesRow");
 const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
 const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
+const exportAllBtn = el("#exportAllBtn");
+const downloadAllLink = el("#downloadAllLink");
+const exportAllHint = el("#exportAllHint");
 
 let allReports = [];
 let currentReport = null;
 let refreshTimer = null, refreshCountdown = 0, REFRESH_SECS = 60;
 
+/* ---------- helpers & fetch ---------- */
 function showError(msg){
   const e = document.getElementById('errors');
   e.style.display = 'block';
   e.innerHTML = '<div class="err">'+msg+'</div>';
 }
-
 async function fetchJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
   if(!r.ok){
@@ -153,7 +166,6 @@ async function fetchJSON(url){
   }
   return r.json();
 }
-
 function parseReportTime(name){
   const m = name?.match?.(/(\d{8})_(\d{6})/);
   if(!m) return null;
@@ -163,7 +175,6 @@ function parseReportTime(name){
   const fmt = dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
   return {iso, local: fmt};
 }
-
 function renderStats(items){
   const byDet = items.reduce((acc,h)=>{
     const k = (h.detector||'unknown').toUpperCase();
@@ -189,7 +200,6 @@ function renderStats(items){
     add("AI ‘not_comet’", ai['not_comet']||0);
   }
 }
-
 function applyFilters(items){
   const useC2 = c2Filter.checked;
   const useC3 = c3Filter.checked;
@@ -202,9 +212,50 @@ function applyFilters(items){
   });
 }
 
+/* ---------- Sungrazer helpers ---------- */
+function buildSungrazerText(h){
+  const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
+  const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
+  const lines = [];
+  lines.push("=== Sungrazer Report Helper ===");
+  lines.push(`Camera: ${(h.detector||'').toUpperCase()}`);
+  lines.push(`Image Size: ${imgW}x${imgH}`);
+  lines.push(`Your (0,0) position: Upper Left`);
+  lines.push(`Date of FIRST IMAGE: ${dateFirst}`);
+  lines.push("Frames (time_utc, x, y):");
+  (h.positions||[]).forEach(p=>{
+    const t = (p.time_utc||"").replace("T"," ").replace("Z","");
+    lines.push(`  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`);
+  });
+  return lines.join("\n") + "\n";
+}
+function buildAllSungrazerText(items, reportNameStr){
+  const lines = [];
+  lines.push("=== Sungrazer Report Helper — FULL EXPORT ===");
+  if (reportNameStr) lines.push(`Report: ${reportNameStr}`);
+  lines.push("");
+  items.forEach((h, idx)=>{
+    lines.push(`--- Candidate ${idx+1} — ${ (h.detector||'').toUpperCase() } Track #${h.track_index ?? '?' } ---`);
+    lines.push(buildSungrazerText(h).trim());
+    lines.push(""); // spacer
+  });
+  return lines.join("\n") + "\n";
+}
+function copyTextToClipboard(t){
+  return navigator.clipboard.writeText(t);
+}
+
+/* ---------- grid rendering ---------- */
+const gridState = { items: [] }; // keep last rendered (filtered) items for export-all
+
 function renderGrid(items){
   const filtered = applyFilters(items);
+  gridState.items = filtered.slice();
   renderStats(filtered);
+
+  // Update Export All hint
+  exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : "(no candidates)";
+
   if(!filtered.length){
     grid.hidden = true; empty.hidden = false;
     empty.textContent = "No matching detections for the current filters.";
@@ -215,6 +266,13 @@ function renderGrid(items){
   filtered.forEach((h,i)=>{
     const cropPath = (h.crop_path || "").replace(/^\.?\/*/,'');
     const imgURL = rawURL(cropPath);
+    const sgText = buildSungrazerText(h);
+    const det = (h.detector||'').toUpperCase();
+    const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
+    const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
+    const txtURL = rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.txt`) + `?t=${Date.now()}`;
+    const csvURL = rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.csv`) + `?t=${Date.now()}`;
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -223,16 +281,31 @@ function renderGrid(items){
       </a>
       <div class="meta">
         <div class="row">
-          <span class="pill">${(h.detector||'').toUpperCase()||'—'}</span>
+          <span class="pill">${det||'—'}</span>
           <span class="pill">Track #${h.track_index ?? '?'}</span>
           <span class="right sub">${h.series_mid_frame||''}</span>
         </div>
-        <div class="kvs">
-          <div class="kv">Timestamp (UTC): <b>${(h.timestamp_utc||'').replace('T',' ').replace('Z',' Z')}</b></div>
-          <div class="kv">AI: <b>${h.ai_label||'—'}</b> <span class="sub">${h.ai_score!=null?`(${(+h.ai_score).toFixed(2)})`:''}</span></div>
+        <div class="kvs" style="margin-top:8px;">
+          <div class="kv">Image Size: <b>${imgW}×${imgH}</b></div>
+          <div class="kv">Origin: <b>Upper Left</b></div>
+          <div class="kv">Positions: <b>${(h.positions||[]).length}</b></div>
+          <div class="kv">First date: <b>${dateFirst||'—'}</b></div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="sgBtn" data-sg="">Copy for Sungrazer</button>
+          <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
+          <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
         </div>
       </div>`;
     grid.appendChild(card);
+    const btn = card.querySelector(".sgBtn");
+    btn.setAttribute("data-sg", sgText);
+    btn.addEventListener("click", ()=>{
+      copyTextToClipboard(sgText).then(()=>{
+        btn.textContent = "Copied!";
+        setTimeout(()=> btn.textContent = "Copy for Sungrazer", 1200);
+      }).catch(()=> alert("Copy failed"));
+    });
   });
 }
 
@@ -280,8 +353,8 @@ async function tryShowBareThumbnails(){
   `).join("");
   return true;
 }
-/* ------------------------------------------------------------------ */
 
+/* ---------- status & last frames ---------- */
 function renderLastFrames(overlays, status){
   if (!overlays || !overlays.length) { lastFramesRow.innerHTML = ""; return; }
   lastFramesRow.innerHTML = overlays.map(o => `
@@ -303,20 +376,6 @@ function renderLastFrames(overlays, status){
     </div>
   `).join("");
 }
-
-/* ---------- New: Live GIFs loader ---------- */
-function loadLiveGifs(){
-  // cache-bust so the browser reloads the animation after each refresh tick
-  const t = Date.now();
-  c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
-  c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-  // show a rough local time of refresh
-  const now = new Date().toLocaleTimeString();
-  c2GifTime.textContent = `refreshed ${now}`;
-  c3GifTime.textContent = `refreshed ${now}`;
-}
-/* ------------------------------------------ */
-
 async function tryLoadStatus() {
   try {
     const s = await fetchJSON(rawURL(`${FOLDER}/latest_status.json`) + `?t=${Date.now()}`);
@@ -337,6 +396,17 @@ async function tryLoadStatus() {
   }
 }
 
+/* ---------- Live NASA GIFs ---------- */
+function loadLiveGifs(){
+  const t = Date.now();
+  c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
+  c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
+  const now = new Date().toLocaleTimeString();
+  c2GifTime.textContent = `refreshed ${now}`;
+  c3GifTime.textContent = `refreshed ${now}`;
+}
+
+/* ---------- reports loading ---------- */
 async function loadReportByName(name){
   const url = rawURL(`${FOLDER}/${name}`) + `?t=${Date.now()}`;
   const data = await fetchJSON(url);
@@ -356,7 +426,6 @@ async function loadReportByName(name){
     if (status) renderLastFrames(status.overlays, status);
   } catch (e) {}
 }
-
 async function loadLatestReport(){
   try{
     const list = await fetchJSON(apiListURL());
@@ -387,11 +456,38 @@ async function loadLatestReport(){
     const hadAny = await tryShowBareThumbnails();
     if (!hadAny) showError(`Could not list /${FOLDER}/ via GitHub API and no thumbnails found.`);
   } finally {
-    // refresh the live GIFs every load attempt
     loadLiveGifs();
   }
 }
 
+/* ---------- Export ALL button ---------- */
+function exportAll(){
+  if(!currentReport || !Array.isArray(currentReport.data) || !currentReport.data.length){
+    alert("No report loaded.");
+    return;
+  }
+  const filtered = gridState.items || [];
+  if(!filtered.length){
+    alert("No candidates to export (check filters).");
+    return;
+  }
+  const bundle = buildAllSungrazerText(filtered, currentReport.name);
+  // Copy to clipboard
+  copyTextToClipboard(bundle).catch(()=>{/* ignore */});
+  // Build a downloadable blob
+  const blob = new Blob([bundle], {type: "text/plain"});
+  const url = URL.createObjectURL(blob);
+  downloadAllLink.href = url;
+  const base = (currentReport.name || "candidates").replace(".json","");
+  downloadAllLink.download = `${base}_Sungrazer_ALL.txt`;
+  downloadAllLink.style.display = "inline-flex";
+  // UX ping
+  exportAllBtn.textContent = "Exported & Copied!";
+  setTimeout(()=> exportAllBtn.textContent = "Export ALL for Sungrazer", 1200);
+}
+exportAllBtn.addEventListener("click", exportAll);
+
+/* ---------- refresh & events ---------- */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
   refreshCountdown = REFRESH_SECS;
@@ -412,6 +508,7 @@ reportSelect.addEventListener("change", (e)=>{ loadReportByName(e.target.value) 
   if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
 }));
 
+/* init */
 loadLatestReport().then(startAutoRefresh);
 </script>
 </body>
