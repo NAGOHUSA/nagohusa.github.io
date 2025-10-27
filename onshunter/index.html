@@ -63,12 +63,15 @@
       <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
       <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
       <label class="pill"><input type="checkbox" id="aiOnly" /> AI=‘comet’ only</label>
-      <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only</label>
+      <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only (grid)</label>
       <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
 
+      <!-- Export ALL area -->
       <div class="exportAll">
         <button id="exportAllBtn">Export ALL for Sungrazer</button>
-        <a id="downloadAllLink" class="pill" href="#" download rel="noopener" style="display:none;">Download TXT</a>
+        <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Export marked only</label>
+        <a id="downloadAllTxt" class="pill" href="#" download rel="noopener" style="display:none;">Download TXT</a>
+        <a id="downloadAllCsv" class="pill" href="#" download rel="noopener" style="display:none;">Download CSV</a>
         <span id="exportAllHint" class="muted"></span>
       </div>
     </div>
@@ -116,7 +119,7 @@
   </section>
 
   <footer>
-    <div>Tip: mark promising candidates, then “Export ALL” with “Marked only” enabled to create a clean Sungrazer submission draft.</div>
+    <div>Tip: mark promising candidates, then use “Export marked only” for a clean Sungrazer submission draft. CSV includes all positions per candidate.</div>
   </footer>
 </main>
 
@@ -143,15 +146,16 @@ const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOn
 const lastFramesRow = el("#lastFramesRow");
 const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
 const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
-const exportAllBtn = el("#exportAllBtn"), downloadAllLink = el("#downloadAllLink"), exportAllHint = el("#exportAllHint");
+const exportAllBtn = el("#exportAllBtn"), exportAllHint = el("#exportAllHint");
+const exportMarkedOnly = el("#exportMarkedOnly");
+const downloadAllTxt = el("#downloadAllTxt");
+const downloadAllCsv = el("#downloadAllCsv");
 
 let currentReport = null;
 let refreshTimer=null, refreshCountdown=0, REFRESH_SECS=60;
 const LS_KEY = "ons_submit_marks";
 
-function getMarks(){
-  try { return JSON.parse(localStorage.getItem(LS_KEY)||"{}"); } catch { return {}; }
-}
+function getMarks(){ try { return JSON.parse(localStorage.getItem(LS_KEY)||"{}"); } catch { return {}; } }
 function setMarks(m){ localStorage.setItem(LS_KEY, JSON.stringify(m)); }
 function keyFor(h){ return `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`; }
 
@@ -181,7 +185,7 @@ function renderStats(items){
   add("Candidates", items.length); add("C2", byDet.C2||0); add("C3", byDet.C3||0);
   if(Object.keys(ai).length){ add("AI ‘comet’", ai.comet||0); add("AI ‘not_comet’", ai.not_comet||0); }
 }
-function applyFilters(items){
+function applyGridFilters(items){
   const m = getMarks();
   return items.filter(h=>{
     if(c2Filter.checked && (h.detector||'').toUpperCase()!=='C2') return false;
@@ -192,7 +196,7 @@ function applyFilters(items){
   });
 }
 
-/* Sungrazer text builders */
+/* Sungrazer text & CSV builders */
 function buildSungrazerText(h){
   const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
   const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
@@ -221,12 +225,28 @@ function buildAllSungrazerText(items, reportNameStr){
   });
   return lines.join("\n")+"\n";
 }
+function buildAllCSV(items){
+  // Wide CSV with one row per (candidate position)
+  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_channel_match"]];
+  items.forEach(h=>{
+    const det=(h.detector||'').toUpperCase();
+    const w=(h.image_size?.[0]??""), hgt=(h.image_size?.[1]??"");
+    const origin=(h.origin||"").toLowerCase();
+    const ai_label=h.ai_label||"";
+    const ai_score=h.ai_score!=null? String(h.ai_score) : "";
+    const dcm = h.dual_channel_match? (h.dual_channel_match.with+";Δ="+h.dual_channel_match.pa_diff_deg+"°") : "";
+    (h.positions||[]).forEach(p=>{
+      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, hgt, origin, ai_label, ai_score, dcm]);
+    });
+  });
+  return rows.map(r=>r.map(v=>String(v).replace(/"/g,'""')).map(v=>`"${v}"`).join(",")).join("\n")+"\n";
+}
 function copyTextToClipboard(t){ return navigator.clipboard.writeText(t); }
 
 /* grid rendering */
 const gridState = { items: [] };
 function renderGrid(items){
-  const filtered = applyFilters(items);
+  const filtered = applyGridFilters(items);
   gridState.items = filtered.slice();
   renderStats(filtered);
   exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : "(no candidates)";
@@ -244,7 +264,7 @@ function renderGrid(items){
     const txtURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.txt`)+`?t=${Date.now()}`;
     const csvURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.csv`)+`?t=${Date.now()}`;
     const sgText=buildSungrazerText(h);
-    const k=keyFor(h);
+    const k=`${det}#${h.track_index}#${h.series_mid_frame||''}`;
     const marked = !!marks[k];
 
     const card=document.createElement("div");
@@ -417,28 +437,47 @@ async function loadLatestReport(){
   } finally { loadLiveGifs(); }
 }
 
-/* Export-all */
+/* Export ALL (TXT + CSV) */
 function exportAll(){
   if(!currentReport || !Array.isArray(currentReport.data)){ alert("No report loaded."); return; }
-  const items = applyFilters(currentReport.data);
-  if(!items.length){ alert("No candidates to export (check filters)."); return; }
-  const bundle = buildAllSungrazerText(items, currentReport.name);
-  copyTextToClipboard(bundle).catch(()=>{});
-  const blob = new Blob([bundle], {type:"text/plain"});
-  const url = URL.createObjectURL(blob);
-  downloadAllLink.href = url;
-  const base=(currentReport.name||"candidates").replace(".json","");
-  downloadAllLink.download = `${base}_Sungrazer_MARKED_OR_FILTERED.txt`;
-  downloadAllLink.style.display="inline-flex";
+  // Start with the grid items (already filtered by the left-side controls)
+  let items = (gridState.items || []).slice();
+  // Optionally further restrict to marked only (export-only toggle)
+  if (exportMarkedOnly.checked) {
+    const marks = getMarks();
+    items = items.filter(h => marks[keyFor(h)]);
+  }
+  if(!items.length){ alert("No candidates to export (check filters/toggles)."); return; }
+
+  const txtBundle = buildAllSungrazerText(items, currentReport.name);
+  copyTextToClipboard(txtBundle).catch(()=>{});
+
+  const csvBundle = buildAllCSV(items);
+
+  // Build downloadable TXT
+  const txtBlob = new Blob([txtBundle], {type:"text/plain"});
+  const txtUrl = URL.createObjectURL(txtBlob);
+  downloadAllTxt.href = txtUrl;
+  downloadAllTxt.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.txt`;
+  downloadAllTxt.style.display = "inline-flex";
+
+  // Build downloadable CSV
+  const csvBlob = new Blob([csvBundle], {type:"text/csv"});
+  const csvUrl = URL.createObjectURL(csvBlob);
+  downloadAllCsv.href = csvUrl;
+  downloadAllCsv.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.csv`;
+  downloadAllCsv.style.display = "inline-flex";
+
   exportAllBtn.textContent="Exported & Copied!"; setTimeout(()=>exportAllBtn.textContent="Export ALL for Sungrazer", 1200);
 }
 exportAllBtn.addEventListener("click", exportAll);
 
 /* refresh & events */
+let refreshTimerId=null;
 function startAutoRefresh(){
-  if(refreshTimer) clearInterval(refreshTimer);
+  if(refreshTimerId) clearInterval(refreshTimerId);
   refreshCountdown=REFRESH_SECS; el("#refreshEta").textContent=refreshCountdown+"s";
-  refreshTimer = setInterval(async ()=>{
+  refreshTimerId = setInterval(async ()=>{
     refreshCountdown--; el("#refreshEta").textContent=refreshCountdown+"s";
     if(refreshCountdown<=0){ await loadLatestReport(); refreshCountdown=REFRESH_SECS; }
   },1000);
@@ -450,6 +489,7 @@ reportSelect.addEventListener("change", (e)=> loadReportByName(e.target.value));
 }));
 
 /* init */
+const gridState = { items: [] };
 loadLatestReport().then(startAutoRefresh);
 </script>
 </body>
