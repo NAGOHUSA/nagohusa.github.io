@@ -6,8 +6,7 @@
 <title>SOHO Comet Hunter — Live Results</title>
 <style>
   :root{
-    --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444; --chip:#1e293b;
-    --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
+    --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa; --chip:#1e293b; --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
@@ -77,13 +76,12 @@
 </main>
 
 <script>
-/*** CONFIG — EDIT THESE THREE LINES ***/
+/*** CONFIG — EDIT THESE THREE LINES TO MATCH YOUR REPO ***/
 const OWNER  = "NAGOHUSA";
 const REPO   = "ONS_SOHOHUNTER";
 const BRANCH = "main";
 /*** END CONFIG ***/
 
-// Optional URL overrides: ?branch=...&folder=...&owner=...&repo=...
 const params = new URLSearchParams(location.search);
 const FOLDER = params.get("folder") || "detections";
 
@@ -100,16 +98,14 @@ const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOn
 
 let allReports = [];
 let currentReport = null;
-let refreshTimer = null, refreshCountdown = 0, REFRESH_SECS = 60; // check every 60s
+let refreshTimer = null, refreshCountdown = 0, REFRESH_SECS = 60;
 
 async function fetchJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
   if(!r.ok) throw new Error(`HTTP ${r.status} when fetching ${url}`);
   return r.json();
 }
-
 function parseReportTime(name){
-  // candidates_YYYYmmdd_HHMMSS.json
   const m = name.match(/(\d{8})_(\d{6})/);
   if(!m) return null;
   const [_, d, t] = m;
@@ -118,7 +114,6 @@ function parseReportTime(name){
   const fmt = dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
   return {iso, local: fmt};
 }
-
 function renderStats(items){
   const byDet = items.reduce((acc,h)=>{
     const k = (h.detector||'unknown').toUpperCase();
@@ -144,7 +139,6 @@ function renderStats(items){
     add("AI ‘not_comet’", ai['not_comet']||0);
   }
 }
-
 function applyFilters(items){
   const useC2 = c2Filter.checked;
   const useC3 = c3Filter.checked;
@@ -156,7 +150,6 @@ function applyFilters(items){
     return true;
   });
 }
-
 function renderGrid(items){
   const filtered = applyFilters(items);
   renderStats(filtered);
@@ -170,7 +163,6 @@ function renderGrid(items){
   filtered.forEach((h,i)=>{
     const cropPath = (h.crop_path || "").replace(/^\.?\/*/,'');
     const imgURL = rawURL(cropPath);
-    const ai = (h.ai_label ? ` • AI: ${h.ai_label} (${(h.ai_score??0).toFixed(2)})` : "");
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -185,4 +177,110 @@ function renderGrid(items){
         </div>
         <div class="kvs">
           <div class="kv">Timestamp (UTC): <b>${(h.timestamp_utc||'').replace('T',' ').replace('Z',' Z')}</b></div>
-          <div class="kv">AI: <b>${h.ai_label||_
+          <div class="kv">AI: <b>${h.ai_label||'—'}</b> <span class="sub">${h.ai_score!=null?`(${(+h.ai_score).toFixed(2)})`:''}</span></div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+async function tryLoadStatus() {
+  const statusURL = rawURL(`${FOLDER}/latest_status.json`);
+  const r = await fetch(statusURL);
+  if (!r.ok) return null;
+  const s = await r.json();
+  const overlays = ["C2","C3"].map(det => ({
+    det,
+    overlay: rawURL(`${FOLDER}/overlay_${det}.png`),
+    contact: rawURL(`${FOLDER}/contact_${det}.png`),
+    frames: s?.detectors?.[det]?.frames ?? 0,
+    tracks: s?.detectors?.[det]?.tracks ?? 0
+  }));
+  return { s, overlays };
+}
+async function loadReportByName(name){
+  const url = rawURL(`${FOLDER}/${name}`);
+  const data = await fetchJSON(url);
+  currentReport = { name, data, url };
+  reportName.textContent = name;
+  srcLink.href = ghBlobURL(`${FOLDER}/${name}`);
+  const t = name ? parseReportTime(name) : null;
+  reportTime.textContent = t ? `• ${t.local} (local)` : "";
+  if(Array.isArray(data) && data.length){
+    renderGrid(data);
+  }else{
+    grid.hidden = true; empty.hidden = false;
+    empty.textContent = "Report is empty.";
+  }
+}
+async function loadLatestReport(){
+  try{
+    const list = await fetchJSON(apiListURL());
+    const files = list
+      .filter(f => f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
+      .sort((a,b)=> b.name.localeCompare(a.name));
+    allReports = files.map(f=>f.name);
+    reportSelect.innerHTML = allReports.slice(0,20).map(n=>`<option value="${n}">${n}</option>`).join("");
+    if(!files.length){
+      reportName.textContent = "—";
+      reportTime.textContent = "";
+      srcLink.href = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/${FOLDER}`;
+      const status = await tryLoadStatus();
+      if (status) {
+        const { s, overlays } = status;
+        grid.hidden = false; empty.hidden = true;
+        grid.innerHTML = overlays.map(o => `
+          <div class="card">
+            <img class="thumb" alt="overlay ${o.det}" src="${o.overlay}">
+            <div class="meta">
+              <div class="row">
+                <span class="pill">${o.det}</span>
+                <span class="pill">frames: ${o.frames}</span>
+                <span class="pill">tracks: ${o.tracks}</span>
+              </div>
+              <div class="kv" style="margin-top:8px;">
+                Contact sheet: <a href="${o.contact}" target="_blank">open</a>
+              </div>
+            </div>
+          </div>
+        `).join("");
+        const t = s?.timestamp_utc ? new Date(s.timestamp_utc).toLocaleString() : "";
+        reportName.textContent = "latest_status.json";
+        reportTime.textContent = t ? `• ${t} (local)` : "";
+        return;
+      }
+      grid.hidden = true; empty.hidden = false;
+      empty.innerHTML = `No reports found yet in <code>/${FOLDER}</code>.`;
+      return;
+    }
+    const chosen = params.get("file") || files[0].name;
+    reportSelect.value = chosen;
+    await loadReportByName(chosen);
+  }catch(err){
+    grid.hidden = true; empty.hidden = false;
+    empty.innerHTML = `<div class="err">Error loading from GitHub: ${err.message}</div>`;
+  }
+}
+function startAutoRefresh(){
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshCountdown = REFRESH_SECS;
+  el("#refreshEta").textContent = refreshCountdown + "s";
+  refreshTimer = setInterval(async ()=>{
+    refreshCountdown--;
+    el("#refreshEta").textContent = refreshCountdown + "s";
+    if(refreshCountdown<=0){
+      const before = allReports[0];
+      await loadLatestReport();
+      const after = allReports[0];
+      refreshCountdown = REFRESH_SECS;
+    }
+  }, 1000);
+}
+el("#refreshBtn").addEventListener("click", async ()=>{ refreshCountdown = REFRESH_SECS; await loadLatestReport(); });
+reportSelect.addEventListener("change", (e)=>{ loadReportByName(e.target.value) });
+[c2Filter,c3Filter,aiOnly].forEach(cb=> cb.addEventListener("change", ()=>{
+  if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
+}));
+loadLatestReport().then(startAutoRefresh);
+</script>
+</body>
+</html>
