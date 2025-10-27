@@ -4,93 +4,109 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SOHO Comet Hunter — Live Results</title>
-<style>
-  :root{
-    --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa;
-    --chip:#1e293b; --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
-  .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
-  h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
-  .sub{font-size:13px;color:var(--muted)}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
-  button,.sel,input[type="checkbox"]{cursor:pointer}
-  button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
-  button:hover{border-color:#33508a}
-  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text)}
-  main{padding:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-  .thumb{aspect-ratio:1.6/1;display:block;width:100%;background:#0b1220;object-fit:contain}
-  .meta{padding:12px}
-  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-  .kv{font-size:12px;color:var(--muted)}
-  .kv b{color:var(--text)}
-  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
-  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .right{margin-left:auto}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
-  .stat b{font-size:18px}
-  .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  footer{color:var(--muted);font-size:12px;padding:20px 0}
-  .err{color:#ffb4b4}
-  .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
-  .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
-  .thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px}
-  .gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;margin-top:12px}
-  .gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
-  .gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
-  .gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
-  .exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
-  .muted{color:var(--muted);font-size:12px}
-  .mark{display:flex;gap:8px;align-items:center}
-  .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
-  .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
-  .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:12px}
 
-  /* Segmented toggle */
-  .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
-  .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:12px}
-  .seg button:last-child{border-right:0}
-  .seg button.active{background:#1b2a46;color:#e6eefc}
-  .seg button:disabled{opacity:.45;cursor:not-allowed}
-
-  /* Player */
-  .player{padding:10px 12px;border-top:1px solid #1e293b;background:#0d1526}
-  .canvasWrap{position:relative;width:100%}
-  canvas{display:block;width:100%;height:auto;background:#000}
-  .playerBar{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
-  .slider{flex:1}
-  .player button.small{padding:6px 10px;border-radius:8px;font-size:12px}
-  .player label{font-size:12px;color:var(--muted)}
-</style>
-<!-- GIF encoder (best-effort; may fail if canvas is tainted by CORS) -->
+<!-- GIF encoder for optional GIF exports -->
 <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+
+<style>
+:root{
+  --bg:#0b1220;--panel:#0f1b30;--muted:#94a3b8;--text:#e6eefc;--accent:#60a5fa;
+  --chip:#1e293b;--card:#0d1526;--shadow:0 8px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+header{position:sticky;top:0;z-index:10;
+  background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);
+  backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
+.wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
+.sub{font-size:13px;color:var(--muted)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button,.sel,input[type="checkbox"]{cursor:pointer}
+button{border:1px solid #243244;background:#0e1a2b;color:var(--text);
+  padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
+button:hover{border-color:#33508a}
+.sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;
+  padding:8px 10px;color:var(--text)}
+main{padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid #1e293b;border-radius:16px;
+  overflow:hidden;box-shadow:var(--shadow)}
+.thumb{aspect-ratio:1.6/1;display:block;width:100%;background:#0b1220;object-fit:contain}
+.meta{padding:12px}
+.kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.kv{font-size:12px;color:var(--muted)}
+.kv b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);
+  border:1px solid #1e293b;padding:4px 8px;border-radius:999px;
+  font-size:12px;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.right{margin-left:auto}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
+.stat b{font-size:18px}
+.empty{padding:40px;text-align:center;color:var(--muted);
+  border:1px dashed #253044;border-radius:16px;background:#0b1220}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+footer{color:var(--muted);font-size:12px;padding:20px 0}
+.err{color:#ffb4b4}
+.thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:16px;margin-top:12px}
+.thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
+.thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;
+  display:flex;align-items:center;gap:10px}
+.gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  gap:16px;margin-top:12px}
+.gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
+.gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
+.gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
+.exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
+.muted{color:var(--muted);font-size:12px}
+.mark{display:flex;gap:8px;align-items:center}
+.flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
+.flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
+.group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;
+  padding:4px 6px;color:var(--text);font-size:12px}
+
+/* segmented toggle */
+.seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
+.seg button{border:0;border-right:1px solid #27324a;background:transparent;
+  color:#cbd5e1;padding:6px 10px;font-size:12px}
+.seg button:last-child{border-right:0}
+.seg button.active{background:#1b2a46;color:#e6eefc}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+
+/* player */
+.player{padding:10px 12px;border-top:1px solid #1e293b;background:#0d1526}
+.canvasWrap{position:relative;width:100%}
+canvas{display:block;width:100%;height:auto;background:#000}
+.playerBar{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.slider{flex:1}
+.player button.small{padding:6px 10px;border-radius:8px;font-size:12px}
+.player label{font-size:12px;color:var(--muted)}
+</style>
 </head>
+
 <body>
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter</h1>
-    <div class="sub">Live NASA animations, last-frame thumbs, and Sungrazer-ready exports from your GitHub repo.</div>
+    <div class="sub">Live NASA animations, detections, and Sungrazer-ready exports from your GitHub repo.</div>
     <div class="controls">
-      <button id="refreshBtn" title="Reload now">⟳ Refresh</button>
-      <select id="reportSelect" class="sel" title="Pick a past report"></select>
+      <button id="refreshBtn">⟳ Refresh</button>
+      <select id="reportSelect" class="sel"></select>
       <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
       <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
-      <label class="pill"><input type="checkbox" id="aiOnly" /> AI=‘comet’ only</label>
+      <label class="pill"><input type="checkbox" id="aiOnly" /> AI ‘comet’ only</label>
       <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only</label>
       <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
-
       <div class="exportAll">
         <button id="exportAllBtn">Export ALL</button>
-        <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Export marked only</label>
-        <a id="downloadAllTxt" class="pill" href="#" download rel="noopener" style="display:none;">TXT</a>
-        <a id="downloadAllCsv" class="pill" href="#" download rel="noopener" style="display:none;">CSV</a>
+        <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Marked only</label>
+        <a id="downloadAllTxt" class="pill" href="#" download style="display:none;">TXT</a>
+        <a id="downloadAllCsv" class="pill" href="#" download style="display:none;">CSV</a>
         <span id="exportAllHint" class="muted"></span>
       </div>
     </div>
@@ -101,7 +117,7 @@
   <section id="status">
     <div class="row">
       <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
-      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank">GitHub</a></div>
     </div>
     <div class="stats" id="stats"></div>
   </section>
@@ -110,658 +126,259 @@
   <section aria-label="Live LASCO animations">
     <div class="gifRow">
       <div class="gifCard">
-        <div class="gifHead">
-          <span class="pill">C2 — Live GIF</span>
-          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" rel="noopener">open</a>
+        <div class="gifHead"><span class="pill">C2 — Live GIF</span>
+          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank">open</a>
           <span class="right sub" id="c2GifTime"></span>
         </div>
-        <img id="c2Gif" class="gif" alt="SOHO LASCO C2 live animation">
+        <img id="c2Gif" class="gif" alt="SOHO LASCO C2 live">
       </div>
       <div class="gifCard">
-        <div class="gifHead">
-          <span class="pill">C3 — Live GIF</span>
-          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" rel="noopener">open</a>
+        <div class="gifHead"><span class="pill">C3 — Live GIF</span>
+          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank">open</a>
           <span class="right sub" id="c3GifTime"></span>
         </div>
-        <img id="c3Gif" class="gif" alt="SOHO LASCO C3 live animation">
+        <img id="c3Gif" class="gif" alt="SOHO LASCO C3 live">
       </div>
     </div>
   </section>
 
-  <!-- Annotated last-frame thumbnails generated by your workflow -->
+  <!-- Thumbnails -->
   <section style="padding-top:10px;">
     <div class="thumbRow" id="lastFramesRow"></div>
-    <div class="empty" id="errors" style="margin-top:12px; display:none;"></div>
+    <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
   </section>
 
   <section id="content" style="margin-top:16px;">
-    <div class="empty" id="empty">No detections yet. The viewer will update automatically when new candidates are committed.</div>
+    <div class="empty" id="empty">No detections yet.</div>
     <div class="grid" id="grid" hidden></div>
   </section>
 
   <footer>
-    <div>Tip: per-card toggle switches Crop/Original/Annotated. Use the built-in player to watch motion and export one-loop WebM/GIF.</div>
+    <div>Tip: Each candidate card has a player with Play/Pause, FPS slider, Show Path, and Save 1 loop (WebM or GIF).</div>
   </footer>
 </main>
 
 <script>
-/*** CONFIG — update if you rename the repo ***/
-const OWNER  = "NAGOHUSA";
-const REPO   = "ONS_SOHOHUNTER";
-const BRANCH = "main";
+/*** CONFIG ***/
+const OWNER="NAGOHUSA", REPO="ONS_SOHOHUNTER", BRANCH="main";
+const FOLDER="detections";
 /*** END CONFIG ***/
 
-const params = new URLSearchParams(location.search);
-const FOLDER = params.get("folder") || "detections";
+// helpers for GitHub raw and blob links
+const rawURL = p=>`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${p.replace(/^\.?\/*/,'')}`;
+const ghBlobURL = p=>`https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${p.replace(/^\.?\/*/,'')}`;
 
-const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
-const rawURL = (path) => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
-const ghBlobURL = (path) => `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
-
-const el = (s)=>document.querySelector(s);
+// Short refs 
+const el = q => document.querySelector(q);
 const grid = el("#grid"), empty = el("#empty");
-const reportSelect = el("#reportSelect");
-const reportName = el("#reportName"), reportTime = el("#reportTime"), srcLink = el("#srcLink");
-const stats = el("#stats");
-const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOnly"), markedOnly = el("#markedOnly");
-const lastFramesRow = el("#lastFramesRow");
-const c2Gif = el("#c2Gif"), c("#c3Gif");
-function c(q){return document.querySelector(q)}
-const c3Gif = c("#c3Gif");
+const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
 const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
-const exportAllBtn = el("#exportAllBtn"), exportAllHint = el("#exportAllHint");
-const exportMarkedOnly = el("#exportMarkedOnly");
-const downloadAllTxt = el("#downloadAllTxt");
-const downloadAllCsv = el("#downloadAllCsv");
 
-let currentReport = null;
-let refreshTimer=null, refreshCountdown=0, REFRESH_SECS=60;
-
-const LS_MARKS = "ons_submit_marks";
-const LS_GROUPS = "ons_candidate_groups"; // map key -> group
-
-function getMarks(){ try { return JSON.parse(localStorage.getItem(LS_MARKS)||"{}"); } catch { return {}; } }
-function setMarks(m){ localStorage.setItem(LS_MARKS, JSON.stringify(m)); }
-function getGroups(){ try { return JSON.parse(localStorage.getItem(LS_GROUPS)||"{}"); } catch { return {}; } }
-function setGroups(g){ localStorage.setItem(LS_GROUPS, JSON.stringify(g)); }
-function keyFor(h){ return `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`; }
-
-/* errors & fetch */
-function showError(msg){
-  const e = el('#errors'); e.style.display='block'; e.innerHTML = '<div class="err">'+msg+'</div>';
+/* SOHO frame URL */
+function sohoUrlFromFrame(det, frameName){
+ const m = /^(\d{8})_(\d{4})(?:\d{0,2})?_(c[23])_\d+\.jpe?g$/i.exec(frameName||"");
+ if(!m) return null;
+ const [_,d,,cam]=m; const year=d.slice(0,4);
+ return `https://soho.nascom.nasa.gov/data/REPROCESSING/Completed/${year}/${cam.toLowerCase()}/${d}/${frameName}`;
 }
-async function fetchJSON(url){
-  const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
-  if(!r.ok){ showError(`Fetch failed: ${url} — HTTP ${r.status}`); throw new Error(`HTTP ${r.status}`); }
-  return r.json();
-}
-function parseReportTime(name){
-  const m = name?.match?.(/(\d{8})_(\d{6})/); if(!m) return null;
-  const [_, d, t] = m;
-  const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
-  const dt = new Date(iso);
-  return {iso, local: dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'})};
-}
-
-/* stats & filters */
-function renderStats(items){
-  const byDet = items.reduce((a,h)=>{ const k=(h.detector||'').toUpperCase(); a[k]=(a[k]||0)+1; return a; },{});
-  const ai = items.reduce((a,h)=>{ const l=(h.ai_label||'').toLowerCase(); if(l) a[l]=(a[l]||0)+1; return a; },{});
-  stats.innerHTML="";
-  const add=(k,v)=>{ const d=document.createElement("div"); d.className="stat"; d.innerHTML=`<div class="sub">${k}</div><div><b>${v}</b></div>`; stats.appendChild(d); };
-  add("Candidates", items.length); add("C2", byDet.C2||0); add("C3", byDet.C3||0);
-  if(Object.keys(ai).length){ add("AI ‘comet’", ai.comet||0); add("AI ‘not_comet’", ai.not_comet||0); }
-}
-function applyGridFilters(items){
-  const m = getMarks();
-  return items.filter(h=>{
-    if(c2Filter.checked && (h.detector||'').toUpperCase()!=='C2') return false;
-    if(c3Filter.checked && (h.detector||'').toUpperCase()!=='C3') return false;
-    if(aiOnly.checked && (h.ai_label||'').toLowerCase()!=='comet') return false;
-    if(markedOnly.checked && !m[keyFor(h)]) return false;
-    return true;
-  });
-}
-
-/* Sungrazer builders */
-function buildSungrazerText(h){
-  const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
-  const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
-  const groups = getGroups(); const gLabel = groups[keyFor(h)] || "Unknown";
-  const lines = [];
-  lines.push("=== Sungrazer Report Helper ===");
-  lines.push(`Camera: ${(h.detector||'').toUpperCase()}`);
-  lines.push(`Image Size: ${imgW}x${imgH}`);
-  lines.push(`Your (0,0) position: Upper Left`);
-  lines.push(`Probable Group: ${gLabel}`);
-  lines.push(`Date of FIRST IMAGE: ${dateFirst}`);
-  lines.push("Frames (time_utc, x, y):");
-  (h.positions||[]).forEach(p=>{
-    const t=(p.time_utc||"").replace("T"," ").replace("Z","");
-    lines.push(`  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`);
-  });
-  return lines.join("\n")+"\n";
-}
-function buildAllSungrazerText(items, reportNameStr){
-  const lines = [];
-  lines.push("=== Sungrazer Report Helper — FULL EXPORT ===");
-  if(reportNameStr) lines.push(`Report: ${reportNameStr}`);
-  lines.push("");
-  items.forEach((h,i)=>{
-    lines.push(`--- Candidate ${i+1} — ${(h.detector||'').toUpperCase()} Track #${h.track_index ?? '?' } ---`);
-    lines.push(buildSungrazerText(h).trim());
-    lines.push("");
-  });
-  return lines.join("\n")+"\n";
-}
-function buildAllCSV(items){
-  const groups = getGroups();
-  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_channel_match","group","original_mid_path","annotated_mid_path"]];
-  items.forEach(h=>{
-    const det=(h.detector||'').toUpperCase();
-    const w=(h.image_size?.[0]??""), hgt=(h.image_size?.[1]??"");
-    const origin=(h.origin||"").toLowerCase();
-    const ai_label=h.ai_label||"";
-    const ai_score=h.ai_score!=null? String(h.ai_score) : "";
-    const dcm = h.dual_channel_match? (h.dual_channel_match.with+";Δ="+h.dual_channel_match.pa_diff_deg+"°") : "";
-    const group = groups[keyFor(h)] || "Unknown";
-    const orig = h.original_mid_path || "";
-    const ann  = h.annotated_mid_path || "";
-    (h.positions||[]).forEach(p=>{
-      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, hgt, origin, ai_label, ai_score, dcm, group, orig, ann]);
-    });
-  });
-  return rows.map(r=>r.map(v=>String(v).replace(/"/g,'""')).map(v=>`"${v}"`).join(",")).join("\n")+"\n";
-}
-function copyTextToClipboard(t){ return navigator.clipboard.writeText(t); }
-
-/* SOHO URL from frame name like 20251027_0736_c3_1024.jpg */
-function sohoUrlFromFrame(detector, frameName){
-  const m = /^(\d{8})_(\d{4})(?:\d{0,2})?_(c[23])_\d+\.jpe?g$/i.exec(frameName||"");
-  if(!m) return null;
-  const [_, d, , cam] = m;
-  const year = d.slice(0,4);
-  const camPath = cam.toLowerCase()==='c2' ? 'c2' : 'c3';
-  return `https://soho.nascom.nasa.gov/data/REPROCESSING/Completed/${year}/${camPath}/${d}/${frameName}`;
-}
-
-/* Segmented toggle UI */
-function makeSeg(items){
-  const seg=document.createElement("div"); seg.className="seg";
-  items.forEach(({label,disabled,onClick,active})=>{
-    const b=document.createElement("button");
-    b.textContent=label;
-    if(disabled) b.disabled=true;
-    if(active) b.classList.add("active");
-    b.addEventListener("click", ()=>{
-      [...seg.children].forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      onClick?.();
-    });
-    seg.appendChild(b);
-  });
-  return seg;
-}
-
-/* Player with export */
-function buildPlayer(container, h){
-  const det=(h.detector||'').toUpperCase();
-  const pos = (h.positions||[]).slice();
-  if(pos.length<2){ container.innerHTML='<div class="muted">No animation available (need ≥2 frames).</div>'; return; }
-
-  const frames = pos.map(p => p.frame).filter(Boolean);
-  const xy     = pos.map(p => ({x: p.x, y: p.y}));
-  const urls = frames.map(fn => sohoUrlFromFrame(det, fn));
-  if(urls.some(u=>!u)){ container.innerHTML='<div class="muted">Can’t reconstruct SOHO URLs for this candidate.</div>'; return; }
-
-  container.innerHTML = `
-    <div class="canvasWrap"><canvas></canvas></div>
-    <div class="playerBar">
-      <button class="small" data-action="play">▶︎ Play</button>
-      <button class="small" data-action="pause" disabled>❚❚ Pause</button>
-      <label>FPS <input type="range" min="1" max="15" value="6" class="slider" data-role="fps"></label>
-      <label><input type="checkbox" data-role="path" checked> Show path</label>
-      <button class="small" data-action="saveWebM" title="Exports one full loop">Save 1 loop (WebM)</button>
-      <button class="small" data-action="saveGIF" title="May be blocked by CORS">Save 1 loop (GIF)</button>
-      <span class="muted" data-role="status">Loading frames…</span>
-    </div>
-  `;
-  const canvas = container.querySelector("canvas");
-  const ctx = canvas.getContext("2d");
-  const playBtn = container.querySelector('[data-action="play"]');
-  const pauseBtn= container.querySelector('[data-action="pause"]');
-  const fpsSl   = container.querySelector('[data-role="fps"]');
-  const cbPath  = container.querySelector('[data-role="path"]');
-  const status  = container.querySelector('[data-role="status"]');
-  const saveW   = container.querySelector('[data-action="saveWebM"]');
-  const saveG   = container.querySelector('[data-action="saveGIF"]');
-
-  const state = {imgs:[], idx:0, timer:null, fps:6, w:1024, h:1024};
-  fpsSl.addEventListener("input", ()=>{ state.fps = parseInt(fpsSl.value,10)||6; if(state.timer){ pause(); play(); }});
-
-  // Preload
-  Promise.all(urls.map(u=>new Promise(res=>{
-    const im=new Image(); im.crossOrigin="anonymous";
-    im.onload = ()=>res({ok:true, im});
-    im.onerror= ()=>res({ok:false});
-    im.src = u + `?cb=${Date.now()}`;
-  }))).then(list=>{
-    state.imgs = list.map(o=>o.ok?o.im:null);
-    const firstGood = state.imgs.find(im=>!!im);
-    if(!firstGood){ status.textContent='Frames failed to load (SOHO host/CORS/retention).'; saveW.disabled=true; saveG.disabled=true; return; }
-    state.w = firstGood.naturalWidth||1024; state.h = firstGood.naturalHeight||1024;
-    canvas.width = state.w; canvas.height = state.h;
-    status.textContent = `${state.imgs.filter(Boolean).length}/${state.imgs.length} frames loaded`;
-    drawFrame(0);
-  });
-
-  function drawFrame(i){
-    state.idx = i % state.imgs.length;
-    const im = state.imgs[state.idx];
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,canvas.width,canvas.height);
-    if(im){ ctx.drawImage(im, 0,0, canvas.width, canvas.height); }
-    if(cbPath.checked){
-      ctx.strokeStyle="rgba(255,255,0,.85)"; ctx.lineWidth=2;
-      ctx.beginPath();
-      xy.forEach((p, k)=>{ if(k===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
-      ctx.stroke();
-      ctx.fillStyle="rgba(255,255,0,.85)";
-      xy.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2); ctx.fill(); });
-    }
-    if(xy[state.idx]){
-      const p = xy[state.idx];
-      ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2);
-      ctx.strokeStyle="rgba(0,255,0,.95)"; ctx.lineWidth=2; ctx.stroke();
-      ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
-      ctx.fillStyle="rgba(0,255,0,.95)"; ctx.fill();
-    }
+/******** LOAD JSON + BUILD VIEW ********/
+async function loadLatest() {
+  try {
+    const res = await fetch(rawURL(`${FOLDER}/latest_status.json?${Date.now()}`));
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const data = await res.json();
+    renderAll(data);
+  } catch(e){
+    console.error(e);
+    el("#errors").style.display="block";
+    el("#errors").textContent=`Error loading latest_status.json – ${e}`;
   }
-  function play(){
-    if(state.timer) return;
-    playBtn.disabled=true; pauseBtn.disabled=false;
-    state.timer = setInterval(()=>{ drawFrame((state.idx+1)%state.imgs.length); }, Math.max(1000/state.fps, 25));
-  }
-  function pause(){
-    if(state.timer){ clearInterval(state.timer); state.timer=null; }
-    playBtn.disabled=false; pauseBtn.disabled=true;
-  }
-  playBtn.addEventListener("click", play);
-  pauseBtn.addEventListener("click", pause);
-  cbPath.addEventListener("change", ()=>drawFrame(state.idx));
-
-  // ---- Export: 1 loop WebM (reliable) ----
-  async function saveOneLoopWebM(){
-    try{
-      const fps = state.fps || 6;
-      const stream = canvas.captureStream(fps);
-      const rec = new MediaRecorder(stream, {mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm'});
-      const chunks=[];
-      rec.ondataavailable = e=>{ if(e.data?.size) chunks.push(e.data); };
-      const done = new Promise(res=> rec.onstop = res);
-
-      // render one loop manually to guarantee exact length
-      const wasRunning = !!state.timer; pause();
-      rec.start();
-      let i=0, total=state.imgs.length;
-      const delay = 1000/fps;
-      while(i<total){
-        drawFrame(i);
-        // Let the frame paint
-        await new Promise(r=>setTimeout(r, delay));
-        i++;
-      }
-      rec.stop(); await done;
-
-      const blob = new Blob(chunks, {type: rec.mimeType});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href=url; a.download = `${(h.detector||'det')}_track${h.track_index||'X'}_1loop.webm`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-      status.textContent = 'Saved WebM (1 loop).';
-      if(wasRunning) play();
-    }catch(e){
-      console.error(e); status.textContent='WebM export failed (browser not supported?)';
-    }
-  }
-  saveW.addEventListener("click", saveOneLoopWebM);
-
-  // ---- Export: 1 loop GIF (may be blocked by CORS) ----
-  async function saveOneLoopGIF(){
-    const fps = state.fps || 6;
-    const delay = Math.max(1, Math.round(1000/fps)); // ms
-    // Try a quick taint check
-    try { canvas.toDataURL('image/png'); } 
-    catch { status.textContent='GIF export blocked by CORS (canvas is tainted). Use WebM export.'; return; }
-
-    const gif = new GIF({
-      workers: 2,
-      quality: 10,
-      workerScript: 'https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.worker.js'
-    });
-    status.textContent='Encoding GIF…';
-    const wasRunning = !!state.timer; pause();
-    for(let i=0;i<state.imgs.length;i++){
-      drawFrame(i);
-      // let draw flush
-      await new Promise(r=>requestAnimationFrame(()=>r()));
-      gif.addFrame(canvas, {copy:true, delay});
-    }
-    gif.on('finished', (blob)=>{
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href=url; a.download = `${(h.detector||'det')}_track${h.track_index||'X'}_1loop.gif`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-      status.textContent='Saved GIF (1 loop).';
-      if(wasRunning) play();
-    });
-    gif.on('abort', ()=>{ status.textContent='GIF encoding aborted.'; if(wasRunning) play(); });
-    gif.render();
-  }
-  saveG.addEventListener("click", saveOneLoopGIF);
 }
 
-/* Grid rendering (cards with image toggle + player) */
-const gridState = { items: [] };
+function renderAll(data){
+  el("#reportName").textContent=data.name||"latest_status.json";
+  el("#reportTime").textContent=data.generated_at||"";
+  el("#srcLink").href=ghBlobURL(`${FOLDER}/latest_status.json`);
+  renderStats(data);
+  renderThumbs(data);
+  renderGrid(data.candidates||[]);
+}
+
+function renderStats(data){
+  const s=el("#stats"); s.innerHTML="";
+  const mk=(t,v)=>`<div class="stat"><div>${t}</div><b>${v}</b></div>`;
+  s.innerHTML += mk("Candidates",data.candidates?.length||0);
+  s.innerHTML += mk("C2 frames",data.c2_frames||"—");
+  s.innerHTML += mk("C3 frames",data.c3_frames||"—");
+}
+
+function renderThumbs(data){
+  const r=el("#lastFramesRow"); r.innerHTML="";
+  ["C2","C3"].forEach(det=>{
+    const u=rawURL(`${FOLDER}/lastthumb_${det}.png?${Date.now()}`);
+    r.innerHTML+=`
+      <div class="thumbCard">
+        <div class="thumbHead">
+          <span class="pill">${det} last frame</span>
+          <a class="sub" href="${ghBlobURL(`${FOLDER}/lastthumb_${det}.png`)}" target="_blank">view</a>
+        </div>
+        <img src="${u}" class="thumb" loading="lazy">
+      </div>`;
+  });
+}
+
+/************ GRID ************/
 function renderGrid(items){
-  const filtered = applyGridFilters(items);
-  gridState.items = filtered.slice();
-  renderStats(filtered);
-  exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : "(no candidates)";
-
-  if(!filtered.length){ grid.hidden=true; empty.hidden=false; empty.textContent="No matching detections for the current filters."; return; }
-  grid.hidden=false; empty.hidden=true; grid.innerHTML="";
-
-  const marks = getMarks(); const groups = getGroups();
-  filtered.forEach((h,i)=>{
-    const cropPath=(h.crop_path||"").replace(/^\.?\/*/,'');
-    const cropURL=rawURL(cropPath)+`?t=${Date.now()}`;
-    const det=(h.detector||'').toUpperCase();
-    const imgW=(h.image_size?.[0]??1024), imgH=(h.image_size?.[1]??1024);
-    const dateFirst=(h.positions?.[0]?.time_utc||"").split("T")[0]||"";
-    const txtURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.txt`)+`?t=${Date.now()}`;
-    const csvURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.csv`)+`?t=${Date.now()}`;
-    const k=keyFor(h);
-    const marked = !!marks[k];
-    const groupVal = groups[k] || "Unknown";
-    const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : "—";
-    let speed="—";
-    const pos=h.positions||[];
-    if(pos.length>=2){
-      const x0=pos[0].x, y0=pos[0].y, x1=pos[pos.length-1].x, y1=pos[pos.length-1].y;
-      const dist=Math.hypot(x1-x0,y1-y0); speed = `${(dist/Math.max(1,(pos.length-1))).toFixed(1)} px/frame`;
-    }
-    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) + `?t=${Date.now()}` : null;
-    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) + `?t=${Date.now()}` : null;
-
-    const card=document.createElement("div");
-    card.className="card";
-
-    // Header image + segmented toggle
-    const headerLink=document.createElement("a");
-    headerLink.href=ghBlobURL(cropPath);
-    headerLink.target="_blank"; headerLink.rel="noopener";
-    const img=document.createElement("img");
-    img.className="thumb"; img.loading="lazy"; img.alt=`candidate ${i+1}`;
-    img.src=cropURL;
-    img.onerror = function(){
-      const repl=document.createElement('div');
-      repl.className='thumb'; repl.textContent='(image unavailable)';
-      img.replaceWith(repl);
-    };
-    headerLink.appendChild(img);
-    card.appendChild(headerLink);
-
-    const segWrap=document.createElement("div");
-    segWrap.style.display="flex"; segWrap.style.justifyContent="center"; segWrap.style.padding="8px 12px 0";
-    const seg = makeSeg([
-      {label:"Crop",      active:true,  onClick:()=>{ img.src=cropURL; headerLink.href=ghBlobURL(cropPath); }},
-      {label:"Original",  disabled:!origURL, onClick:()=>{ img.src=origURL; headerLink.href=origURL; }},
-      {label:"Annotated", disabled:!annURL,  onClick:()=>{ img.src=annURL;  headerLink.href=annURL;  }},
-    ]);
-    segWrap.appendChild(seg);
-    card.appendChild(segWrap);
-
-    // Meta
-    const meta=document.createElement("div"); meta.className="meta";
-    meta.innerHTML=`
-      <div class="row">
-        <span class="pill">${det||'—'}</span>
-        <span class="pill">Track #${h.track_index ?? '?'}</span>
-        <span class="pill">PA match: ${pa}</span>
-        <span class="pill">Speed: ${speed}</span>
-        <span class="right sub">${h.series_mid_frame||''}</span>
-      </div>
-      <div class="kvs" style="margin-top:8px;">
-        <div class="kv">Image Size: <b>${imgW}×${imgH}</b></div>
-        <div class="kv">Origin: <b>Upper Left</b></div>
-        <div class="kv">Positions: <b>${(h.positions||[]).length}</b></div>
-        <div class="kv">First date: <b>${dateFirst||'—'}</b></div>
-      </div>
-      <div class="row" style="margin-top:10px;">
-        <button class="sgBtn">Copy for Sungrazer</button>
-        <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
-        <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
-        ${origURL ? `<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>` : ``}
-        ${annURL  ? `<a class="pill" href="${annURL}"  target="_blank" rel="noopener">Annotated</a>` : ``}
-        <span class="right mark">
-          <select class="group">
-            <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
-            <option ${groupVal==='Kreutz'?'selected':''}>Kreutz</option>
-            <option ${groupVal==='Meyer'?'selected':''}>Meyer</option>
-            <option ${groupVal==='Marsden'?'selected':''}>Marsden</option>
-            <option ${groupVal==='Kracht'?'selected':''}>Kracht</option>
-            <option ${groupVal==='Kracht-II'?'selected':''}>Kracht-II</option>
-          </select>
-          <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
-        </span>
-      </div>
-    `;
-    card.appendChild(meta);
-
-    // Player (with exports)
-    const player=document.createElement("div");
-    player.className="player";
-    card.appendChild(player);
-    buildPlayer(player, h);
-
-    grid.appendChild(card);
-
-    // Actions
-    meta.querySelector(".sgBtn").addEventListener("click", ()=>{
-      copyTextToClipboard(buildSungrazerText(h)).then(()=>{
-        const b=meta.querySelector(".sgBtn");
-        b.textContent="Copied!"; setTimeout(()=>b.textContent="Copy for Sungrazer",1200);
-      }).catch(()=>alert("Copy failed"));
-    });
-
-    const flag=meta.querySelector(".flag");
-    flag.addEventListener("click", ()=>{
-      const m=getMarks();
-      if(m[k]) { delete m[k]; flag.classList.remove("on"); flag.textContent="Mark"; }
-      else { m[k]=true; flag.classList.add("on"); flag.textContent="Marked"; }
-      setMarks(m);
-      if(markedOnly.checked){ renderGrid(items); }
-    });
-
-    const sel=meta.querySelector(".group");
-    sel.addEventListener("change", ()=>{
-      const g=getGroups(); g[k]=sel.value; setGroups(g);
-    });
-  });
-}
-
-/* bare thumbs fallback */
-function loadImageIfExists(path){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload = ()=>res({ok:true,src:img.src,w:img.naturalWidth,h:img.naturalHeight});
-    img.onerror= ()=>res({ok:false});
-    img.src = rawURL(path)+`?t=${Date.now()}`;
-  });
-}
-async function tryShowBareThumbnails(){
-  const dets=["C2","C3"]; const rows=[];
-  for(const det of dets){
-    const thumb=await loadImageIfExists(`${FOLDER}/lastthumb_${det}.png`);
-    const overlay=await loadImageIfExists(`${FOLDER}/overlay_${det}.png`);
-    const contact=await loadImageIfExists(`${FOLDER}/contact_${det}.png`);
-    if(thumb.ok||overlay.ok||contact.ok){ rows.push({det,thumb,overlay,contact}); }
-  }
-  if(!rows.length) return false;
-  lastFramesRow.innerHTML = rows.map(o=>`
-    <div class="thumbCard">
-      <div class="thumbHead">
-        <span class="pill">${o.det}</span>
-        ${o.thumb.ok? `<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
-      </div>
-      ${o.thumb.ok
-        ? `<a href="${ghBlobURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener">
-            <img class="thumb" alt="last ${o.det}" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}?t=${Date.now()}">
-          </a>`
-        : `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
+  const g=grid;
+  if(!items.length){ g.hidden=true; empty.hidden=false; return; }
+  g.hidden=false; empty.hidden=true;
+  g.innerHTML=items.map((h,i)=>{
+    const crop=rawURL(h.crop_path);
+    const orig=h.original_mid_path?rawURL(h.original_mid_path):"";
+    const ann =h.annotated_mid_path?rawURL(h.annotated_mid_path):"";
+    const txt =rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.txt`);
+    const csv =rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.csv`);
+    const det =h.detector||"";
+    const idx =h.track_index||i;
+    const pa  =h.pa_deg?.toFixed?.(1)||"—";
+    const spd =h.speed_px_min?.toFixed?.(1)||"—";
+    return `
+    <div class="card" data-det="${det}">
       <div class="meta">
-        <div class="kv">
-          ${o.overlay.ok? `Overlay: <a href="${rawURL(`${FOLDER}/overlay_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Overlay: —'}
-          &nbsp;•&nbsp;
-          ${o.contact.ok? `Contact: <a href="${rawURL(`${FOLDER}/contact_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Contact: —'}
+        <div class="row"><span class="pill">${det} #${idx}</span><span class="right sub">${h.series_mid_frame||""}</span></div>
+        <div class="kvs">
+          <div class="kv">PA <b>${pa}°</b></div>
+          <div class="kv">Speed <b>${spd}</b></div>
+        </div>
+        <div class="seg" style="margin-top:8px">
+          <button class="active" data-view="crop">Crop</button>
+          <button data-view="orig"${!orig?" disabled":""}>Original</button>
+          <button data-view="ann"${!ann?" disabled":""}>Annotated</button>
         </div>
       </div>
-    </div>`).join("");
-  return true;
-}
-
-/* status + last frames */
-function renderLastFrames(overlays,status){
-  if(!overlays||!overlays.length){ lastFramesRow.innerHTML=""; return; }
-  lastFramesRow.innerHTML = overlays.map(o=>`
-    <div class="thumbCard">
-      <div class="thumbHead">
-        <span class="pill">${o.det}</span>
-        <span class="pill">frames: ${o.frames}</span>
-        <span class="pill">tracks: ${o.tracks}</span>
-        <span class="pill">${o.lastName||'—'}</span>
-        <span class="right sub">${status?.s?.timestamp_utc ? new Date(status.s.timestamp_utc).toLocaleString() : ''}</span>
+      <div class="canvasWrap"><canvas id="can${i}"></canvas></div>
+      <div class="player">
+        <div class="playerBar">
+          <button class="small play">▶︎</button>
+          <button class="small pause">❚❚</button>
+          <label>FPS <input type="range" min="1" max="20" value="5" class="slider fps"></label>
+          <label><input type="checkbox" class="showPath"> Show path</label>
+          <button class="small webm">Save 1 loop (WebM)</button>
+          <button class="small gif">Save 1 loop (GIF)</button>
+        </div>
       </div>
-      <a href="${ghBlobURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener">
-        <img class="thumb" alt="last ${o.det}" src="${o.lastThumb}"
-             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb',textContent:'(thumbnail not available)'}))">
-      </a>
       <div class="meta">
-        <div class="kv">Overlay: <a href="${o.overlay}" target="_blank">open</a> • Contact: <a href="${o.contact}" target="_blank">open</a></div>
+        <div class="row" style="margin-top:6px">
+          <button class="sgBtn small">Copy for Sungrazer</button>
+          <a class="pill" href="${txt}" target="_blank">TXT</a>
+          <a class="pill" href="${csv}" target="_blank">CSV</a>
+        </div>
       </div>
-    </div>`).join("");
-}
-async function tryLoadStatus(){
-  try{
-    const s = await fetchJSON(rawURL(`${FOLDER}/latest_status.json`)+`?t=${Date.now()}`);
-    const overlays = ["C2","C3"].map(det=>({
-      det,
-      overlay: rawURL(`${FOLDER}/overlay_${det}.png`)+`?t=${Date.now()}`,
-      contact: rawURL(`${FOLDER}/contact_${det}.png`)+`?t=${Date.now()}`,
-      frames: s?.detectors?.[det]?.frames ?? 0,
-      tracks: s?.detectors?.[det]?.tracks ?? 0,
-      lastThumb: rawURL(`${FOLDER}/lastthumb_${det}.png`)+`?t=${Date.now()}`,
-      lastName: s?.detectors?.[det]?.last_frame_name || ""
-    }));
-    return {s,overlays};
-  }catch(e){
-    const had = await tryShowBareThumbnails();
-    if(!had) showError("No status JSON yet and no thumbnails found in /detections/.");
-    return null;
-  }
+    </div>`}).join("");
+  g.querySelectorAll(".card").forEach((card,i)=>setupCard(card,items[i]));
 }
 
-/* live GIFs */
-function loadLiveGifs(){
-  const t=Date.now();
-  c2Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
-  c3Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-  const now=new Date().toLocaleTimeString();
-  c2GifTime.textContent=`refreshed ${now}`; c3GifTime.textContent=`refreshed ${now}`;
-}
+/******** PLAYER + ANIMATION ********/
+function setupCard(card,h){
+  const can=card.querySelector("canvas");
+  const ctx=can.getContext("2d");
+  const imgs=[]; const frameCount=h.frames?.length||3;
+  let idx=0,playing=false,fps=5,showPath=false,timer=null;
 
-/* report loading */
-async function loadReportByName(name){
-  const url = rawURL(`${FOLDER}/${name}`)+`?t=${Date.now()}`;
-  const data = await fetchJSON(url);
-  currentReport = {name, data, url};
-  reportName.textContent=name;
-  srcLink.href = ghBlobURL(`${FOLDER}/${name}`);
-  const t = parseReportTime(name);
-  reportTime.textContent = t? `• ${t.local} (local)` : "";
-  if(Array.isArray(data) && data.length){ renderGrid(data); }
-  else { grid.hidden=true; empty.hidden=false; empty.textContent="Report is empty."; }
-  const status = await tryLoadStatus(); if(status) renderLastFrames(status.overlays, status);
-}
-async function loadLatestReport(){
-  try{
-    const list = await fetchJSON(apiListURL());
-    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name)).sort((a,b)=>b.name.localeCompare(a.name)) : [];
-    reportSelect.innerHTML = files.slice(0,20).map(f=>`<option value="${f.name}">${f.name}</option>`).join("");
-    if(!files.length){
-      reportName.textContent="—"; reportTime.textContent="";
-      srcLink.href = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/${FOLDER}`;
-      const status = await tryLoadStatus(); if(status){ renderLastFrames(status.overlays, status); grid.hidden=true; empty.hidden=false; empty.textContent="No candidate detections yet."; }
-    } else {
-      const chosen = params.get("file") || files[0].name;
-      reportSelect.value = chosen; await loadReportByName(chosen);
+  function loadAll(){
+    const base=rawURL(h.crop_path||"");
+    imgs.push(base);
+    if(h.series_files){
+      h.series_files.forEach(f=>imgs.push(rawURL(f)));
     }
-  }catch(err){
-    const had = await tryShowBareThumbnails();
-    if(!had) showError(`Could not list /${FOLDER}/ via GitHub API and no thumbnails found.`);
-  } finally { loadLiveGifs(); }
-}
-
-/* Export ALL (TXT + CSV) */
-function exportAll(){
-  if(!currentReport || !Array.isArray(currentReport.data)){ alert("No report loaded."); return; }
-  let items = (applyGridFilters(currentReport.data) || []).slice();
-  if (exportMarkedOnly.checked) {
-    const marks = getMarks();
-    items = items.filter(h => marks[keyFor(h)]);
   }
-  if(!items.length){ alert("No candidates to export (check filters/toggles)."); return; }
+  loadAll();
 
-  const txtBundle = buildAllSungrazerText(items, currentReport.name);
-  copyTextToClipboard(txtBundle).catch(()=>{});
+  const imgEls=imgs.map(u=>{
+    const im=new Image(); im.crossOrigin="anonymous"; im.src=u; return im;
+  });
 
-  const csvBundle = buildAllCSV(items);
+  imgEls[0].onload=()=>{can.width=imgEls[0].width;can.height=imgEls[0].height;draw();};
 
-  const txtBlob = new Blob([txtBundle], {type:"text/plain"});
-  const txtUrl = URL.createObjectURL(txtBlob);
-  downloadAllTxt.href = txtUrl;
-  downloadAllTxt.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.txt`;
-  downloadAllTxt.style.display = "inline-flex";
+  function draw(){
+    if(!imgEls[idx])return;
+    ctx.drawImage(imgEls[idx],0,0,can.width,can.height);
+    if(showPath&&h.positions){
+      ctx.strokeStyle="lime";ctx.beginPath();
+      h.positions.forEach((p,j)=>{if(j)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y)});
+      ctx.stroke();
+    }
+  }
+  function next(){idx=(idx+1)%imgEls.length;draw();}
+  function play(){if(playing)return;playing=true;
+    timer=setInterval(next,1000/fps);}
+  function stop(){playing=false;clearInterval(timer);}
 
-  const csvBlob = new Blob([csvBundle], {type:"text/csv"});
-  const csvUrl = URL.createObjectURL(csvBlob);
-  downloadAllCsv.href = csvUrl;
-  downloadAllCsv.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.csv`;
-  downloadAllCsv.style.display = "inline-flex";
+  card.querySelector(".play").onclick=()=>play();
+  card.querySelector(".pause").onclick=()=>stop();
+  card.querySelector(".fps").oninput=e=>{fps=e.target.value; if(playing){stop();play();}};
+  card.querySelector(".showPath").onchange=e=>{showPath=e.target.checked;draw();};
 
-  exportAllBtn.textContent="Exported & Copied!"; setTimeout(()=>exportAllBtn.textContent="Export ALL", 1200);
+  // save loop (WebM)
+  card.querySelector(".webm").onclick=()=>{
+    const stream=can.captureStream(); const rec=new MediaRecorder(stream,{mimeType:"video/webm"});
+    const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{const blob=new Blob(chunks,{type:"video/webm"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download=`${h.detector}_track${h.track_index}.webm`;
+      a.click();
+    };
+    rec.start(); let c=0;
+    const recTimer=setInterval(()=>{next();if(++c>=imgs.length){clearInterval(recTimer);rec.stop();}},1000/fps);
+  };
+
+  // save loop (GIF)
+  card.querySelector(".gif").onclick=()=>{
+    try{
+      const gif=new GIF({workers:2,quality:10,width:can.width,height:can.height});
+      imgEls.forEach(im=>gif.addFrame(im,{delay:1000/fps}));
+      gif.on('finished',b=>{
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(b);
+        a.download=`${h.detector}_track${h.track_index}.gif`; a.click();
+      });
+      gif.render();
+    }catch(e){alert("GIF export failed (CORS). Use WebM instead.");}
+  };
+
+  // segmented toggle
+  card.querySelectorAll(".seg button").forEach(btn=>{
+    btn.onclick=()=>{
+      card.querySelectorAll(".seg button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const mode=btn.dataset.view;
+      let src=h.crop_path;
+      if(mode==="orig"&&h.original_mid_path)src=h.original_mid_path;
+      if(mode==="ann"&&h.annotated_mid_path)src=h.annotated_mid_path;
+      imgEls.length=0;
+      const im=new Image();im.crossOrigin="anonymous";im.src=rawURL(src);
+      im.onload=()=>{can.width=im.width;can.height=im.height;ctx.drawImage(im,0,0,im.width,im.height);}
+    };
+  });
 }
-exportAllBtn.addEventListener("click", exportAll);
 
-/* refresh & events */
-function startAutoRefresh(){
-  if(refreshTimer) clearInterval(refreshTimer);
-  refreshCountdown=REFRESH_SECS; el("#refreshEta").textContent=refreshCountdown+"s";
-  refreshTimer = setInterval(async ()=>{
-    refreshCountdown--; el("#refreshEta").textContent=refreshCountdown+"s";
-    if(refreshCountdown<=0){ await loadLatestReport(); refreshCountdown=REFRESH_SECS; }
-  },1000);
+/*********** REFRESH + LIVE GIFS ***********/
+async function loadLiveGifs(){
+  c2Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?${Date.now()}`;
+  c3Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?${Date.now()}`;
+  const d=new Date().toISOString().split("T")[1].slice(0,5);
+  c2GifTime.textContent=`${d} UTC`;
+  c3GifTime.textContent=`${d} UTC`;
 }
-el("#refreshBtn").addEventListener("click", async ()=>{ refreshCountdown=REFRESH_SECS; await loadLatestReport(); });
-reportSelect.addEventListener("change", (e)=> loadReportByName(e.target.value));
-[c2Filter,c3Filter,aiOnly,markedOnly].forEach(cb=> cb.addEventListener("change", ()=>{
-  if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
-}));
+loadLiveGifs(); loadLatest();
 
-/* init */
-loadLatestReport().then(startAutoRefresh);
+let eta=60;
+setInterval(()=>{eta--;el("#refreshEta").textContent=`${eta}s`;
+  if(eta<=0){eta=60;loadLatest();loadLiveGifs();}
+},1000);
+
+el("#refreshBtn").onclick=()=>{eta=60;loadLatest();loadLiveGifs();};
 </script>
 </body>
 </html>
