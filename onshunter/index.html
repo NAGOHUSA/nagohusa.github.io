@@ -71,6 +71,7 @@
   <!-- Annotated last-frame thumbnails -->
   <section style="padding-top:10px;">
     <div class="thumbRow" id="lastFramesRow"></div>
+    <div class="empty" id="errors" style="margin-top:12px; display:none;"></div>
   </section>
 
   <section id="content" style="margin-top:16px;">
@@ -109,9 +110,17 @@ let allReports = [];
 let currentReport = null;
 let refreshTimer = null, refreshCountdown = 0, REFRESH_SECS = 60;
 
+function showError(msg){
+  const e = document.getElementById('errors');
+  e.style.display = 'block';
+  e.innerHTML = '<div class="err">'+msg+'</div>';
+}
 async function fetchJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
-  if(!r.ok) throw new Error(`HTTP ${r.status} when fetching ${url}`);
+  if(!r.ok){
+    showError(`Fetch failed: ${url} — HTTP ${r.status}`);
+    throw new Error(`HTTP ${r.status} when fetching ${url}`);
+  }
   return r.json();
 }
 function parseReportTime(name){
@@ -263,10 +272,8 @@ async function loadLatestReport(){
       const status = await tryLoadStatus();
       if (status) {
         const { s, overlays } = status;
-        // show overlays panel and thumbnails even without candidates
         renderLastFrames(overlays, status);
         grid.hidden = false; empty.hidden = true;
-        // also show overlay cards for quick context
         grid.innerHTML = overlays.map(o => `
           <div class="card">
             <img class="thumb" alt="overlay ${o.det}" src="${o.overlay}">
@@ -307,9 +314,7 @@ function startAutoRefresh(){
     refreshCountdown--;
     el("#refreshEta").textContent = refreshCountdown + "s";
     if(refreshCountdown<=0){
-      const before = allReports[0];
       await loadLatestReport();
-      const after = allReports[0];
       refreshCountdown = REFRESH_SECS;
     }
   }, 1000);
