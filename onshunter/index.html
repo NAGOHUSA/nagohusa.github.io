@@ -42,12 +42,10 @@
   .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
   .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
   .thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px}
-  /* Live GIFs */
   .gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;margin-top:12px}
   .gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
   .gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
   .gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
-  /* Export area */
   .exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
   .muted{color:var(--muted);font-size:12px}
   .mark{display:flex;gap:8px;align-items:center}
@@ -237,9 +235,8 @@ function buildAllSungrazerText(items, reportNameStr){
   return lines.join("\n")+"\n";
 }
 function buildAllCSV(items){
-  // One row per (candidate position)
   const groups = getGroups();
-  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_channel_match","group"]];
+  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_channel_match","group","original_mid_path","annotated_mid_path"]];
   items.forEach(h=>{
     const det=(h.detector||'').toUpperCase();
     const w=(h.image_size?.[0]??""), hgt=(h.image_size?.[1]??"");
@@ -248,8 +245,10 @@ function buildAllCSV(items){
     const ai_score=h.ai_score!=null? String(h.ai_score) : "";
     const dcm = h.dual_channel_match? (h.dual_channel_match.with+";Δ="+h.dual_channel_match.pa_diff_deg+"°") : "";
     const group = groups[keyFor(h)] || "Unknown";
+    const orig = h.original_mid_path || "";
+    const ann  = h.annotated_mid_path || "";
     (h.positions||[]).forEach(p=>{
-      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, hgt, origin, ai_label, ai_score, dcm, group]);
+      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, hgt, origin, ai_label, ai_score, dcm, group, orig, ann]);
     });
   });
   return rows.map(r=>r.map(v=>String(v).replace(/"/g,'""')).map(v=>`"${v}"`).join(",")).join("\n")+"\n";
@@ -281,16 +280,16 @@ function renderGrid(items){
     const marked = !!marks[k];
     const groupVal = groups[k] || "Unknown";
     const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : "—";
-    // quick PA/speed estimates
-    const pos=h.positions||[]; let speed="—";
+    let speed="—";
+    const pos=h.positions||[];
     if(pos.length>=2){
       const x0=pos[0].x, y0=pos[0].y, x1=pos[pos.length-1].x, y1=pos[pos.length-1].y;
       const dist=Math.hypot(x1-x0,y1-y0); speed = `${(dist/Math.max(1,(pos.length-1))).toFixed(1)} px/frame`;
     }
+    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) + `?t=${Date.now()}` : null;
+    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) + `?t=${Date.now()}` : null;
 
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
+    const html = `
       <a href="${ghBlobURL(cropPath)}" target="_blank" rel="noopener">
         <img class="thumb" loading="lazy" alt="crop ${i+1}" src="${imgURL}"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb',textContent:'(image unavailable)'}))">
@@ -313,6 +312,8 @@ function renderGrid(items){
           <button class="sgBtn">Copy for Sungrazer</button>
           <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
           <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
+          ${origURL ? `<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>` : ``}
+          ${annURL  ? `<a class="pill" href="${annURL}"  target="_blank" rel="noopener">Annotated</a>` : ``}
           <span class="right mark">
             <select class="group">
               <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
@@ -326,6 +327,10 @@ function renderGrid(items){
           </span>
         </div>
       </div>`;
+
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=html;
     grid.appendChild(card);
 
     card.querySelector(".sgBtn").addEventListener("click", ()=>{
@@ -335,7 +340,6 @@ function renderGrid(items){
       }).catch(()=>alert("Copy failed"));
     });
 
-    // mark toggle
     const flag=card.querySelector(".flag");
     flag.addEventListener("click", ()=>{
       const m=getMarks();
@@ -345,7 +349,6 @@ function renderGrid(items){
       if(markedOnly.checked){ renderGrid(items); }
     });
 
-    // group selector
     const sel=card.querySelector(".group");
     sel.addEventListener("change", ()=>{
       const g=getGroups(); g[k]=sel.value; setGroups(g);
@@ -478,9 +481,7 @@ async function loadLatestReport(){
 /* Export ALL (TXT + CSV) */
 function exportAll(){
   if(!currentReport || !Array.isArray(currentReport.data)){ alert("No report loaded."); return; }
-  // grid-level filters first
   let items = (applyGridFilters(currentReport.data) || []).slice();
-  // export-only toggle
   if (exportMarkedOnly.checked) {
     const marks = getMarks();
     items = items.filter(h => marks[keyFor(h)]);
@@ -492,14 +493,12 @@ function exportAll(){
 
   const csvBundle = buildAllCSV(items);
 
-  // downloadable TXT
   const txtBlob = new Blob([txtBundle], {type:"text/plain"});
   const txtUrl = URL.createObjectURL(txtBlob);
   downloadAllTxt.href = txtUrl;
   downloadAllTxt.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.txt`;
   downloadAllTxt.style.display = "inline-flex";
 
-  // downloadable CSV
   const csvBlob = new Blob([csvBundle], {type:"text/csv"});
   const csvUrl = URL.createObjectURL(csvBlob);
   downloadAllCsv.href = csvUrl;
