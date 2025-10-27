@@ -22,7 +22,7 @@
   main{padding:16px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
   .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-  .thumb{aspect-ratio:1.4/1;display:block;width:100%;background:#0b1220;object-fit:contain}
+  .thumb{aspect-ratio:1.6/1;display:block;width:100%;background:#0b1220;object-fit:contain}
   .meta{padding:12px}
   .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
   .kv{font-size:12px;color:var(--muted)}
@@ -38,13 +38,16 @@
   a:hover{text-decoration:underline}
   footer{color:var(--muted);font-size:12px;padding:20px 0}
   .err{color:#ffb4b4}
+  .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
+  .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
+  .thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter</h1>
-    <div class="sub">Auto-pulls latest candidates from your GitHub repo and refreshes periodically.</div>
+    <div class="sub">Live last-frame thumbnails + candidate crops from your GitHub repo.</div>
     <div class="controls">
       <button id="refreshBtn" title="Reload now">⟳ Refresh</button>
       <select id="reportSelect" class="sel" title="Pick a past report"></select>
@@ -65,18 +68,23 @@
     <div class="stats" id="stats"></div>
   </section>
 
+  <!-- Annotated last-frame thumbnails -->
+  <section style="padding-top:10px;">
+    <div class="thumbRow" id="lastFramesRow"></div>
+  </section>
+
   <section id="content" style="margin-top:16px;">
     <div class="empty" id="empty">No detections yet. The viewer will update automatically when new candidates are committed.</div>
     <div class="grid" id="grid" hidden></div>
   </section>
 
   <footer>
-    <div>Tip: click a thumbnail to open the full crop on GitHub; JSON link opens the raw report. Data copyright: instruments & imagery via SOHO/LASCO providers.</div>
+    <div>Tip: click any crop to open the full image on GitHub. Thumbnails include run stats overlay. Data via SOHO/LASCO providers.</div>
   </footer>
 </main>
 
 <script>
-/*** CONFIG — EDIT THESE THREE LINES TO MATCH YOUR REPO ***/
+/*** CONFIG — EDIT THESE TO MATCH YOUR REPO ***/
 const OWNER  = "NAGOHUSA";
 const REPO   = "ONS_SOHOHUNTER";
 const BRANCH = "main";
@@ -95,6 +103,7 @@ const reportSelect = el("#reportSelect");
 const reportName = el("#reportName"), reportTime = el("#reportTime"), srcLink = el("#srcLink");
 const stats = el("#stats");
 const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOnly");
+const lastFramesRow = document.querySelector("#lastFramesRow");
 
 let allReports = [];
 let currentReport = null;
@@ -106,7 +115,7 @@ async function fetchJSON(url){
   return r.json();
 }
 function parseReportTime(name){
-  const m = name.match(/(\d{8})_(\d{6})/);
+  const m = name?.match?.(/(\d{8})_(\d{6})/);
   if(!m) return null;
   const [_, d, t] = m;
   const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
@@ -183,6 +192,27 @@ function renderGrid(items){
     grid.appendChild(card);
   });
 }
+function renderLastFrames(overlays, status){
+  if (!overlays || !overlays.length) { lastFramesRow.innerHTML = ""; return; }
+  lastFramesRow.innerHTML = overlays.map(o => `
+    <div class="thumbCard">
+      <div class="thumbHead">
+        <span class="pill">${o.det}</span>
+        <span class="pill">frames: ${o.frames}</span>
+        <span class="pill">tracks: ${o.tracks}</span>
+        <span class="pill">${o.lastName || '—'}</span>
+        <span class="right sub">${status?.s?.timestamp_utc ? new Date(status.s.timestamp_utc).toLocaleString() : ''}</span>
+      </div>
+      <a href="${ghBlobURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener">
+        <img class="thumb" alt="last ${o.det}" src="${o.lastThumb}"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb',textContent:'(thumbnail not available)'}))">
+      </a>
+      <div class="meta">
+        <div class="kv">Overlay: <a href="${o.overlay}" target="_blank">open</a> • Contact sheet: <a href="${o.contact}" target="_blank">open</a></div>
+      </div>
+    </div>
+  `).join("");
+}
 async function tryLoadStatus() {
   const statusURL = rawURL(`${FOLDER}/latest_status.json`);
   const r = await fetch(statusURL);
@@ -193,7 +223,9 @@ async function tryLoadStatus() {
     overlay: rawURL(`${FOLDER}/overlay_${det}.png`),
     contact: rawURL(`${FOLDER}/contact_${det}.png`),
     frames: s?.detectors?.[det]?.frames ?? 0,
-    tracks: s?.detectors?.[det]?.tracks ?? 0
+    tracks: s?.detectors?.[det]?.tracks ?? 0,
+    lastThumb: rawURL(`${FOLDER}/lastthumb_${det}.png`),    // annotated
+    lastName: s?.detectors?.[det]?.last_frame_name || ""
   }));
   return { s, overlays };
 }
@@ -211,6 +243,10 @@ async function loadReportByName(name){
     grid.hidden = true; empty.hidden = false;
     empty.textContent = "Report is empty.";
   }
+  try {
+    const status = await tryLoadStatus();
+    if (status) renderLastFrames(status.overlays, status);
+  } catch (e) {}
 }
 async function loadLatestReport(){
   try{
@@ -227,7 +263,10 @@ async function loadLatestReport(){
       const status = await tryLoadStatus();
       if (status) {
         const { s, overlays } = status;
+        // show overlays panel and thumbnails even without candidates
+        renderLastFrames(overlays, status);
         grid.hidden = false; empty.hidden = true;
+        // also show overlay cards for quick context
         grid.innerHTML = overlays.map(o => `
           <div class="card">
             <img class="thumb" alt="overlay ${o.det}" src="${o.overlay}">
