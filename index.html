@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SOHO Comet Hunter — Live Results</title>
 
-<!-- GIF encoder for optional GIF exports -->
+<!-- GIF encoder for optional GIF exports (canvas mode fallback) -->
 <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
 
 <style>
@@ -70,7 +70,7 @@ footer{color:var(--muted);font-size:12px;padding:20px 0}
 .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;
   padding:4px 6px;color:var(--text);font-size:12px}
 
-/* segmented toggle */
+/* segmented toggles */
 .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
 .seg button{border:0;border-right:1px solid #27324a;background:transparent;
   color:#cbd5e1;padding:6px 10px;font-size:12px}
@@ -81,7 +81,7 @@ footer{color:var(--muted);font-size:12px;padding:20px 0}
 /* player */
 .player{padding:10px 12px;border-top:1px solid #1e293b;background:#0d1526}
 .canvasWrap{position:relative;width:100%}
-canvas{display:block;width:100%;height:auto;background:#000}
+canvas, video.gif{display:block;width:100%;height:auto;background:#000}
 .playerBar{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .slider{flex:1}
 .player button.small{padding:6px 10px;border-radius:8px;font-size:12px}
@@ -154,7 +154,7 @@ canvas{display:block;width:100%;height:auto;background:#000}
   </section>
 
   <footer>
-    <div>Tip: Each candidate card has a player with Play/Pause, FPS slider, Show Path, and Save 1 loop (WebM or GIF).</div>
+    <div>Tip: If animations exist you’ll see a video player with an Annotated/Clean toggle. Otherwise, the canvas player appears with Play/Pause, FPS, path overlay, and one-loop export (WebM/GIF).</div>
   </footer>
 </main>
 
@@ -174,13 +174,14 @@ const grid = el("#grid"), empty = el("#empty");
 const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
 const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
 
-/* SOHO frame URL */
+/* SOHO frame URL (unused here, but handy to keep) */
 function sohoUrlFromFrame(det, frameName){
  const m = /^(\d{8})_(\d{4})(?:\d{0,2})?_(c[23])_\d+\.jpe?g$/i.exec(frameName||"");
  if(!m) return null;
  const [_,d,,cam]=m; const year=d.slice(0,4);
  return `https://soho.nascom.nasa.gov/data/REPROCESSING/Completed/${year}/${cam.toLowerCase()}/${d}/${frameName}`;
 }
+
 /******** LOAD JSON + BUILD VIEW ********/
 async function loadLatest() {
   try {
@@ -222,7 +223,7 @@ function renderThumbs(data){
           <span class="pill">${det} last frame</span>
           <a class="sub" href="${ghBlobURL(`${FOLDER}/lastthumb_${det}.png`)}" target="_blank">view</a>
         </div>
-        <img src="${u}" class="thumb" loading="lazy">
+        <img src="${u}" class="thumb" loading="lazy" alt="${det} last frame">
       </div>`;
   });
 }
@@ -233,7 +234,7 @@ function renderGrid(items){
   if(!items.length){ g.hidden=true; empty.hidden=false; return; }
   g.hidden=false; empty.hidden=true;
   g.innerHTML=items.map((h,i)=>{
-    const crop=rawURL(h.crop_path);
+    const crop=rawURL(h.crop_path||"");
     const orig=h.original_mid_path?rawURL(h.original_mid_path):"";
     const ann =h.annotated_mid_path?rawURL(h.annotated_mid_path):"";
     const txt =rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.txt`);
@@ -242,6 +243,18 @@ function renderGrid(items){
     const idx =h.track_index||i;
     const pa  =h.pa_deg?.toFixed?.(1)||"—";
     const spd =h.speed_px_min?.toFixed?.(1)||"—";
+
+    // detect if backend provided animations (annotated + clean variants)
+    const hasAnnVid = !!(h.animation_mp4_path || h.animation_gif_path);
+    const hasCleanVid = !!(h.animation_mp4_clean_path || h.animation_gif_clean_path);
+    const hasAnyVid = hasAnnVid || hasCleanVid;
+
+    const initialVidSrc =
+      h.animation_mp4_path ? rawURL(h.animation_mp4_path) :
+      (h.animation_gif_path ? rawURL(h.animation_gif_path) :
+      (h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) :
+      (h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : "")));
+
     return `
     <div class="card" data-det="${det}">
       <div class="meta">
@@ -256,8 +269,25 @@ function renderGrid(items){
           <button data-view="ann"${!ann?" disabled":""}>Annotated</button>
         </div>
       </div>
-      <div class="canvasWrap"><canvas id="can${i}"></canvas></div>
-      <div class="player">
+
+      <div class="canvasWrap">
+        ${
+          hasAnyVid
+          ? `
+            <div class="gifHead" style="padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center">
+              <div class="mark"><span class="muted">Animation</span></div>
+              <div class="seg" style="margin-left:auto">
+                <button class="active" data-anim="annotated" ${hasAnnVid? "" : "disabled"}>Annotated</button>
+                <button data-anim="clean" ${hasCleanVid? "" : "disabled"}>Clean</button>
+              </div>
+            </div>
+            <video class="gif" controls loop muted playsinline src="${initialVidSrc}"></video>
+          `
+          : `<canvas id="can${i}"></canvas>`
+        }
+      </div>
+
+      <div class="player" ${hasAnyVid ? 'style="display:none"' : ""}>
         <div class="playerBar">
           <button class="small play">▶︎</button>
           <button class="small pause">❚❚</button>
@@ -267,6 +297,7 @@ function renderGrid(items){
           <button class="small gif">Save 1 loop (GIF)</button>
         </div>
       </div>
+
       <div class="meta">
         <div class="row" style="margin-top:6px">
           <button class="sgBtn small">Copy for Sungrazer</button>
@@ -280,17 +311,42 @@ function renderGrid(items){
 
 /******** PLAYER + ANIMATION ********/
 function setupCard(card,h){
+  // If we have a <video>, wire the Annotated/Clean toggle and skip canvas init.
+  const vid = card.querySelector("video.gif");
+  if (vid) {
+    const toURL = p => p ? rawURL(p) : "";
+    const annBtn = card.querySelector('button[data-anim="annotated"]');
+    const cleanBtn = card.querySelector('button[data-anim="clean"]');
+
+    if (annBtn) annBtn.onclick = () => {
+      if (h.animation_mp4_path) vid.src = toURL(h.animation_mp4_path);
+      else if (h.animation_gif_path) vid.src = toURL(h.animation_gif_path);
+      annBtn.classList.add('active');
+      if (cleanBtn) cleanBtn.classList.remove('active');
+    };
+    if (cleanBtn) cleanBtn.onclick = () => {
+      if (h.animation_mp4_clean_path) vid.src = toURL(h.animation_mp4_clean_path);
+      else if (h.animation_gif_clean_path) vid.src = toURL(h.animation_gif_clean_path);
+      cleanBtn.classList.add('active');
+      if (annBtn) annBtn.classList.remove('active');
+    };
+
+    // Sungrazer button still copies the TXT/csv links to clipboard for convenience
+    const sgBtn = card.querySelector(".sgBtn");
+    if (sgBtn) sgBtn.onclick = () => copySungrazerBlock(h);
+
+    return; // Do not initialize the canvas player for this card.
+  }
+
+  // -------- Canvas player fallback (no prebuilt animations) --------
   const can=card.querySelector("canvas");
   const ctx=can.getContext("2d");
-  const imgs=[]; const frameCount=h.frames?.length||3;
-  let idx=0,playing=false,fps=5,showPath=false,timer=null;
+  const imgs=[]; let idx=0,playing=false,fps=5,showPath=false,timer=null;
 
   function loadAll(){
     const base=rawURL(h.crop_path||"");
     imgs.push(base);
-    if(h.series_files){
-      h.series_files.forEach(f=>imgs.push(rawURL(f)));
-    }
+    if(h.series_files){ h.series_files.forEach(f=>imgs.push(rawURL(f))); }
   }
   loadAll();
 
@@ -310,31 +366,37 @@ function setupCard(card,h){
     }
   }
   function next(){idx=(idx+1)%imgEls.length;draw();}
-  function play(){if(playing)return;playing=true;
-    timer=setInterval(next,1000/fps);}
+  function play(){if(playing)return;playing=true;timer=setInterval(next,1000/fps);}
   function stop(){playing=false;clearInterval(timer);}
 
   card.querySelector(".play").onclick=()=>play();
   card.querySelector(".pause").onclick=()=>stop();
-  card.querySelector(".fps").oninput=e=>{fps=e.target.value; if(playing){stop();play();}};
-  card.querySelector(".showPath").onchange=e=>{showPath=e.target.checked;draw();};
+  const fpsEl=card.querySelector(".fps");
+  if (fpsEl) fpsEl.oninput=e=>{fps=e.target.value; if(playing){stop();play();}};
+  const pathEl=card.querySelector(".showPath");
+  if (pathEl) pathEl.onchange=e=>{showPath=e.target.checked;draw();};
 
   // save loop (WebM)
-  card.querySelector(".webm").onclick=()=>{
-    const stream=can.captureStream(); const rec=new MediaRecorder(stream,{mimeType:"video/webm"});
-    const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data);
-    rec.onstop=()=>{const blob=new Blob(chunks,{type:"video/webm"});
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(blob);
-      a.download=`${h.detector}_track${h.track_index}.webm`;
-      a.click();
-    };
-    rec.start(); let c=0;
-    const recTimer=setInterval(()=>{next();if(++c>=imgs.length){clearInterval(recTimer);rec.stop();}},1000/fps);
+  const webmBtn = card.querySelector(".webm");
+  if (webmBtn) webmBtn.onclick=()=>{
+    try{
+      const stream=can.captureStream();
+      const rec=new MediaRecorder(stream,{mimeType:"video/webm"});
+      const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data);
+      rec.onstop=()=>{const blob=new Blob(chunks,{type:"video/webm"});
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(blob);
+        a.download=`${h.detector}_track${h.track_index}.webm`;
+        a.click();
+      };
+      rec.start(); let c=0;
+      const recTimer=setInterval(()=>{next();if(++c>=imgs.length){clearInterval(recTimer);rec.stop();}},1000/fps);
+    }catch(e){alert("WebM export not supported in this browser.");}
   };
 
   // save loop (GIF)
-  card.querySelector(".gif").onclick=()=>{
+  const gifBtn = card.querySelector(".gif");
+  if (gifBtn) gifBtn.onclick=()=>{
     try{
       const gif=new GIF({workers:2,quality:10,width:can.width,height:can.height});
       imgEls.forEach(im=>gif.addFrame(im,{delay:1000/fps}));
@@ -347,7 +409,7 @@ function setupCard(card,h){
     }catch(e){alert("GIF export failed (CORS). Use WebM instead.");}
   };
 
-  // segmented toggle
+  // segmented image toggle (crop/original/annotated)
   card.querySelectorAll(".seg button").forEach(btn=>{
     btn.onclick=()=>{
       card.querySelectorAll(".seg button").forEach(b=>b.classList.remove("active"));
@@ -356,11 +418,23 @@ function setupCard(card,h){
       let src=h.crop_path;
       if(mode==="orig"&&h.original_mid_path)src=h.original_mid_path;
       if(mode==="ann"&&h.annotated_mid_path)src=h.annotated_mid_path;
-      imgEls.length=0;
       const im=new Image();im.crossOrigin="anonymous";im.src=rawURL(src);
       im.onload=()=>{can.width=im.width;can.height=im.height;ctx.drawImage(im,0,0,im.width,im.height);}
     };
   });
+
+  const sgBtn = card.querySelector(".sgBtn");
+  if (sgBtn) sgBtn.onclick = () => copySungrazerBlock(h);
+}
+
+/******** Sungrazer helper ********/
+async function copySungrazerBlock(h){
+  const txtUrl = rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.txt`);
+  try{
+    const t = await (await fetch(txtUrl)).text();
+    await navigator.clipboard.writeText(t);
+    alert("Sungrazer TXT copied to clipboard.");
+  }catch(e){ alert("Could not copy. Open TXT link instead."); }
 }
 
 /*********** REFRESH + LIVE GIFS ***********/
