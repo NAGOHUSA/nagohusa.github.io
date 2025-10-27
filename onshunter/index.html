@@ -115,6 +115,7 @@ function showError(msg){
   e.style.display = 'block';
   e.innerHTML = '<div class="err">'+msg+'</div>';
 }
+
 async function fetchJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
   if(!r.ok){
@@ -123,6 +124,7 @@ async function fetchJSON(url){
   }
   return r.json();
 }
+
 function parseReportTime(name){
   const m = name?.match?.(/(\d{8})_(\d{6})/);
   if(!m) return null;
@@ -132,6 +134,7 @@ function parseReportTime(name){
   const fmt = dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
   return {iso, local: fmt};
 }
+
 function renderStats(items){
   const byDet = items.reduce((acc,h)=>{
     const k = (h.detector||'unknown').toUpperCase();
@@ -157,6 +160,7 @@ function renderStats(items){
     add("AI ‘not_comet’", ai['not_comet']||0);
   }
 }
+
 function applyFilters(items){
   const useC2 = c2Filter.checked;
   const useC3 = c3Filter.checked;
@@ -168,6 +172,7 @@ function applyFilters(items){
     return true;
   });
 }
+
 function renderGrid(items){
   const filtered = applyFilters(items);
   renderStats(filtered);
@@ -201,6 +206,54 @@ function renderGrid(items){
     grid.appendChild(card);
   });
 }
+
+/* ---------- NEW: bare image fallback (no status JSON required) ---------- */
+function loadImageIfExists(path){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=> resolve({ok:true, src:img.src, w:img.naturalWidth, h:img.naturalHeight});
+    img.onerror = ()=> resolve({ok:false});
+    // cache-bust so you see fresh files after a new commit
+    img.src = rawURL(path) + `?t=${Date.now()}`;
+  });
+}
+async function tryShowBareThumbnails(){
+  const dets = ["C2","C3"];
+  const rows = [];
+  for (const det of dets){
+    const thumb = await loadImageIfExists(`${FOLDER}/lastthumb_${det}.png`);
+    const overlay = await loadImageIfExists(`${FOLDER}/overlay_${det}.png`);
+    const contact = await loadImageIfExists(`${FOLDER}/contact_${det}.png`);
+    if (thumb.ok || overlay.ok || contact.ok){
+      rows.push({det, thumb, overlay, contact});
+    }
+  }
+  if (!rows.length) return false;
+
+  lastFramesRow.innerHTML = rows.map(o=>`
+    <div class="thumbCard">
+      <div class="thumbHead">
+        <span class="pill">${o.det}</span>
+        ${o.thumb.ok? `<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
+      </div>
+      ${o.thumb.ok
+        ? `<a href="${ghBlobURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener">
+             <img class="thumb" alt="last ${o.det}" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}?t=${Date.now()}">
+           </a>`
+        : `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
+      <div class="meta">
+        <div class="kv">
+          ${o.overlay.ok? `Overlay: <a href="${rawURL(`${FOLDER}/overlay_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>` : `Overlay: —`}
+          &nbsp;•&nbsp;
+          ${o.contact.ok? `Contact: <a href="${rawURL(`${FOLDER}/contact_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>` : `Contact: —`}
+        </div>
+      </div>
+    </div>
+  `).join("");
+  return true;
+}
+/* ----------------------------------------------------------------------- */
+
 function renderLastFrames(overlays, status){
   if (!overlays || !overlays.length) { lastFramesRow.innerHTML = ""; return; }
   lastFramesRow.innerHTML = overlays.map(o => `
@@ -222,24 +275,31 @@ function renderLastFrames(overlays, status){
     </div>
   `).join("");
 }
+
 async function tryLoadStatus() {
-  const statusURL = rawURL(`${FOLDER}/latest_status.json`);
-  const r = await fetch(statusURL);
-  if (!r.ok) return null;
-  const s = await r.json();
-  const overlays = ["C2","C3"].map(det => ({
-    det,
-    overlay: rawURL(`${FOLDER}/overlay_${det}.png`),
-    contact: rawURL(`${FOLDER}/contact_${det}.png`),
-    frames: s?.detectors?.[det]?.frames ?? 0,
-    tracks: s?.detectors?.[det]?.tracks ?? 0,
-    lastThumb: rawURL(`${FOLDER}/lastthumb_${det}.png`),    // annotated
-    lastName: s?.detectors?.[det]?.last_frame_name || ""
-  }));
-  return { s, overlays };
+  // try to load latest_status.json first
+  try {
+    const s = await fetchJSON(rawURL(`${FOLDER}/latest_status.json`) + `?t=${Date.now()}`);
+    const overlays = ["C2","C3"].map(det => ({
+      det,
+      overlay: rawURL(`${FOLDER}/overlay_${det}.png`) + `?t=${Date.now()}`,
+      contact: rawURL(`${FOLDER}/contact_${det}.png`) + `?t=${Date.now()}`,
+      frames: s?.detectors?.[det]?.frames ?? 0,
+      tracks: s?.detectors?.[det]?.tracks ?? 0,
+      lastThumb: rawURL(`${FOLDER}/lastthumb_${det}.png`) + `?t=${Date.now()}`,
+      lastName: s?.detectors?.[det]?.last_frame_name || ""
+    }));
+    return { s, overlays };
+  } catch (e) {
+    // if status JSON is missing or 404, fall back to bare thumbnails
+    const hadAny = await tryShowBareThumbnails();
+    if (!hadAny) showError("No status JSON yet and no thumbnails found in /detections/. Run the GitHub Action to produce outputs.");
+    return null;
+  }
 }
+
 async function loadReportByName(name){
-  const url = rawURL(`${FOLDER}/${name}`);
+  const url = rawURL(`${FOLDER}/${name}`) + `?t=${Date.now()}`;
   const data = await fetchJSON(url);
   currentReport = { name, data, url };
   reportName.textContent = name;
@@ -257,14 +317,18 @@ async function loadReportByName(name){
     if (status) renderLastFrames(status.overlays, status);
   } catch (e) {}
 }
+
 async function loadLatestReport(){
   try{
+    // list candidate reports; this may 404 if folder missing
     const list = await fetchJSON(apiListURL());
-    const files = list
-      .filter(f => f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
-      .sort((a,b)=> b.name.localeCompare(a.name));
+    const files = Array.isArray(list)
+      ? list.filter(f => f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
+             .sort((a,b)=> b.name.localeCompare(a.name))
+      : [];
     allReports = files.map(f=>f.name);
     reportSelect.innerHTML = allReports.slice(0,20).map(n=>`<option value="${n}">${n}</option>`).join("");
+
     if(!files.length){
       reportName.textContent = "—";
       reportTime.textContent = "";
@@ -273,39 +337,22 @@ async function loadLatestReport(){
       if (status) {
         const { s, overlays } = status;
         renderLastFrames(overlays, status);
-        grid.hidden = false; empty.hidden = true;
-        grid.innerHTML = overlays.map(o => `
-          <div class="card">
-            <img class="thumb" alt="overlay ${o.det}" src="${o.overlay}">
-            <div class="meta">
-              <div class="row">
-                <span class="pill">${o.det}</span>
-                <span class="pill">frames: ${o.frames}</span>
-                <span class="pill">tracks: ${o.tracks}</span>
-              </div>
-              <div class="kv" style="margin-top:8px;">
-                Contact sheet: <a href="${o.contact}" target="_blank">open</a>
-              </div>
-            </div>
-          </div>
-        `).join("");
-        const t = s?.timestamp_utc ? new Date(s.timestamp_utc).toLocaleString() : "";
-        reportName.textContent = "latest_status.json";
-        reportTime.textContent = t ? `• ${t} (local)` : "";
+        grid.hidden = true; empty.hidden = false;
+        empty.textContent = "No candidate detections yet.";
         return;
       }
-      grid.hidden = true; empty.hidden = false;
-      empty.innerHTML = `No reports found yet in <code>/${FOLDER}</code>.`;
       return;
     }
     const chosen = params.get("file") || files[0].name;
     reportSelect.value = chosen;
     await loadReportByName(chosen);
   }catch(err){
-    grid.hidden = true; empty.hidden = false;
-    empty.innerHTML = `<div class="err">Error loading from GitHub: ${err.message}</div>`;
+    // If listing failed (e.g., folder doesn’t exist yet), still try thumbnails
+    const hadAny = await tryShowBareThumbnails();
+    if (!hadAny) showError(`Could not list /${FOLDER}/ via GitHub API and no thumbnails found.`);
   }
 }
+
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
   refreshCountdown = REFRESH_SECS;
@@ -319,11 +366,13 @@ function startAutoRefresh(){
     }
   }, 1000);
 }
+
 el("#refreshBtn").addEventListener("click", async ()=>{ refreshCountdown = REFRESH_SECS; await loadLatestReport(); });
 reportSelect.addEventListener("change", (e)=>{ loadReportByName(e.target.value) });
 [c2Filter,c3Filter,aiOnly].forEach(cb=> cb.addEventListener("change", ()=>{
   if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
 }));
+
 loadLatestReport().then(startAutoRefresh);
 </script>
 </body>
