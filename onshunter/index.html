@@ -23,7 +23,7 @@
   button,.sel,input[type=checkbox]{cursor:pointer}
   button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:8px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
   button:hover{border-color:#33508a}
-  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:6px 10px;color:var(--text)}
+  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:6px 10px;color:var(--text);min-width:160px}
   .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:.8rem;color:var(--muted)}
   .pill input{accent-color:var(--accent)}
   .right{margin-left:auto}
@@ -70,6 +70,10 @@
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
 
+      <!-- NEW: Two dropdowns -->
+      <select id="latestSelect" class="sel"><option value="">— Latest Report —</option></select>
+      <select id="hitsSelect"   class="sel"><option value="">— Potential Hits —</option></select>
+
       <label class="pill"><input type="checkbox" id="c2Filter"> C2</label>
       <label class="pill"><input type="checkbox" id="c3Filter"> C3</label>
       <label class="pill"><input type="checkbox" id="aiOnly"> AI='comet' only</label>
@@ -93,7 +97,7 @@
   <!-- STATUS -->
   <section id="status">
     <div class="row">
-      <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
+      <div>Current view: <b id="viewName">—</b> <span class="sub" id="reportTime"></span></div>
     </div>
     <div class="stats" id="stats"></div>
   </section>
@@ -151,7 +155,8 @@ const $$ = s => document.querySelectorAll(s);
 
 const el = {
   grid:$('#grid'), empty:$('#empty'), errors:$('#errors'),
-  reportName:$('#reportName'), reportTime:$('#reportTime'), stats:$('#stats'),
+  viewName:$('#viewName'), reportTime:$('#reportTime'), stats:$('#stats'),
+  latestSelect:$('#latestSelect'), hitsSelect:$('#hitsSelect'),
   c2Filter:$('#c2Filter'), c3Filter:$('#c3Filter'), aiOnly:$('#aiOnly'), markedOnly:$('#markedOnly'),
   lastFramesRow:$('#lastFramesRow'), c2Gif:$('#c2Gif'), c3Gif:$('#c3Gif'),
   c2GifTime:$('#c2GifTime'), c3GifTime:$('#c3GifTime'),
@@ -160,7 +165,7 @@ const el = {
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta')
 };
 
-let currentReport = null;
+let currentReport = null;      // {name, items, isHitFile}
 let refreshTimer = null, countdown = REFRESH_SECS;
 
 /* ---------- LOCAL STORAGE ---------- */
@@ -174,7 +179,6 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 const rawURL = path => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}`;
-const ghBlobURL = path => `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
 
 async function fetchJSON(url){
   const r = await fetch(url,{headers:{'Accept':'application/vnd.github+json'}});
@@ -465,42 +469,76 @@ function refreshLiveGifs(){
   const t = Date.now();
   el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
   el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
+monkey
   const now = new Date().toLocaleTimeString();
   el.c2GifTime.textContent = `refreshed ${now}`;
   el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
-/* ---------- MAIN LOAD ---------- */
-async function loadLatestReport(){
+/* ---------- MAIN LOAD & DROPDOWNS ---------- */
+let allReportFiles = [];          // [{name, hasComet}]
+async function loadReportList(){
   hideError();
   try{
     const list = await fetchJSON(apiListURL());
     const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
-                                        .sort((a,b)=>b.name.localeCompare(a.name)) : [];
-    if(!files.length){
-      el.reportName.textContent='—'; el.reportTime.textContent='';
-      el.grid.hidden=true; el.empty.hidden=false; el.empty.textContent='No candidate files yet.';
-      await loadThumbs();
-      return;
+                                      .sort((a,b)=>b.name.localeCompare(a.name)) : [];
+
+    allReportFiles = [];
+    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
+    el.hitsSelect.innerHTML   = '<option value="">— Potential Hits —</option>';
+
+    for(const f of files){
+      const data = await fetchJSON(rawURL(`${FOLDER}/${f.name}`));
+      const hasComet = Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
+      allReportFiles.push({name:f.name, hasComet});
+
+      // populate both selects
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      opt.textContent = f.name;
+      el.latestSelect.appendChild(opt.cloneNode(true));
+      if(hasComet) el.hitsSelect.appendChild(opt);
     }
 
-    const latest = files[0];
-    const data = await fetchJSON(rawURL(`${FOLDER}/${latest.name}`));
-    currentReport = {name:latest.name, items:Array.isArray(data)?data:[]};
-
-    el.reportName.textContent = latest.name;
-    const t = parseReportTime(latest.name);
-    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
-
-    renderGrid(currentReport.items);
+    // auto-select newest
+    if(files.length){
+      el.latestSelect.value = files[0].name;
+      await loadReport(files[0].name, false);
+    }else{
+      el.viewName.textContent = '—';
+      el.reportTime.textContent = '';
+      el.grid.hidden = true; el.empty.hidden = false;
+      el.empty.textContent = 'No candidate files yet.';
+    }
     await loadThumbs();
   }catch(e){
     showError(`GitHub load failed: ${e.message}`);
-    el.empty.textContent = "Unable to fetch the latest report.";
+    el.empty.textContent = "Unable to fetch report list.";
   }finally{
     refreshLiveGifs();
   }
 }
+
+/* load a specific report */
+async function loadReport(name, isHitFile){
+  try{
+    const data = await fetchJSON(rawURL(`${FOLDER}/${name}`));
+    currentReport = {name, items:Array.isArray(data)?data:[], isHitFile:!!isHitFile};
+
+    el.viewName.textContent = isHitFile ? `Potential Hits – ${name}` : name;
+    const t = parseReportTime(name);
+    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
+
+    renderGrid(currentReport.items);
+  }catch(e){
+    showError(`Failed to load ${name}: ${e.message}`);
+  }
+}
+
+/* dropdown handlers */
+el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
+el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
 
 /* ---------- EXPORT ALL ---------- */
 function exportAll(){
@@ -535,16 +573,16 @@ function startAutoRefresh(){
   countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
   refreshTimer = setInterval(()=>{
     countdown--; el.refreshEta.textContent = fmtSec(countdown);
-    if(countdown<=0){ loadLatestReport(); countdown=REFRESH_SECS; }
+    if(countdown<=0){ loadReportList(); countdown=REFRESH_SECS; }
   },1000);
 }
 
 /* ---------- UI BINDINGS ---------- */
-el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadLatestReport(); };
+el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
 $$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
 /* ---------- BOOT ---------- */
-loadLatestReport().then(startAutoRefresh);
+loadReportList().then(startAutoRefresh);
 </script>
 </body>
 </html>
