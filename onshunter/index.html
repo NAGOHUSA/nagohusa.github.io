@@ -13,7 +13,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
-  a{color:var(--accent);text-decoration:none}
+  a{color:var(--accent};text-decoration:none}
   a:hover{text-decoration:underline}
   header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
   .wrap{max-width:1240px;margin:auto;padding:14px 16px}
@@ -40,7 +40,7 @@
   .stat b{font-size:1.1rem}
   .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
   .err{color:#ffb4b4}
-  .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
+  .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minminmax(320px,1fr));gap:16px;margin-top:12px}
   .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
   .thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px}
   .gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;margin-top:12px}
@@ -50,7 +50,7 @@
   .exportAll{display:flex;gap:8px;align-items:center}
   .muted{color:var(--muted);font-size:.75rem}
   .mark{display:flex;gap:6px;align-items:center}
-  .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
+  .flag{padding:4px 8px;border-radius:10px;border:1 border:1px solid #1e293b;background:#13223a}
   .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
   .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:.75rem}
   .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter</h1>
+    <h1>SOHO Comet Hunter 1.4 </h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -173,10 +173,10 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 
-/* rawURL adds the detections/ prefix **only if the path does NOT already contain a slash** */
+/* FIXED: Only add 'detections/' if path does NOT already contain a slash */
 const rawURL = path => {
   const clean = path.replace(/^\.?\/*/,'');
-  const full = clean.includes('/') ? `${FOLDER}/${clean}` : `${FOLDER}/${clean}`;
+  const full = clean.includes('/') ? clean : `${FOLDER}/${clean}`;
   return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}?t=${Date.now()}`;
 };
 
@@ -334,7 +334,7 @@ function videoPlayer(h){
 
 /* ---------- RENDER GRID ---------- */
 function renderGrid(items){
-  const filtered = applyFilters(items).slice(0,10);   // limit to avoid overload
+  const filtered = applyFilters(items).slice(0,10);
   renderStats(filtered);
   el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
 
@@ -352,10 +352,9 @@ function renderGrid(items){
     const groupVal = g[k]||"Unknown";
 
     const cropURL = rawURL(h.crop_path);
-    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
-    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
+    const origURL = h.original_mid_path ? rawURL(`originals/${h.original_mid_path}`) : null;
+    const annURL  = h.annotated_mid_path ? rawURL(`annotated/${h.annotated_mid_path}`) : null;
 
-    // reports folder
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
