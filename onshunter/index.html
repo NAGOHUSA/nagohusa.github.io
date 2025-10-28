@@ -160,7 +160,7 @@ const el = {
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta')
 };
 
-let currentReport = null;
+let currentReport = null;  // {name, items, isHitFile}
 let refreshTimer = null, countdown = REFRESH_SECS;
 
 const LS_MARKS = 'soho_marks', LS_GROUPS = 'soho_groups';
@@ -170,6 +170,7 @@ const saveMarks = m => localStorage.setItem(LS_MARKS, JSON.stringify(m));
 const saveGroups = g => localStorage.setItem(LS_GROUPS, JSON.stringify(g));
 const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`;
 
+/* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 const rawURL = path => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}`;
 
@@ -181,6 +182,7 @@ async function fetchJSON(url){
 function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML=`<div class="err">${msg}</div>`; }
 function hideError(){ el.errors.style.display='none'; }
 
+/* ---------- TIME HELPERS ---------- */
 function parseReportTime(name){
   const m = name?.match?.(/(\d{8})_(\d{6})/);
   if(!m) return null;
@@ -191,6 +193,7 @@ function parseReportTime(name){
 }
 function fmtSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
 
+/* ---------- FILTERING ---------- */
 function applyFilters(items){
   const m = marks();
   return items.filter(h=>{
@@ -202,6 +205,7 @@ function applyFilters(items){
   });
 }
 
+/* ---------- STATS ---------- */
 function renderStats(filtered){
   const byDet = filtered.reduce((a,h)=>{a[(h.detector||'').toUpperCase()]=(a[(h.detector||'').toUpperCase()]||0)+1;return a;},{});
   const ai = filtered.reduce((a,h)=>{const l=(h.ai_label||'').toLowerCase();if(l)a[l]=(a[l]||0)+1;return a;},{});
@@ -213,6 +217,7 @@ function renderStats(filtered){
   if(ai.comet||ai.not_comet){ add('AI "comet"',ai.comet||0); add('AI "not_comet"',ai.not_comet||0); }
 }
 
+/* ---------- SUNGRAZER TEXT / CSV ---------- */
 function sungrazerText(h){
   const w = h.image_size?.[0]??1024, ht = h.image_size?.[1]??1024;
   const first = (h.positions?.[0]?.time_utc||"").split('T')[0]||"";
@@ -261,6 +266,7 @@ function allCSV(items){
   return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')+'\n';
 }
 
+/* ---------- SEGMENTED TOGGLE ---------- */
 function seg(items){
   const div = document.createElement('div'); div.className='seg';
   items.forEach(({label,disabled,active,click})=>{
@@ -273,6 +279,7 @@ function seg(items){
   return div;
 }
 
+/* ---------- VIDEO PLAYER ---------- */
 function videoPlayer(h){
   const container = document.createElement('div'); container.className='video-container';
   const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) : null;
@@ -295,12 +302,12 @@ function videoPlayer(h){
   };
 
   // Prefer MP4, start with clean
-  setSrc(cleanMp4 || cleanGif);
+  setSrc(cleanMp4, cleanGif);
 
   if((cleanMp4||cleanGif) && (annMp4||annGif)){
     const s = seg([
-      {label:'Clean', active:true, click:()=>setSrc(cleanMp4 || cleanGif)},
-      {label:'Annotated', click:()=>setSrc(annMp4 || annGif)}
+      {label:'Clean', active:true, click:()=>setSrc(cleanMp4, cleanGif)},
+      {label:'Annotated', click:()=>setSrc(annMp4, annGif)}
     ]);
     s.style.margin='8px';
     container.appendChild(s);
@@ -309,8 +316,9 @@ function videoPlayer(h){
   return container;
 }
 
+/* ---------- RENDER GRID ---------- */
 function renderGrid(items){
-  const filtered = applyFilters(items);
+  const filtered = applyFilters(items).slice(0, 10);  // Limit to top 10 to avoid overload
   renderStats(filtered);
   el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
 
@@ -332,8 +340,8 @@ function renderGrid(items){
     const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
     // FIXED: No /reports/ subfolder
-    const txtURL = rawURL(`${FOLDER}/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
-    const csvURL = rawURL(`${FOLDER}/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
+    const txtURL = rawURL(`detections/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
+    const csvURL = rawURL(`detections/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
@@ -344,9 +352,9 @@ function renderGrid(items){
 
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
-      {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
-      {label:'Original', disabled:!origURL, click:()=>{ img.src=origURL; link.href=origURL; }},
-      {label:'Annotated', disabled:!annURL, click:()=>{ img.src=annURL; link.href=annURL; }}
+      {label:'Crop', active:true, click:()=>{ img.src = cropURL || ''; link.href=cropURL || '#'; }},
+      {label:'Original', disabled:!origURL, click:()=>{ img.src = origURL || ''; link.href=origURL || '#'; }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ img.src = annURL || ''; link.href=annURL || '#'; }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
