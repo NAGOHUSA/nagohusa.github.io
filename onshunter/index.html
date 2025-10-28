@@ -70,7 +70,6 @@
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
 
-      <!-- NEW: Two dropdowns -->
       <select id="latestSelect" class="sel"><option value="">— Latest Report —</option></select>
       <select id="hitsSelect"   class="sel"><option value="">— Potential Hits —</option></select>
 
@@ -94,7 +93,6 @@
 
 <main class="wrap">
 
-  <!-- STATUS -->
   <section id="status">
     <div class="row">
       <div>Current view: <b id="viewName">—</b> <span class="sub" id="reportTime"></span></div>
@@ -102,7 +100,6 @@
     <div class="stats" id="stats"></div>
   </section>
 
-  <!-- LIVE NASA GIFs -->
   <section aria-label="Live LASCO animations" style="margin-top:20px;">
     <div class="gifRow">
       <div class="gifCard">
@@ -124,13 +121,11 @@
     </div>
   </section>
 
-  <!-- LAST-FRAME THUMBNAILS -->
   <section style="margin-top:20px;">
     <div class="thumbRow" id="lastFramesRow"></div>
     <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
   </section>
 
-  <!-- CANDIDATE GRID -->
   <section id="content" style="margin-top:24px;">
     <div class="empty" id="empty">Loading latest detections from GitHub…</div>
     <div class="grid" id="grid" hidden></div>
@@ -147,7 +142,7 @@ const OWNER  = "NAGOHUSA";
 const REPO   = "ONS_SOHOHUNTER";
 const BRANCH = "main";
 const FOLDER = "detections";
-const REFRESH_SECS = 15 * 60;               // 15 minutes
+const REFRESH_SECS = 15 * 60;
 /* =============================================== */
 
 const $ = s => document.querySelector(s);
@@ -168,7 +163,6 @@ const el = {
 let currentReport = null;
 let refreshTimer = null, countdown = REFRESH_SECS;
 
-/* ---------- LOCAL STORAGE ---------- */
 const LS_MARKS = 'soho_marks', LS_GROUPS = 'soho_groups';
 const marks = () => JSON.parse(localStorage.getItem(LS_MARKS) || '{}');
 const groups = () => JSON.parse(localStorage.getItem(LS_GROUPS) || '{}');
@@ -176,7 +170,6 @@ const saveMarks = m => localStorage.setItem(LS_MARKS, JSON.stringify(m));
 const saveGroups = g => localStorage.setItem(LS_GROUPS, JSON.stringify(g));
 const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`;
 
-/* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 const rawURL = path => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}`;
 
@@ -188,7 +181,6 @@ async function fetchJSON(url){
 function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML=`<div class="err">${msg}</div>`; }
 function hideError(){ el.errors.style.display='none'; }
 
-/* ---------- TIME HELPERS ---------- */
 function parseReportTime(name){
   const m = name?.match?.(/(\d{8})_(\d{6})/);
   if(!m) return null;
@@ -199,7 +191,6 @@ function parseReportTime(name){
 }
 function fmtSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
 
-/* ---------- FILTERING ---------- */
 function applyFilters(items){
   const m = marks();
   return items.filter(h=>{
@@ -211,7 +202,6 @@ function applyFilters(items){
   });
 }
 
-/* ---------- STATS ---------- */
 function renderStats(filtered){
   const byDet = filtered.reduce((a,h)=>{a[(h.detector||'').toUpperCase()]=(a[(h.detector||'').toUpperCase()]||0)+1;return a;},{});
   const ai = filtered.reduce((a,h)=>{const l=(h.ai_label||'').toLowerCase();if(l)a[l]=(a[l]||0)+1;return a;},{});
@@ -223,7 +213,6 @@ function renderStats(filtered){
   if(ai.comet||ai.not_comet){ add('AI "comet"',ai.comet||0); add('AI "not_comet"',ai.not_comet||0); }
 }
 
-/* ---------- SUNGRAZER TEXT / CSV ---------- */
 function sungrazerText(h){
   const w = h.image_size?.[0]??1024, ht = h.image_size?.[1]??1024;
   const first = (h.positions?.[0]?.time_utc||"").split('T')[0]||"";
@@ -272,7 +261,6 @@ function allCSV(items){
   return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')+'\n';
 }
 
-/* ---------- SEGMENTED TOGGLE ---------- */
 function seg(items){
   const div = document.createElement('div'); div.className='seg';
   items.forEach(({label,disabled,active,click})=>{
@@ -285,7 +273,6 @@ function seg(items){
   return div;
 }
 
-/* ---------- VIDEO PLAYER ---------- */
 function videoPlayer(h){
   const container = document.createElement('div'); container.className='video-container';
   const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) : null;
@@ -306,12 +293,14 @@ function videoPlayer(h){
     if(gif){ const s=document.createElement('source'); s.src=gif; s.type='image/gif'; video.appendChild(s); }
     video.load();
   };
-  setSrc(cleanMp4, cleanGif);
+
+  // Prefer MP4, start with clean
+  setSrc(cleanMp4 || cleanGif);
 
   if((cleanMp4||cleanGif) && (annMp4||annGif)){
     const s = seg([
-      {label:'Clean', active:true, click:()=>setSrc(cleanMp4,cleanGif)},
-      {label:'Annotated', click:()=>setSrc(annMp4,annGif)}
+      {label:'Clean', active:true, click:()=>setSrc(cleanMp4 || cleanGif)},
+      {label:'Annotated', click:()=>setSrc(annMp4 || annGif)}
     ]);
     s.style.margin='8px';
     container.appendChild(s);
@@ -320,7 +309,6 @@ function videoPlayer(h){
   return container;
 }
 
-/* ---------- RENDER GRID ---------- */
 function renderGrid(items){
   const filtered = applyFilters(items);
   renderStats(filtered);
@@ -343,8 +331,9 @@ function renderGrid(items){
     const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
     const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
-    const txtURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
-    const csvURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
+    // FIXED: No /reports/ subfolder
+    const txtURL = rawURL(`${FOLDER}/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
+    const csvURL = rawURL(`${FOLDER}/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
@@ -353,7 +342,6 @@ function renderGrid(items){
     const link = document.createElement('a'); link.href=cropURL; link.target='_blank'; link.rel='noopener';
     link.appendChild(img); card.appendChild(link);
 
-    // Thumb toggle
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
       {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
@@ -405,7 +393,6 @@ function renderGrid(items){
     card.appendChild(meta);
     el.grid.appendChild(card);
 
-    // copy button
     meta.querySelector('.sgBtn').onclick = ()=>{ 
       navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
         const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
@@ -413,7 +400,6 @@ function renderGrid(items){
       });
     };
 
-    // mark toggle
     const flag = meta.querySelector('.flag');
     flag.onclick = ()=>{ 
       const mm=marks(); 
@@ -423,12 +409,10 @@ function renderGrid(items){
       if(el.markedOnly.checked) renderGrid(items); 
     };
 
-    // group selector
     meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
   });
 }
 
-/* ---------- LAST-FRAME THUMBNAILS ---------- */
 async function loadThumbs(){
   const dets = ['C2','C3'];
   const rows = [];
@@ -445,7 +429,7 @@ async function loadThumbs(){
         <span class="pill">${o.det}</span>
         ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
       </div>
-      ${o.thumb.ok?`<a href="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" alt="last ${o.det}"></a>`:
+      ${o.thumb.ok?`<a href="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" alt="last ${o.det}" loading="lazy"></a>`:
         `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
       <div class="meta">
         <div class="kv">
@@ -464,7 +448,6 @@ function imgExists(path){
   });
 }
 
-/* ---------- LIVE GIFs ---------- */
 function refreshLiveGifs(){
   const t = Date.now();
   el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
@@ -474,7 +457,6 @@ function refreshLiveGifs(){
   el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
-/* ---------- MAIN LOAD & DROPDOWNS ---------- */
 let allReportFiles = [];
 async function loadReportList(){
   hideError();
@@ -535,7 +517,6 @@ async function loadReport(name, isHitFile){
 el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
 el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
 
-/* ---------- EXPORT ALL ---------- */
 function exportAll(){
   if(!currentReport) return alert('No report loaded.');
   let items = applyFilters(currentReport.items);
@@ -562,7 +543,6 @@ function exportAll(){
 }
 el.exportAllBtn.onclick = exportAll;
 
-/* ---------- AUTO-REFRESH ---------- */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
   countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
@@ -572,11 +552,9 @@ function startAutoRefresh(){
   },1000);
 }
 
-/* ---------- UI BINDINGS ---------- */
 el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
 $$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
-/* ---------- BOOT ---------- */
 loadReportList().then(startAutoRefresh);
 </script>
 </body>
