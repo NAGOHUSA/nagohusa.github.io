@@ -134,7 +134,7 @@
 </main>
 
 <script>
-/*** CONFIG — update if you rename the repo ***/
+/*** CONFIG ***/
 const OWNER  = "NAGOHUSA";
 const REPO   = "ONS_SOHOHUNTER";
 const BRANCH = "main";
@@ -165,7 +165,7 @@ let currentReport = null;
 let refreshTimer=null, refreshCountdown=0, REFRESH_SECS=60;
 
 const LS_MARKS = "ons_submit_marks";
-const LS_GROUPS = "ons_candidate_groups"; // map key -> group
+const LS_GROUPS = "ons_candidate_groups";
 
 function getMarks(){ try { return JSON.parse(localStorage.getItem(LS_MARKS)||"{}"); } catch { return {}; } }
 function setMarks(m){ localStorage.setItem(LS_MARKS, JSON.stringify(m)); }
@@ -173,7 +173,6 @@ function getGroups(){ try { return JSON.parse(localStorage.getItem(LS_GROUPS)||"
 function setGroups(g){ localStorage.setItem(LS_GROUPS, JSON.stringify(g)); }
 function keyFor(h){ return `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`; }
 
-/* errors & fetch */
 function showError(msg){
   const e = el('#errors'); e.style.display='block'; e.innerHTML = '<div class="err">'+msg+'</div>';
 }
@@ -190,7 +189,6 @@ function parseReportTime(name){
   return {iso, local: dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'})};
 }
 
-/* stats & filters */
 function renderStats(items){
   const byDet = items.reduce((a,h)=>{ const k=(h.detector||'').toUpperCase(); a[k]=(a[k]||0)+1; return a; },{});
   const ai = items.reduce((a,h)=>{ const l=(h.ai_label||'').toLowerCase(); if(l) a[l]=(a[l]||0)+1; return a; },{});
@@ -210,7 +208,6 @@ function applyGridFilters(items){
   });
 }
 
-/* Sungrazer text & CSV builders */
 function buildSungrazerText(h){
   const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
   const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
@@ -262,7 +259,6 @@ function buildAllCSV(items){
 }
 function copyTextToClipboard(t){ return navigator.clipboard.writeText(t); }
 
-/* per-card image toggle helpers */
 function makeSeg(items){
   const seg=document.createElement("div"); seg.className="seg";
   items.forEach(({label,disabled,onClick,active})=>{
@@ -270,7 +266,7 @@ function makeSeg(items){
     b.textContent=label;
     if(disabled) b.disabled=true;
     if(active) b.classList.add("active");
-    b.addEventListener("click", ()=>{
+    b.addEventListener("click",", ()=>{
       [...seg.children].forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
       onClick?.();
@@ -280,7 +276,67 @@ function makeSeg(items){
   return seg;
 }
 
-/* grid rendering */
+/* === NEW: Video Player with Clean/Annotated Toggle === */
+function createVideoPlayer(h) {
+  const videoContainer = document.createElement("div");
+  videoContainer.style.marginTop = "12px";
+  videoContainer.style.border = "1px solid #1e293b";
+  videoContainer.style.borderRadius = "12px";
+  videoContainer.style.overflow = "hidden";
+  videoContainer.style.background = "#0b1220";
+
+  const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) + "?t=" + Date.now() : null;
+  const cleanGif = h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) + "?t=" + Date.now() : null;
+  const annMp4 = h.animation_mp4_path ? rawURL(h.animation_mp4_path) + "?t=" + Date.now() : null;
+  const annGif = h.animation_gif_path ? rawURL(h.animation_gif_path) + "?t=" + Date.now() : null;
+
+  const hasClean = cleanMp4 || cleanGif;
+  const hasAnnot = annMp4 || annGif;
+
+  if (!hasClean && !hasAnnot) {
+    videoContainer.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">No animation available</div>`;
+    return videoContainer;
+  }
+
+  const video = document.createElement("video");
+  video.controls = true;
+  video.loop = true;
+  video.style.width = "100%";
+  video.style.display = "block";
+  video.style.background = "#000";
+
+  const setSource = (srcMp4, srcGif) => {
+    video.innerHTML = "";
+    if (srcMp4) {
+      const source = document.createElement("source");
+      source.src = srcMp4; source.type = "video/mp4";
+      video.appendChild(source);
+    }
+    if (srcGif) {
+      const source = document.createElement("source");
+      source.src = srcGif; source.type = "image/gif";
+      video.appendChild(source);
+    }
+    video.load();
+  };
+
+  // Default: show clean
+  setSource(cleanMp4, cleanGif);
+
+  if (hasClean && hasAnnot) {
+    const seg = makeSeg([
+      { label: "Clean", active: true, onClick: () => setSource(cleanMp4, cleanGif) },
+      { label: "Annotated", active: false, onClick: () => setSource(annMp4, annGif) }
+    ]);
+    seg.style.margin = "8px";
+    videoContainer.appendChild(seg);
+  }
+
+  videoContainer.appendChild(video);
+  return videoContainer;
+}
+
+/* === UPDATED: renderGrid with video === */
 const gridState = { items: [] };
 function renderGrid(items){
   const filtered = applyGridFilters(items);
@@ -317,7 +373,6 @@ function renderGrid(items){
     const card=document.createElement("div");
     card.className="card";
 
-    // Header image container with toggle
     const headerLink=document.createElement("a");
     headerLink.href=ghBlobURL(cropPath);
     headerLink.target="_blank"; headerLink.rel="noopener";
@@ -332,7 +387,6 @@ function renderGrid(items){
     headerLink.appendChild(img);
     card.appendChild(headerLink);
 
-    // Segmented control
     const segWrap=document.createElement("div");
     segWrap.style.display="flex"; segWrap.style.justifyContent="center"; segWrap.style.padding="8px 12px 0";
     const seg = makeSeg([
@@ -343,7 +397,9 @@ function renderGrid(items){
     segWrap.appendChild(seg);
     card.appendChild(segWrap);
 
-    // Meta
+    // ADD VIDEO PLAYER
+    card.appendChild(createVideoPlayer(h));
+
     const meta=document.createElement("div"); meta.className="meta";
     meta.innerHTML=`
       <div class="row">
@@ -381,7 +437,6 @@ function renderGrid(items){
     card.appendChild(meta);
     grid.appendChild(card);
 
-    // Actions
     meta.querySelector(".sgBtn").addEventListener("click", ()=>{
       copyTextToClipboard(buildSungrazerText(h)).then(()=>{
         const b=meta.querySelector(".sgBtn");
@@ -405,15 +460,7 @@ function renderGrid(items){
   });
 }
 
-/* bare thumbs fallback */
-function loadImageIfExists(path){
-  return new Promise(res=>{
-    const img=new Image();
-    img.onload = ()=>res({ok:true,src:img.src,w:img.naturalWidth,h:img.naturalHeight});
-    img.onerror= ()=>res({ok:false});
-    img.src = rawURL(path)+`?t=${Date.now()}`;
-  });
-}
+/* rest unchanged */
 async function tryShowBareThumbnails(){
   const dets=["C2","C3"]; const rows=[];
   for(const det of dets){
@@ -437,7 +484,7 @@ async function tryShowBareThumbnails(){
       <div class="meta">
         <div class="kv">
           ${o.overlay.ok? `Overlay: <a href="${rawURL(`${FOLDER}/overlay_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Overlay: —'}
-          &nbsp;•&nbsp;
+          •
           ${o.contact.ok? `Contact: <a href="${rawURL(`${FOLDER}/contact_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Contact: —'}
         </div>
       </div>
@@ -445,7 +492,15 @@ async function tryShowBareThumbnails(){
   return true;
 }
 
-/* status + last frames */
+function loadImageIfExists(path){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload = ()=>res({ok:true,src:img.src,w:img.naturalWidth,h:img.naturalHeight});
+    img.onerror= ()=>res({ok:false});
+    img.src = rawURL(path)+`?t=${Date.now()}`;
+  });
+}
+
 function renderLastFrames(overlays,status){
   if(!overlays||!overlays.length){ lastFramesRow.innerHTML=""; return; }
   lastFramesRow.innerHTML = overlays.map(o=>`
@@ -486,7 +541,6 @@ async function tryLoadStatus(){
   }
 }
 
-/* live GIFs */
 function loadLiveGifs(){
   const t=Date.now();
   el("#c2Gif").src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
@@ -495,7 +549,6 @@ function loadLiveGifs(){
   c2GifTime.textContent=`refreshed ${now}`; c3GifTime.textContent=`refreshed ${now}`;
 }
 
-/* report loading */
 async function loadReportByName(name){
   const url = rawURL(`${FOLDER}/${name}`)+`?t=${Date.now()}`;
   const data = await fetchJSON(url);
@@ -527,7 +580,6 @@ async function loadLatestReport(){
   } finally { loadLiveGifs(); }
 }
 
-/* Export ALL (TXT + CSV) */
 function exportAll(){
   if(!currentReport || !Array.isArray(currentReport.data)){ alert("No report loaded."); return; }
   let items = (applyGridFilters(currentReport.data) || []).slice();
@@ -558,7 +610,6 @@ function exportAll(){
 }
 exportAllBtn.addEventListener("click", exportAll);
 
-/* refresh & events */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
   refreshCountdown=REFRESH_SECS; el("#refreshEta").textContent=refreshCountdown+"s";
@@ -573,7 +624,6 @@ reportSelect.addEventListener("change", (e)=> loadReportByName(e.target.value));
   if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
 }));
 
-/* init */
 loadLatestReport().then(startAutoRefresh);
 </script>
 </body>
