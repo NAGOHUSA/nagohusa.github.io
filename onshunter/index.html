@@ -469,7 +469,6 @@ function refreshLiveGifs(){
   const t = Date.now();
   el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
   el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-monkey
   const now = new Date().toLocaleTimeString();
   el.c2GifTime.textContent = `refreshed ${now}`;
   el.c3GifTime.textContent = `refreshed ${now}`;
