@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SOHO Comet Hunter (v1.0) – Nagoh Creative</title>
+<title>SOHO Comet Hunter – Nagoh Creative</title>
 <meta name="description" content="Live NASA LASCO animations, AI-detected comets and Sungrazer-ready exports – built by Nagoh Creative for OurNightSky.Us">
 <link rel="icon" href="data:,">
 <style>
@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter (v1.0)</h1>
+    <h1>SOHO Comet Hunter (v1.1)</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -160,7 +160,7 @@ const el = {
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta')
 };
 
-let currentReport = null;  // {name, items, isHitFile}
+let currentReport = null;
 let refreshTimer = null, countdown = REFRESH_SECS;
 
 const LS_MARKS = 'soho_marks', LS_GROUPS = 'soho_groups';
@@ -288,7 +288,7 @@ function videoPlayer(h){
   const annGif   = h.animation_gif_path ? rawURL(h.animation_gif_path) : null;
 
   if(!cleanMp4 && !cleanGif && !annMp4 && !annGif){
-    container.innerHTML = `<div style="padding:16px;text-align:center;color:#94a3b8;">No animation</div>`;
+    container.innerHTML = `<div style="padding:16px;text-align:center;color:#94a3b8;">Generating animation…</div>`;
     return container;
   }
 
@@ -301,13 +301,12 @@ function videoPlayer(h){
     video.load();
   };
 
-  // Prefer MP4, start with clean
-  setSrc(cleanMp4, cleanGif);
+  setSrc(cleanMp4 || cleanGif);
 
   if((cleanMp4||cleanGif) && (annMp4||annGif)){
     const s = seg([
-      {label:'Clean', active:true, click:()=>setSrc(cleanMp4, cleanGif)},
-      {label:'Annotated', click:()=>setSrc(annMp4, annGif)}
+      {label:'Clean', active:true, click:()=>setSrc(cleanMp4 || cleanGif)},
+      {label:'Annotated', click:()=>setSrc(annMp4 || annGif)}
     ]);
     s.style.margin='8px';
     container.appendChild(s);
@@ -318,7 +317,7 @@ function videoPlayer(h){
 
 /* ---------- RENDER GRID ---------- */
 function renderGrid(items){
-  const filtered = applyFilters(items).slice(0, 10);  // Limit to top 10 to avoid overload
+  const filtered = applyFilters(items).slice(0, 10);
   renderStats(filtered);
   el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
 
@@ -339,9 +338,9 @@ function renderGrid(items){
     const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
     const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
-    // FIXED: No /reports/ subfolder
-    const txtURL = rawURL(`detections/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
-    const csvURL = rawURL(`detections/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
+    // FIXED: Use reports/ folder
+    const txtURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
+    const csvURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
@@ -352,9 +351,9 @@ function renderGrid(items){
 
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
-      {label:'Crop', active:true, click:()=>{ img.src = cropURL || ''; link.href=cropURL || '#'; }},
-      {label:'Original', disabled:!origURL, click:()=>{ img.src = origURL || ''; link.href=origURL || '#'; }},
-      {label:'Annotated', disabled:!annURL, click:()=>{ img.src = annURL || ''; link.href=annURL || '#'; }}
+      {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
+      {label:'Original', disabled:!origURL, click:()=>{ img.src=origURL; link.href=origURL; }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ img.src=annURL; link.href=annURL; }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
@@ -421,6 +420,7 @@ function renderGrid(items){
   });
 }
 
+/* ---------- LAST-FRAME THUMBNAILS ---------- */
 async function loadThumbs(){
   const dets = ['C2','C3'];
   const rows = [];
@@ -456,6 +456,7 @@ function imgExists(path){
   });
 }
 
+/* ---------- LIVE GIFs ---------- */
 function refreshLiveGifs(){
   const t = Date.now();
   el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
@@ -465,6 +466,7 @@ function refreshLiveGifs(){
   el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
+/* ---------- MAIN LOAD & DROPDOWNS ---------- */
 let allReportFiles = [];
 async function loadReportList(){
   hideError();
@@ -525,6 +527,7 @@ async function loadReport(name, isHitFile){
 el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
 el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
 
+/* ---------- EXPORT ALL ---------- */
 function exportAll(){
   if(!currentReport) return alert('No report loaded.');
   let items = applyFilters(currentReport.items);
@@ -551,6 +554,7 @@ function exportAll(){
 }
 el.exportAllBtn.onclick = exportAll;
 
+/* ---------- AUTO-REFRESH ---------- */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
   countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
@@ -560,9 +564,11 @@ function startAutoRefresh(){
   },1000);
 }
 
+/* ---------- UI BINDINGS ---------- */
 el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
 $$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
+/* ---------- BOOT ---------- */
 loadReportList().then(startAutoRefresh);
 </script>
 </body>
