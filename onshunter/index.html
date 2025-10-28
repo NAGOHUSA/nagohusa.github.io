@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SOHO Comet Hunter — Live Results</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOHO Comet Hunter – Nagoh Creative</title>
+<meta name="description" content="Live NASA LASCO animations, AI‑detected comets and Sungrazer‑ready exports – built by Nagoh Creative for OurNightSky.Us">
+<link rel="icon" href="data:,">
 <style>
   :root{
     --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa;
     --chip:#1e293b; --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
-  .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
-  h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
-  .sub{font-size:13px;color:var(--muted)}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
-  button,.sel,input[type="checkbox"]{cursor:pointer}
-  button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
-  button:hover{border-color:#33508a}
-  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text)}
-  main{padding:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-  .thumb{aspect-ratio:1.6/1;display:block;width:100%;background:#0b1220;object-fit:contain}
-  .meta{padding:12px}
-  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-  .kv{font-size:12px;color:var(--muted)}
-  .kv b{color:var(--text)}
-  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
-  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .right{margin-left:auto}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
-  .stat b{font-size:18px}
-  .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
-  footer{color:var(--muted);font-size:12px;padding:20px 0}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
+  .wrap{max-width:1240px;margin:auto;padding:14px 16px}
+  h1{font-size:1.35rem;font-weight:800;letter-spacing:.3px}
+  .sub{font-size:.85rem;color:var(--muted)}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
+  button,.sel,input[type=checkbox]{cursor:pointer}
+  button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:8px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
+  button:hover{border-color:#33508a}
+  .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:6px 10px;color:var(--text)}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:.8rem;color:var(--muted)}
+  .pill input{accent-color:var(--accent)}
+  .right{margin-left:auto}
+  main{padding:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .thumb{aspect-ratio:1.6/1;width:100%;background:#0b1220;object-fit:contain;display:block}
+  .meta{padding:12px;flex:1;display:flex;flex-direction:column;gap:8px}
+  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.8rem;color:var(--muted)}
+  .kv b{color:var(--text)}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+  .stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:8px 12px}
+  .stat b{font-size:1.1rem}
+  .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
   .err{color:#ffb4b4}
   .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
   .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
@@ -46,44 +47,41 @@
   .gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
   .gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
   .gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
-  .exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
-  .muted{color:var(--muted);font-size:12px}
-  .mark{display:flex;gap:8px;align-items:center}
+  .exportAll{display:flex;gap:8px;align-items:center}
+  .muted{color:var(--muted);font-size:.75rem}
+  .mark{display:flex;gap:6px;align-items:center}
   .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
   .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
-  .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:12px}
-
-  /* Segmented toggle */
+  .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:.75rem}
   .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
-  .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:12px}
+  .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:.75rem}
   .seg button:last-child{border-right:0}
   .seg button.active{background:#1b2a46;color:#e6eefc}
-  .seg button:disabled{opacity:.45;cursor:not-allowed}
-
-  /* Video player */
   .video-container{margin-top:12px;border:1px solid #1e293b;border-radius:12px;overflow:hidden;background:#0b1220}
   .video-container video{width:100%;display:block;background:#000}
+  footer{font-size:.75rem;color:var(--muted);padding:20px 0;text-align:center}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter</h1>
-    <div class="sub">Live NASA animations, last-frame thumbs, and Sungrazer-ready exports from your GitHub repo.</div>
+    <div class="sub">Live NASA LASCO animations • AI‑detected comets • Sungrazer‑ready exports</div>
     <div class="controls">
-      <button id="refreshBtn" title="Reload now">Refresh</button>
-      <select id="reportSelect" class="sel" title="Pick a past report"></select>
-      <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
-      <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
-      <label class="pill"><input type="checkbox" id="aiOnly" /> AI=‘comet’ only</label>
-      <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only</label>
-      <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
+      <button id="refreshBtn">Refresh</button>
+
+      <label class="pill"><input type="checkbox" id="c2Filter"> C2</label>
+      <label class="pill"><input type="checkbox" id="c3Filter"> C3</label>
+      <label class="pill"><input type="checkbox" id="aiOnly"> AI=‘comet’ only</label>
+      <label class="pill"><input type="checkbox" id="markedOnly"> Marked only</label>
+
+      <div class="right pill">Auto‑refresh: <span id="refreshEta">—</span></div>
 
       <div class="exportAll">
         <button id="exportAllBtn">Export ALL</button>
-        <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Export marked only</label>
-        <a id="downloadAllTxt" class="pill" href="#" download rel="noopener" style="display:none;">TXT</a>
-        <a id="downloadAllCsv" class="pill" href="#" download rel="noopener" style="display:none;">CSV</a>
+        <label class="pill"><input type="checkbox" id="exportMarkedOnly"> Marked only</label>
+        <a id="downloadAllTxt" class="pill" href="#" download style="display:none;">TXT</a>
+        <a id="downloadAllCsv" class="pill" href="#" download style="display:none;">CSV</a>
         <span id="exportAllHint" class="muted"></span>
       </div>
     </div>
@@ -91,20 +89,21 @@
 </header>
 
 <main class="wrap">
+
+  <!-- ==== STATUS BAR ==== -->
   <section id="status">
     <div class="row">
       <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
-      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank" rel="noopener">GitHub</a></div>
     </div>
     <div class="stats" id="stats"></div>
   </section>
 
-  <!-- Live official NASA animations -->
-  <section aria-label="Live LASCO animations">
+  <!-- ==== LIVE NASA GIFS ==== -->
+  <section aria-label="Live LASCO animations" style="margin-top:20px;">
     <div class="gifRow">
       <div class="gifCard">
         <div class="gifHead">
-          <span class="pill">C2 — Live GIF</span>
+          <span class="pill">C2 – Live GIF</span>
           <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" rel="noopener">open</a>
           <span class="right sub" id="c2GifTime"></span>
         </div>
@@ -112,7 +111,7 @@
       </div>
       <div class="gifCard">
         <div class="gifHead">
-          <span class="pill">C3 — Live GIF</span>
+          <span class="pill">C3 – Live GIF</span>
           <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" rel="noopener">open</a>
           <span class="right sub" id="c3GifTime"></span>
         </div>
@@ -121,302 +120,256 @@
     </div>
   </section>
 
-  <!-- Annotated last-frame thumbnails -->
-  <section style="padding-top:10px;">
+  <!-- ==== LAST‑FRAME THUMBNAILS ==== -->
+  <section style="margin-top:20px;">
     <div class="thumbRow" id="lastFramesRow"></div>
-    <div class="empty" id="errors" style="margin-top:12px; display:none;"></div>
+    <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
   </section>
 
-  <section id="content" style="margin-top:16px;">
-    <div class="empty" id="empty">No detections yet. The viewer will update automatically when new candidates are committed.</div>
+  <!-- ==== CANDIDATE GRID ==== -->
+  <section id="content" style="margin-top:24px;">
+    <div class="empty" id="empty">Loading the latest detections…</div>
     <div class="grid" id="grid" hidden></div>
   </section>
 
   <footer>
-    <div>Tip: use the per-card toggle to compare the crop with the original and annotated full frame, then export your report.</div>
+    <div>Built by <a href="https://nagohcreative.com" target="_blank" rel="noopener">Nagoh Creative</a> for <a href="https://ournightsky.us" target="_blank" rel="noopener">OurNightSky.Us</a></div>
   </footer>
 </main>
 
 <script>
-/*** CONFIG — update if you rename the repo ***/
-const OWNER  = "NAGOHUSA";
-const REPO   = "ONS_SOHOHUNTER";
-const BRANCH = "main";
-/*** END CONFIG ***/
+/* ────────────────────── CONFIG ────────────────────── */
+const BASE = '/detections';               // <-- change only if you move the folder
+const REPORT_JSON = `${BASE}/latest_report.json`;
+const REFRESH_SECS = 15 * 60;             // 15 minutes
+/* ─────────────────────────────────────────────────── */
 
-const params = new URLSearchParams(location.search);
-const FOLDER = params.get("folder") || "detections";
-
-const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
-const rawURL = (path) => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
-const ghBlobURL = (path) => `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
-
-const el = (s)=>document.querySelector(s);
-const grid = el("#grid"), empty = el("#empty");
-const reportSelect = el("#reportSelect");
-const reportName = el("#reportName"), reportTime = el("#reportTime"), srcLink = el("#srcLink");
-const stats = el("#stats");
-const c2Filter = el("#c2Filter"), c3Filter = el("#c3Filter"), aiOnly = el("#aiOnly"), markedOnly = el("#markedOnly");
-const lastFramesRow = el("#lastFramesRow");
-const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
-const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
-const exportAllBtn = el("#exportAllBtn"), exportAllHint = el("#exportAllHint");
-const exportMarkedOnly = el("#exportMarkedOnly");
-const downloadAllTxt = el("#downloadAllTxt");
-const downloadAllCsv = el("#downloadAllCsv");
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const el = { 
+  grid: $('#grid'), empty: $('#empty'), errors: $('#errors'),
+  reportName: $('#reportName'), reportTime: $('#reportTime'),
+  stats: $('#stats'), c2Filter: $('#c2Filter'), c3Filter: $('#c3Filter'),
+  aiOnly: $('#aiOnly'), markedOnly: $('#markedOnly'), lastFramesRow: $('#lastFramesRow'),
+  c2Gif: $('#c2Gif'), c3Gif: $('#c3Gif'), c2GifTime: $('#c2GifTime'), c3GifTime: $('#c3GifTime'),
+  exportAllBtn: $('#exportAllBtn'), exportMarkedOnly: $('#exportMarkedOnly'),
+  downloadAllTxt: $('#downloadAllTxt'), downloadAllCsv: $('#downloadAllCsv'), exportAllHint: $('#exportAllHint'),
+  refreshBtn: $('#refreshBtn'), refreshEta: $('#refreshEta')
+};
 
 let currentReport = null;
-let refreshTimer=null, refreshCountdown=0, REFRESH_SECS=60;
+let refreshTimer = null, countdown = REFRESH_SECS;
 
-const LS_MARKS = "ons_submit_marks";
-const LS_GROUPS = "ons_candidate_groups";
+/* ───── LOCAL STORAGE ───── */
+const LS_MARKS = 'soho_marks', LS_GROUPS = 'soho_groups';
+const marks = () => JSON.parse(localStorage.getItem(LS_MARKS) || '{}');
+const groups = () => JSON.parse(localStorage.getItem(LS_GROUPS) || '{}');
+const saveMarks = m => localStorage.setItem(LS_MARKS, JSON.stringify(m));
+const saveGroups = g => localStorage.setItem(LS_GROUPS, JSON.stringify(g));
+const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`;
 
-function getMarks(){ try { return JSON.parse(localStorage.getItem(LS_MARKS)||"{}"); } catch { return {}; } }
-function setMarks(m){ localStorage.setItem(LS_MARKS, JSON.stringify(m)); }
-function getGroups(){ try { return JSON.parse(localStorage.getItem(LS_GROUPS)||"{}"); } catch { return {}; } }
-function setGroups(g){ localStorage.setItem(LS_GROUPS, JSON.stringify(g)); }
-function keyFor(h){ return `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`; }
+/* ───── HELPERS ───── */
+function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML = `<div class="err">${msg}</div>`; }
+function hideError(){ el.errors.style.display='none'; }
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
+}
+function imgURL(path){ return path ? `${BASE}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}` : null; }
+function ghBlobURL(path){ return `https://github.com/NAGOHUSA/ONS_SOHOHUNTER/blob/main/${path}`; } // kept only for fallback images
 
-function showError(msg){
-  const e = el('#errors'); e.style.display='block'; e.innerHTML = '<div class="err">'+msg+'</div>';
-}
-async function fetchJSON(url){
-  const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
-  if(!r.ok){ showError(`Fetch failed: ${url} — HTTP ${r.status}`); throw new Error(`HTTP ${r.status}`); }
-  return r.json();
-}
-function parseReportTime(name){
-  const m = name?.match?.(/(\d{8})_(\d{6})/); if(!m) return null;
-  const [_, d, t] = m;
-  const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
-  const dt = new Date(iso);
-  return {iso, local: dt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'})};
-}
-
-function renderStats(items){
-  const byDet = items.reduce((a,h)=>{ const k=(h.detector||'').toUpperCase(); a[k]=(a[k]||0)+1; return a; },{});
-  const ai = items.reduce((a,h)=>{ const l=(h.ai_label||'').toLowerCase(); if(l) a[l]=(a[l]||0)+1; return a; },{});
-  stats.innerHTML="";
-  const add=(k,v)=>{ const d=document.createElement("div"); d.className="stat"; d.innerHTML=`<div class="sub">${k}</div><div><b>${v}</b></div>`; stats.appendChild(d); };
-  add("Candidates", items.length); add("C2", byDet.C2||0); add("C3", byDet.C3||0);
-  if(Object.keys(ai).length){ add("AI ‘comet’", ai.comet||0); add("AI ‘not_comet’", ai.not_comet||0); }
-}
-function applyGridFilters(items){
-  const m = getMarks();
+/* ───── FILTERING ───── */
+function applyFilters(items){
+  const m = marks();
   return items.filter(h=>{
-    if(c2Filter.checked && (h.detector||'').toUpperCase()!=='C2') return false;
-    if(c3Filter.checked && (h.detector||'').toUpperCase()!=='C3') return false;
-    if(aiOnly.checked && (h.ai_label||'').toLowerCase()!=='comet') return false;
-    if(markedOnly.checked && !m[keyFor(h)]) return false;
+    if(el.c2Filter.checked && (h.detector||'').toUpperCase()!=='C2') return false;
+    if(el.c3Filter.checked && (h.detector||'').toUpperCase()!=='C3') return false;
+    if(el.aiOnly.checked && (h.ai_label||'').toLowerCase()!=='comet') return false;
+    if(el.markedOnly.checked && !m[keyFor(h)]) return false;
     return true;
   });
 }
 
-function buildSungrazerText(h){
-  const imgW = (h.image_size?.[0] ?? 1024), imgH = (h.image_size?.[1] ?? 1024);
-  const dateFirst = (h.positions?.[0]?.time_utc || "").split("T")[0] || "";
-  const groups = getGroups(); const gLabel = groups[keyFor(h)] || "Unknown";
-  const lines = [];
-  lines.push("=== Sungrazer Report Helper ===");
-  lines.push(`Camera: ${(h.detector||'').toUpperCase()}`);
-  lines.push(`Image Size: ${imgW}x${imgH}`);
-  lines.push(`Your (0,0) position: Upper Left`);
-  lines.push(`Probable Group: ${gLabel}`);
-  lines.push(`Date of FIRST IMAGE: ${dateFirst}`);
-  lines.push("Frames (time_utc, x, y):");
+/* ───── STATS ───── */
+function renderStats(filtered){
+  const byDet = filtered.reduce((a,h)=>{a[(h.detector||'').toUpperCase()]=(a[(h.detector||'').toUpperCase()]||0)+1;return a;},{});
+  const ai = filtered.reduce((a,h)=>{const l=(h.ai_label||'').toLowerCase();if(l)a[l]=(a[l]||0)+1;return a;},{});
+  el.stats.innerHTML='';
+  const add = (label,val)=>{ const d=document.createElement('div'); d.className='stat';
+    d.innerHTML=`<div class="sub">${label}</div><div><b>${val}</b></div>`; el.stats.appendChild(d); };
+  add('Candidates',filtered.length);
+  add('C2',byDet.C2||0); add('C3',byDet.C3||0);
+  if(ai.comet||ai.not_comet){ add('AI “comet”',ai.comet||0); add('AI “not_comet”',ai.not_comet||0); }
+}
+
+/* ───── SUNGRAZER TEXT / CSV ───── */
+function sungrazerText(h){
+  const w = h.image_size?.[0]??1024, ht = h.image_size?.[1]??1024;
+  const first = (h.positions?.[0]?.time_utc||"").split('T')[0]||"";
+  const g = groups()[keyFor(h)]||"Unknown";
+  const lines = [
+    `=== Sungrazer Report Helper ===`,
+    `Camera: ${(h.detector||'').toUpperCase()}`,
+    `Image Size: ${w}x${ht}`,
+    `Your (0,0) position: Upper Left`,
+    `Probable Group: ${g}`,
+    `Date of FIRST IMAGE: ${first}`,
+    `Frames (time_utc, x, y):`
+  ];
   (h.positions||[]).forEach(p=>{
-    const t=(p.time_utc||"").replace("T"," ").replace("Z","");
+    const t = (p.time_utc||"").replace('T',' ').replace('Z','');
     lines.push(`  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`);
   });
-  return lines.join("\n")+"\n";
+  return lines.join('\n')+'\n';
 }
-function buildAllSungrazerText(items, reportNameStr){
-  const lines = [];
-  lines.push("=== Sungrazer Report Helper — FULL EXPORT ===");
-  if(reportNameStr) lines.push(`Report: ${reportNameStr}`);
-  lines.push("");
+function allSungrazerText(items, reportName){
+  const lines = [`=== Sungrazer Report Helper — FULL EXPORT ===`];
+  if(reportName) lines.push(`Report: ${reportName}`);
+  lines.push('');
   items.forEach((h,i)=>{
-    lines.push(`--- Candidate ${i+1} — ${(h.detector||'').toUpperCase()} Track #${h.track_index ?? '?' } ---`);
-    lines.push(buildSungrazerText(h).trim());
-    lines.push("");
+    lines.push(`--- Candidate ${i+1} — ${(h.detector||'').toUpperCase()} Track #${h.track_index??'?' } ---`);
+    lines.push(sungrazerText(h).trim());
+    lines.push('');
   });
-  return lines.join("\n")+"\n";
+  return lines.join('\n')+'\n';
 }
-function buildAllCSV(items){
-  const groups = getGroups();
-  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_channel_match","group","original_mid_path","annotated_mid_path"]];
+function allCSV(items){
+  const g = groups();
+  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_match","group","orig_mid","ann_mid"]];
   items.forEach(h=>{
-    const det=(h.detector||'').toUpperCase();
-    const w=(h.image_size?.[0]??""), hgt=(h.image_size?.[1]??"");
-    const origin=(h.origin||"").toLowerCase();
-    const ai_label=h.ai_label||"";
-    const ai_score=h.ai_score!=null? String(h.ai_score) : "";
-    const dcm = h.dual_channel_match? (h.dual_channel_match.with+";Δ="+h.dual_channel_match.pa_diff_deg+"°") : "";
-    const group = groups[keyFor(h)] || "Unknown";
-    const orig = h.original_mid_path || "";
-    const ann  = h.annotated_mid_path || "";
+    const det = (h.detector||'').toUpperCase();
+    const w = h.image_size?.[0]??'', ht = h.image_size?.[1]??'';
+    const origin = (h.origin||"").toLowerCase();
+    const ai = h.ai_label||"", score = h.ai_score!=null?String(h.ai_score):"";
+    const dual = h.dual_channel_match? `${h.dual_channel_match.with};Δ=${h.dual_channel_match.pa_diff_deg}°`:"";
+    const grp = g[keyFor(h)]||"Unknown";
+    const orig = h.original_mid_path||"", ann = h.annotated_mid_path||"";
     (h.positions||[]).forEach(p=>{
-      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, hgt, origin, ai_label, ai_score, dcm, group, orig, ann]);
+      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, ht, origin, ai, score, dual, grp, orig, ann]);
     });
   });
-  return rows.map(r=>r.map(v=>String(v).replace(/"/g,'""')).map(v=>`"${v}"`).join(",")).join("\n")+"\n";
+  return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')+'\n';
 }
-function copyTextToClipboard(t){ return navigator.clipboard.writeText(t); }
 
-function makeSeg(items){
-  const seg=document.createElement("div"); seg.className="seg";
-  items.forEach(({label,disabled,onClick,active})=>{
-    const b=document.createElement("button");
-    b.textContent=label;
-    if(disabled) b.disabled=true;
-    if(active) b.classList.add("active");
-    b.addEventListener("click", ()=>{
-      [...seg.children].forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      onClick?.();
-    });
-    seg.appendChild(b);
+/* ───── SEGMENTED TOGGLE (Clean / Annotated) ───── */
+function seg(items){
+  const div = document.createElement('div'); div.className='seg';
+  items.forEach(({label,disabled,active,click})=>{
+    const b = document.createElement('button');
+    b.textContent=label; if(disabled) b.disabled=true;
+    if(active) b.classList.add('active');
+    b.onclick = ()=>{ $$('.seg button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); click?.(); };
+    div.appendChild(b);
   });
-  return seg;
+  return div;
 }
 
-/* === VIDEO PLAYER: Clean (default) vs Annotated === */
-function createVideoPlayer(h) {
-  const container = document.createElement("div");
-  container.className = "video-container";
+/* ───── VIDEO PLAYER ───── */
+function videoPlayer(h){
+  const container = document.createElement('div'); container.className='video-container';
+  const cleanMp4 = h.animation_mp4_clean_path ? imgURL(h.animation_mp4_clean_path) : null;
+  const cleanGif = h.animation_gif_clean_path ? imgURL(h.animation_gif_clean_path) : null;
+  const annMp4   = h.animation_mp4_path ? imgURL(h.animation_mp4_path) : null;
+  const annGif   = h.animation_gif_path ? imgURL(h.animation_gif_path) : null;
 
-  const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) + "?t=" + Date.now() : null;
-  const cleanGif = h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) + "?t=" + Date.now() : null;
-  const annMp4 = h.animation_mp4_path ? rawURL(h.animation_mp4_path) + "?t=" + Date.now() : null;
-  const annGif = h.animation_gif_path ? rawURL(h.animation_gif_path) + "?t=" + Date.now() : null;
-
-  const hasClean = cleanMp4 || cleanGif;
-  const hasAnnot = annMp4 || annGif;
-
-  if (!hasClean && !hasAnnot) {
-    container.innerHTML = `<div style="padding:16px; text-align:center; color:#94a3b8;">No animation available</div>`;
+  if(!cleanMp4 && !cleanGif && !annMp4 && !annGif){
+    container.innerHTML = `<div style="padding:16px;text-align:center;color:#94a3b8;">No animation</div>`;
     return container;
   }
 
-  const video = document.createElement("video");
-  video.controls = true;
-  video.loop = true;
-  video.style.width = "100%";
+  const video = document.createElement('video');
+  video.controls = video.loop = true; video.style.width='100%';
 
-  const setSource = (srcMp4, srcGif) => {
-    video.innerHTML = "";
-    if (srcMp4) {
-      const s = document.createElement("source");
-      s.src = srcMp4; s.type = "video/mp4";
-      video.appendChild(s);
-    }
-    if (srcGif) {
-      const s = document.createElement("source");
-      s.src = srcGif; s.type = "image/gif";
-      video.appendChild(s);
-    }
+  const setSrc = (mp4,gif)=>{ video.innerHTML=''; 
+    if(mp4){ const s=document.createElement('source'); s.src=mp4; s.type='video/mp4'; video.appendChild(s); }
+    if(gif){ const s=document.createElement('source'); s.src=gif; s.type='image/gif'; video.appendChild(s); }
     video.load();
   };
+  setSrc(cleanMp4, cleanGif);
 
-  setSource(cleanMp4, cleanGif); // default: clean
-
-  if (hasClean && hasAnnot) {
-    const seg = makeSeg([
-      { label: "Clean", active: true, onClick: () => setSource(cleanMp4, cleanGif) },
-      { label: "Annotated", active: false, onClick: () => setSource(annMp4, annGif) }
+  if((cleanMp4||cleanGif) && (annMp4||annGif)){
+    const s = seg([
+      {label:'Clean', active:true, click:()=>setSrc(cleanMp4,cleanGif)},
+      {label:'Annotated', click:()=>setSrc(annMp4,annGif)}
     ]);
-    seg.style.margin = "8px";
-    container.appendChild(seg);
+    s.style.margin='8px';
+    container.appendChild(s);
   }
-
   container.appendChild(video);
   return container;
 }
 
-/* === RENDER GRID === */
-const gridState = { items: [] };
+/* ───── RENDER GRID ───── */
 function renderGrid(items){
-  const filtered = applyGridFilters(items);
-  gridState.items = filtered.slice();
+  const filtered = applyFilters(items);
   renderStats(filtered);
-  exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : "(no candidates)";
+  el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
 
-  if(!filtered.length){ grid.hidden=true; empty.hidden=false; empty.textContent="No matching detections for the current filters."; return; }
-  grid.hidden=false; empty.hidden=true; grid.innerHTML="";
+  if(!filtered.length){
+    el.grid.hidden = true; el.empty.hidden = false;
+    el.empty.textContent = "No candidates match the current filters.";
+    return;
+  }
+  el.grid.hidden = false; el.empty.hidden = true; el.grid.innerHTML='';
 
-  const marks = getMarks(); const groups = getGroups();
+  const m = marks(), g = groups();
   filtered.forEach((h,i)=>{
-    const cropPath=(h.crop_path||"").replace(/^\.?\/*/,'');
-    const cropURL=rawURL(cropPath)+`?t=${Date.now()}`;
-    const det=(h.detector||'').toUpperCase();
-    const imgW=(h.image_size?.[0]??1024), imgH=(h.image_size?.[1]??1024);
-    const dateFirst=(h.positions?.[0]?.time_utc||"").split("T")[0]||"";
-    const txtURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.txt`)+`?t=${Date.now()}`;
-    const csvURL=rawURL(`detections/reports/${det}_track${h.track_index}_sungrazer.csv`)+`?t=${Date.now()}`;
-    const sgText=buildSungrazerText(h);
-    const k=keyFor(h);
-    const marked = !!marks[k];
-    const groupVal = groups[k] || "Unknown";
-    const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : "—";
-    let speed="—";
-    const pos=h.positions||[];
-    if(pos.length>=2){
-      const x0=pos[0].x, y0=pos[0].y, x1=pos[pos.length-1].x, y1=pos[pos.length-1].y;
-      const dist=Math.hypot(x1-x0,y1-y0); speed = `${(dist/Math.max(1,(pos.length-1))).toFixed(1)} px/frame`;
-    }
-    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) + `?t=${Date.now()}` : null;
-    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) + `?t=${Date.now()}` : null;
+    const k = keyFor(h);
+    const marked = !!m[k];
+    const groupVal = g[k]||"Unknown";
 
-    const card=document.createElement("div");
-    card.className="card";
+    const cropURL = imgURL(h.crop_path);
+    const origURL = imgURL(h.original_mid_path);
+    const annURL  = imgURL(h.annotated_mid_path);
 
-    const headerLink=document.createElement("a");
-    headerLink.href=ghBlobURL(cropPath);
-    headerLink.target="_blank"; headerLink.rel="noopener";
-    const img=document.createElement("img");
-    img.className="thumb"; img.loading="lazy"; img.alt=`candidate ${i+1}`;
-    img.src=cropURL;
-    img.onerror = function(){
-      const repl=document.createElement('div');
-      repl.className='thumb'; repl.textContent='(image unavailable)';
-      img.replaceWith(repl);
-    };
-    headerLink.appendChild(img);
-    card.appendChild(headerLink);
+    const txtURL = imgURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
+    const csvURL = imgURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
-    const segWrap=document.createElement("div");
-    segWrap.style.display="flex"; segWrap.style.justifyContent="center"; segWrap.style.padding="8px 12px 0";
-    const seg = makeSeg([
-      {label:"Crop",      active:true,  onClick:()=>{ img.src=cropURL; headerLink.href=ghBlobURL(cropPath); }},
-      {label:"Original",  disabled:!origURL, onClick:()=>{ img.src=origURL; headerLink.href=origURL; }},
-      {label:"Annotated", disabled:!annURL,  onClick:()=>{ img.src=annURL;  headerLink.href=annURL;  }},
+    const card = document.createElement('div'); card.className='card';
+    const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
+    img.src = cropURL; img.alt=`candidate ${i+1}`;
+    img.onerror = ()=>{ const ph=document.createElement('div'); ph.className='thumb'; ph.textContent='(image missing)'; img.replaceWith(ph); };
+    const link = document.createElement('a'); link.href=cropURL; link.target='_blank'; link.rel='noopener';
+    link.appendChild(img); card.appendChild(link);
+
+    // Thumb toggle
+    const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
+    const seg = seg([
+      {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
+      {label:'Original', disabled:!origURL, click:()=>{ img.src=origURL; link.href=origURL; }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ img.src=annURL; link.href=annURL; }}
     ]);
-    segWrap.appendChild(seg);
-    card.appendChild(segWrap);
+    segWrap.appendChild(seg); card.appendChild(segWrap);
 
-    card.appendChild(createVideoPlayer(h));
+    card.appendChild(videoPlayer(h));
 
-    const meta=document.createElement("div"); meta.className="meta";
-    meta.innerHTML=`
+    const meta = document.createElement('div'); meta.className='meta';
+    const speed = (()=>{ const p=h.positions||[]; if(p.length<2) return '—';
+      const d = Math.hypot(p[p.length-1].x-p[0].x, p[p.length-1].y-p[0].y);
+      return `${(d/Math.max(1,p.length-1)).toFixed(1)} px/frame`; })();
+    const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : '—';
+
+    meta.innerHTML = `
       <div class="row">
-        <span class="pill">${det||'—'}</span>
-        <span class="pill">Track #${h.track_index ?? '?'}</span>
-        <span class="pill">PA match: ${pa}</span>
+        <span class="pill">${(h.detector||'').toUpperCase()}</span>
+        <span class="pill">Track #${h.track_index??'?'}</span>
+        <span class="pill">PA: ${pa}</span>
         <span class="pill">Speed: ${speed}</span>
         <span class="right sub">${h.series_mid_frame||''}</span>
       </div>
-      <div class="kvs" style="margin-top:8px;">
-        <div class="kv">Image Size: <b>${imgW}×${imgH}</b></div>
+      <div class="kvs">
+        <div class="kv">Size: <b>${h.image_size?.[0]??1024}×${h.image_size?.[1]??1024}</b></div>
         <div class="kv">Origin: <b>Upper Left</b></div>
-        <div class="kv">Positions: <b>${(h.positions||[]).length}</b></div>
-        <div class="kv">First date: <b>${dateFirst||'—'}</b></div>
+        <div class="kv">Frames: <b>${(h.positions||[]).length}</b></div>
+        <div class="kv">First: <b>${(h.positions?.[0]?.time_utc||"").split('T')[0]||'—'}</b></div>
       </div>
-      <div class="row" style="margin-top:10px;">
+      <div class="row" style="margin-top:8px;">
         <button class="sgBtn">Copy for Sungrazer</button>
-        <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
-        <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
-        ${origURL ? `<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>` : ``}
-        ${annURL  ? `<a class="pill" href="${annURL}"  target="_blank" rel="noopener">Annotated</a>` : ``}
+        ${txtURL?`<a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>`:''}
+        ${csvURL?`<a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>`:''}
+        ${origURL?`<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>`:''}
+        ${annURL?`<a class="pill" href="${annURL}" target="_blank" rel="noopener">Annotated</a>`:''}
         <span class="right mark">
           <select class="group">
             <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
@@ -428,179 +381,137 @@ function renderGrid(items){
           </select>
           <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
         </span>
-      </div>
-    `;
+      </div>`;
     card.appendChild(meta);
-    grid.appendChild(card);
+    el.grid.appendChild(card);
 
-    meta.querySelector(".sgBtn").addEventListener("click", ()=>{
-      copyTextToClipboard(buildSungrazerText(h)).then(()=>{
-        const b=meta.querySelector(".sgBtn");
-        b.textContent="Copied!"; setTimeout(()=>b.textContent="Copy for Sungrazer",1200);
-      }).catch(()=>alert("Copy failed"));
-    });
+    // copy button
+    meta.querySelector('.sgBtn').onclick = ()=>{ navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy for Sungrazer',1200); }); };
 
-    const flag=meta.querySelector(".flag");
-    flag.addEventListener("click", ()=>{
-      const m=getMarks();
-      if(m[k]) { delete m[k]; flag.classList.remove("on"); flag.textContent="Mark"; }
-      else { m[k]=true; flag.classList.add("on"); flag.textContent="Marked"; }
-      setMarks(m);
-      if(markedOnly.checked){ renderGrid(items); }
-    });
+    // mark toggle
+    const flag = meta.querySelector('.flag');
+    flag.onclick = ()=>{ const mm=marks(); if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';}else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} saveMarks(mm); if(el.markedOnly.checked) renderGrid(items); };
 
-    const sel=meta.querySelector(".group");
-    sel.addEventListener("change", ()=>{
-      const g=getGroups(); g[k]=sel.value; setGroups(g);
-    });
+    // group selector
+    meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
   });
 }
 
-/* === THUMBNAILS & STATUS === */
-async function tryShowBareThumbnails(){
-  const dets=["C2","C3"]; const rows=[];
-  for(const det of dets){
-    const thumb=await loadImageIfExists(`${FOLDER}/lastthumb_${det}.png`);
-    const overlay=await loadImageIfExists(`${FOLDER}/overlay_${det}.png`);
-    const contact=await loadImageIfExists(`${FOLDER}/contact_${det}.png`);
-    if(thumb.ok||overlay.ok||contact.ok){ rows.push({det,thumb,overlay,contact}); }
+/* ───── LAST‑FRAME THUMBNAILS ───── */
+async function loadThumbs(){
+  const dets = ['C2','C3'];
+  const rows = [];
+  for(const d of dets){
+    const thumb = await imgExists(`${BASE}/lastthumb_${d}.png`);
+    const overlay = await imgExists(`${BASE}/overlay_${d}.png`);
+    const contact = await imgExists(`${BASE}/contact_${d}.png`);
+    if(thumb.ok||overlay.ok||contact.ok) rows.push({det:d,thumb,overlay,contact});
   }
-  if(!rows.length) return false;
-  lastFramesRow.innerHTML = rows.map(o=>`
+  if(!rows.length) return;
+  el.lastFramesRow.innerHTML = rows.map(o=>`
     <div class="thumbCard">
       <div class="thumbHead">
         <span class="pill">${o.det}</span>
-        ${o.thumb.ok? `<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
+        ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
       </div>
-      ${o.thumb.ok
-        ? `<a href="${ghBlobURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener">
-            <img class="thumb" alt="last ${o.det}" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}?t=${Date.now()}">
-          </a>`
-        : `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
+      ${o.thumb.ok?`<a href="${imgURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${imgURL(`lastthumb_${o.det}.png`)}" alt="last ${o.det}"></a>`:
+        `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
       <div class="meta">
         <div class="kv">
-          ${o.overlay.ok? `Overlay: <a href="${rawURL(`${FOLDER}/overlay_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Overlay: —'}
-          •
-          ${o.contact.ok? `Contact: <a href="${rawURL(`${FOLDER}/contact_${o.det}.png`)}?t=${Date.now()}" target="_blank">open</a>`:'Contact: —'}
+          ${o.overlay.ok?`Overlay: <a href="${imgURL(`overlay_${o.det}.png`)}" target="_blank">open</a>`:'Overlay: —'} •
+          ${o.contact.ok?`Contact: <a href="${imgURL(`contact_${o.det}.png`)}" target="_blank">open</a>`:'Contact: —'}
         </div>
       </div>
-    </div>`).join("");
-  return true;
+    </div>`).join('');
 }
-
-function loadImageIfExists(path){
+function imgExists(path){
   return new Promise(res=>{
-    const img=new Image();
-    img.onload = ()=>res({ok:true,src:img.src,w:img.naturalWidth,h:img.naturalHeight});
-    img.onerror= ()=>res({ok:false});
-    img.src = rawURL(path)+`?t=${Date.now()}`;
+    const i=new Image();
+    i.onload = ()=>res({ok:true,w:i.naturalWidth,h:i.naturalHeight});
+    i.onerror = ()=>res({ok:false});
+    i.src = imgURL(path);
   });
 }
 
-async function tryLoadStatus(){
-  try{
-    const s = await fetchJSON(rawURL(`${FOLDER}/latest_status.json`)+`?t=${Date.now()}`);
-    const overlays = ["C2","C3"].map(det=>({
-      det,
-      overlay: rawURL(`${FOLDER}/overlay_${det}.png`)+`?t=${Date.now()}`,
-      contact: rawURL(`${FOLDER}/contact_${det}.png`)+`?t=${Date.now()}`,
-      frames: s?.detectors?.[det]?.frames ?? 0,
-      tracks: s?.detectors?.[det]?.tracks ?? 0,
-      lastThumb: rawURL(`${FOLDER}/lastthumb_${det}.png`)+`?t=${Date.now()}`,
-      lastName: s?.detectors?.[det]?.last_frame_name || ""
-    }));
-    return {s,overlays};
-  }catch(e){
-    const had = await tryShowBareThumbnails();
-    if(!had) showError("No status JSON yet and no thumbnails found in /detections/.");
-    return null;
-  }
+/* ───── LIVE GIFS ───── */
+function refreshLiveGifs(){
+  const t = Date.now();
+  el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
+  el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
+  const now = new Date().toLocaleTimeString();
+  el.c2GifTime.textContent = `refreshed ${now}`;
+  el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
-function loadLiveGifs(){
-  const t=Date.now();
-  el("#c2Gif").src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
-  el("#c3Gif").src=`https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-  const now=new Date().toLocaleTimeString();
-  c2GifTime.textContent=`refreshed ${now}`; c3GifTime.textContent=`refreshed ${now}`;
-}
-
-async function loadReportByName(name){
-  const url = rawURL(`${FOLDER}/${name}`)+`?t=${Date.now()}`;
-  const data = await fetchJSON(url);
-  currentReport = {name, data, url};
-  reportName.textContent=name;
-  srcLink.href = ghBlobURL(`${FOLDER}/${name}`);
-  const t = parseReportTime(name);
-  reportTime.textContent = t? `• ${t.local} (local)` : "";
-  if(Array.isArray(data) && data.length){ renderGrid(data); }
-  else { grid.hidden=true; empty.hidden=false; empty.textContent="Report is empty."; }
-  const status = await tryLoadStatus(); if(status) renderLastFrames(status.overlays, status);
-}
-async function loadLatestReport(){
+/* ───── MAIN DATA LOAD ───── */
+async function loadLatest(){
+  hideError();
   try{
-    const list = await fetchJSON(apiListURL());
-    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name)).sort((a,b)=>b.name.localeCompare(a.name)) : [];
-    reportSelect.innerHTML = files.slice(0,20).map(f=>`<option value="${f.name}">${f.name}</option>`).join("");
-    if(!files.length){
-      reportName.textContent="—"; reportTime.textContent="";
-      srcLink.href = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/${FOLDER}`;
-      const status = await tryLoadStatus(); if(status){ renderLastFrames(status.overlays, status); grid.hidden=true; empty.hidden=false; empty.textContent="No candidate detections yet."; }
-    } else {
-      const chosen = params.get("file") || files[0].name;
-      reportSelect.value = chosen; await loadReportByName(chosen);
+    const r = await fetch(REPORT_JSON);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    if(!data || !Array.isArray(data.candidates)){
+      el.empty.textContent = "Report is empty.";
+      el.grid.hidden = true; el.empty.hidden = false;
+      return;
     }
-  }catch(err){
-    const had = await tryShowBareThumbnails();
-    if(!had) showError(`Could not list /${FOLDER}/ via GitHub API and no thumbnails found.`);
-  } finally { loadLiveGifs(); }
-}
-
-function exportAll(){
-  if(!currentReport || !Array.isArray(currentReport.data)){ alert("No report loaded."); return; }
-  let items = (applyGridFilters(currentReport.data) || []).slice();
-  if (exportMarkedOnly.checked) {
-    const marks = getMarks();
-    items = items.filter(h => marks[keyFor(h)]);
+    currentReport = {name:data.report_name, time:data.report_time, items:data.candidates};
+    el.reportName.textContent = data.report_name;
+    el.reportTime.textContent = fmtDate(data.report_time) ? `• ${fmtDate(data.report_time)} (local)` : '';
+    renderGrid(currentReport.items);
+    await loadThumbs();
+  }catch(e){
+    showError(`Failed to load report: ${e.message}`);
+    el.empty.textContent = "Unable to load the latest detections.";
+  }finally{
+    refreshLiveGifs();
   }
-  if(!items.length){ alert("No candidates to export (check filters/toggles)."); return; }
-
-  const txtBundle = buildAllSungrazerText(items, currentReport.name);
-  copyTextToClipboard(txtBundle).catch(()=>{});
-
-  const csvBundle = buildAllCSV(items);
-
-  const txtBlob = new Blob([txtBundle], {type:"text/plain"});
-  const txtUrl = URL.createObjectURL(txtBlob);
-  downloadAllTxt.href = txtUrl;
-  downloadAllTxt.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.txt`;
-  downloadAllTxt.style.display = "inline-flex";
-
-  const csvBlob = new Blob([csvBundle], {type:"text/csv"});
-  const csvUrl = URL.createObjectURL(csvBlob);
-  downloadAllCsv.href = csvUrl;
-  downloadAllCsv.download = `${(currentReport.name||"candidates").replace(".json","")}_Sungrazer_EXPORT.csv`;
-  downloadAllCsv.style.display = "inline-flex";
-
-  exportAllBtn.textContent="Exported & Copied!"; setTimeout(()=>exportAllBtn.textContent="Export ALL", 1200);
 }
-exportAllBtn.addEventListener("click", exportAll);
 
+/* ───── EXPORT ALL ───── */
+function exportAll(){
+  if(!currentReport) return alert('No report loaded.');
+  let items = applyFiltersFilters(currentReport.items);
+  if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
+  if(!items.length) return alert('No candidates to export (check filters).');
+
+  const txt = allSungrazerText(items, currentReport.name);
+  navigator.clipboard.writeText(txt).catch(()=>{});
+
+  const csv = allCSV(items);
+  const txtBlob = new Blob([txt],{type:'text/plain'});
+  const csvBlob = new Blob([csv],{type:'text/csv'});
+
+  el.downloadAllTxt.href = URL.createObjectURL(txtBlob);
+  el.downloadAllTxt.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.txt`;
+  el.downloadAllTxt.style.display='inline-flex';
+
+  el.downloadAllCsv.href = URL.createObjectURL(csvBlob);
+  el.downloadAllCsv.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.csv`;
+  el.downloadAllCsv.style.display='inline-flex';
+
+  el.exportAllBtn.textContent='Exported & Copied!';
+  setTimeout(()=>el.exportAllBtn.textContent='Export ALL',1200);
+}
+el.exportAllBtn.onclick = exportAll;
+
+/* ───── AUTO‑REFRESH ───── */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
-  refreshCountdown=REFRESH_SECS; el("#refreshEta").textContent=refreshCountdown+"s";
-  refreshTimer = setInterval(async ()=>{
-    refreshCountdown--; el("#refreshEta").textContent=refreshCountdown+"s";
-    if(refreshCountdown<=0){ await loadLatestReport(); refreshCountdown=REFRESH_SECS; }
+  countdown = REFRESH_SECS; el.refreshEta.textContent = formatSec(countdown);
+  refreshTimer = setInterval(()=>{
+    countdown--; el.refreshEta.textContent = formatSec(countdown);
+    if(countdown<=0){ loadLatest(); countdown=REFRESH_SECS; }
   },1000);
 }
-el("#refreshBtn").addEventListener("click", async ()=>{ refreshCountdown=REFRESH_SECS; await loadLatestReport(); });
-reportSelect.addEventListener("change", (e)=> loadReportByName(e.target.value));
-[c2Filter,c3Filter,aiOnly,markedOnly].forEach(cb=> cb.addEventListener("change", ()=>{
-  if(currentReport && Array.isArray(currentReport.data)) renderGrid(currentReport.data);
-}));
+function formatSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
 
-loadLatestReport().then(startAutoRefresh);
+/* ───── UI BINDINGS ───── */
+el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadLatest(); };
+$$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
+
+/* ───── BOOT ───── */
+loadLatest().then(startAutoRefresh);
 </script>
 </body>
 </html>
