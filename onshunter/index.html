@@ -165,7 +165,7 @@ const el = {
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta')
 };
 
-let currentReport = null;      // {name, items, isHitFile}
+let currentReport = null;
 let refreshTimer = null, countdown = REFRESH_SECS;
 
 /* ---------- LOCAL STORAGE ---------- */
@@ -355,12 +355,12 @@ function renderGrid(items){
 
     // Thumb toggle
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
-    const seg = seg([
+    const segToggle = seg([
       {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
       {label:'Original', disabled:!origURL, click:()=>{ img.src=origURL; link.href=origURL; }},
       {label:'Annotated', disabled:!annURL, click:()=>{ img.src=annURL; link.href=annURL; }}
     ]);
-    segWrap.appendChild(seg); card.appendChild(segWrap);
+    segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
     card.appendChild(videoPlayer(h));
 
@@ -475,7 +475,7 @@ function refreshLiveGifs(){
 }
 
 /* ---------- MAIN LOAD & DROPDOWNS ---------- */
-let allReportFiles = [];          // [{name, hasComet}]
+let allReportFiles = [];
 async function loadReportList(){
   hideError();
   try{
@@ -492,7 +492,6 @@ async function loadReportList(){
       const hasComet = Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
       allReportFiles.push({name:f.name, hasComet});
 
-      // populate both selects
       const opt = document.createElement('option');
       opt.value = f.name;
       opt.textContent = f.name;
@@ -500,7 +499,6 @@ async function loadReportList(){
       if(hasComet) el.hitsSelect.appendChild(opt);
     }
 
-    // auto-select newest
     if(files.length){
       el.latestSelect.value = files[0].name;
       await loadReport(files[0].name, false);
@@ -519,7 +517,6 @@ async function loadReportList(){
   }
 }
 
-/* load a specific report */
 async function loadReport(name, isHitFile){
   try{
     const data = await fetchJSON(rawURL(`${FOLDER}/${name}`));
@@ -535,7 +532,6 @@ async function loadReport(name, isHitFile){
   }
 }
 
-/* dropdown handlers */
 el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
 el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
 
