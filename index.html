@@ -159,300 +159,123 @@ canvas, video.gif{display:block;width:100%;height:auto;background:#000}
 </main>
 
 <script>
-/*** CONFIG ***/
-const OWNER="NAGOHUSA", REPO="ONS_SOHOHUNTER", BRANCH="main";
-const FOLDER="detections";
-/*** END CONFIG ***/
+/* ========== CONFIG ========== */
+const REPO = "NAGOHUSA/ONS_SOHOHUNTER";
+const BRANCH = "main";
+const FOLDER = "detections";
+const RAW = (path) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
 
-// helpers for GitHub raw and blob links
-const rawURL = p=>`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${p.replace(/^\.?\/*/,'')}`;
-const ghBlobURL = p=>`https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${p.replace(/^\.?\/*/,'')}`;
+/* ========== ELEMENTS ========== */
+const el = {
+  latestSelect: document.getElementById("latestSelect"),
+  hitsSelect: document.getElementById("hitsSelect"),
+  reportDiv: document.getElementById("report"),
+  status: document.getElementById("status")
+};
 
-// Short refs 
-const el = q => document.querySelector(q);
-const grid = el("#grid"), empty = el("#empty");
-const c2Gif = el("#c2Gif"), c3Gif = el("#c3Gif");
-const c2GifTime = el("#c2GifTime"), c3GifTime = el("#c3GifTime");
-
-/* SOHO frame URL (unused here, but handy to keep) */
-function sohoUrlFromFrame(det, frameName){
- const m = /^(\d{8})_(\d{4})(?:\d{0,2})?_(c[23])_\d+\.jpe?g$/i.exec(frameName||"");
- if(!m) return null;
- const [_,d,,cam]=m; const year=d.slice(0,4);
- return `https://soho.nascom.nasa.gov/data/REPROCESSING/Completed/${year}/${cam.toLowerCase()}/${d}/${frameName}`;
+/* ========== UTILS ========== */
+function log(msg) {
+  console.log(msg);
+  if (el.status) el.status.textContent = msg;
 }
 
-/******** LOAD JSON + BUILD VIEW ********/
-async function loadLatest() {
+/* ========== SEG (SAFE SEGMENTATION) ========== */
+function seg(data) {
+  if (!data || !Array.isArray(data)) return [];
+  return data.map((c, i) => ({
+    id: `${c.detector}#${c.track_index}`,
+    label: c.ai_label || "unknown",
+    score: c.ai_score || 0,
+    pos: c.positions?.[0] || {},
+    crop: c.crop_path,
+    anim: c.animation_mp4_path || c.animation_gif_path,
+    dual: c.dual_channel_match
+  }));
+}
+
+/* ========== LOAD REPORT ========== */
+async function loadReport(file) {
   try {
-    const res = await fetch(rawURL(`${FOLDER}/latest_status.json?${Date.now()}`));
-    if (!res.ok) throw new Error(`status ${res.status}`);
-    const data = await res.json();
-    renderAll(data);
-  } catch(e){
-    console.error(e);
-    el("#errors").style.display="block";
-    el("#errors").textContent=`Error loading latest_status.json – ${e}`;
+    log(`Loading ${file}...`);
+    const resp = await fetch(RAW(`${FOLDER}/${file}`));
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const items = seg(data);  // ← now seg is defined
+    renderReport(file, items);
+  } catch (err) {
+    log(`Failed to load ${file}: ${err.message}`);
+    console.error(err);
   }
 }
 
-function renderAll(data){
-  el("#reportName").textContent=data.name||"latest_status.json";
-  el("#reportTime").textContent=data.generated_at||"";
-  el("#srcLink").href=ghBlobURL(`${FOLDER}/latest_status.json`);
-  renderStats(data);
-  renderThumbs(data);
-  renderGrid(data.candidates||[]);
+/* ========== RENDER ========== */
+function renderReport(file, items) {
+  const html = items.map(it => `
+    <div class="candidate ${it.label}">
+      <h4>${it.id} — <strong>${it.label.toUpperCase()}</strong> (${(it.score*100).toFixed(1)}%)</h4>
+      ${it.crop ? `<img src="${RAW(it.crop)}" width="120">` : ''}
+      ${it.anim ? `<video src="${RAW(it.anim)}" controls loop muted width="200"></video>` : ''}
+      ${it.dual ? `<p>Dual match: ${it.dual.with} (±${it.dual.pa_diff_deg}°)</p>` : ''}
+    </div>
+  `).join("");
+  el.reportDiv.innerHTML = `<h3>${file}</h3>${html || "<p>No comets found.</p>"}`;
 }
 
-function renderStats(data){
-  const s=el("#stats"); s.innerHTML="";
-  const mk=(t,v)=>`<div class="stat"><div>${t}</div><b>${v}</b></div>`;
-  s.innerHTML += mk("Candidates",data.candidates?.length||0);
-  s.innerHTML += mk("C2 frames",data.c2_frames||"—");
-  s.innerHTML += mk("C3 frames",data.c3_frames||"—");
-}
+/* ========== POPULATE DROPDOWNS ========== */
+async function refreshDropdowns() {
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}?ref=${BRANCH}`);
+    const files = await resp.json();
+    const jsonFiles = files
+      .filter(f => f.name.match(/^candidates_\d{8}_\d{6}\.json$/))
+      .sort((a, b) => b.name.localeCompare(a.name));
 
-function renderThumbs(data){
-  const r=el("#lastFramesRow"); r.innerHTML="";
-  ["C2","C3"].forEach(det=>{
-    const u=rawURL(`${FOLDER}/lastthumb_${det}.png?${Date.now()}`);
-    r.innerHTML+=`
-      <div class="thumbCard">
-        <div class="thumbHead">
-          <span class="pill">${det} last frame</span>
-          <a class="sub" href="${ghBlobURL(`${FOLDER}/lastthumb_${det}.png`)}" target="_blank">view</a>
-        </div>
-        <img src="${u}" class="thumb" loading="lazy" alt="${det} last frame">
-      </div>`;
-  });
-}
+    // Clear
+    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
+    el.hitsSelect.innerHTML = '<option value="">— Potential Hits —</option>';
 
-/************ GRID ************/
-function renderGrid(items){
-  const g=grid;
-  if(!items.length){ g.hidden=true; empty.hidden=false; return; }
-  g.hidden=false; empty.hidden=true;
-  g.innerHTML=items.map((h,i)=>{
-    const crop=rawURL(h.crop_path||"");
-    const orig=h.original_mid_path?rawURL(h.original_mid_path):"";
-    const ann =h.annotated_mid_path?rawURL(h.annotated_mid_path):"";
-    const txt =rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.txt`);
-    const csv =rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.csv`);
-    const det =h.detector||"";
-    const idx =h.track_index||i;
-    const pa  =h.pa_deg?.toFixed?.(1)||"—";
-    const spd =h.speed_px_min?.toFixed?.(1)||"—";
+    for (const f of jsonFiles) {
+      const opt = document.createElement("option");
+      opt.value = f.name;
+      opt.textContent = f.name.replace(".json", "").replace("candidates_", "");
 
-    // detect if backend provided animations (annotated + clean variants)
-    const hasAnnVid = !!(h.animation_mp4_path || h.animation_gif_path);
-    const hasCleanVid = !!(h.animation_mp4_clean_path || h.animation_gif_clean_path);
-    const hasAnyVid = hasAnnVid || hasCleanVid;
+      // Add to Latest
+      el.latestSelect.appendChild(opt.cloneNode(true));
 
-    const initialVidSrc =
-      h.animation_mp4_path ? rawURL(h.animation_mp4_path) :
-      (h.animation_gif_path ? rawURL(h.animation_gif_path) :
-      (h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) :
-      (h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : "")));
-
-    return `
-    <div class="card" data-det="${det}">
-      <div class="meta">
-        <div class="row"><span class="pill">${det} #${idx}</span><span class="right sub">${h.series_mid_frame||""}</span></div>
-        <div class="kvs">
-          <div class="kv">PA <b>${pa}°</b></div>
-          <div class="kv">Speed <b>${spd}</b></div>
-        </div>
-        <div class="seg" style="margin-top:8px">
-          <button class="active" data-view="crop">Crop</button>
-          <button data-view="orig"${!orig?" disabled":""}>Original</button>
-          <button data-view="ann"${!ann?" disabled":""}>Annotated</button>
-        </div>
-      </div>
-
-      <div class="canvasWrap">
-        ${
-          hasAnyVid
-          ? `
-            <div class="gifHead" style="padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center">
-              <div class="mark"><span class="muted">Animation</span></div>
-              <div class="seg" style="margin-left:auto">
-                <button class="active" data-anim="annotated" ${hasAnnVid? "" : "disabled"}>Annotated</button>
-                <button data-anim="clean" ${hasCleanVid? "" : "disabled"}>Clean</button>
-              </div>
-            </div>
-            <video class="gif" controls loop muted playsinline src="${initialVidSrc}"></video>
-          `
-          : `<canvas id="can${i}"></canvas>`
+      // Check for comet
+      try {
+        const data = await (await fetch(RAW(f.path))).json();
+        const hasComet = data.some(c => (c.ai_label || "").toLowerCase() === "comet");
+        if (hasComet) {
+          el.hitsSelect.appendChild(opt.cloneNode(true));
         }
-      </div>
-
-      <div class="player" ${hasAnyVid ? 'style="display:none"' : ""}>
-        <div class="playerBar">
-          <button class="small play">▶︎</button>
-          <button class="small pause">❚❚</button>
-          <label>FPS <input type="range" min="1" max="20" value="5" class="slider fps"></label>
-          <label><input type="checkbox" class="showPath"> Show path</label>
-          <button class="small webm">Save 1 loop (WebM)</button>
-          <button class="small gif">Save 1 loop (GIF)</button>
-        </div>
-      </div>
-
-      <div class="meta">
-        <div class="row" style="margin-top:6px">
-          <button class="sgBtn small">Copy for Sungrazer</button>
-          <a class="pill" href="${txt}" target="_blank">TXT</a>
-          <a class="pill" href="${csv}" target="_blank">CSV</a>
-        </div>
-      </div>
-    </div>`}).join("");
-  g.querySelectorAll(".card").forEach((card,i)=>setupCard(card,items[i]));
-}
-
-/******** PLAYER + ANIMATION ********/
-function setupCard(card,h){
-  // If we have a <video>, wire the Annotated/Clean toggle and skip canvas init.
-  const vid = card.querySelector("video.gif");
-  if (vid) {
-    const toURL = p => p ? rawURL(p) : "";
-    const annBtn = card.querySelector('button[data-anim="annotated"]');
-    const cleanBtn = card.querySelector('button[data-anim="clean"]');
-
-    if (annBtn) annBtn.onclick = () => {
-      if (h.animation_mp4_path) vid.src = toURL(h.animation_mp4_path);
-      else if (h.animation_gif_path) vid.src = toURL(h.animation_gif_path);
-      annBtn.classList.add('active');
-      if (cleanBtn) cleanBtn.classList.remove('active');
-    };
-    if (cleanBtn) cleanBtn.onclick = () => {
-      if (h.animation_mp4_clean_path) vid.src = toURL(h.animation_mp4_clean_path);
-      else if (h.animation_gif_clean_path) vid.src = toURL(h.animation_gif_clean_path);
-      cleanBtn.classList.add('active');
-      if (annBtn) annBtn.classList.remove('active');
-    };
-
-    // Sungrazer button still copies the TXT/csv links to clipboard for convenience
-    const sgBtn = card.querySelector(".sgBtn");
-    if (sgBtn) sgBtn.onclick = () => copySungrazerBlock(h);
-
-    return; // Do not initialize the canvas player for this card.
-  }
-
-  // -------- Canvas player fallback (no prebuilt animations) --------
-  const can=card.querySelector("canvas");
-  const ctx=can.getContext("2d");
-  const imgs=[]; let idx=0,playing=false,fps=5,showPath=false,timer=null;
-
-  function loadAll(){
-    const base=rawURL(h.crop_path||"");
-    imgs.push(base);
-    if(h.series_files){ h.series_files.forEach(f=>imgs.push(rawURL(f))); }
-  }
-  loadAll();
-
-  const imgEls=imgs.map(u=>{
-    const im=new Image(); im.crossOrigin="anonymous"; im.src=u; return im;
-  });
-
-  imgEls[0].onload=()=>{can.width=imgEls[0].width;can.height=imgEls[0].height;draw();};
-
-  function draw(){
-    if(!imgEls[idx])return;
-    ctx.drawImage(imgEls[idx],0,0,can.width,can.height);
-    if(showPath&&h.positions){
-      ctx.strokeStyle="lime";ctx.beginPath();
-      h.positions.forEach((p,j)=>{if(j)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y)});
-      ctx.stroke();
+      } catch (e) {
+        console.warn("Failed to scan", f.name, e);
+      }
     }
+
+    // Auto-load latest
+    if (jsonFiles.length > 0) {
+      loadReport(jsonFiles[0].name);
+    }
+  } catch (err) {
+    log("Failed to load file list: " + err);
   }
-  function next(){idx=(idx+1)%imgEls.length;draw();}
-  function play(){if(playing)return;playing=true;timer=setInterval(next,1000/fps);}
-  function stop(){playing=false;clearInterval(timer);}
-
-  card.querySelector(".play").onclick=()=>play();
-  card.querySelector(".pause").onclick=()=>stop();
-  const fpsEl=card.querySelector(".fps");
-  if (fpsEl) fpsEl.oninput=e=>{fps=e.target.value; if(playing){stop();play();}};
-  const pathEl=card.querySelector(".showPath");
-  if (pathEl) pathEl.onchange=e=>{showPath=e.target.checked;draw();};
-
-  // save loop (WebM)
-  const webmBtn = card.querySelector(".webm");
-  if (webmBtn) webmBtn.onclick=()=>{
-    try{
-      const stream=can.captureStream();
-      const rec=new MediaRecorder(stream,{mimeType:"video/webm"});
-      const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data);
-      rec.onstop=()=>{const blob=new Blob(chunks,{type:"video/webm"});
-        const a=document.createElement("a");
-        a.href=URL.createObjectURL(blob);
-        a.download=`${h.detector}_track${h.track_index}.webm`;
-        a.click();
-      };
-      rec.start(); let c=0;
-      const recTimer=setInterval(()=>{next();if(++c>=imgs.length){clearInterval(recTimer);rec.stop();}},1000/fps);
-    }catch(e){alert("WebM export not supported in this browser.");}
-  };
-
-  // save loop (GIF)
-  const gifBtn = card.querySelector(".gif");
-  if (gifBtn) gifBtn.onclick=()=>{
-    try{
-      const gif=new GIF({workers:2,quality:10,width:can.width,height:can.height});
-      imgEls.forEach(im=>gif.addFrame(im,{delay:1000/fps}));
-      gif.on('finished',b=>{
-        const a=document.createElement("a");
-        a.href=URL.createObjectURL(b);
-        a.download=`${h.detector}_track${h.track_index}.gif`; a.click();
-      });
-      gif.render();
-    }catch(e){alert("GIF export failed (CORS). Use WebM instead.");}
-  };
-
-  // segmented image toggle (crop/original/annotated)
-  card.querySelectorAll(".seg button").forEach(btn=>{
-    btn.onclick=()=>{
-      card.querySelectorAll(".seg button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const mode=btn.dataset.view;
-      let src=h.crop_path;
-      if(mode==="orig"&&h.original_mid_path)src=h.original_mid_path;
-      if(mode==="ann"&&h.annotated_mid_path)src=h.annotated_mid_path;
-      const im=new Image();im.crossOrigin="anonymous";im.src=rawURL(src);
-      im.onload=()=>{can.width=im.width;can.height=im.height;ctx.drawImage(im,0,0,im.width,im.height);}
-    };
-  });
-
-  const sgBtn = card.querySelector(".sgBtn");
-  if (sgBtn) sgBtn.onclick = () => copySungrazerBlock(h);
 }
 
-/******** Sungrazer helper ********/
-async function copySungrazerBlock(h){
-  const txtUrl = rawURL(`detections/reports/${h.detector}_track${h.track_index}_sungrazer.txt`);
-  try{
-    const t = await (await fetch(txtUrl)).text();
-    await navigator.clipboard.writeText(t);
-    alert("Sungrazer TXT copied to clipboard.");
-  }catch(e){ alert("Could not copy. Open TXT link instead."); }
-}
+/* ========== EVENTS ========== */
+el.latestSelect.onchange = () => {
+  const val = el.latestSelect.value;
+  if (val) loadReport(val);
+};
+el.hitsSelect.onchange = () => {
+  const val = el.hitsSelect.value;
+  if (val) loadReport(val);
+};
 
-/*********** REFRESH + LIVE GIFS ***********/
-async function loadLiveGifs(){
-  c2Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?${Date.now()}`;
-  c3Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?${Date.now()}`;
-  const d=new Date().toISOString().split("T")[1].slice(0,5);
-  c2GifTime.textContent=`${d} UTC`;
-  c3GifTime.textContent=`${d} UTC`;
-}
-loadLiveGifs(); loadLatest();
-
-let eta=60;
-setInterval(()=>{eta--;el("#refreshEta").textContent=`${eta}s`;
-  if(eta<=0){eta=60;loadLatest();loadLiveGifs();}
-},1000);
-
-el("#refreshBtn").onclick=()=>{eta=60;loadLatest();loadLiveGifs();};
+/* ========== INIT ========== */
+refreshDropdowns();
+setInterval(refreshDropdowns, 15 * 60 * 1000); // every 15 min
 </script>
 </body>
 </html>
