@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SOHO Comet Hunter – Nagoh Creative</title>
-<meta name="description" content="Live NASA LASCO animations, AI‑detected comets and Sungrazer‑ready exports – built by Nagoh Creative for OurNightSky.Us">
+<meta name="description" content="Live NASA LASCO animations, AI-detected comets and Sungrazer-ready exports – built by Nagoh Creative for OurNightSky.Us">
 <link rel="icon" href="data:,">
 <style>
   :root{
@@ -66,16 +66,16 @@
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter</h1>
-    <div class="sub">Live NASA LASCO animations • AI‑detected comets • Sungrazer‑ready exports</div>
+    <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
 
       <label class="pill"><input type="checkbox" id="c2Filter"> C2</label>
       <label class="pill"><input type="checkbox" id="c3Filter"> C3</label>
-      <label class="pill"><input type="checkbox" id="aiOnly"> AI=‘comet’ only</label>
+      <label class="pill"><input type="checkbox" id="aiOnly"> AI='comet' only</label>
       <label class="pill"><input type="checkbox" id="markedOnly"> Marked only</label>
 
-      <div class="right pill">Auto‑refresh: <span id="refreshEta">—</span></div>
+      <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
 
       <div class="exportAll">
         <button id="exportAllBtn">Export ALL</button>
@@ -90,7 +90,7 @@
 
 <main class="wrap">
 
-  <!-- ==== STATUS BAR ==== -->
+  <!-- STATUS -->
   <section id="status">
     <div class="row">
       <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
@@ -98,7 +98,7 @@
     <div class="stats" id="stats"></div>
   </section>
 
-  <!-- ==== LIVE NASA GIFS ==== -->
+  <!-- LIVE NASA GIFs -->
   <section aria-label="Live LASCO animations" style="margin-top:20px;">
     <div class="gifRow">
       <div class="gifCard">
@@ -120,15 +120,15 @@
     </div>
   </section>
 
-  <!-- ==== LAST‑FRAME THUMBNAILS ==== -->
+  <!-- LAST-FRAME THUMBNAILS -->
   <section style="margin-top:20px;">
     <div class="thumbRow" id="lastFramesRow"></div>
     <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
   </section>
 
-  <!-- ==== CANDIDATE GRID ==== -->
+  <!-- CANDIDATE GRID -->
   <section id="content" style="margin-top:24px;">
-    <div class="empty" id="empty">Loading the latest detections…</div>
+    <div class="empty" id="empty">Loading latest detections from GitHub…</div>
     <div class="grid" id="grid" hidden></div>
   </section>
 
@@ -138,29 +138,32 @@
 </main>
 
 <script>
-/* ────────────────────── CONFIG ────────────────────── */
-const BASE = '/detections';               // <-- change only if you move the folder
-const REPORT_JSON = `${BASE}/latest_report.json`;
-const REFRESH_SECS = 15 * 60;             // 15 minutes
-/* ─────────────────────────────────────────────────── */
+/* ==================== CONFIG ==================== */
+const OWNER  = "NAGOHUSA";
+const REPO   = "ONS_SOHOHUNTER";
+const BRANCH = "main";
+const FOLDER = "detections";
+const REFRESH_SECS = 15 * 60;               // 15 minutes
+/* =============================================== */
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const el = { 
-  grid: $('#grid'), empty: $('#empty'), errors: $('#errors'),
-  reportName: $('#reportName'), reportTime: $('#reportTime'),
-  stats: $('#stats'), c2Filter: $('#c2Filter'), c3Filter: $('#c3Filter'),
-  aiOnly: $('#aiOnly'), markedOnly: $('#markedOnly'), lastFramesRow: $('#lastFramesRow'),
-  c2Gif: $('#c2Gif'), c3Gif: $('#c3Gif'), c2GifTime: $('#c2GifTime'), c3GifTime: $('#c3GifTime'),
-  exportAllBtn: $('#exportAllBtn'), exportMarkedOnly: $('#exportMarkedOnly'),
-  downloadAllTxt: $('#downloadAllTxt'), downloadAllCsv: $('#downloadAllCsv'), exportAllHint: $('#exportAllHint'),
-  refreshBtn: $('#refreshBtn'), refreshEta: $('#refreshEta')
+
+const el = {
+  grid:$('#grid'), empty:$('#empty'), errors:$('#errors'),
+  reportName:$('#reportName'), reportTime:$('#reportTime'), stats:$('#stats'),
+  c2Filter:$('#c2Filter'), c3Filter:$('#c3Filter'), aiOnly:$('#aiOnly'), markedOnly:$('#markedOnly'),
+  lastFramesRow:$('#lastFramesRow'), c2Gif:$('#c2Gif'), c3Gif:$('#c3Gif'),
+  c2GifTime:$('#c2GifTime'), c3GifTime:$('#c3GifTime'),
+  exportAllBtn:$('#exportAllBtn'), exportMarkedOnly:$('#exportMarkedOnly'),
+  downloadAllTxt:$('#downloadAllTxt'), downloadAllCsv:$('#downloadAllCsv'), exportAllHint:$('#exportAllHint'),
+  refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta')
 };
 
 let currentReport = null;
 let refreshTimer = null, countdown = REFRESH_SECS;
 
-/* ───── LOCAL STORAGE ───── */
+/* ---------- LOCAL STORAGE ---------- */
 const LS_MARKS = 'soho_marks', LS_GROUPS = 'soho_groups';
 const marks = () => JSON.parse(localStorage.getItem(LS_MARKS) || '{}');
 const groups = () => JSON.parse(localStorage.getItem(LS_GROUPS) || '{}');
@@ -168,18 +171,31 @@ const saveMarks = m => localStorage.setItem(LS_MARKS, JSON.stringify(m));
 const saveGroups = g => localStorage.setItem(LS_GROUPS, JSON.stringify(g));
 const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`;
 
-/* ───── HELPERS ───── */
-function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML = `<div class="err">${msg}</div>`; }
-function hideError(){ el.errors.style.display='none'; }
-function fmtDate(iso){
-  if(!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
-}
-function imgURL(path){ return path ? `${BASE}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}` : null; }
-function ghBlobURL(path){ return `https://github.com/NAGOHUSA/ONS_SOHOHUNTER/blob/main/${path}`; } // kept only for fallback images
+/* ---------- GITHUB HELPERS ---------- */
+const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
+const rawURL = path => `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path.replace(/^\.?\/*/,'')}?t=${Date.now()}`;
+const ghBlobURL = path => `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path.replace(/^\.?\/*/,'')}`;
 
-/* ───── FILTERING ───── */
+async function fetchJSON(url){
+  const r = await fetch(url,{headers:{'Accept':'application/vnd.github+json'}});
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML=`<div class="err">${msg}</div>`; }
+function hideError(){ el.errors.style.display='none'; }
+
+/* ---------- TIME HELPERS ---------- */
+function parseReportTime(name){
+  const m = name?.match?.(/(\d{8})_(\d{6})/);
+  if(!m) return null;
+  const [_,d,t] = m;
+  const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
+  const dt = new Date(iso);
+  return {iso, local:dt.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})};
+}
+function fmtSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
+
+/* ---------- FILTERING ---------- */
 function applyFilters(items){
   const m = marks();
   return items.filter(h=>{
@@ -191,7 +207,7 @@ function applyFilters(items){
   });
 }
 
-/* ───── STATS ───── */
+/* ---------- STATS ---------- */
 function renderStats(filtered){
   const byDet = filtered.reduce((a,h)=>{a[(h.detector||'').toUpperCase()]=(a[(h.detector||'').toUpperCase()]||0)+1;return a;},{});
   const ai = filtered.reduce((a,h)=>{const l=(h.ai_label||'').toLowerCase();if(l)a[l]=(a[l]||0)+1;return a;},{});
@@ -200,10 +216,10 @@ function renderStats(filtered){
     d.innerHTML=`<div class="sub">${label}</div><div><b>${val}</b></div>`; el.stats.appendChild(d); };
   add('Candidates',filtered.length);
   add('C2',byDet.C2||0); add('C3',byDet.C3||0);
-  if(ai.comet||ai.not_comet){ add('AI “comet”',ai.comet||0); add('AI “not_comet”',ai.not_comet||0); }
+  if(ai.comet||ai.not_comet){ add('AI "comet"',ai.comet||0); add('AI "not_comet"',ai.not_comet||0); }
 }
 
-/* ───── SUNGRAZER TEXT / CSV ───── */
+/* ---------- SUNGRAZER TEXT / CSV ---------- */
 function sungrazerText(h){
   const w = h.image_size?.[0]??1024, ht = h.image_size?.[1]??1024;
   const first = (h.positions?.[0]?.time_utc||"").split('T')[0]||"";
@@ -223,7 +239,7 @@ function sungrazerText(h){
   });
   return lines.join('\n')+'\n';
 }
-function allSungrazerText(items, reportName){
+function allSungrazerText(items,reportName){
   const lines = [`=== Sungrazer Report Helper — FULL EXPORT ===`];
   if(reportName) lines.push(`Report: ${reportName}`);
   lines.push('');
@@ -252,7 +268,7 @@ function allCSV(items){
   return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')+'\n';
 }
 
-/* ───── SEGMENTED TOGGLE (Clean / Annotated) ───── */
+/* ---------- SEGMENTED TOGGLE ---------- */
 function seg(items){
   const div = document.createElement('div'); div.className='seg';
   items.forEach(({label,disabled,active,click})=>{
@@ -265,13 +281,13 @@ function seg(items){
   return div;
 }
 
-/* ───── VIDEO PLAYER ───── */
+/* ---------- VIDEO PLAYER ---------- */
 function videoPlayer(h){
   const container = document.createElement('div'); container.className='video-container';
-  const cleanMp4 = h.animation_mp4_clean_path ? imgURL(h.animation_mp4_clean_path) : null;
-  const cleanGif = h.animation_gif_clean_path ? imgURL(h.animation_gif_clean_path) : null;
-  const annMp4   = h.animation_mp4_path ? imgURL(h.animation_mp4_path) : null;
-  const annGif   = h.animation_gif_path ? imgURL(h.animation_gif_path) : null;
+  const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) : null;
+  const cleanGif = h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : null;
+  const annMp4   = h.animation_mp4_path ? rawURL(h.animation_mp4_path) : null;
+  const annGif   = h.animation_gif_path ? rawURL(h.animation_gif_path) : null;
 
   if(!cleanMp4 && !cleanGif && !annMp4 && !annGif){
     container.innerHTML = `<div style="padding:16px;text-align:center;color:#94a3b8;">No animation</div>`;
@@ -300,7 +316,7 @@ function videoPlayer(h){
   return container;
 }
 
-/* ───── RENDER GRID ───── */
+/* ---------- RENDER GRID ---------- */
 function renderGrid(items){
   const filtered = applyFilters(items);
   renderStats(filtered);
@@ -319,12 +335,12 @@ function renderGrid(items){
     const marked = !!m[k];
     const groupVal = g[k]||"Unknown";
 
-    const cropURL = imgURL(h.crop_path);
-    const origURL = imgURL(h.original_mid_path);
-    const annURL  = imgURL(h.annotated_mid_path);
+    const cropURL = rawURL(h.crop_path);
+    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
+    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
-    const txtURL = imgURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
-    const csvURL = imgURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
+    const txtURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
+    const csvURL = rawURL(`detections/reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
@@ -366,8 +382,8 @@ function renderGrid(items){
       </div>
       <div class="row" style="margin-top:8px;">
         <button class="sgBtn">Copy for Sungrazer</button>
-        ${txtURL?`<a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>`:''}
-        ${csvURL?`<a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>`:''}
+        <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
+        <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
         ${origURL?`<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>`:''}
         ${annURL?`<a class="pill" href="${annURL}" target="_blank" rel="noopener">Annotated</a>`:''}
         <span class="right mark">
@@ -386,25 +402,36 @@ function renderGrid(items){
     el.grid.appendChild(card);
 
     // copy button
-    meta.querySelector('.sgBtn').onclick = ()=>{ navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy for Sungrazer',1200); }); };
+    meta.querySelector('.sgBtn').onclick = ()=>{ 
+      navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
+        const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
+        setTimeout(()=>b.textContent='Copy for Sungrazer',1200); 
+      });
+    };
 
     // mark toggle
     const flag = meta.querySelector('.flag');
-    flag.onclick = ()=>{ const mm=marks(); if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';}else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} saveMarks(mm); if(el.markedOnly.checked) renderGrid(items); };
+    flag.onclick = ()=>{ 
+      const mm=marks(); 
+      if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';} 
+      else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
+      saveMarks(mm); 
+      if(el.markedOnly.checked) renderGrid(items); 
+    };
 
     // group selector
     meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
   });
 }
 
-/* ───── LAST‑FRAME THUMBNAILS ───── */
+/* ---------- LAST-FRAME THUMBNAILS ---------- */
 async function loadThumbs(){
   const dets = ['C2','C3'];
   const rows = [];
   for(const d of dets){
-    const thumb = await imgExists(`${BASE}/lastthumb_${d}.png`);
-    const overlay = await imgExists(`${BASE}/overlay_${d}.png`);
-    const contact = await imgExists(`${BASE}/contact_${d}.png`);
+    const thumb = await imgExists(`${FOLDER}/lastthumb_${d}.png`);
+    const overlay = await imgExists(`${FOLDER}/overlay_${d}.png`);
+    const contact = await imgExists(`${FOLDER}/contact_${d}.png`);
     if(thumb.ok||overlay.ok||contact.ok) rows.push({det:d,thumb,overlay,contact});
   }
   if(!rows.length) return;
@@ -414,12 +441,12 @@ async function loadThumbs(){
         <span class="pill">${o.det}</span>
         ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
       </div>
-      ${o.thumb.ok?`<a href="${imgURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${imgURL(`lastthumb_${o.det}.png`)}" alt="last ${o.det}"></a>`:
+      ${o.thumb.ok?`<a href="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${rawURL(`${FOLDER}/lastthumb_${o.det}.png`)}" alt="last ${o.det}"></a>`:
         `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
       <div class="meta">
         <div class="kv">
-          ${o.overlay.ok?`Overlay: <a href="${imgURL(`overlay_${o.det}.png`)}" target="_blank">open</a>`:'Overlay: —'} •
-          ${o.contact.ok?`Contact: <a href="${imgURL(`contact_${o.det}.png`)}" target="_blank">open</a>`:'Contact: —'}
+          ${o.overlay.ok?`Overlay: <a href="${rawURL(`${FOLDER}/overlay_${o.det}.png`)}" target="_blank">open</a>`:'Overlay: —'} •
+          ${o.contact.ok?`Contact: <a href="${rawURL(`${FOLDER}/contact_${o.det}.png`)}" target="_blank">open</a>`:'Contact: —'}
         </div>
       </div>
     </div>`).join('');
@@ -429,11 +456,11 @@ function imgExists(path){
     const i=new Image();
     i.onload = ()=>res({ok:true,w:i.naturalWidth,h:i.naturalHeight});
     i.onerror = ()=>res({ok:false});
-    i.src = imgURL(path);
+    i.src = rawURL(path);
   });
 }
 
-/* ───── LIVE GIFS ───── */
+/* ---------- LIVE GIFs ---------- */
 function refreshLiveGifs(){
   const t = Date.now();
   el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
@@ -443,35 +470,42 @@ function refreshLiveGifs(){
   el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
-/* ───── MAIN DATA LOAD ───── */
-async function loadLatest(){
+/* ---------- MAIN LOAD ---------- */
+async function loadLatestReport(){
   hideError();
   try{
-    const r = await fetch(REPORT_JSON);
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    if(!data || !Array.isArray(data.candidates)){
-      el.empty.textContent = "Report is empty.";
-      el.grid.hidden = true; el.empty.hidden = false;
+    const list = await fetchJSON(apiListURL());
+    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
+                                        .sort((a,b)=>b.name.localeCompare(a.name)) : [];
+    if(!files.length){
+      el.reportName.textContent='—'; el.reportTime.textContent='';
+      el.grid.hidden=true; el.empty.hidden=false; el.empty.textContent='No candidate files yet.';
+      await loadThumbs();
       return;
     }
-    currentReport = {name:data.report_name, time:data.report_time, items:data.candidates};
-    el.reportName.textContent = data.report_name;
-    el.reportTime.textContent = fmtDate(data.report_time) ? `• ${fmtDate(data.report_time)} (local)` : '';
+
+    const latest = files[0];
+    const data = await fetchJSON(rawURL(`${FOLDER}/${latest.name}`));
+    currentReport = {name:latest.name, items:Array.isArray(data)?data:[]};
+
+    el.reportName.textContent = latest.name;
+    const t = parseReportTime(latest.name);
+    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
+
     renderGrid(currentReport.items);
     await loadThumbs();
   }catch(e){
-    showError(`Failed to load report: ${e.message}`);
-    el.empty.textContent = "Unable to load the latest detections.";
+    showError(`GitHub load failed: ${e.message}`);
+    el.empty.textContent = "Unable to fetch the latest report.";
   }finally{
     refreshLiveGifs();
   }
 }
 
-/* ───── EXPORT ALL ───── */
+/* ---------- EXPORT ALL ---------- */
 function exportAll(){
   if(!currentReport) return alert('No report loaded.');
-  let items = applyFiltersFilters(currentReport.items);
+  let items = applyFilters(currentReport.items);
   if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
   if(!items.length) return alert('No candidates to export (check filters).');
 
@@ -495,23 +529,22 @@ function exportAll(){
 }
 el.exportAllBtn.onclick = exportAll;
 
-/* ───── AUTO‑REFRESH ───── */
+/* ---------- AUTO-REFRESH ---------- */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
-  countdown = REFRESH_SECS; el.refreshEta.textContent = formatSec(countdown);
+  countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
   refreshTimer = setInterval(()=>{
-    countdown--; el.refreshEta.textContent = formatSec(countdown);
-    if(countdown<=0){ loadLatest(); countdown=REFRESH_SECS; }
+    countdown--; el.refreshEta.textContent = fmtSec(countdown);
+    if(countdown<=0){ loadLatestReport(); countdown=REFRESH_SECS; }
   },1000);
 }
-function formatSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
 
-/* ───── UI BINDINGS ───── */
-el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadLatest(); };
+/* ---------- UI BINDINGS ---------- */
+el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadLatestReport(); };
 $$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
-/* ───── BOOT ───── */
-loadLatest().then(startAutoRefresh);
+/* ---------- BOOT ---------- */
+loadLatestReport().then(startAutoRefresh);
 </script>
 </body>
 </html>
