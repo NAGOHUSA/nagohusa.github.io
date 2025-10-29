@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter1.0</h1>
+    <h1>SOHO Comet Hunter2.0</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -354,20 +354,12 @@ function renderGrid(items){
     const marked = !!m[k];
     const groupVal = g[k]||"Unknown";
 
-    /* ---- Build correct URLs ---- */
-    const cropURL = rawURL(h.crop_path);
-
-    let origURL = null;
-    if (h.original_mid_path) {
-      const p = h.original_mid_path.includes('/') ? h.original_mid_path : `originals/${h.original_mid_path}`;
-      origURL = rawURL(p);
-    }
-
-    let annURL = null;
-    if (h.annotated_mid_path) {
-      const p = h.annotated_mid_path.includes('/') ? h.annotated_mid_path : `annotated/${h.annotated_mid_path}`;
-      annURL = rawURL(p);
-    }
+    /* ---- Build correct URLs (FIXED) ---- */
+    const cropURL = h.crop_path ? rawURL(h.crop_path) : null;
+    
+    // Use the path exactly as provided from JSON
+    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
+    const annURL = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
@@ -611,7 +603,7 @@ function startAutoRefresh(){
 
 /* ---------- UI BINDINGS ---------- */
 el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
-$$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
+$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
 /* ---------- BOOT ---------- */
 loadReportList().then(startAutoRefresh);
