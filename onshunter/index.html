@@ -1,4 +1,3 @@
-<!-- DOCUMENT filename="index.html" -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter1.2</h1>
+    <h1>SOHO Comet Hunter1.3</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -169,7 +168,7 @@ const marks = () => JSON.parse(localStorage.getItem(LS_MARKS) || '{}');
 const groups = () => JSON.parse(localStorage.getItem(LS_GROUPS) || '{}');
 const saveMarks = m => localStorage.setItem(LS_MARKS, JSON.stringify(m));
 const saveGroups = g => localStorage.setItem(LS_GROUPS, JSON.stringify(g));
-const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.series_mid_frame||''}`;
+const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}`;
 
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
@@ -239,6 +238,8 @@ function allCSV(items){
   return 'detector,track_index,time_utc,x,y\n' +
     items.flatMap(h=>h.positions.map(p=>`${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`)).join('\n');
 }
+
+/* ---------- ANIMATION WIDGET ---------- */
 function animationWidget(h) {
   const wrap = document.createElement('div');
   wrap.className = 'video-container';
@@ -251,7 +252,6 @@ function animationWidget(h) {
     return wrap;
   }
 
-  // Show GIF as <img> (more reliable than stuffing a GIF into <video>)
   const img = document.createElement('img');
   img.className = 'gif';
   img.alt = 'Candidate animation';
@@ -263,14 +263,12 @@ function animationWidget(h) {
     { label: 'Annotated GIF', active: !!annGif, disabled: !annGif, click: () => setSrc(annGif) },
     { label: 'Clean GIF',     active: !annGif && !!cleanGif, disabled: !cleanGif, click: () => setSrc(cleanGif) },
   ]);
-  bar.bar.style = 'margin:8px';
+  bar.style.margin = '8px';               // <-- FIXED
 
-  // Default choice
   setSrc(annGif || cleanGif);
 
-  // Direct “open” link so you can verify quickly
   const open = document.createElement('div');
-  open.style = 'padding:6px 10px';
+  open.style.padding = '6px 10px';
   open.innerHTML = [
     annGif ? `<a class="pill" target="_blank" rel="noopener" href="${annGif}">Open annotated</a>` : '',
     cleanGif ? `<a class="pill" target="_blank" rel="noopener" href="${cleanGif}">Open clean</a>` : ''
@@ -281,6 +279,8 @@ function animationWidget(h) {
   wrap.appendChild(open);
   return wrap;
 }
+
+/* ---------- FILTERS & RENDER ---------- */
 function applyFilters(items){
   let f = items;
   if(el.c2Filter.checked) f = f.filter(h=>h.detector==='C2');
@@ -348,7 +348,7 @@ function renderGrid(items){
         <span class="pill">Track #${h.track_index??'?'}</span>
         <span class="pill">PA: ${pa}</span>
         <span class="pill">Speed: ${speed}</span>
-        <span class="right sub">${h.series_mid_frame||''}</span>
+        <span class="right sub"></span>
       </div>
       <div class="kvs">
         <div class="kv">Size: <b>${h.image_size?.[0]??1024}×${h.image_size?.[1]??1024}</b></div>
