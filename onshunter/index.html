@@ -51,7 +51,7 @@
   .muted{color:var(--muted);font-size:.75rem}
   .mark{display:flex;gap:6px;align-items:center}
   .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
-  .flag.on(background:#11351d;border-color:#1d4d2a;color:#b5f7c0)
+  .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
   .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:.75rem}
   .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
   .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:.75rem}
@@ -81,7 +81,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter 1.7</h1>
+    <h1>SOHO Comet Hunter 1.8</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -255,15 +255,64 @@ function seg(opts){
   });
   return seg;
 }
-function sungrazerText(h){
-  return h.positions.map(p=>`${p.time_utc.replace(/Z$/,'').replace('T',' ')} ${p.x|0} ${p.y|0}`).join('\n');
+
+/* ---------- SUNGRAZER FORMAT ---------- */
+function sungrazerReportText(h) {
+  const group = groups()[keyFor(h)] || "Unknown";
+  const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
+  const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
+  const lines = h.positions.map(p => {
+    const t = p.time_utc.replace('T', ' ').replace('Z', '').replace(/:\d{2}\.\d+Z?$/, ''); // remove seconds if present
+    return `  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`;
+  }).join('\n');
+
+  return `=== Sungrazer Report Helper ===
+Camera: ${h.detector}
+Image Size: ${size}
+Your (0,0) position: Upper Left
+Probable Group: ${group}
+Date of FIRST IMAGE: ${firstDate}
+Frames (time_utc, x, y):
+${lines}
+
+`;
 }
-function allSungrazerText(items, name){
-  return items.map((h,i)=>`# Candidate ${i+1} (${h.detector.toUpperCase()} Track #${h.track_index})\n${sungrazerText(h)}\n\n`).join('');
+
+function allSungrazerReportText(items) {
+  return items.map((h, i) => {
+    const group = groups()[keyFor(h)] || "Unknown";
+    const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
+    const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
+    const lines = h.positions.map(p => {
+      const t = p.time_utc.replace('T', ' ').replace('Z', '').replace(/:\d{2}\.\d+Z?$/, '');
+      return `  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`;
+    }).join('\n');
+
+    return `=== Sungrazer Report Helper ===
+Camera: ${h.detector}
+Image Size: ${size}
+Your (0,0) position: Upper Left
+Probable Group: ${group}
+Date of FIRST IMAGE: ${firstDate}
+Frames (time_utc, x, y):
+${lines}
+
+`;
+  }).join('');
 }
-function allCSV(items){
-  return 'detector,track_index,time_utc,x,y\n' +
-    items.flatMap(h=>h.positions.map(p=>`${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`)).join('\n');
+
+function allCSV(items) {
+  const header = "camera,track_id,image_size,group,first_date,time_utc,x,y";
+  const rows = items.flatMap(h => {
+    const group = groups()[keyFor(h)] || "Unknown";
+    const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
+    const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
+    return h.positions.map(p => {
+      const t = p.time_utc.replace('T', ' ').replace('Z', '');
+      return `${h.detector},${h.track_index},${size},${group},${firstDate},${t},${Math.round(p.x)},${Math.round(p.y)}`;
+    });
+  });
+  return [header, ...rows].join('\n');
 }
 
 /* ---------- ANIMATION WIDGET ---------- */
@@ -442,43 +491,57 @@ ${orb.ascii_plot||''}
     card.appendChild(meta);
     el.grid.appendChild(card);
 
-    meta.querySelector('.sgBtn').onclick = ()=>{ 
-      navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
-        const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
-        setTimeout(()=>b.textContent='Copy for Sungrazer',1200); 
+    // Copy Button
+    meta.querySelector('.sgBtn').onclick = () => { 
+      navigator.clipboard.writeText(sungrazerReportText(h)).then(() => { 
+        const b = meta.querySelector('.sgBtn'); 
+        b.textContent = 'Copied!'; 
+        setTimeout(() => b.textContent = 'Copy for Sungrazer', 1200); 
       });
     };
 
+    // Mark Button
     const flag = meta.querySelector('.flag');
-    flag.onclick = ()=>{ 
-      const mm=marks(); 
-      if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';} 
-      else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
+    flag.onclick = () => { 
+      const mm = marks(); 
+      if (mm[k]) { delete mm[k]; flag.classList.remove('on'); flag.textContent = 'Mark'; } 
+      else { mm[k] = true; flag.classList.add('on'); flag.textContent = 'Marked'; } 
       saveMarks(mm); 
-      if(el.markedOnly.checked) renderGrid(items); 
+      if (el.markedOnly.checked) renderGrid(items); 
     };
 
-    meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
+    // Group Dropdown
+    meta.querySelector('.group').onchange = e => { 
+      const gg = groups(); 
+      gg[k] = e.target.value; 
+      saveGroups(gg); 
+    };
 
-    // Dynamic TXT/CSV download buttons
-    const txtBlob = new Blob([sungrazerText(h)], {type: 'text/plain'});
+    // TXT Download
+    const txtBlob = new Blob([sungrazerReportText(h)], { type: 'text/plain' });
     const txtA = document.createElement('a');
     txtA.href = URL.createObjectURL(txtBlob);
     txtA.download = `${h.detector}_track${h.track_index}_sungrazer.txt`;
     txtA.className = 'pill';
     txtA.textContent = 'TXT';
     txtA.style.display = 'inline-flex';
+    meta.querySelector('.row').appendChild(txtA);
 
-    const csvContent = `detector,track_index,time_utc,x,y\n` + h.positions.map(p => `${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`).join('\n');
-    const csvBlob = new Blob([csvContent], {type: 'text/csv'});
+    // CSV Download
+    const csvHeader = "camera,track_id,image_size,group,first_date,time_utc,x,y\n";
+    const csvRows = h.positions.map(p => {
+      const t = p.time_utc.replace('T', ' ').replace('Z', '');
+      const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
+      const firstDate = h.positions[0].time_utc.split('T')[0];
+      return `${h.detector},${h.track_index},${size},${groupVal},${firstDate},${t},${Math.round(p.x)},${Math.round(p.y)}`;
+    }).join('\n');
+    const csvBlob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
     const csvA = document.createElement('a');
     csvA.href = URL.createObjectURL(csvBlob);
     csvA.download = `${h.detector}_track${h.track_index}_sungrazer.csv`;
     csvA.className = 'pill';
     csvA.textContent = 'CSV';
     csvA.style.display = 'inline-flex';
-
-    meta.querySelector('.row').appendChild(txtA);
     meta.querySelector('.row').appendChild(csvA);
   });
   if(items.length) el.grid.firstChild?.scrollIntoView({behavior:'smooth',block:'center'});
@@ -598,7 +661,7 @@ function exportAll(){
   if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
   if(!items.length) return alert('No candidates to export (check filters).');
 
-  const txt = allSungrazerText(items, currentReport.name);
+  const txt = allSungrazerReportText(items);
   navigator.clipboard.writeText(txt).catch(()=>{});
 
   const csv = allCSV(items);
