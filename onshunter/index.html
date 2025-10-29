@@ -81,7 +81,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter 1.8</h1>
+    <h1>SOHO Comet Hunter 1.9</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -256,15 +256,27 @@ function seg(opts){
   return seg;
 }
 
-/* ---------- SUNGRAZER FORMAT ---------- */
+/* ---------- SUNGRAZER FORMAT (FIXED) ---------- */
+function formatTime(time_utc) {
+  if (!time_utc || typeof time_utc !== 'string') return 'Unknown';
+  const t = time_utc.trim().replace('Z', '').replace(/\.\d+$/, ''); // remove ms
+  const parts = t.split('T');
+  if (parts.length !== 2) return 'Unknown';
+  const [date, time] = parts;
+  const [h, m, s = '00'] = time.split(':');
+  return `${date} ${h.padStart(2,'0')}:${m.padStart(2,'0')}:${s.padStart(2,'0')}`;
+}
+
 function sungrazerReportText(h) {
   const group = groups()[keyFor(h)] || "Unknown";
   const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
-  const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
-  const lines = h.positions.map(p => {
-    const t = p.time_utc.replace('T', ' ').replace('Z', '').replace(/:\d{2}\.\d+Z?$/, ''); // remove seconds if present
-    return `  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`;
-  }).join('\n');
+  const firstTime = h.positions?.[0]?.time_utc;
+  const firstDate = firstTime ? formatTime(firstTime).split(' ')[0] : "Unknown";
+
+  const lines = (h.positions || []).map(p => {
+    const t = formatTime(p.time_utc);
+    return t === 'Unknown' ? '' : `  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`;
+  }).filter(line => line).join('\n');
 
   return `=== Sungrazer Report Helper ===
 Camera: ${h.detector}
@@ -273,32 +285,13 @@ Your (0,0) position: Upper Left
 Probable Group: ${group}
 Date of FIRST IMAGE: ${firstDate}
 Frames (time_utc, x, y):
-${lines}
+${lines || '  (no valid positions)'}
 
 `;
 }
 
 function allSungrazerReportText(items) {
-  return items.map((h, i) => {
-    const group = groups()[keyFor(h)] || "Unknown";
-    const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
-    const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
-    const lines = h.positions.map(p => {
-      const t = p.time_utc.replace('T', ' ').replace('Z', '').replace(/:\d{2}\.\d+Z?$/, '');
-      return `  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`;
-    }).join('\n');
-
-    return `=== Sungrazer Report Helper ===
-Camera: ${h.detector}
-Image Size: ${size}
-Your (0,0) position: Upper Left
-Probable Group: ${group}
-Date of FIRST IMAGE: ${firstDate}
-Frames (time_utc, x, y):
-${lines}
-
-`;
-  }).join('');
+  return items.map(h => sungrazerReportText(h)).join('');
 }
 
 function allCSV(items) {
@@ -306,11 +299,12 @@ function allCSV(items) {
   const rows = items.flatMap(h => {
     const group = groups()[keyFor(h)] || "Unknown";
     const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
-    const firstDate = h.positions?.[0]?.time_utc?.split('T')[0] || "Unknown";
-    return h.positions.map(p => {
-      const t = p.time_utc.replace('T', ' ').replace('Z', '');
-      return `${h.detector},${h.track_index},${size},${group},${firstDate},${t},${Math.round(p.x)},${Math.round(p.y)}`;
-    });
+    const firstTime = h.positions?.[0]?.time_utc;
+    const firstDate = firstTime ? formatTime(firstTime).split(' ')[0] : "Unknown";
+    return (h.positions || []).map(p => {
+      const t = formatTime(p.time_utc);
+      return t === 'Unknown' ? null : `${h.detector},${h.track_index},${size},${group},${firstDate},${t},${Math.round(p.x)},${Math.round(p.y)}`;
+    }).filter(Boolean);
   });
   return [header, ...rows].join('\n');
 }
@@ -425,7 +419,6 @@ function renderGrid(items){
       return `${d.toFixed(1)} px / ${p.length} frames`; })();
     const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : '—';
 
-    // Orbit HTML
     let orbitHTML = '';
     const orb = h.predicted_orbit;
     if (orb && orb.orbit_2d) {
@@ -435,7 +428,7 @@ function renderGrid(items){
           <summary class="pill" style="cursor:pointer;font-weight:700;">
             2D Orbit: ${o2.orbit_group_guess} (q=${o2.perihelion_distance_Rsun} R⊙)
           </summary>
-          <pre style="font-size:0.7rem;margin:6px 0;background:#0b1220;padding:8px;border-radius:8px;overflow:auto;">
+          <pre style="font-size:0.7rem;margin:6px 0;background:#0b1220;padding::8px;border-radius:8px;overflow:auto;">
 ${orb.ascii_plot||''}
           </pre>
           ${orb.plot_path ? `<a href="${rawURL(orb.plot_path)}" target="_blank" rel="noopener"><img src="${rawURL(orb.plot_path)}" style="width:100%;border-radius:8px;margin-top:6px;" loading="lazy"></a>` : ''}
@@ -469,7 +462,7 @@ ${orb.ascii_plot||''}
         <div class="kv">Size: <b>${h.image_size?.[0]??1024}×${h.image_size?.[1]??1024}</b></div>
         <div class="kv">Origin: <b>Upper Left</b></div>
         <div class="kv">Frames: <b>${(h.positions||[]).length}</b></div>
-        <div class="kv">First: <b>${(h.positions?.[0]?.time_utc||"").split('T')[0]||'—'}</b></div>
+        <div class="kv">First: <b>${formatTime(h.positions?.[0]?.time_utc) || '—'}</b></div>
       </div>
       ${orbitHTML}
       <div class="row" style="margin-top:8px;">
@@ -529,12 +522,13 @@ ${orb.ascii_plot||''}
 
     // CSV Download
     const csvHeader = "camera,track_id,image_size,group,first_date,time_utc,x,y\n";
-    const csvRows = h.positions.map(p => {
-      const t = p.time_utc.replace('T', ' ').replace('Z', '');
+    const csvRows = (h.positions || []).map(p => {
+      const t = formatTime(p.time_utc);
+      if (t === 'Unknown') return null;
       const size = h.image_size ? `${h.image_size[0]}x${h.image_size[1]}` : "1024x1024";
-      const firstDate = h.positions[0].time_utc.split('T')[0];
+      const firstDate = formatTime(h.positions[0].time_utc).split(' ')[0];
       return `${h.detector},${h.track_index},${size},${groupVal},${firstDate},${t},${Math.round(p.x)},${Math.round(p.y)}`;
-    }).join('\n');
+    }).filter(Boolean).join('\n');
     const csvBlob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
     const csvA = document.createElement('a');
     csvA.href = URL.createObjectURL(csvBlob);
