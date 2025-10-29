@@ -51,7 +51,7 @@
   .muted{color:var(--muted);font-size:.75rem}
   .mark{display:flex;gap:6px;align-items:center}
   .flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
-  .flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
+  .flag.on(background:#11351d;border-color:#1d4d2a;color:#b5f7c0)
   .group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;padding:4px 6px;color:var(--text);font-size:.75rem}
   .seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
   .seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:.75rem}
@@ -60,33 +60,20 @@
   .video-container{margin-top:12px;border:1px solid #1e293b;border-radius:12px;overflow:hidden;background:#0b1220}
   .video-container video{width:100%;display:block;background:#000}
   footer{font-size:.75rem;color:var(--muted);padding:20px 0;text-align:center}
-  /* Smooth transitions */
   .gif, .thumb { transition: opacity .2s; }
   .gif:hover, .thumb:hover { opacity: .9; }
-
-  /* Subtle card hover lift */
   .card { transition: transform .15s, box-shadow .15s; }
   .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.5); }
-
-  /* Loading placeholder */
   .gif:not([src]), .thumb:not([src]) {
     background: linear-gradient(90deg, #0f1b30 25%, #1a2332 50%, #0f1b30 75%);
     background-size: 200% 100%;
     animation: loading 1.5s infinite;
   }
   @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-  /* Better focus for buttons */
   button, .seg button { transition: all .15s; }
   button:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
   .thumb { cursor: zoom-in; }
   .thumb:hover { transform: scale(1.05); }
-
-  body.light {
-    --bg:#f8fafc; --panel:#e2e8f0; --text:#1e293b; --muted:#64748b; --accent:#3b82f6;
-    --chip:#cbd5e1; --card:#ffffff; --shadow:0 8px 30px rgba(0,0,0,.12);
-  }
   .orbit-btn { background: #1e293b; color: #60a5fa; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; margin-top: 6px; display: inline-block; }
   .orbit-btn:hover { background: #334155; }
 </style>
@@ -116,7 +103,6 @@
         <label class="pill"><input type="checkbox" id="exportMarkedOnly"> Marked only</label>
         <a id="downloadAllTxt" class="pill" href="#" download style="display:none;">TXT</a>
         <a id="downloadAllCsv" class="pill" href="#" download style="display:none;">CSV</a>
-        <span id="exportAllHint" class="muted"></span>
         <button id="markAllComet">Mark All as Comet</button>
         <button id="clearMarks">Clear Marks</button>
       </div>
@@ -176,8 +162,6 @@
   </footer>
 </main>
 
-<script src="https://threejs.org/build/three.js"></script>
-<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 <script>
 /* ==================== CONFIG ==================== */
 const OWNER  = "NAGOHUSA";
@@ -198,7 +182,7 @@ const el = {
   lastFramesRow:$('#lastFramesRow'), c2Gif:$('#c2Gif'), c3Gif:$('#c3Gif'),
   c2GifTime:$('#c2GifTime'), c3GifTime:$('#c3GifTime'),
   exportAllBtn:$('#exportAllBtn'), exportMarkedOnly:$('#exportMarkedOnly'),
-  downloadAllTxt:$('#downloadAllTxt'), downloadAllCsv:$('#downloadAllCsv'), exportAllHint:$('#exportAllHint'),
+  downloadAllTxt:$('#downloadAllTxt'), downloadAllCsv:$('#downloadAllCsv'),
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta'),
   markAllComet:$('#markAllComet'), clearMarks:$('#clearMarks'),
   darkMode:$('#darkMode')
@@ -328,7 +312,7 @@ function animationWidget(h) {
   return wrap;
 }
 
-/* ---------- FILTERS ---------- */
+/* ---------- FILTERS & STATS ---------- */
 function applyFilters(items){
   let f = items;
   if(el.c2Filter.checked) f = f.filter(h=>h.detector==='C2');
@@ -367,9 +351,6 @@ function renderGrid(items){
     const cropURL = h.crop_path ? rawURL(h.crop_path) : null;
     const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
     const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
-
-    const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
-    const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
@@ -444,8 +425,6 @@ ${orb.ascii_plot||''}
       ${orbitHTML}
       <div class="row" style="margin-top:8px;">
         <button class="sgBtn">Copy for Sungrazer</button>
-        <a class="pill" href="${txtURL}" target="_blank" rel="noopener">TXT</a>
-        <a class="pill" href="${csvURL}" target="_blank" rel="noopener">CSV</a>
         ${origURL?`<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>`:''}
         ${annURL?`<a class="pill" href="${annURL}" target="_blank" rel="noopener">Annotated</a>`:''}
         <span class="right mark">
@@ -480,6 +459,27 @@ ${orb.ascii_plot||''}
     };
 
     meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
+
+    // Dynamic TXT/CSV download buttons
+    const txtBlob = new Blob([sungrazerText(h)], {type: 'text/plain'});
+    const txtA = document.createElement('a');
+    txtA.href = URL.createObjectURL(txtBlob);
+    txtA.download = `${h.detector}_track${h.track_index}_sungrazer.txt`;
+    txtA.className = 'pill';
+    txtA.textContent = 'TXT';
+    txtA.style.display = 'inline-flex';
+
+    const csvContent = `detector,track_index,time_utc,x,y\n` + h.positions.map(p => `${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`).join('\n');
+    const csvBlob = new Blob([csvContent], {type: 'text/csv'});
+    const csvA = document.createElement('a');
+    csvA.href = URL.createObjectURL(csvBlob);
+    csvA.download = `${h.detector}_track${h.track_index}_sungrazer.csv`;
+    csvA.className = 'pill';
+    csvA.textContent = 'CSV';
+    csvA.style.display = 'inline-flex';
+
+    meta.querySelector('.row').appendChild(txtA);
+    meta.querySelector('.row').appendChild(csvA);
   });
   if(items.length) el.grid.firstChild?.scrollIntoView({behavior:'smooth',block:'center'});
 }
