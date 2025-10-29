@@ -29,10 +29,8 @@
   .right{margin-left:auto}
   main{padding:16px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
-  .card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
-  .thumb{aspect-ratio:1.6/1;width:100%;background:#0b1220;object-fit:contain;display:block;transition:opacity .2s}
-  .thumb:hover{opacity:.9}
+  .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .thumb{aspect-ratio:1.6/1;width:100%;background:#0b1220;object-fit:contain;display:block}
   .meta{padding:12px;flex:1;display:flex;flex-direction:column;gap:8px}
   .kvs{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.8rem;color:var(--muted)}
   .kv b{color:var(--text)}
@@ -62,22 +60,41 @@
   .video-container{margin-top:12px;border:1px solid #1e293b;border-radius:12px;overflow:hidden;background:#0b1220}
   .video-container video{width:100%;display:block;background:#000}
   footer{font-size:.75rem;color:var(--muted);padding:20px 0;text-align:center}
-  /* Loading shimmer */
+  /* Smooth transitions */
+  .gif, .thumb { transition: opacity .2s; }
+  .gif:hover, .thumb:hover { opacity: .9; }
+
+  /* Subtle card hover lift */
+  .card { transition: transform .15s, box-shadow .15s; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+
+  /* Loading placeholder */
   .gif:not([src]), .thumb:not([src]) {
-    background: linear-gradient(90deg,#0f1b30 25%,#1a2332 50%,#0f1b30 75%);
-    background-size:200% 100%; animation:loading 1.5s infinite;
+    background: linear-gradient(90deg, #0f1b30 25%, #1a2332 50%, #0f1b30 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
   }
-  @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  /* Dark-mode toggle */
-  body.light{--bg:#f8fafc;--panel:#e2e8f0;--text:#1e293b;--muted:#64748b;--accent:#3b82f6;--chip:#cbd5e1;--card:#ffffff;--shadow:0 8px 30px rgba(0,0,0,.12)}
-  /* Orbit iframe */
-  .orbit-plot iframe{width:100%;height:400px;border:none;border-radius:8px;margin-top:8px;}
+  @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Better focus for buttons */
+  button, .seg button { transition: all .15s; }
+  button:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .thumb { cursor: zoom-in; }
+  .thumb:hover { transform: scale(1.05); }
+
+  body.light {
+    --bg:#f8fafc; --panel:#e2e8f0; --text:#1e293b; --muted:#64748b; --accent:#3b82f6;
+    --chip:#cbd5e1; --card:#ffffff; --shadow:0 8px 30px rgba(0,0,0,.12);
+  }
+  .orbit-btn { background: #1e293b; color: #60a5fa; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; margin-top: 6px; display: inline-block; }
+  .orbit-btn:hover { background: #334155; }
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter 1.5</h1>
+    <h1>SOHO Comet Hunter 1.6</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -99,6 +116,7 @@
         <label class="pill"><input type="checkbox" id="exportMarkedOnly"> Marked only</label>
         <a id="downloadAllTxt" class="pill" href="#" download style="display:none;">TXT</a>
         <a id="downloadAllCsv" class="pill" href="#" download style="display:none;">CSV</a>
+        <span id="exportAllHint" class="muted"></span>
         <button id="markAllComet">Mark All as Comet</button>
         <button id="clearMarks">Clear Marks</button>
       </div>
@@ -107,7 +125,8 @@
 </header>
 
 <main class="wrap">
-  <div id="liveStats" style="position:fixed;top:16px;right:16px;background:var(--panel);padding:8px 12px;border-radius:12px;font-size:.8rem;color:var(--text);z-index:9;display:none;">
+
+  <div id="liveStats" style="position:fixed;top:16px;right:16px;background:var(--panel);padding:8px 12px;border-radius:12px;font-size:.8rem;color:var(--text);z-index:9;">
     <span id="frameCount">—</span> frames • <span id="candCount">—</span> tracks
   </div>
 
@@ -157,6 +176,8 @@
   </footer>
 </main>
 
+<script src="https://threejs.org/build/three.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 <script>
 /* ==================== CONFIG ==================== */
 const OWNER  = "NAGOHUSA";
@@ -177,7 +198,7 @@ const el = {
   lastFramesRow:$('#lastFramesRow'), c2Gif:$('#c2Gif'), c3Gif:$('#c3Gif'),
   c2GifTime:$('#c2GifTime'), c3GifTime:$('#c3GifTime'),
   exportAllBtn:$('#exportAllBtn'), exportMarkedOnly:$('#exportMarkedOnly'),
-  downloadAllTxt:$('#downloadAllTxt'), downloadAllCsv:$('#downloadAllCsv'),
+  downloadAllTxt:$('#downloadAllTxt'), downloadAllCsv:$('#downloadAllCsv'), exportAllHint:$('#exportAllHint'),
   refreshBtn:$('#refreshBtn'), refreshEta:$('#refreshEta'),
   markAllComet:$('#markAllComet'), clearMarks:$('#clearMarks'),
   darkMode:$('#darkMode')
@@ -203,13 +224,15 @@ function rawURL(path) {
   const rel = p.startsWith('detections/') ? p : `detections/${p}`;
   return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${rel}`;
 }
-const freshURL = url => `${url}${url.includes('?')?'&':'?'}t=${Date.now()}`;
 
-async function fetchJSON(url, retry=0){
+const freshURL = url => `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+
+async function fetchJSON(url, retry = 0){
   try{
     const r = await fetch(url,{headers:{'Accept':'application/vnd.github+json'}});
     if(r.status===429){
       const wait = Math.pow(2,retry)*1000 + 500;
+      showError(`Rate-limited – retry in ${Math.round(wait/1000)}s`);
       await new Promise(res=>setTimeout(res,wait));
       return fetchJSON(url,retry+1);
     }
@@ -221,33 +244,37 @@ async function fetchJSON(url, retry=0){
   }
 }
 function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML=`<div class="err">${msg}</div>`; }
+function hideError(){ el.errors.style.display='none'; }
 
 /* ---------- UI HELPERS ---------- */
-function fmtSec(s){ const m=Math.floor(s/60),sec=s%60; return `${m}:${sec<10?'0':''}${sec}`; }
+function fmtSec(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return `${m}:${sec<10?'0':''}${sec}`;
+}
 function parseReportTime(name){
-  const m=name.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
+  const m = name.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
   if(m){
-    const utc=new Date(Date.UTC(m[1],m[2]-1,m[3],m[4],m[5],m[6]));
-    return {utc:utc.toISOString(),local:utc.toLocaleString()};
+    const utc = new Date(Date.UTC(m[1],m[2]-1,m[3],m[4],m[5],m[6]));
+    return {utc:utc.toISOString(), local:utc.toLocaleString()};
   }
   return null;
 }
 function seg(opts){
-  const s=document.createElement('div'); s.className='seg';
-  opts.forEach(o=>{
-    const b=document.createElement('button');
-    b.textContent=o.label;
-    if(o.active) b.classList.add('active');
-    if(o.disabled) b.disabled=true;
-    else b.onclick=()=>{ s.querySelectorAll('button').forEach(bb=>bb.classList.remove('active')); b.classList.add('active'); o.click(); };
-    s.appendChild(b);
+  const seg = document.createElement('div'); seg.className='seg';
+  opts.forEach(({label, active, disabled, click})=>{
+    const b = document.createElement('button');
+    b.textContent = label;
+    if(active) b.classList.add('active');
+    if(disabled) b.disabled = true;
+    else b.onclick = ()=>{ seg.querySelectorAll('button').forEach(b=>b.classList.remove('active')); b.classList.add('active'); click(); };
+    seg.appendChild(b);
   });
-  return s;
+  return seg;
 }
 function sungrazerText(h){
   return h.positions.map(p=>`${p.time_utc.replace(/Z$/,'').replace('T',' ')} ${p.x|0} ${p.y|0}`).join('\n');
 }
-function allSungrazerText(items,name){
+function allSungrazerText(items, name){
   return items.map((h,i)=>`# Candidate ${i+1} (${h.detector.toUpperCase()} Track #${h.track_index})\n${sungrazerText(h)}\n\n`).join('');
 }
 function allCSV(items){
@@ -255,80 +282,87 @@ function allCSV(items){
     items.flatMap(h=>h.positions.map(p=>`${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`)).join('\n');
 }
 
-/* ---------- ANIMATION WIDGET (GIF + MP4) ---------- */
-function animationWidget(h){
+/* ---------- ANIMATION WIDGET ---------- */
+function animationWidget(h) {
   const annMp4 = h.animation_mp4_path ? rawURL(h.animation_mp4_path) : null;
   const annGif = h.animation_gif_path ? rawURL(h.animation_gif_path) : null;
-  const cleanGif= h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : null;
-
-  const wrap=document.createElement('div'); wrap.className='video-container';
-  if(!annMp4 && !annGif && !cleanGif){
-    wrap.innerHTML=`<div style="padding:12px;color:#94a3b8;">No animation yet…</div>`;
+  const cleanGif = h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : null;
+  const wrap = document.createElement('div');
+  wrap.className = 'video-container';
+  if (!annMp4 && !annGif && !cleanGif) {
+    wrap.innerHTML = `<div style="padding:12px;color:#94a3b8;">No animation yet…</div>`;
     return wrap;
   }
+  const media = document.createElement(annMp4 ? 'video' : 'img');
+  media.className = 'gif';
+  media.loop = true;
+  if (annMp4) {
+    media.muted = true;
+    media.playsInline = true;
+    media.autoplay = true;
+  }
+  media.alt = 'Candidate animation';
+  media.loading = 'lazy';
 
-  const media=document.createElement(annMp4?'video':'img');
-  media.className='gif'; media.loop=true;
-  if(annMp4){ media.muted=true; media.playsInline=true; media.autoplay=true; }
+  const setSrc = (url, isVideo) => { media.src = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`; if (isVideo) media.load(); };
 
-  const setSrc=(url,isVideo)=>{
-    if(isVideo){ media.src=`${url}?t=${Date.now()}`; media.load(); }
-    else media.src=`${url}?t=${Date.now()}`;
-  };
-
-  const bar=seg([
-    {label:'Annotated',active:!!(annMp4||annGif),disabled:!(annMp4||annGif),click:()=>setSrc(annMp4||annGif,!!annMp4)},
-    {label:'Clean',active:!!(annMp4||annGif)&&!!cleanGif,disabled:!cleanGif,click:()=>setSrc(cleanGif,false)},
+  const bar = seg([
+    { label: 'Annotated', active: !!(annMp4 || annGif), disabled: !(annMp4 || annGif), click: () => setSrc(annMp4 || annGif, !!annMp4) },
+    { label: 'Clean', active: !annMp4 && !!cleanGif, disabled: !cleanGif, click: () => setSrc(cleanGif, false) },
   ]);
-  bar.style.margin='8px';
+  bar.style.margin = '8px';
 
-  setSrc(annMp4||annGif,!!annMp4);
+  setSrc(annMp4 || annGif, !!annMp4);
 
-  const links=document.createElement('div');
-  links.style.padding='6px 10px';
-  const a=[];
-  if(annMp4) a.push(`<a class="pill" href="${annMp4}" target="_blank">Open MP4</a>`);
-  if(annGif) a.push(`<a class="pill" href="${annGif}" target="_blank">Open GIF</a>`);
-  if(cleanGif) a.push(`<a class="pill" href="${cleanGif}" target="_blank">Open clean</a>`);
-  links.innerHTML=a.join(' ');
-  wrap.appendChild(bar); wrap.appendChild(media); wrap.appendChild(links);
+  const open = document.createElement('div');
+  open.style = 'padding:6px 10px';
+  open.innerHTML = [
+    annMp4 ? `<a class="pill" target="_blank" rel="noopener" href="${annMp4}">Open MP4</a>` : '',
+    annGif ? `<a class="pill" target="_blank" rel="noopener" href="${annGif}">Open GIF</a>` : '',
+    cleanGif ? `<a class="pill" target="_blank" rel="noopener" href="${cleanGif}">Open clean</a>` : ''
+  ].filter(Boolean).join(' ');
+
+  wrap.appendChild(bar);
+  wrap.appendChild(media);
+  wrap.appendChild(open);
   return wrap;
 }
 
-/* ---------- FILTER & STATS ---------- */
+/* ---------- FILTERS ---------- */
 function applyFilters(items){
-  let f=items;
-  if(el.c2Filter.checked) f=f.filter(h=>h.detector==='C2');
-  if(el.c3Filter.checked) f=f.filter(h=>h.detector==='C3');
-  if(el.aiOnly.checked) f=f.filter(h=>(h.ai_label||'').toLowerCase()==='comet');
-  if(el.markedOnly.checked) f=f.filter(h=>marks()[keyFor(h)]);
+  let f = items;
+  if(el.c2Filter.checked) f = f.filter(h=>h.detector==='C2');
+  if(el.c3Filter.checked) f = f.filter(h=>h.detector==='C3');
+  if(el.aiOnly.checked) f = f.filter(h=>(h.ai_label||'').toLowerCase()==='comet');
+  if(el.markedOnly.checked) f = f.filter(h=>marks()[keyFor(h)]);
   return f;
 }
 function renderStats(items){
-  const f=applyFilters(items);
-  const stats=[
-    {label:'Candidates',val:f.length},
-    {label:'C2',val:f.filter(h=>h.detector==='C2').length},
-    {label:'C3',val:f.filter(h=>h.detector==='C3').length},
-    {label:'Comet AI',val:f.filter(h=>(h.ai_label||'').toLowerCase()==='comet').length},
-    {label:'Marked',val:f.filter(h=>marks()[keyFor(h)]).length},
+  const f = applyFilters(items);
+  const stats = [
+    {label:'Candidates', val:f.length},
+    {label:'C2', val:f.filter(h=>h.detector==='C2').length},
+    {label:'C3', val:f.filter(h=>h.detector==='C3').length},
+    {label:'Comet AI', val:f.filter(h=>(h.ai_label||'').toLowerCase()==='comet').length},
+    {label:'Marked', val:f.filter(h=>marks()[keyFor(h)]).length},
   ];
-  el.stats.innerHTML=stats.map(s=>`<div class="stat"><div>${s.label}</div><b>${s.val}</b></div>`).join('');
-  $('#liveStats').style.display=f.length?'block':'none';
-  $('#frameCount').textContent=f.reduce((a,c)=>a+c.positions.length,0);
-  $('#candCount').textContent=f.length;
+  el.stats.innerHTML = stats.map(s=>`<div class="stat"><div>${s.label}</div><b>${s.val}</b></div>`).join('');
+  $('#liveStats').style.display = f.length ? 'block' : 'none';
+  $('#frameCount').textContent = f.length ? `${f.reduce((a,c)=>a+c.positions.length,0)}` : '0';
+  $('#candCount').textContent = f.length;
 }
 
-/* ---------- GRID RENDER (with orbit visualization) ---------- */
+/* ---------- RENDER GRID ---------- */
 function renderGrid(items){
   renderStats(items);
-  items=applyFilters(items);
-  el.grid.innerHTML=''; el.grid.hidden=!items.length; el.empty.hidden=!!items.length;
-  el.empty.textContent=items.length?'':'No candidates match filters.';
+  items = applyFilters(items);
+  el.grid.innerHTML = '';
+  el.grid.hidden = !items.length; el.empty.hidden = !!items.length;
+  el.empty.textContent = items.length ? '' : 'No candidates match filters.';
   items.forEach((h,i)=>{
-    const k=keyFor(h);
-    const marked=!!marks()[k];
-    const groupVal=groups()[k]||"Unknown";
+    const k = keyFor(h);
+    const marked = !!marks()[k];
+    const groupVal = groups()[k]||"Unknown";
 
     const cropURL = h.crop_path ? rawURL(h.crop_path) : null;
     const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
@@ -337,40 +371,60 @@ function renderGrid(items){
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
-    const card=document.createElement('div'); card.className='card';
-    const img=document.createElement('img'); img.className='thumb'; img.loading='lazy';
-    img.src=freshURL(cropURL); img.alt=`candidate ${i+1}`;
-    const link=document.createElement('a'); link.href=freshURL(cropURL); link.target='_blank'; link.rel='noopener';
+    const card = document.createElement('div'); card.className='card';
+    const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
+    img.src = freshURL(cropURL); img.alt = `candidate ${i+1}`;
+    const link = document.createElement('a'); link.href=freshURL(cropURL); link.target='_blank'; link.rel='noopener';
     link.appendChild(img); card.appendChild(link);
 
-    const segWrap=document.createElement('div'); segWrap.style.padding='0 12px 8px';
-    const segToggle=seg([
-      {label:'Crop',active:true,click:()=>{img.src=link.href=freshURL(cropURL);}},
-      {label:'Original',disabled:!origURL,click:()=>{img.src=link.href=freshURL(origURL);}},
-      {label:'Annotated',disabled:!annURL,click:()=>{img.src=link.href=freshURL(annURL);}}
+    img.onerror = () => { img.alt = '(loading failed)'; img.title = 'Image failed to load'; };
+
+    const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
+    const segToggle = seg([
+      {label:'Crop', active:true, click:()=>{ const url=freshURL(cropURL); img.src=url; link.href=url; }},
+      {label:'Original', disabled:!origURL, click:()=>{ const url=freshURL(origURL); img.src=url; link.href=url; }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ const url=freshURL(annURL); img.src=url; link.href=url; }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
+
     card.appendChild(animationWidget(h));
 
-    const meta=document.createElement('div'); meta.className='meta';
-    const speed=(()=>{const p=h.positions||[];if(p.length<2)return'—';
-      const dx=p[p.length-1].x-p[0].x, dy=p[p.length-1].y-p[0].y;
-      return `${Math.hypot(dx,dy).toFixed(1)} px / ${p.length} frames`;})();
-    const pa=h.dual_channel_match?`${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)`:'—';
+    const meta = document.createElement('div'); meta.className='meta';
+    const speed = (()=>{ const p=h.positions||[]; if(p.length<2) return '—';
+      const d = Math.hypot(p[p.length-1].x-p[0].x, p[p.length-1].y-p[0].y);
+      return `${d.toFixed(1)} px / ${p.length} frames`; })();
+    const pa = h.dual_channel_match ? `${h.dual_channel_match.with} (Δ=${h.dual_channel_match.pa_diff_deg}°)` : '—';
 
-    // ---- ORBIT VISUALIZATION ----
+    // Orbit HTML
     let orbitHTML = '';
     const orb = h.predicted_orbit;
-    if (orb && orb.interactive_plot_path) {
-      orbitHTML = `
+    if (orb && orb.orbit_2d) {
+      const o2 = orb.orbit_2d;
+      orbitHTML += `
         <details style="margin-top:8px;">
           <summary class="pill" style="cursor:pointer;font-weight:700;">
-            Interactive Orbit Plot
+            2D Orbit: ${o2.orbit_group_guess} (q=${o2.perihelion_distance_Rsun} R⊙)
           </summary>
-          <div class="orbit-plot">
-            <iframe src="${rawURL(orb.interactive_plot_path)}" loading="lazy"></iframe>
-          </div>
+          <pre style="font-size:0.7rem;margin:6px 0;background:#0b1220;padding:8px;border-radius:8px;overflow:auto;">
+${orb.ascii_plot||''}
+          </pre>
+          ${orb.plot_path ? `<a href="${rawURL(orb.plot_path)}" target="_blank" rel="noopener"><img src="${rawURL(orb.plot_path)}" style="width:100%;border-radius:8px;margin-top:6px;" loading="lazy"></a>` : ''}
         </details>`;
+    }
+    if (orb && orb.orbit_3d) {
+      const o3 = orb.orbit_3d;
+      orbitHTML += `
+        <div style="margin-top:8px;">
+          <summary class="pill" style="cursor:pointer;font-weight:700;color:#ff0;">
+            3D Orbit: ${o3.orbit_group_guess} (i=${o3.inclination_deg}°)
+          </summary>
+          <div style="font-size:0.8rem;padding:6px;">
+            Perihelion: ${new Date(o3.perihelion_time_utc).toLocaleString()} <br>
+            q = ${o3.perihelion_distance_Rsun} R⊙ | v = ${o3.speed_at_perihelion_kms} km/s <br>
+            PA = ${o3.position_angle_deg}° | Inclination = ${o3.inclination_deg}°
+          </div>
+          <div class="orbit-btn" onclick="show3DOrbit(${JSON.stringify(o3)})">View Interactive 3D Orbit</div>
+        </div>`;
     }
 
     meta.innerHTML = `
@@ -409,37 +463,39 @@ function renderGrid(items){
     card.appendChild(meta);
     el.grid.appendChild(card);
 
-    meta.querySelector('.sgBtn').onclick=()=>{ 
+    meta.querySelector('.sgBtn').onclick = ()=>{ 
       navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
         const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
         setTimeout(()=>b.textContent='Copy for Sungrazer',1200); 
       });
     };
-    const flag=meta.querySelector('.flag');
-    flag.onclick=()=>{ 
-      const m=marks(); 
-      if(m[k]){delete m[k];flag.classList.remove('on');flag.textContent='Mark';} 
-      else{m[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
-      saveMarks(m); 
+
+    const flag = meta.querySelector('.flag');
+    flag.onclick = ()=>{ 
+      const mm=marks(); 
+      if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';} 
+      else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
+      saveMarks(mm); 
       if(el.markedOnly.checked) renderGrid(items); 
     };
-    meta.querySelector('.group').onchange=e=>{ const g=groups(); g[k]=e.target.value; saveGroups(g); };
+
+    meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
   });
   if(items.length) el.grid.firstChild?.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-/* ---------- THUMBNAILS & LIVE GIFs ---------- */
+/* ---------- LAST-FRAME THUMBNAILS ---------- */
 async function loadThumbs(){
-  const dets=['C2','C3'];
-  const rows=[];
+  const dets = ['C2', 'C3'];
+  const rows = [];
   for(const d of dets){
-    const thumb=await imgExists(`lastthumb_${d}.png`);
-    const overlay=await imgExists(`overlay_${d}.png`);
-    const contact=await imgExists(`contact_${d}.png`);
+    const thumb = await imgExists(`lastthumb_${d}.png`);
+    const overlay = await imgExists(`overlay_${d}.png`);
+    const contact = await imgExists(`contact_${d}.png`);
     if(thumb.ok||overlay.ok||contact.ok) rows.push({det:d,thumb,overlay,contact});
   }
   if(!rows.length) return;
-  el.lastFramesRow.innerHTML=rows.map(o=>`
+  el.lastFramesRow.innerHTML = rows.map(o=>`
     <div class="thumbCard">
       <div class="thumbHead">
         <span class="pill">${o.det}</span>
@@ -463,134 +519,118 @@ function imgExists(path){
     i.src=freshURL(rawURL(path));
   });
 }
+
+/* ---------- LIVE GIFs ---------- */
 function refreshLiveGifs(){
-  const t=Date.now();
-  el.c2Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
-  el.c3Gif.src=`https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-  const now=new Date().toLocaleTimeString();
-  el.c2GifTime.textContent=`refreshed ${now}`;
-  el.c3GifTime.textContent=`refreshed ${now}`;
+  const t = Date.now();
+  el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
+  el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
+  const now = new Date().toLocaleTimeString();
+  el.c2GifTime.textContent = `refreshed ${now}`;
+  el.c3GifTime.textContent = `refreshed ${now}`;
 }
 
-/* ---------- REPORT LIST & LOAD ---------- */
-let allReportFiles=[];
+/* ---------- MAIN LOAD & DROPDOWNS ---------- */
+let allReportFiles = [];
 async function loadReportList(){
+  hideError();
   try{
-    const list=await fetchJSON(apiListURL());
-    const files=Array.isArray(list)?list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
+    const list = await fetchJSON(apiListURL());
+    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
                                       .sort((a,b)=>b.name.localeCompare(a.name)) : [];
 
-    allReportFiles=[];
-    el.latestSelect.innerHTML='<option value="">— Latest Report —</option>';
-    el.hitsSelect.innerHTML  ='<option value="">— Potential Hits —</option>';
+    allReportFiles = [];
+    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
+    el.hitsSelect.innerHTML   = '<option value="">— Potential Hits —</option>';
 
     for(const f of files){
-      const data=await fetchJSON(rawURL(f.name));
-      const hasComet=Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
-      allReportFiles.push({name:f.name,hasComet});
-      const opt=document.createElement('option');
-      opt.value=f.name; opt.textContent=f.name;
+      const data = await fetchJSON(rawURL(f.name));
+      const hasComet = Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
+      allReportFiles.push({name:f.name, hasComet});
+
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      opt.textContent = f.name;
       el.latestSelect.appendChild(opt.cloneNode(true));
       if(hasComet) el.hitsSelect.appendChild(opt);
     }
 
     if(files.length){
-      el.latestSelect.value=files[0].name;
-      await loadReport(files[0].name,false);
+      el.latestSelect.value = files[0].name;
+      await loadReport(files[0].name, false);
     }else{
-      el.viewName.textContent='—'; el.reportTime.textContent='';
-      el.grid.hidden=true; el.empty.hidden=false;
-      el.empty.textContent='No candidate files yet.';
+      el.viewName.textContent = '—';
+      el.reportTime.textContent = '';
+      el.grid.hidden = true; el.empty.hidden = false;
+      el.empty.textContent = 'No candidate files yet.';
     }
     await loadThumbs();
   }catch(e){
     showError(`GitHub load failed: ${e.message}`);
-    el.empty.textContent="Unable to fetch report list.";
+    el.empty.textContent = "Unable to fetch report list.";
   }finally{
     refreshLiveGifs();
   }
 }
-async function loadReport(name,isHitFile){
+
+async function loadReport(name, isHitFile){
   try{
-    const data=await fetchJSON(rawURL(name));
-    currentReport={name,items:Array.isArray(data)?data:[],isHitFile:!!isHitFile};
-    el.viewName.textContent=isHitFile?`Potential Hits – ${name}`:name;
-    const t=parseReportTime(name);
-    el.reportTime.textContent=t?`• ${t.local} (local)`:'';
+    const data = await fetchJSON(rawURL(name));
+    currentReport = {name, items:Array.isArray(data)?data:[], isHitFile:!!isHitFile};
+
+    el.viewName.textContent = isHitFile ? `Potential Hits – ${name}` : name;
+    const t = parseReportTime(name);
+    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
+
     renderGrid(currentReport.items);
   }catch(e){
     showError(`Failed to load ${name}: ${e.message}`);
   }
 }
-el.latestSelect.onchange=e=>{if(e.target.value) loadReport(e.target.value,false);};
-el.hitsSelect.onchange  =e=>{if(e.target.value) loadReport(e.target.value,true);};
+
+el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
+el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
 
 /* ---------- EXPORT ALL ---------- */
 function exportAll(){
   if(!currentReport) return alert('No report loaded.');
-  let items=applyFilters(currentReport.items);
-  if(el.exportMarkedOnly.checked) items=items.filter(h=>marks()[keyFor(h)]);
+  let items = applyFilters(currentReport.items);
+  if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
   if(!items.length) return alert('No candidates to export (check filters).');
 
-  const txt=allSungrazerText(items,currentReport.name);
+  const txt = allSungrazerText(items, currentReport.name);
   navigator.clipboard.writeText(txt).catch(()=>{});
-  const csv=allCSV(items);
-  const txtBlob=new Blob([txt],{type:'text/plain'});
-  const csvBlob=new Blob([csv],{type:'text/csv'});
-  el.downloadAllTxt.href=URL.createObjectURL(txtBlob);
-  el.downloadAllTxt.download=`${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.txt`;
+
+  const csv = allCSV(items);
+  const txtBlob = new Blob([txt],{type:'text/plain'});
+  const csvBlob = new Blob([csv],{type:'text/csv'});
+
+  el.downloadAllTxt.href = URL.createObjectURL(txtBlob);
+  el.downloadAllTxt.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.txt`;
   el.downloadAllTxt.style.display='inline-flex';
-  el.downloadAllCsv.href=URL.createObjectURL(csvBlob);
-  el.downloadAllCsv.download=`${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.csv`;
+
+  el.downloadAllCsv.href = URL.createObjectURL(csvBlob);
+  el.downloadAllCsv.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.csv`;
   el.downloadAllCsv.style.display='inline-flex';
+
   el.exportAllBtn.textContent='Exported & Copied!';
   setTimeout(()=>el.exportAllBtn.textContent='Export ALL',1200);
 }
-el.exportAllBtn.onclick=exportAll;
+el.exportAllBtn.onclick = exportAll;
 
 /* ---------- AUTO-REFRESH ---------- */
 function startAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
-  countdown=REFRESH_SECS; el.refreshEta.textContent=fmtSec(countdown);
-  refreshTimer=setInterval(()=>{
-    countdown--; el.refreshEta.textContent=fmtSec(countdown);
+  countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
+  refreshTimer = setInterval(()=>{
+    countdown--; el.refreshEta.textContent = fmtSec(countdown);
     if(countdown<=0){ loadReportList(); countdown=REFRESH_SECS; }
   },1000);
 }
 
 /* ---------- UI BINDINGS ---------- */
-el.refreshBtn.onclick=()=>{ countdown=REFRESH_SECS; loadReportList(); };
+el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
 $$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
-el.darkMode.onchange=e=>{ document.body.classList.toggle('light',!e.target.checked); };
-el.markAllComet.onclick=()=>{
-  const m=marks();
-  currentReport.items.forEach(h=>m[keyFor(h)]=true);
-  saveMarks(m); renderGrid(currentReport.items);
-};
-el.clearMarks.onclick=()=>{ saveMarks({}); renderGrid(currentReport.items); };
-
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT') return;
-  if(e.key==='r') el.refreshBtn.click();
-  if(e.key==='a') el.exportAllBtn.click();
-  if(e.key==='m') el.markedOnly.click();
-  if(e.key==='1') el.c2Filter.click();
-  if(e.key==='2') el.c3Filter.click();
-});
-
-/* Thumbnail zoom modal */
-document.body.addEventListener('click',e=>{
-  if(e.target.classList.contains('thumb')){
-    const modal=document.createElement('div');
-    modal.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out;`;
-    const img=document.createElement('img');
-    img.src=e.target.src.replace(/&t=\d+/,'');
-    img.style.cssText='max-width:90%;max-height:90%;border:4px solid #60a5fa;border-radius:8px;';
-    modal.appendChild(img);
-    modal.onclick=()=>modal.remove();
-    document.body.appendChild(modal);
-  }
-});
 
 /* ---------- BOOT ---------- */
 loadReportList().then(startAutoRefresh);
