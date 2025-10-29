@@ -66,7 +66,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter1.1</h1>
+    <h1>SOHO Comet Hunter1.2</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -363,3 +363,190 @@ function renderGrid(items){
         ${origURL?`<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>`:''}
         ${annURL?`<a class="pill" href="${annURL}" target="_blank" rel="noopener">Annotated</a>`:''}
         <span class="right mark">
+          <select class="group">
+            <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
+            <option ${groupVal==='Kreutz'?'selected':''}>Kreutz</option>
+            <option ${groupVal==='Meyer'?'selected':''}>Meyer</option>
+            <option ${groupVal==='Marsden'?'selected':''}>Marsden</option>
+            <option ${groupVal==='Kracht'?'selected':''}>Kracht</option>
+            <option ${groupVal==='Kracht-II'?'selected':''}>Kracht-II</option>
+          </select>
+          <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
+        </span>
+      </div>`;
+    card.appendChild(meta);
+    el.grid.appendChild(card);
+
+    meta.querySelector('.sgBtn').onclick = ()=>{ 
+      navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
+        const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
+        setTimeout(()=>b.textContent='Copy for Sungrazer',1200); 
+      });
+    };
+
+    const flag = meta.querySelector('.flag');
+    flag.onclick = ()=>{ 
+      const mm=marks(); 
+      if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';} 
+      else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
+      saveMarks(mm); 
+      if(el.markedOnly.checked) renderGrid(items); 
+    };
+
+    meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
+  });
+}
+
+/* ---------- LAST-FRAME THUMBNAILS ---------- */
+async function loadThumbs(){
+  const dets = ['C2','C3'];
+  const rows = [];
+  for(const d of dets){
+    const thumb = await imgExists(`lastthumb_${d}.png`);
+    const overlay = await imgExists(`overlay_${d}.png`);
+    const contact = await imgExists(`contact_${d}.png`);
+    if(thumb.ok||overlay.ok||contact.ok) rows.push({det:d,thumb,overlay,contact});
+  }
+  if(!rows.length) return;
+  el.lastFramesRow.innerHTML = rows.map(o=>`
+    <div class="thumbCard">
+      <div class="thumbHead">
+        <span class="pill">${o.det}</span>
+        ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
+      </div>
+      ${o.thumb.ok?`<a href="${rawURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${freshURL(rawURL(`lastthumb_${o.det}.png`))}" alt="last ${o.det}" loading="lazy"></a>`:
+        `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
+      <div class="meta">
+        <div class="kv">
+          ${o.overlay.ok?`Overlay: <a href="${rawURL(`overlay_${o.det}.png`)}" target="_blank">open</a>`:'Overlay: —'} •
+          ${o.contact.ok?`Contact: <a href="${rawURL(`contact_${o.det}.png`)}" target="_blank">open</a>`:'Contact: —'}
+        </div>
+      </div>
+    </div>`).join('');
+}
+function imgExists(path){
+  return new Promise(res=>{
+    const i=new Image();
+    i.onload = ()=>res({ok:true,w:i.naturalWidth,h:i.naturalHeight});
+    i.onerror = ()=>res({ok:false});
+    i.src = freshURL(rawURL(path));
+  });
+}
+
+/* ---------- LIVE GIFs ---------- */
+function refreshLiveGifs(){
+  const t = Date.now();
+  el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
+  el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
+  const now = new Date().toLocaleTimeString();
+  el.c2GifTime.textContent = `refreshed ${now}`;
+  el.c3GifTime.textContent = `refreshed ${now}`;
+}
+
+/* ---------- MAIN LOAD & DROPDOWNS ---------- */
+let allReportFiles = [];
+async function loadReportList(){
+  hideError();
+  try{
+    const list = await fetchJSON(apiListURL());
+    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
+                                      .sort((a,b)=>b.name.localeCompare(a.name)) : [];
+
+    allReportFiles = [];
+    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
+    el.hitsSelect.innerHTML   = '<option value="">— Potential Hits —</option>';
+
+    for(const f of files){
+      const data = await fetchJSON(rawURL(f.name));
+      const hasComet = Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
+      allReportFiles.push({name:f.name, hasComet});
+
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      opt.textContent = f.name;
+      el.latestSelect.appendChild(opt.cloneNode(true));
+      if(hasComet) el.hitsSelect.appendChild(opt);
+    }
+
+    if(files.length){
+      el.latestSelect.value = files[0].name;
+      await loadReport(files[0].name, false);
+    }else{
+      el.viewName.textContent = '—';
+      el.reportTime.textContent = '';
+      el.grid.hidden = true; el.empty.hidden = false;
+      el.empty.textContent = 'No candidate files yet.';
+    }
+    await loadThumbs();
+  }catch(e){
+    showError(`GitHub load failed: ${e.message}`);
+    el.empty.textContent = "Unable to fetch report list.";
+  }finally{
+    refreshLiveGifs();
+  }
+}
+
+async function loadReport(name, isHitFile){
+  try{
+    const data = await fetchJSON(rawURL(name));
+    currentReport = {name, items:Array.isArray(data)?data:[], isHitFile:!!isHitFile};
+
+    el.viewName.textContent = isHitFile ? `Potential Hits – ${name}` : name;
+    const t = parseReportTime(name);
+    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
+
+    renderGrid(currentReport.items);
+  }catch(e){
+    showError(`Failed to load ${name}: ${e.message}`);
+  }
+}
+
+el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
+el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
+
+/* ---------- EXPORT ALL ---------- */
+function exportAll(){
+  if(!currentReport) return alert('No report loaded.');
+  let items = applyFilters(currentReport.items);
+  if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
+  if(!items.length) return alert('No candidates to export (check filters).');
+
+  const txt = allSungrazerText(items, currentReport.name);
+  navigator.clipboard.writeText(txt).catch(()=>{});
+
+  const csv = allCSV(items);
+  const txtBlob = new Blob([txt],{type:'text/plain'});
+  const csvBlob = new Blob([csv],{type:'text/csv'});
+
+  el.downloadAllTxt.href = URL.createObjectURL(txtBlob);
+  el.downloadAllTxt.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.txt`;
+  el.downloadAllTxt.style.display='inline-flex';
+
+  el.downloadAllCsv.href = URL.createObjectURL(csvBlob);
+  el.downloadAllCsv.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.csv`;
+  el.downloadAllCsv.style.display='inline-flex';
+
+  el.exportAllBtn.textContent='Exported & Copied!';
+  setTimeout(()=>el.exportAllBtn.textContent='Export ALL',1200);
+}
+el.exportAllBtn.onclick = exportAll;
+
+/* ---------- AUTO-REFRESH ---------- */
+function startAutoRefresh(){
+  if(refreshTimer) clearInterval(refreshTimer);
+  countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
+  refreshTimer = setInterval(()=>{
+    countdown--; el.refreshEta.textContent = fmtSec(countdown);
+    if(countdown<=0){ loadReportList(); countdown=REFRESH_SECS; }
+  },1000);
+}
+
+/* ---------- UI BINDINGS ---------- */
+el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
+$$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
+
+/* ---------- BOOT ---------- */
+loadReportList().then(startAutoRefresh);
+</script>
+</body>
+</html>
