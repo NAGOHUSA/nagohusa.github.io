@@ -1,3 +1,4 @@
+<!-- DOCUMENT filename="index.html" -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +66,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter1.0</h1>
+    <h1>SOHO Comet Hunter1.1</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -173,15 +174,12 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 
-/* Hardened raw URL builder:
-   - http(s):// => return as-is
-   - starts with "detections/" => use as-is
-   - else => prefix "detections/" */
 function rawURL(path) {
-  const p = String(path || '').replace(/^\.?\/*/, '');
+  const p = String(path || '').replace(/^\/+/, '');
+  if (!p) return '';
   if (/^https?:\/\//i.test(p)) return p;
-  const withFolder = p.startsWith(`${FOLDER}/`) ? p : `${FOLDER}/${p}`;
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${withFolder}`;
+  const rel = p.startsWith('detections/') ? p : `detections/${p}`;
+  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${rel}`;
 }
 
 /* Helper to add fresh timestamp */
@@ -206,162 +204,116 @@ async function fetchJSON(url, retry = 0){
 function showError(msg){ el.errors.style.display='block'; el.errors.innerHTML=`<div class="err">${msg}</div>`; }
 function hideError(){ el.errors.style.display='none'; }
 
-/* ---------- TIME HELPERS ---------- */
+/* ---------- UI HELPERS ---------- */
+function fmtSec(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return `${m}:${sec<10?'0':''}${sec}`;
+}
 function parseReportTime(name){
-  const m = name?.match?.(/(\d{8})_(\d{6})/);
-  if(!m) return null;
-  const [_,d,t] = m;
-  const iso = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)}Z`;
-  const dt = new Date(iso);
-  return {iso, local:dt.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})};
+  const m = name.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
+  if(m){
+    const utc = new Date(Date.UTC(m[1],m[2]-1,m[3],m[4],m[5],m[6]));
+    return {utc:utc.toISOString(), local:utc.toLocaleString()};
+  }
+  return null;
 }
-function fmtSec(s){ const m=Math.floor(s/60), ss=s%60; return `${m}m ${ss<10?'0':''}${ss}s`; }
-
-/* ---------- FILTERING ---------- */
-function applyFilters(items){
-  const m = marks();
-  return items.filter(h=>{
-    if(el.c2Filter.checked && (h.detector||'').toUpperCase()!=='C2') return false;
-    if(el.c3Filter.checked && (h.detector||'').toUpperCase()!=='C3') return false;
-    if(el.aiOnly.checked && (h.ai_label||'').toLowerCase()!=='comet') return false;
-    if(el.markedOnly.checked && !m[keyFor(h)]) return false;
-    return true;
+function seg(opts){
+  const seg = document.createElement('div'); seg.className='seg';
+  opts.forEach(({label, active, disabled, click})=>{
+    const b = document.createElement('button');
+    b.textContent = label;
+    if(active) b.classList.add('active');
+    if(disabled) b.disabled = true;
+    else b.onclick = ()=>{ seg.querySelectorAll('button').forEach(b=>b.classList.remove('active')); b.classList.add('active'); click(); };
+    seg.appendChild(b);
   });
+  return seg;
 }
-
-/* ---------- STATS ---------- */
-function renderStats(filtered){
-  const byDet = filtered.reduce((a,h)=>{a[(h.detector||'').toUpperCase()]=(a[(h.detector||'').toUpperCase()]||0)+1;return a;},{});
-  const ai = filtered.reduce((a,h)=>{const l=(h.ai_label||'').toLowerCase();if(l)a[l]=(a[l]||0)+1;return a;},{});
-  el.stats.innerHTML='';
-  const add = (label,val)=>{ const d=document.createElement('div'); d.className='stat';
-    d.innerHTML=`<div class="sub">${label}</div><div><b>${val}</b></div>`; el.stats.appendChild(d); };
-  const filteredItems = filtered;
-  add('Candidates',filteredItems.length);
-  add('C2',byDet.C2||0); add('C3',byDet.C3||0);
-  if(ai.comet||ai.not_comet){ add('AI "comet"',ai.comet||0); add('AI "not_comet"',ai.not_comet||0); }
-}
-
-/* ---------- SUNGRAZER TEXT / CSV ---------- */
 function sungrazerText(h){
-  const w = h.image_size?.[0]??1024, ht = h.image_size?.[1]??1024;
-  const first = (h.positions?.[0]?.time_utc||"").split('T')[0]||"";
-  const g = groups()[keyFor(h)]||"Unknown";
-  const lines = [
-    `=== Sungrazer Report Helper ===`,
-    `Camera: ${(h.detector||'').toUpperCase()}`,
-    `Image Size: ${w}x${ht}`,
-    `Your (0,0) position: Upper Left`,
-    `Probable Group: ${g}`,
-    `Date of FIRST IMAGE: ${first}`,
-    `Frames (time_utc, x, y):`
-  ];
-  (h.positions||[]).forEach(p=>{
-    const t = (p.time_utc||"").replace('T',' ').replace('Z','');
-    lines.push(`  ${t}, ${Math.round(p.x)}, ${Math.round(p.y)}`);
-  });
-  return lines.join('\n')+'\n';
+  return h.positions.map(p=>`${p.time_utc.replace(/Z$/,'').replace('T',' ')} ${p.x|0} ${p.y|0}`).join('\n');
 }
-function allSungrazerText(items,reportName){
-  const lines = [`=== Sungrazer Report Helper — FULL EXPORT ===`];
-  if(reportName) lines.push(`Report: ${reportName}`);
-  lines.push('');
-  items.forEach((h,i)=>{
-    lines.push(`--- Candidate ${i+1} — ${(h.detector||'').toUpperCase()} Track #${h.track_index??'?' } ---`);
-    lines.push(sungrazerText(h).trim());
-    lines.push('');
-  });
-  return lines.join('\n')+'\n';
+function allSungrazerText(items, name){
+  return items.map((h,i)=>`# Candidate ${i+1} (${h.detector.toUpperCase()} Track #${h.track_index})\n${sungrazerText(h)}\n\n`).join('');
 }
 function allCSV(items){
-  const g = groups();
-  const rows = [["detector","track_index","series_mid_frame","frame_time_utc","x","y","image_width","image_height","origin","ai_label","ai_score","dual_match","group","orig_mid","ann_mid"]];
-  items.forEach(h=>{
-    const det = (h.detector||'').toUpperCase();
-    const w = h.image_size?.[0]??'', ht = h.image_size?.[1]??'';
-    const origin = (h.origin||"").toLowerCase();
-    const ai = h.ai_label||"", score = h.ai_score!=null?String(h.ai_score):"";
-    const dual = h.dual_channel_match? `${h.dual_channel_match.with};Δ=${h.dual_channel_match.pa_diff_deg}°`:"";
-    const grp = g[keyFor(h)]||"Unknown";
-    const orig = h.original_mid_path||"", ann = h.annotated_mid_path||"";
-    (h.positions||[]).forEach(p=>{
-      rows.push([det, h.track_index, h.series_mid_frame||"", p.time_utc||"", Math.round(p.x), Math.round(p.y), w, ht, origin, ai, score, dual, grp, orig, ann]);
-    });
-  });
-  return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')+'\n';
+  return 'detector,track_index,time_utc,x,y\n' +
+    items.flatMap(h=>h.positions.map(p=>`${h.detector},${h.track_index},${p.time_utc},${p.x},${p.y}`)).join('\n');
 }
+function animationWidget(h) {
+  const wrap = document.createElement('div');
+  wrap.className = 'video-container';
 
-/* ---------- SEGMENTED TOGGLE ---------- */
-function seg(items){
-  const div = document.createElement('div'); div.className='seg';
-  items.forEach(({label,disabled,active,click})=>{
-    const b = document.createElement('button');
-    b.textContent=label; if(disabled) b.disabled=true;
-    if(active) b.classList.add('active');
-    b.onclick = ()=>{ $$('.seg button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); click?.(); };
-    div.appendChild(b);
-  });
-  return div;
-}
+  const annGif  = h.animation_gif_path ? rawURL(h.animation_gif_path) : null;
+  const cleanGif= h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : null;
 
-/* ---------- VIDEO PLAYER ---------- */
-function videoPlayer(h){
-  const container = document.createElement('div'); container.className='video-container';
-  const cleanMp4 = h.animation_mp4_clean_path ? rawURL(h.animation_mp4_clean_path) : null;
-  const cleanGif = h.animation_gif_clean_path ? rawURL(h.animation_gif_clean_path) : null;
-  const annMp4   = h.animation_mp4_path ? rawURL(h.animation_mp4_path) : null;
-  const annGif   = h.animation_gif_path ? rawURL(h.animation_gif_path) : null;
-
-  if(!cleanMp4 && !cleanGif && !annMp4 && !annGif){
-    container.innerHTML = `<div style="padding:16px;text-align:center;color:#94a3b8;">Generating animation…</div>`;
-    return container;
+  if (!annGif && !cleanGif) {
+    wrap.innerHTML = `<div style="padding:12px;color:#94a3b8;">No animation yet…</div>`;
+    return wrap;
   }
 
-  const video = document.createElement('video');
-  video.controls = video.loop = true; video.style.width='100%';
+  // Show GIF as <img> (more reliable than stuffing a GIF into <video>)
+  const img = document.createElement('img');
+  img.className = 'gif';
+  img.alt = 'Candidate animation';
+  img.loading = 'lazy';
 
-  const setSrc = (mp4,gif)=>{ video.innerHTML=''; 
-    if(mp4){ const s=document.createElement('source'); s.src=mp4; s.type='video/mp4'; video.appendChild(s); }
-    if(gif){ const s=document.createElement('source'); s.src=gif; s.type='image/gif'; video.appendChild(s); }
-    video.load();
-  };
+  const setSrc = (url) => { img.src = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`; };
 
-  setSrc(cleanMp4 || cleanGif);
+  const bar = seg([
+    { label: 'Annotated GIF', active: !!annGif, disabled: !annGif, click: () => setSrc(annGif) },
+    { label: 'Clean GIF',     active: !annGif && !!cleanGif, disabled: !cleanGif, click: () => setSrc(cleanGif) },
+  ]);
+  bar.bar.style = 'margin:8px';
 
-  if((cleanMp4||cleanGif) && (annMp4||annGif)){
-    const s = seg([
-      {label:'Clean', active:true, click:()=>setSrc(cleanMp4 || cleanGif)},
-      {label:'Annotated', click:()=>setSrc(annMp4 || annGif)}
-    ]);
-    s.style.margin='8px';
-    container.appendChild(s);
-  }
-  container.appendChild(video);
-  return container;
+  // Default choice
+  setSrc(annGif || cleanGif);
+
+  // Direct “open” link so you can verify quickly
+  const open = document.createElement('div');
+  open.style = 'padding:6px 10px';
+  open.innerHTML = [
+    annGif ? `<a class="pill" target="_blank" rel="noopener" href="${annGif}">Open annotated</a>` : '',
+    cleanGif ? `<a class="pill" target="_blank" rel="noopener" href="${cleanGif}">Open clean</a>` : ''
+  ].filter(Boolean).join(' ');
+
+  wrap.appendChild(bar);
+  wrap.appendChild(img);
+  wrap.appendChild(open);
+  return wrap;
 }
-
-/* ---------- RENDER GRID ---------- */
+function applyFilters(items){
+  let f = items;
+  if(el.c2Filter.checked) f = f.filter(h=>h.detector==='C2');
+  if(el.c3Filter.checked) f = f.filter(h=>h.detector==='C3');
+  if(el.aiOnly.checked) f = f.filter(h=>(h.ai_label||'').toLowerCase()==='comet');
+  if(el.markedOnly.checked) f = f.filter(h=>marks()[keyFor(h)]);
+  return f;
+}
+function renderStats(items){
+  const f = applyFilters(items);
+  const stats = [
+    {label:'Candidates', val:f.length},
+    {label:'C2', val:f.filter(h=>h.detector==='C2').length},
+    {label:'C3', val:f.filter(h=>h.detector==='C3').length},
+    {label:'Comet AI', val:f.filter(h=>(h.ai_label||'').toLowerCase()==='comet').length},
+    {label:'Marked', val:f.filter(h=>marks()[keyFor(h)]).length},
+  ];
+  el.stats.innerHTML = stats.map(s=>`<div class="stat"><div>${s.label}</div><b>${s.val}</b></div>`).join('');
+}
 function renderGrid(items){
-  const filtered = applyFilters(items);
-  renderStats(filtered);
-  el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
-
-  if(!filtered.length){
-    el.grid.hidden = true; el.empty.hidden = false;
-    el.empty.textContent = "No candidates match the current filters.";
-    return;
-  }
-  el.grid.hidden = false; el.empty.hidden = true; el.grid.innerHTML='';
-
-  const m = marks(), g = groups();
-  filtered.forEach((h,i)=>{
+  renderStats(items);
+  items = applyFilters(items);
+  el.grid.innerHTML = '';
+  el.grid.hidden = !items.length; el.empty.hidden = !!items.length;
+  el.empty.textContent = items.length ? '' : 'No candidates match filters.';
+  items.forEach((h,i)=>{
     const k = keyFor(h);
-    const marked = !!m[k];
-    const groupVal = g[k]||"Unknown";
+    const marked = !!marks()[k];
+    const groupVal = groups()[k]||"Unknown";
 
-    const cropURL = rawURL(h.crop_path);
-    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;   // <-- fixed
-    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null; // <-- fixed
+    const cropURL = h.crop_path ? rawURL(h.crop_path) : null;
+    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
+    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
 
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
@@ -382,7 +334,7 @@ function renderGrid(items){
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
-    card.appendChild(videoPlayer(h));
+    card.appendChild(animationWidget(h));
 
     const meta = document.createElement('div'); meta.className='meta';
     const speed = (()=>{ const p=h.positions||[]; if(p.length<2) return '—';
@@ -411,190 +363,3 @@ function renderGrid(items){
         ${origURL?`<a class="pill" href="${origURL}" target="_blank" rel="noopener">Original</a>`:''}
         ${annURL?`<a class="pill" href="${annURL}" target="_blank" rel="noopener">Annotated</a>`:''}
         <span class="right mark">
-          <select class="group">
-            <option ${groupVal==='Unknown'?'selected':''}>Unknown</option>
-            <option ${groupVal==='Kreutz'?'selected':''}>Kreutz</option>
-            <option ${groupVal==='Meyer'?'selected':''}>Meyer</option>
-            <option ${groupVal==='Marsden'?'selected':''}>Marsden</option>
-            <option ${groupVal==='Kracht'?'selected':''}>Kracht</option>
-            <option ${groupVal==='Kracht-II'?'selected':''}>Kracht-II</option>
-          </select>
-          <button class="flag ${marked?'on':''}" title="Mark for submission">${marked?'Marked':'Mark'}</button>
-        </span>
-      </div>`;
-    card.appendChild(meta);
-    el.grid.appendChild(card);
-
-    meta.querySelector('.sgBtn').onclick = ()=>{ 
-      navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
-        const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
-        setTimeout(()=>b.textContent='Copy for Sungrazer',1200); 
-      });
-    };
-
-    const flag = meta.querySelector('.flag');
-    flag.onclick = ()=>{ 
-      const mm=marks(); 
-      if(mm[k]){delete mm[k];flag.classList.remove('on');flag.textContent='Mark';} 
-      else{mm[k]=true;flag.classList.add('on');flag.textContent='Marked';} 
-      saveMarks(mm); 
-      if(el.markedOnly.checked) renderGrid(items); 
-    };
-
-    meta.querySelector('.group').onchange = e=>{ const gg=groups(); gg[k]=e.target.value; saveGroups(gg); };
-  });
-}
-
-/* ---------- LAST-FRAME THUMBNAILS ---------- */
-async function loadThumbs(){
-  const dets = ['C2','C3'];
-  const rows = [];
-  for(const d of dets){
-    const thumb = await imgExists(`lastthumb_${d}.png`);
-    const overlay = await imgExists(`overlay_${d}.png`);
-    const contact = await imgExists(`contact_${d}.png`);
-    if(thumb.ok||overlay.ok||contact.ok) rows.push({det:d,thumb,overlay,contact});
-  }
-  if(!rows.length) return;
-  el.lastFramesRow.innerHTML = rows.map(o=>`
-    <div class="thumbCard">
-      <div class="thumbHead">
-        <span class="pill">${o.det}</span>
-        ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
-      </div>
-      ${o.thumb.ok?`<a href="${rawURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${freshURL(rawURL(`lastthumb_${o.det}.png`))}" alt="last ${o.det}" loading="lazy"></a>`:
-        `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
-      <div class="meta">
-        <div class="kv">
-          ${o.overlay.ok?`Overlay: <a href="${rawURL(`overlay_${o.det}.png`)}" target="_blank">open</a>`:'Overlay: —'} •
-          ${o.contact.ok?`Contact: <a href="${rawURL(`contact_${o.det}.png`)}" target="_blank">open</a>`:'Contact: —'}
-        </div>
-      </div>
-    </div>`).join('');
-}
-function imgExists(path){
-  return new Promise(res=>{
-    const i=new Image();
-    i.onload = ()=>res({ok:true,w:i.naturalWidth,h:i.naturalHeight});
-    i.onerror = ()=>res({ok:false});
-    i.src = freshURL(rawURL(path));
-  });
-}
-
-/* ---------- LIVE GIFs ---------- */
-function refreshLiveGifs(){
-  const t = Date.now();
-  el.c2Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?cb=${t}`;
-  el.c3Gif.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?cb=${t}`;
-  const now = new Date().toLocaleTimeString();
-  el.c2GifTime.textContent = `refreshed ${now}`;
-  el.c3GifTime.textContent = `refreshed ${now}`;
-}
-
-/* ---------- MAIN LOAD & DROPDOWNS ---------- */
-let allReportFiles = [];
-async function loadReportList(){
-  hideError();
-  try{
-    const list = await fetchJSON(apiListURL());
-    const files = Array.isArray(list) ? list.filter(f=>f.type==="file" && /^candidates_\d{8}_\d{6}\.json$/i.test(f.name))
-                                      .sort((a,b)=>b.name.localeCompare(a.name)) : [];
-
-    allReportFiles = [];
-    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
-    el.hitsSelect.innerHTML   = '<option value="">— Potential Hits —</option>';
-
-    for(const f of files){
-      const data = await fetchJSON(rawURL(f.name));
-      const hasComet = Array.isArray(data) && data.some(h=> (h.ai_label||'').toLowerCase()==='comet');
-      allReportFiles.push({name:f.name, hasComet});
-
-      const opt = document.createElement('option');
-      opt.value = f.name;
-      opt.textContent = f.name;
-      el.latestSelect.appendChild(opt.cloneNode(true));
-      if(hasComet) el.hitsSelect.appendChild(opt);
-    }
-
-    if(files.length){
-      el.latestSelect.value = files[0].name;
-      await loadReport(files[0].name, false);
-    }else{
-      el.viewName.textContent = '—';
-      el.reportTime.textContent = '';
-      el.grid.hidden = true; el.empty.hidden = false;
-      el.empty.textContent = 'No candidate files yet.';
-    }
-    await loadThumbs();
-  }catch(e){
-    showError(`GitHub load failed: ${e.message}`);
-    el.empty.textContent = "Unable to fetch report list.";
-  }finally{
-    refreshLiveGifs();
-  }
-}
-
-async function loadReport(name, isHitFile){
-  try{
-    const data = await fetchJSON(rawURL(name));
-    currentReport = {name, items:Array.isArray(data)?data:[], isHitFile:!!isHitFile};
-
-    el.viewName.textContent = isHitFile ? `Potential Hits – ${name}` : name;
-    const t = parseReportTime(name);
-    el.reportTime.textContent = t? `• ${t.local} (local)` : '';
-
-    renderGrid(currentReport.items);
-  }catch(e){
-    showError(`Failed to load ${name}: ${e.message}`);
-  }
-}
-
-el.latestSelect.onchange = e => { if(e.target.value) loadReport(e.target.value, false); };
-el.hitsSelect.onchange   = e => { if(e.target.value) loadReport(e.target.value, true); };
-
-/* ---------- EXPORT ALL ---------- */
-function exportAll(){
-  if(!currentReport) return alert('No report loaded.');
-  let items = applyFilters(currentReport.items);
-  if(el.exportMarkedOnly.checked) items = items.filter(h=>marks()[keyFor(h)]);
-  if(!items.length) return alert('No candidates to export (check filters).');
-
-  const txt = allSungrazerText(items, currentReport.name);
-  navigator.clipboard.writeText(txt).catch(()=>{});
-
-  const csv = allCSV(items);
-  const txtBlob = new Blob([txt],{type:'text/plain'});
-  const csvBlob = new Blob([csv],{type:'text/csv'});
-
-  el.downloadAllTxt.href = URL.createObjectURL(txtBlob);
-  el.downloadAllTxt.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.txt`;
-  el.downloadAllTxt.style.display='inline-flex';
-
-  el.downloadAllCsv.href = URL.createObjectURL(csvBlob);
-  el.downloadAllCsv.download = `${currentReport.name.replace('.json','')}_Sungrazer_EXPORT.csv`;
-  el.downloadAllCsv.style.display='inline-flex';
-
-  el.exportAllBtn.textContent='Exported & Copied!';
-  setTimeout(()=>el.exportAllBtn.textContent='Export ALL',1200);
-}
-el.exportAllBtn.onclick = exportAll;
-
-/* ---------- AUTO-REFRESH ---------- */
-function startAutoRefresh(){
-  if(refreshTimer) clearInterval(refreshTimer);
-  countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
-  refreshTimer = setInterval(()=>{
-    countdown--; el.refreshEta.textContent = fmtSec(countdown);
-    if(countdown<=0){ loadReportList(); countdown=REFRESH_SECS; }
-  },1000);
-}
-
-/* ---------- UI BINDINGS ---------- */
-el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
-$$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
-
-/* ---------- BOOT ---------- */
-loadReportList().then(startAutoRefresh);
-</script>
-</body>
-</html>
