@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter 1.8</h1>
+    <h1>SOHO Comet Hunter 1.9</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -173,12 +173,15 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 
-/* FIXED: Only add 'detections/' if path has no '/' */
+/* FIXED: Always prepend detections/ */
 const rawURL = path => {
   const clean = path.replace(/^\.?\/*/,'');
-  const full = `${FOLDER}/${clean}`;  // ALWAYS prepend detections/
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}?t=${Date.now()}`;
+  const full = `${FOLDER}/${clean}`;
+  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}`;
 };
+
+/* Helper to add fresh timestamp */
+const freshURL = url => `${url}?t=${Date.now()}`;
 
 async function fetchJSON(url, retry = 0){
   try{
@@ -360,16 +363,27 @@ function renderGrid(items){
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
-    img.src = cropURL; img.alt=`candidate ${i+1}`;
-    img.onerror = ()=>{ const ph=document.createElement('div'); ph.className='thumb'; ph.textContent='(image missing)'; img.replaceWith(ph); };
-    const link = document.createElement('a'); link.href=cropURL; link.target='_blank'; link.rel='noopener';
+    img.src = freshURL(cropURL); img.alt=`candidate ${i+1}`;
+    const link = document.createElement('a'); link.href=freshURL(cropURL); link.target='_blank'; link.rel='noopener';
     link.appendChild(img); card.appendChild(link);
+
+    // Preserve img element on error
+    img.onerror = () => { img.alt = '(loading failed)'; img.title = 'Image failed to load'; };
 
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
-      {label:'Crop', active:true, click:()=>{ img.src=cropURL; link.href=cropURL; }},
-      {label:'Original', disabled:!origURL, click:()=>{ img.src=origURL; link.href=origURL; }},
-      {label:'Annotated', disabled:!annURL, click:()=>{ img.src=annURL; link.href=annURL; }}
+      {label:'Crop', active:true, click:()=>{ 
+        const url = freshURL(cropURL);
+        img.src = url; link.href = url; 
+      }},
+      {label:'Original', disabled:!origURL, click:()=>{ 
+        const url = freshURL(origURL);
+        img.src = url; link.href = url; 
+      }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ 
+        const url = freshURL(annURL);
+        img.src = url; link.href = url; 
+      }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
@@ -453,7 +467,7 @@ async function loadThumbs(){
         <span class="pill">${o.det}</span>
         ${o.thumb.ok?`<span class="pill">${o.thumb.w}×${o.thumb.h}</span>`:''}
       </div>
-      ${o.thumb.ok?`<a href="${rawURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${rawURL(`lastthumb_${o.det}.png`)}" alt="last ${o.det}" loading="lazy"></a>`:
+      ${o.thumb.ok?`<a href="${rawURL(`lastthumb_${o.det}.png`)}" target="_blank" rel="noopener"><img class="thumb" src="${freshURL(rawURL(`lastthumb_${o.det}.png`))}" alt="last ${o.det}" loading="lazy"></a>`:
         `<div class="thumb">(no lastthumb_${o.det}.png)</div>`}
       <div class="meta">
         <div class="kv">
@@ -468,7 +482,7 @@ function imgExists(path){
     const i=new Image();
     i.onload = ()=>res({ok:true,w:i.naturalWidth,h:i.naturalHeight});
     i.onerror = ()=>res({ok:false});
-    i.src = rawURL(path);
+    i.src = freshURL(rawURL(path));
   });
 }
 
