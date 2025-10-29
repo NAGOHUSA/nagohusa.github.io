@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter 1.7</h1>
+    <h1>SOHO Comet Hunter 1.8</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -176,7 +176,7 @@ const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents
 /* FIXED: Only add 'detections/' if path has no '/' */
 const rawURL = path => {
   const clean = path.replace(/^\.?\/*/,'');
-  const full = clean.includes('/') ? clean : `${FOLDER}/${clean}`;
+  const full = `${FOLDER}/${clean}`;  // ALWAYS prepend detections/
   return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}?t=${Date.now()}`;
 };
 
