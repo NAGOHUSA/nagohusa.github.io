@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter2.0</h1>
+    <h1>SOHO Comet Hunter</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -173,14 +173,14 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 
-/* ALWAYS prepend detections/ */
+/* FIXED: Always prepend detections/ */
 const rawURL = path => {
   const clean = path.replace(/^\.?\/*/,'');
   const full = `${FOLDER}/${clean}`;
   return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}`;
 };
 
-/* Fresh cache-buster */
+/* Helper to add fresh timestamp */
 const freshURL = url => `${url}?t=${Date.now()}`;
 
 async function fetchJSON(url, retry = 0){
@@ -335,7 +335,7 @@ function videoPlayer(h){
   return container;
 }
 
-/* ---------- **FIXED** RENDER GRID ---------- */
+/* ---------- RENDER GRID ---------- */
 function renderGrid(items){
   const filtered = applyFilters(items).slice(0,10);
   renderStats(filtered);
@@ -354,47 +354,41 @@ function renderGrid(items){
     const marked = !!m[k];
     const groupVal = g[k]||"Unknown";
 
-    /* ---- Build correct URLs (FIXED) ---- */
-    const cropURL = h.crop_path ? rawURL(h.crop_path) : null;
-    
-    // Use the path exactly as provided from JSON
-    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;
-    const annURL = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null;
+    const cropURL = rawURL(h.crop_path);
+    const origURL = h.original_mid_path ? rawURL(`originals/${h.original_mid_path}`) : null;
+    const annURL  = h.annotated_mid_path ? rawURL(`annotated/${h.annotated_mid_path}`) : null;
 
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
-    /* ---- Card ---- */
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
     img.src = freshURL(cropURL); img.alt=`candidate ${i+1}`;
     const link = document.createElement('a'); link.href=freshURL(cropURL); link.target='_blank'; link.rel='noopener';
     link.appendChild(img); card.appendChild(link);
 
-    /* keep the <img> alive on error */
-    img.onerror = () => { img.alt = '(failed)'; img.title = 'Image not found'; };
+    // Preserve img element on error
+    img.onerror = () => { img.alt = '(loading failed)'; img.title = 'Image failed to load'; };
 
-    /* ---- Toggle ---- */
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
       {label:'Crop', active:true, click:()=>{ 
-        const u = freshURL(cropURL);
-        img.src = u; link.href = u; 
+        const url = freshURL(cropURL);
+        img.src = url; link.href = url; 
       }},
       {label:'Original', disabled:!origURL, click:()=>{ 
-        const u = freshURL(origURL);
-        img.src = u; link.href = u; 
+        const url = freshURL(origURL);
+        img.src = url; link.href = url; 
       }},
       {label:'Annotated', disabled:!annURL, click:()=>{ 
-        const u = freshURL(annURL);
-        img.src = u; link.href = u; 
+        const url = freshURL(annURL);
+        img.src = url; link.href = url; 
       }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
     card.appendChild(videoPlayer(h));
 
-    /* ---- Meta ---- */
     const meta = document.createElement('div'); meta.className='meta';
     const speed = (()=>{ const p=h.positions||[]; if(p.length<2) return '—';
       const d = Math.hypot(p[p.length-1].x-p[0].x, p[p.length-1].y-p[0].y);
@@ -436,7 +430,6 @@ function renderGrid(items){
     card.appendChild(meta);
     el.grid.appendChild(card);
 
-    /* ---- Buttons ---- */
     meta.querySelector('.sgBtn').onclick = ()=>{ 
       navigator.clipboard.writeText(sungrazerText(h)).then(()=>{ 
         const b=meta.querySelector('.sgBtn'); b.textContent='Copied!'; 
@@ -603,7 +596,7 @@ function startAutoRefresh(){
 
 /* ---------- UI BINDINGS ---------- */
 el.refreshBtn.onclick = ()=>{ countdown=REFRESH_SECS; loadReportList(); };
-$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
+$$('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ if(currentReport) renderGrid(currentReport.items); });
 
 /* ---------- BOOT ---------- */
 loadReportList().then(startAutoRefresh);
