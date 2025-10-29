@@ -65,7 +65,7 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>SOHO Comet Hunter</h1>
+    <h1>SOHO Comet Hunter1.0</h1>
     <div class="sub">Live NASA LASCO animations • AI-detected comets • Sungrazer-ready exports</div>
     <div class="controls">
       <button id="refreshBtn">Refresh</button>
@@ -173,15 +173,19 @@ const keyFor = h => `${(h.detector||'').toUpperCase()}#${h.track_index}#${h.seri
 /* ---------- GITHUB HELPERS ---------- */
 const apiListURL = () => `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(FOLDER)}?ref=${encodeURIComponent(BRANCH)}`;
 
-/* FIXED: Always prepend detections/ */
-const rawURL = path => {
-  const clean = path.replace(/^\.?\/*/,'');
-  const full = `${FOLDER}/${clean}`;
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${full}`;
-};
+/* Hardened raw URL builder:
+   - http(s):// => return as-is
+   - starts with "detections/" => use as-is
+   - else => prefix "detections/" */
+function rawURL(path) {
+  const p = String(path || '').replace(/^\.?\/*/, '');
+  if (/^https?:\/\//i.test(p)) return p;
+  const withFolder = p.startsWith(`${FOLDER}/`) ? p : `${FOLDER}/${p}`;
+  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${withFolder}`;
+}
 
 /* Helper to add fresh timestamp */
-const freshURL = url => `${url}?t=${Date.now()}`;
+const freshURL = url => `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
 
 async function fetchJSON(url, retry = 0){
   try{
@@ -232,7 +236,8 @@ function renderStats(filtered){
   el.stats.innerHTML='';
   const add = (label,val)=>{ const d=document.createElement('div'); d.className='stat';
     d.innerHTML=`<div class="sub">${label}</div><div><b>${val}</b></div>`; el.stats.appendChild(d); };
-  add('Candidates',filtered.length);
+  const filteredItems = filtered;
+  add('Candidates',filteredItems.length);
   add('C2',byDet.C2||0); add('C3',byDet.C3||0);
   if(ai.comet||ai.not_comet){ add('AI "comet"',ai.comet||0); add('AI "not_comet"',ai.not_comet||0); }
 }
@@ -337,7 +342,7 @@ function videoPlayer(h){
 
 /* ---------- RENDER GRID ---------- */
 function renderGrid(items){
-  const filtered = applyFilters(items).slice(0,10);
+  const filtered = applyFilters(items);
   renderStats(filtered);
   el.exportAllHint.textContent = filtered.length ? `(${filtered.length} candidate${filtered.length>1?'s':''})` : '(none)';
 
@@ -355,35 +360,25 @@ function renderGrid(items){
     const groupVal = g[k]||"Unknown";
 
     const cropURL = rawURL(h.crop_path);
-    const origURL = h.original_mid_path ? rawURL(`originals/${h.original_mid_path}`) : null;
-    const annURL  = h.annotated_mid_path ? rawURL(`annotated/${h.annotated_mid_path}`) : null;
+    const origURL = h.original_mid_path ? rawURL(h.original_mid_path) : null;   // <-- fixed
+    const annURL  = h.annotated_mid_path ? rawURL(h.annotated_mid_path) : null; // <-- fixed
 
     const txtURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.txt`);
     const csvURL = rawURL(`reports/${(h.detector||'').toUpperCase()}_track${h.track_index}_sungrazer.csv`);
 
     const card = document.createElement('div'); card.className='card';
     const img = document.createElement('img'); img.className='thumb'; img.loading='lazy';
-    img.src = freshURL(cropURL); img.alt=`candidate ${i+1}`;
+    img.src = freshURL(cropURL); img.alt = `candidate ${i+1}`;
     const link = document.createElement('a'); link.href=freshURL(cropURL); link.target='_blank'; link.rel='noopener';
     link.appendChild(img); card.appendChild(link);
 
-    // Preserve img element on error
     img.onerror = () => { img.alt = '(loading failed)'; img.title = 'Image failed to load'; };
 
     const segWrap = document.createElement('div'); segWrap.style.padding='0 12px 8px';
     const segToggle = seg([
-      {label:'Crop', active:true, click:()=>{ 
-        const url = freshURL(cropURL);
-        img.src = url; link.href = url; 
-      }},
-      {label:'Original', disabled:!origURL, click:()=>{ 
-        const url = freshURL(origURL);
-        img.src = url; link.href = url; 
-      }},
-      {label:'Annotated', disabled:!annURL, click:()=>{ 
-        const url = freshURL(annURL);
-        img.src = url; link.href = url; 
-      }}
+      {label:'Crop', active:true, click:()=>{ const url=freshURL(cropURL); img.src=url; link.href=url; }},
+      {label:'Original', disabled:!origURL, click:()=>{ const url=freshURL(origURL); img.src=url; link.href=url; }},
+      {label:'Annotated', disabled:!annURL, click:()=>{ const url=freshURL(annURL); img.src=url; link.href=url; }}
     ]);
     segWrap.appendChild(segToggle); card.appendChild(segWrap);
 
