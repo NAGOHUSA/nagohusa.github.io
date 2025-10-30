@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOHO Comet Hunter – Nagoh Creative</title>
+  <title>SOHO Comet Hunter – Nagoh Creative 2.0 </title>
   <meta name="description" content="Live NASA LASCO animations, AI-detected comets and Sungrazer-ready exports – built by Nagoh Creative for OurNightSky.Us">
   <link rel="icon" href="data:,">
   <style>
@@ -107,7 +107,7 @@
     const BRANCH = 'main';
     const BASE = `https://api.github.com/repos/${REPO}/contents`;
     const RAW = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`;
-    const REFRESH_SECS = 3600;
+    const REFRESH_SECS = 3600; // 1 hour
     let refreshTimer, countdown = REFRESH_SECS;
     let currentReport = null;
 
@@ -140,18 +140,16 @@
     function $(id) { return document.getElementById(id); }
     function $$(sel) { return document.querySelectorAll(sel); }
 
-    // Fetch JSON with error handling
     async function fetchJSON(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     }
 
-    // GitHub API helpers
     function apiURL(path) { return `${BASE}/${path}?ref=${BRANCH}`; }
     function rawURL(path) { return `${RAW}/${path}`; }
 
-    // Load and update status
+    // Update status from latest_status.json
     async function updateStatus() {
       try {
         const status = await fetchJSON(rawURL('detections/latest_status.json'));
@@ -165,7 +163,6 @@
         el.c3Frames.textContent = status.detectors.C3.frames;
         el.c3Tracks.textContent = status.detectors.C3.tracks;
 
-        // Status dot color
         if (ageMin > 120) {
           el.statusBar.classList.add('status-offline');
           el.statusText.textContent = 'Offline (no update in 2h)';
@@ -183,7 +180,6 @@
       }
     }
 
-    // Load report list
     async function loadReportList() {
       try {
         const res = await fetch(apiURL('detections'));
@@ -193,11 +189,9 @@
         const latestFiles = files.filter(f => !f.name.includes('_hits'));
         const hitFiles = files.filter(f => f.name.includes('_hits'));
 
-        // Sort by name (timestamp)
         latestFiles.sort((a,b) => b.name.localeCompare(a.name));
         hitFiles.sort((a,b) => b.name.localeCompare(a.name));
 
-        // Populate selects
         el.latestSelect.innerHTML = '<option value="">Latest Reports</option>';
         latestFiles.forEach(f => {
           const opt = document.createElement('option');
@@ -302,11 +296,11 @@
     }
 
     async function loadThumbs() {
-      // [Your existing thumb loading logic]
+      // Placeholder — keep your original logic here if any
     }
 
     function refreshLiveGifs() {
-      // [Your existing GIF refresh]
+      // Placeholder — keep your original logic here if any
     }
 
     function showError(msg) {
@@ -317,13 +311,18 @@
       setTimeout(() => err.remove(), 5000);
     }
 
-    function fmtSec(s) { return `${s}s`; }
+    function fmtSec(s) {
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${h}h ${m}m ${sec}s`;
+    }
 
     function exportAll() {
       if (!currentReport) return alert('No report loaded.');
       let items = applyFilters(currentReport.items);
       if (el.exportMarkedOnly.checked) items = items.filter(h => marks()[keyFor(h)]);
-      if (!items.length) return alert('No candidates to export.');
+      if (!items.length) return alert('No candidates to export (check filters).');
 
       const txt = items.map(i => `${i.instrument} ${i.timestamp} ${i.bbox}`).join('\n');
       navigator.clipboard.writeText(txt).catch(() => {});
@@ -343,14 +342,19 @@
 
     function startAutoRefresh() {
       if (refreshTimer) clearInterval(refreshTimer);
-      countdown = REFRESH_SECS; el.refreshEta.textContent = fmtSec(countdown);
+      countdown = REFRESH_SECS;
+      el.refreshEta.textContent = fmtSec(countdown);
       refreshTimer = setInterval(() => {
-        countdown--; el.refreshEta.textContent = fmtSec(countdown);
-        if (countdown <= 0) { loadReportList(); countdown = REFRESH_SECS; }
+        countdown--;
+        el.refreshEta.textContent = fmtSec(countdown);
+        if (countdown <= 0) {
+          loadReportList();
+          countdown = REFRESH_SECS;
+        }
       }, 1000);
     }
 
-    // Update status every 30s
+    // Update status every 30 seconds
     setInterval(updateStatus, 30000);
 
     // Boot
