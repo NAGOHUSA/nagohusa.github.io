@@ -66,7 +66,7 @@
   <header>
     <div class="wrap">
       <div class="row">
-        <h1>SOHO Comet Hunter 1.0</h1>
+        <h1>SOHO Comet Hunter 2.0</h1>
         <div class="sub right">by Nagoh Creative • OurNightSky.Us</div>
       </div>
 
@@ -81,6 +81,9 @@
         </div>
         <div class="status-item">
           <strong>C3:</strong> <span id="c3Frames">—</span> frames, <span id="c3Tracks">—</span> tracks
+        </div>
+        <div class="status-item">
+          <strong>Last Run:</strong> <span id="lastRun">—</span>
         </div>
         <div class="status-time right" id="statusTime"></div>
       </div>
@@ -157,6 +160,7 @@
       c2Tracks: $('c2Tracks'),
       c3Frames: $('c3Frames'),
       c3Tracks: $('c3Tracks'),
+      lastRun: $('lastRun'),
       c2Anim: $('c2Anim'),
       c3Anim: $('c3Anim')
     };
@@ -173,19 +177,26 @@
     function apiURL(path) { return `${BASE}/${path}?ref=${BRANCH}`; }
     function rawURL(path) { return `${RAW}/${path}`; }
 
-    // === LIVE STATUS ===
+    // === LIVE STATUS + LAST RUN ===
     async function updateStatus() {
       try {
-        const status = await fetchJSON(rawURL('detections/latest_status.json'));
+        const [status, run] = await Promise.all([
+          fetchJSON(rawURL('detections/latest_status.json')),
+          fetchJSON(rawURL('detections/latest_run.json'))
+        ]);
+
         const ts = new Date(status.timestamp_utc);
+        const runTs = new Date(run.last_run_utc);
         const now = new Date();
         const ageMin = Math.floor((now - ts) / 60000);
+        const runAgeMin = Math.floor((now - runTs) / 60000);
 
         el.statusTime.textContent = `${ts.toLocaleString()} UTC (${ageMin}m ago)`;
         el.c2Frames.textContent = status.detectors.C2.frames;
         el.c2Tracks.textContent = status.detectors.C2.tracks;
         el.c3Frames.textContent = status.detectors.C3.frames;
         el.c3Tracks.textContent = status.detectors.C3.tracks;
+        el.lastRun.textContent = `${runTs.toLocaleString()} UTC (${runAgeMin}m ago)`;
 
         if (ageMin > 120) {
           el.statusBar.classList.add('status-offline');
@@ -199,6 +210,7 @@
         }
       } catch (e) {
         el.statusText.textContent = 'Status unavailable';
+        el.lastRun.textContent = '—';
         el.statusBar.classList.add('status-offline');
         console.warn('Status fetch failed:', e);
       }
@@ -419,7 +431,7 @@
     loadReportList().then(() => {
       updateStatus();
       startAutoRefresh();
-      setInterval(refreshLiveGifs, 60000); // Refresh live GIFs every 60s
+      setInterval(refreshLiveGifs, 60000);
     });
   </script>
 </body>
