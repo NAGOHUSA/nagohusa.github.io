@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SOHO Comet Hunter — Live Results</title>
 
-<!-- GIF encoder for optional GIF exports (canvas mode fallback) -->
+<!-- GIF encoder (canvas fallback) -->
 <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
 
 <style>
@@ -93,15 +93,15 @@ canvas, video.gif{display:block;width:100%;height:auto;background:#000}
 <header>
   <div class="wrap">
     <h1>SOHO Comet Hunter 1.3</h1>
-    <div class="sub">Live NASA animations, detections, and Sungrazer-ready exports from your GitHub repo.</div>
+    <div class="sub">Live NASA animations, detections, and Sungrazer‑ready exports from your GitHub repo.</div>
     <div class="controls">
-      <button id="refreshBtn">⟳ Refresh</button>
+      <button id="refreshBtn">Refresh</button>
       <select id="reportSelect" class="sel"></select>
       <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
       <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
       <label class="pill"><input type="checkbox" id="aiOnly" /> AI ‘comet’ only</label>
       <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only</label>
-      <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
+      <div class="right pill">Auto‑refresh: <span id="refreshEta">—</span></div>
       <div class="exportAll">
         <button id="exportAllBtn">Export ALL</button>
         <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Marked only</label>
@@ -142,7 +142,7 @@ canvas, video.gif{display:block;width:100%;height:auto;background:#000}
     </div>
   </section>
 
-  <!-- Thumbnails -->
+  <!-- Last frames (optional) -->
   <section style="padding-top:10px;">
     <div class="thumbRow" id="lastFramesRow"></div>
     <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
@@ -154,108 +154,318 @@ canvas, video.gif{display:block;width:100%;height:auto;background:#000}
   </section>
 
   <footer>
-    <div>Tip: If animations exist you’ll see a video player with an Annotated/Clean toggle. Otherwise, the canvas player appears with Play/Pause, FPS, path overlay, and one-loop export (WebM/GIF).</div>
+    <div>Tip: If an animation exists you’ll see a video player with an Annotated/Clean toggle. Otherwise the canvas player appears with Play/Pause, FPS, path overlay, and one‑loop export (WebM/GIF).</div>
   </footer>
 </main>
 
 <script>
-/* ========== CONFIG ========== */
-const REPO = "NAGOHUSA/ONS_SOHOHUNTER";
+/* ==================== CONFIG ==================== */
+const REPO   = "NAGOHUSA/ONS_SOHOHUNTER";
 const BRANCH = "main";
 const FOLDER = "detections";
-const RAW = (path) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
+const RAW    = path => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
 
-/* ========== ELEMENTS ========== */
+/* ==================== ELEMENTS ==================== */
+const $ = id => document.getElementById(id);
 const el = {
-  latestSelect: document.getElementById("latestSelect"),
-  hitsSelect: document.getElementById("hitsSelect"),
-  reportDiv: document.getElementById("report"),
-  status: document.getElementById("status")
+  reportSelect   : $("reportSelect"),
+  refreshBtn     : $("refreshBtn"),
+  c2Filter       : $("c2Filter"),
+  c3Filter       : $("c3Filter"),
+  aiOnly         : $("aiOnly"),
+  markedOnly     : $("markedOnly"),
+  exportAllBtn   : $("exportAllBtn"),
+  exportMarked   : $("exportMarkedOnly"),
+  downloadTxt    : $("downloadAllTxt"),
+  downloadCsv    : $("downloadAllCsv"),
+  exportHint     : $("exportAllHint"),
+  reportName     : $("reportName"),
+  reportTime     : $("reportTime"),
+  srcLink        : $("srcLink"),
+  stats          : $("stats"),
+  grid           : $("grid"),
+  empty          : $("empty"),
+  errors         : $("errors"),
+  lastFramesRow  : $("lastFramesRow"),
+  c2Gif          : $("c2Gif"),
+  c3Gif          : $("c3Gif"),
+  c2GifTime      : $("c2GifTime"),
+  c3GifTime      : $("c3GifTime"),
+  refreshEta     : $("refreshEta")
 };
 
-/* ========== SEG FUNCTION — DEFINED FIRST! ========== */
-function seg(data) {
-  if (!data || !Array.isArray(data)) return [];
-  return data.map((c, i) => ({
-    id: `${c.detector}#${c.track_index || i}`,
-    label: (c.ai_label || "unknown").toLowerCase(),
-    score: c.ai_score || 0,
-    pos: c.positions?.[0] || {},
-    crop: c.crop_path,
-    anim: c.animation_mp4_path || c.animation_gif_path,
-    dual: c.dual_channel_match
-  }));
+/* ==================== HELPERS ==================== */
+function fmtDate(s) {
+  const d = new Date(s);
+  return d.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
+}
+function pad(n){return n.toString().padStart(2,'0');}
+
+/* ==================== DATA NORMALISATION ==================== */
+function normalise(c, idx) {
+  const id = `${c.detector || 'unknown'}#${c.track_index ?? idx}`;
+  const label = (c.ai_label || 'unknown').toLowerCase();
+  const score = c.ai_score ?? 0;
+  const pos   = c.positions?.[0] ?? {};
+  const dual  = c.dual_channel_match;
+
+  return {
+    id, label, score,
+    marked      : !!c.marked,                     // NEW
+    telescope   : c.telescope?.toUpperCase() ?? '',
+    timestamp   : c.timestamp ?? '',
+    crop        : c.crop_path,
+    animMp4     : c.animation_mp4_path,
+    animGif     : c.animation_gif_path,
+    thumbnail   : c.thumbnail_path,               // NEW
+    pathOverlay : c.path_overlay_path,            // NEW
+    dual,
+    pos,
+    raw: c
+  };
 }
 
-/* ========== LOAD & RENDER ========== */
+/* ==================== RENDER CARD ==================== */
+function renderCard(item) {
+  const anim = item.animMp4 ? `<video src="${RAW(item.animMp4)}" controls loop muted class="thumb"></video>`
+            : item.animGif ? `<img src="${RAW(item.animGif)}" class="thumb" alt="anim">`
+            : '';
+
+  const kv = (k,v) => v ? `<div class="kv"><b>${k}</b> ${v}</div>` : '';
+
+  const dualHtml = item.dual
+    ? `<div class="pill">Dual ${item.dual.with} (±${item.dual.pa_diff_deg.toFixed(1)}°)</div>`
+    : '';
+
+  const markBtn = `<button class="small flag ${item.marked?'on':''}" data-id="${item.id}">
+                    ${item.marked?'Marked':'Mark'}
+                  </button>`;
+
+  return `
+    <div class="card" data-id="${item.id}" data-label="${item.label}" data-tel="${item.telescope}" data-marked="${item.marked}">
+      <div class="meta">
+        <div class="row">
+          <div><strong>${item.id}</strong> — ${item.label.toUpperCase()} (${(item.score*100).toFixed(1)}%)</div>
+          <div class="right">${markBtn}</div>
+        </div>
+        <div class="kvs">
+          ${kv('Tel', item.telescope)}
+          ${kv('Time', fmtDate(item.timestamp))}
+          ${kv('X', pos.x?.toFixed(1))}
+          ${kv('Y', pos.y?.toFixed(1))}
+        </div>
+        ${dualHtml}
+        ${item.thumbnail ? `<img src="${RAW(item.thumbnail)}" class="thumb" alt="thumb">` : ''}
+        ${anim}
+      </div>
+    </div>`;
+}
+
+/* ==================== RENDER GRID ==================== */
+let ALL_ITEMS = [];          // all candidates of the current report
+let MARKED_IDS = new Set();  // persisted across reports
+
+function renderGrid() {
+  const c2 = el.c2Filter.checked;
+  const c3 = el.c3Filter.checked;
+  const ai = el.aiOnly.checked;
+  const marked = el.markedOnly.checked;
+
+  const filtered = ALL_ITEMS.filter(it => {
+    if (c2 && it.telescope !== 'C2') return false;
+    if (c3 && it.telescope !== 'C3') return false;
+    if (ai && it.label !== 'comet') return false;
+    if (marked && !MARKED_IDS.has(it.id)) return false;
+    return true;
+  });
+
+  el.grid.innerHTML = filtered.map(renderCard).join('') || '<div class="empty">No candidates match the filters.</div>';
+  el.grid.hidden = filtered.length === 0;
+  el.empty.hidden = filtered.length > 0;
+
+  // wire mark buttons
+  document.querySelectorAll('.flag').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      if (MARKED_IDS.has(id)) MARKED_IDS.delete(id);
+      else MARKED_IDS.add(id);
+      renderGrid();               // refresh UI
+      updateExportHint();
+    };
+  });
+}
+
+/* ==================== STATS ==================== */
+function renderStats(items) {
+  const total = items.length;
+  const comets = items.filter(i=>i.label==='comet').length;
+  const c2 = items.filter(i=>i.telescope==='C2').length;
+  const c3 = items.filter(i=>i.telescope==='C3').length;
+  const marked = [...MARKED_IDS].filter(id=>items.some(i=>i.id===id)).length;
+
+  el.stats.innerHTML = `
+    <div class="stat"><b>${total}</b> detections</div>
+    <div class="stat"><b>${comets}</b> AI comets</div>
+    <div class="stat"><b>${c2}</b> C2</div>
+    <div class="stat"><b>${c3}</b> C3</div>
+    <div class="stat"><b>${marked}</b> marked</div>
+  `;
+}
+
+/* ==================== LOAD REPORT ==================== */
 async function loadReport(file) {
   try {
-    el.status.textContent = `Loading ${file}...`;
+    el.errors.style.display = 'none';
+    el.reportName.textContent = file.replace('.json','').replace('candidates_','');
+    el.reportTime.textContent = '';
+    el.srcLink.href = `https://github.com/${REPO}/blob/${BRANCH}/${FOLDER}/${file}`;
+    el.srcLink.textContent = 'GitHub';
+
     const resp = await fetch(RAW(`${FOLDER}/${file}`));
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
-    const items = seg(data);  // ← NOW SAFE: seg is defined
-    renderReport(file, items);
-  } catch (err) {
-    el.status.textContent = `Failed to load ${file}: ${err.message}`;
-    console.error(err);
+
+    // ---- normalise ----
+    ALL_ITEMS = data.map(normalise);
+
+    // ---- timestamps (if any) ----
+    if (data[0]?.timestamp) {
+      el.reportTime.textContent = fmtDate(data[0].timestamp);
+    }
+
+    renderStats(ALL_ITEMS);
+    renderGrid();
+    updateLiveGifs();
+  } catch (e) {
+    el.errors.textContent = `Failed to load ${file}: ${e.message}`;
+    el.errors.style.display = 'block';
+    console.error(e);
   }
 }
 
-function renderReport(file, items) {
-  const hasComet = items.some(i => i.label === "comet");
-  const html = items.map(it => `
-    <div class="candidate ${it.label}">
-      <h4>${it.id} — <strong>${it.label.toUpperCase()}</strong> (${(it.score*100).toFixed(1)}%)</h4>
-      ${it.crop ? `<img src="${RAW(it.crop)}" width="120" alt="crop">` : ''}
-      ${it.anim ? `<video src="${RAW(it.anim)}" controls loop muted width="200"></video>` : ''}
-      ${it.dual ? `<p>Dual match: ${it.dual.with} (±${it.dual.pa_diff_deg}°)</p>` : ''}
-    </div>
-  `).join("");
-  el.reportDiv.innerHTML = `<h3>${file} ${hasComet ? '[Comet]' : ''}</h3>${html || "<p>No candidates.</p>"}`;
-}
-
-/* ========== REFRESH DROPDOWNS ========== */
-async function refreshDropdowns() {
+/* ==================== REFRESH DROPDOWN ==================== */
+async function refreshDropdown() {
   try {
     const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}?ref=${BRANCH}`);
     const files = await resp.json();
+
     const jsonFiles = files
-      .filter(f => f.name.match(/^candidates_\d{8}_\d{6}\.json$/))
-      .sort((a, b) => b.name.localeCompare(a.name));
+      .filter(f => /^candidates_\d{8}_\d{6}\.json$/.test(f.name))
+      .sort((a,b) => b.name.localeCompare(a.name));
 
-    el.latestSelect.innerHTML = '<option value="">— Latest Report —</option>';
-    el.hitsSelect.innerHTML = '<option value="">— Potential Hits —</option>';
-
-    for (const f of jsonFiles) {
-      const opt = document.createElement("option");
+    el.reportSelect.innerHTML = '<option value="">— Select report —</option>';
+    jsonFiles.forEach(f => {
+      const opt = document.createElement('option');
       opt.value = f.name;
-      opt.textContent = f.name.replace(".json", "").replace("candidates_", "");
+      opt.textContent = f.name.replace('.json','').replace('candidates_','');
+      el.reportSelect.appendChild(opt);
+    });
 
-      el.latestSelect.appendChild(opt.cloneNode(true));
-
-      try {
-        const data = await (await fetch(RAW(f.path))).json();
-        const hasComet = data.some(c => (c.ai_label || "").toLowerCase() === "comet");
-        if (hasComet) el.hitsSelect.appendChild(opt.cloneNode(true));
-      } catch (e) {
-        console.warn("Scan failed for", f.name);
-      }
+    if (jsonFiles.length) {
+      el.reportSelect.value = jsonFiles[0].name;
+      loadReport(jsonFiles[0].name);
     }
-
-    if (jsonFiles.length > 0) loadReport(jsonFiles[0].name);
-  } catch (err) {
-    el.status.textContent = "Failed to load file list.";
+  } catch (e) {
+    console.error(e);
   }
 }
 
-/* ========== EVENTS ========== */
-el.latestSelect.onchange = () => loadReport(el.latestSelect.value);
-el.hitsSelect.onchange = () => loadReport(el.hitsSelect.value);
+/* ==================== LIVE GIFS ==================== */
+async function updateLiveGifs() {
+  const urls = {
+    c2: "https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif",
+    c3: "https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif"
+  };
+  for (const [tel, url] of Object.entries(urls)) {
+    try {
+      const r = await fetch(url, {method:'HEAD'});
+      const last = r.headers.get('last-modified');
+      const timeEl = $(`${tel}GifTime`);
+      const imgEl  = $(`${tel}Gif`);
+      if (last) timeEl.textContent = new Date(last).toLocaleTimeString();
+      imgEl.src = url + '?t=' + Date.now();   // cache‑bust
+    } catch {}
+  }
+}
 
-/* ========== INIT ========== */
-refreshDropdowns();
-setInterval(refreshDropdowns, 15 * 60 * 1000);
+/* ==================== EXPORT ALL ==================== */
+function buildTxt(items) {
+  return items.map(it => [
+    it.id,
+    it.label,
+    (it.score*100).toFixed(1)+'%',
+    it.telescope,
+    fmtDate(it.timestamp),
+    it.pos.x?.toFixed(1) ?? '',
+    it.pos.y?.toFixed(1) ?? '',
+    it.dual ? `${it.dual.with} (±${it.dual.pa_diff_deg.toFixed(1)}°)` : ''
+  ].join('\t')).join('\n');
+}
+function buildCsv(items) {
+  const header = ['ID','Label','Score','Telescope','Time','X','Y','Dual'];
+  const rows = items.map(it => [
+    it.id,
+    it.label,
+    (it.score*100).toFixed(1),
+    it.telescope,
+    fmtDate(it.timestamp),
+    it.pos.x?.toFixed(1) ?? '',
+    it.pos.y?.toFixed(1) ?? '',
+    it.dual ? `${it.dual.with} (±${it.dual.pa_diff_deg.toFixed(1)}°)` : ''
+  ]);
+  return [header, ...rows].map(r=>r.join(',')).join('\n');
+}
+function updateExportHint() {
+  const cnt = el.exportMarked.checked ? MARKED_IDS.size : ALL_ITEMS.length;
+  el.exportHint.textContent = `${cnt} item${cnt===1?'':'s'} ready`;
+}
+el.exportAllBtn.onclick = () => {
+  const useMarked = el.exportMarked.checked;
+  const items = useMarked
+    ? ALL_ITEMS.filter(i=>MARKED_IDS.has(i.id))
+    : ALL_ITEMS;
+
+  const txt = buildTxt(items);
+  const csv = buildCsv(items);
+  const blobTxt = new Blob([txt],{type:'text/plain'});
+  const blobCsv = new Blob([csv],{type:'text/csv'});
+
+  el.downloadTxt.href = URL.createObjectURL(blobTxt);
+  el.downloadTxt.download = `soho_export_${useMarked?'marked':'all'}_${Date.now()}.txt`;
+  el.downloadTxt.style.display = 'inline-flex';
+
+  el.downloadCsv.href = URL.createObjectURL(blobCsv);
+  el.downloadCsv.download = `soho_export_${useMarked?'marked':'all'}_${Date.now()}.csv`;
+  el.downloadCsv.style.display = 'inline-flex';
+
+  updateExportHint();
+};
+
+/* ==================== FILTERS ==================== */
+[el.c2Filter, el.c3Filter, el.aiOnly, el.markedOnly, el.exportMarked].forEach(cb=>{
+  cb.onchange = renderGrid;
+});
+
+/* ==================== AUTO‑REFRESH ==================== */
+let refreshTimer;
+function startAutoRefresh() {
+  clearInterval(refreshTimer);
+  const next = 5*60*1000;                // 5 min
+  const end = Date.now() + next;
+  refreshTimer = setInterval(()=>{
+    const left = Math.max(0, Math.round((end - Date.now())/1000));
+    const m = Math.floor(left/60), s = left%60;
+    el.refreshEta.textContent = `${m}:${pad(s)}`;
+    if (left===0) refreshDropdown();
+  },1000);
+}
+el.refreshBtn.onclick = ()=>{ refreshDropdown(); startAutoRefresh(); };
+
+/* ==================== INIT ==================== */
+refreshDropdown();
+updateLiveGifs();
+startAutoRefresh();
+setInterval(updateLiveGifs, 2*60*1000);   // keep GIF timestamps fresh
 </script>
 </body>
 </html>
