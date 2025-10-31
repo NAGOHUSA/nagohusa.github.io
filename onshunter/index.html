@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOHO Comet Hunter – Nagoh Creative 2.0 </title>
+  <title>SOHO Comet Hunter – Nagoh Creative</title>
   <meta name="description" content="Live NASA LASCO animations, AI-detected comets and Sungrazer-ready exports – built by Nagoh Creative for OurNightSky.Us">
   <link rel="icon" href="data:,">
   <style>
@@ -36,13 +36,17 @@
     .kvs{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.8rem;color:var(--muted)}
     .kv b{color:var(--text)}
     .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
-    .stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:8px 12px}
-    .stat b{font-size:1.1rem}
     .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
     .err{color:#ffb4b4}
     .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
     .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+    .thumbCard img{width:100%;aspect-ratio:1.6/1;object-fit:contain;background:#0b1220}
+    .thumbCard .meta{padding:8px;font-size:.8rem}
+    .thumbCard .meta b{font-size:.9rem}
+    .thumbCard .meta .row{justify-content:space-between}
+    .thumbCard .meta .row button{font-size:.75rem;padding:4px 8px}
+
+    /* LIVE STATUS BAR */
     .status-bar{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:.9rem}
     .status-item{display:flex;align-items:center;gap:6px}
     .status-dot{width:10px;height:10px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
@@ -50,13 +54,19 @@
     .status-time{color:var(--muted);font-size:.8rem}
     .status-offline .status-dot{background:var(--danger)}
     .status-warning .status-dot{background:var(--warning)}
+
+    /* LIVE SOHO ANIMATIONS */
+    .live-animations{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+    .anim-card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+    .anim-card img{width:100%;display:block}
+    .anim-card .label{text-align:center;padding:8px;color:var(--muted);font-size:.9rem}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
       <div class="row">
-        <h1>SOHO Comet Hunter</h1>
+        <h1>SOHO Comet Hunter 1.0</h1>
         <div class="sub right">by Nagoh Creative • OurNightSky.Us</div>
       </div>
 
@@ -94,6 +104,18 @@
     <div class="row">
       <h2 id="viewName">—</h2>
       <div id="reportTime" class="sub"></div>
+    </div>
+
+    <!-- LIVE SOHO ANIMATIONS -->
+    <div class="live-animations">
+      <div class="anim-card">
+        <img id="c2Anim" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="Live C2 Animation">
+        <div class="label">Live C2 Animation</div>
+      </div>
+      <div class="anim-card">
+        <img id="c3Anim" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="Live C3 Animation">
+        <div class="label">Live C3 Animation</div>
+      </div>
     </div>
 
     <div id="grid" class="grid" hidden></div>
@@ -134,7 +156,9 @@
       c2Frames: $('c2Frames'),
       c2Tracks: $('c2Tracks'),
       c3Frames: $('c3Frames'),
-      c3Tracks: $('c3Tracks')
+      c3Tracks: $('c3Tracks'),
+      c2Anim: $('c2Anim'),
+      c3Anim: $('c3Anim')
     };
 
     function $(id) { return document.getElementById(id); }
@@ -149,7 +173,7 @@
     function apiURL(path) { return `${BASE}/${path}?ref=${BRANCH}`; }
     function rawURL(path) { return `${RAW}/${path}`; }
 
-    // Update status from latest_status.json
+    // === LIVE STATUS ===
     async function updateStatus() {
       try {
         const status = await fetchJSON(rawURL('detections/latest_status.json'));
@@ -180,6 +204,7 @@
       }
     }
 
+    // === LOAD REPORT LIST ===
     async function loadReportList() {
       try {
         const res = await fetch(apiURL('detections'));
@@ -222,8 +247,8 @@
         showError(`GitHub load failed: ${e.message}`);
         el.empty.textContent = "Unable to fetch report list.";
       } finally {
-        updateStatus();
         refreshLiveGifs();
+        updateStatus();
       }
     }
 
@@ -296,11 +321,44 @@
     }
 
     async function loadThumbs() {
-      // Placeholder — keep your original logic here if any
+      try {
+        const res = await fetch(apiURL('detections/animations'));
+        if (!res.ok) return;
+        const files = (await res.json())
+          .filter(f => f.name.endsWith('.mp4') || f.name.endsWith('.gif'))
+          .sort((a,b) => b.name.localeCompare(a.name))
+          .slice(0, 12);
+
+        if (!files.length) return;
+
+        el.thumbRow.innerHTML = '';
+        el.thumbRow.hidden = false;
+
+        files.forEach(f => {
+          const card = document.createElement('div');
+          card.className = 'thumbCard';
+          const src = rawURL(`detections/animations/${f.name}`);
+          card.innerHTML = `
+            <img src="${src}" alt="${f.name}" loading="lazy">
+            <div class="meta">
+              <b>${f.name}</b>
+              <div class="row">
+                <button onclick="window.open('${src}')">Open</button>
+              </div>
+            </div>
+          `;
+          el.thumbRow.appendChild(card);
+        });
+      } catch (e) {
+        console.warn('Failed to load thumbnails:', e);
+      }
     }
 
     function refreshLiveGifs() {
-      // Placeholder — keep your original logic here if any
+      [el.c2Anim, el.c3Anim].forEach(img => {
+        const src = img.src.split('?')[0];
+        img.src = src + '?' + Date.now();
+      });
     }
 
     function showError(msg) {
@@ -361,6 +419,7 @@
     loadReportList().then(() => {
       updateStatus();
       startAutoRefresh();
+      setInterval(refreshLiveGifs, 60000); // Refresh live GIFs every 60s
     });
   </script>
 </body>
