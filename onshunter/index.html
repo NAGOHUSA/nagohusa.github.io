@@ -1,438 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOHO Comet Hunter – Nagoh Creative</title>
-  <meta name="description" content="Live NASA LASCO animations, AI-detected comets and Sungrazer-ready exports – built by Nagoh Creative for OurNightSky.Us">
-  <link rel="icon" href="data:,">
-  <style>
-    :root{
-      --bg:#0b1220; --panel:#0f1b30; --muted:#94a3b8; --text:#e6eefc; --accent:#60a5fa;
-      --chip:#1e293b; --card:#0d1526; --shadow:0 8px 30px rgba(0,0,0,.35);
-      --success:#34d399; --warning:#fbbf24; --danger:#f87171;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
-    a{color:var(--accent);text-decoration:none}
-    a:hover{text-decoration:underline}
-    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
-    .wrap{max-width:1240px;margin:auto;padding:14px 16px}
-    h1{font-size:1.35rem;font-weight:800;letter-spacing:.3px}
-    .sub{font-size:.85rem;color:var(--muted)}
-    .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
-    button,.sel,input[type=checkbox]{cursor:pointer}
-    button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:8px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
-    button:hover{border-color:#33508a}
-    .sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:6px 10px;color:var(--text);min-width:160px}
-    .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:.8rem;color:var(--muted)}
-    .pill input{accent-color:var(--accent)}
-    .right{margin-left:auto}
-    main{padding:16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-    .card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
-    .thumb{aspect-ratio:1.6/1;width:100%;background:#0b1220;object-fit:contain;display:block}
-    .meta{padding:12px;flex:1;display:flex;flex-direction:column;gap:8px}
-    .kvs{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.8rem;color:var(--muted)}
-    .kv b{color:var(--text)}
-    .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
-    .err{color:#ffb4b4}
-    .thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:12px}
-    .thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-    .thumbCard img{width:100%;aspect-ratio:1.6/1;object-fit:contain;background:#0b1220}
-    .thumbCard .meta{padding:8px;font-size:.8rem}
-    .thumbCard .meta b{font-size:.9rem}
-    .thumbCard .meta .row{justify-content:space-between}
-    .thumbCard .meta .row button{font-size:.75rem;padding:4px 8px}
-
-    /* LIVE STATUS BAR */
-    .status-bar{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:.9rem}
-    .status-item{display:flex;align-items:center;gap:6px}
-    .status-dot{width:10px;height:10px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-    .status-time{color:var(--muted);font-size:.8rem}
-    .status-offline .status-dot{background:var(--danger)}
-    .status-warning .status-dot{background:var(--warning)}
-
-    /* LIVE SOHO ANIMATIONS */
-    .live-animations{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
-    .anim-card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-    .anim-card img{width:100%;display:block}
-    .anim-card .label{text-align:center;padding:8px;color:var(--muted);font-size:.9rem}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SOHO Comet Hunter – Live Detections</title>
+<script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+<style>
+:root{
+  --bg:#0b1220;--panel:#0f1b30;--muted:#94a3b8;--text:#e6eefc;--accent:#60a5fa;
+  --chip:#1e293b;--card:#0d1526;--shadow:0 8px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
+.wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
+.sub{font-size:13px;color:var(--muted)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button,.sel,input[type="checkbox"]{cursor:pointer}
+button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
+button:hover{border-color:#33508a}
+.sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text)}
+main{padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.thumb{aspect-ratio:1/1;display:block;width:100%;background:#0b1220;object-fit:contain}
+.meta{padding:12px}
+.kvs{display:grid;grid-template-columns:max-content 1fr;gap:4px 8px;margin-top:6px;font-size:13px}
+.kv{color:var(--muted)}
+.kv b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.right{margin-left:auto}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
+.stat b{font-size:18px}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+footer{color:var(--muted);font-size:12px;padding:20px 0}
+.err{color:#ffb4b4}
+.gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;margin-top:12px}
+.gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
+.gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
+.gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
+.seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
+.seg button{border:0;border-right:1px solid #27324a;background:transparent;color:#cbd5e1;padding:6px 10px;font-size:12px}
+.seg button:last-child{border-right:0}
+.seg button.active{background:#1b2a46;color:#e6eefc}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
+.flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
+</style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="row">
-        <h1>SOHO Comet Hunter 2.0</h1>
-        <div class="sub right">by Nagoh Creative • OurNightSky.Us</div>
-      </div>
-
-      <!-- LIVE STATUS BAR -->
-      <div class="status-bar" id="statusBar">
-        <div class="status-item">
-          <div class="status-dot" id="statusDot"></div>
-          <span id="statusText">Loading status...</span>
-        </div>
-        <div class="status-item">
-          <strong>C2:</strong> <span id="c2Frames">—</span> frames, <span id="c2Tracks">—</span> tracks
-        </div>
-        <div class="status-item">
-          <strong>C3:</strong> <span id="c3Frames">—</span> frames, <span id="c3Tracks">—</span> tracks
-        </div>
-        <div class="status-item">
-          <strong>Last Run:</strong> <span id="lastRun">—</span>
-        </div>
-        <div class="status-time right" id="statusTime"></div>
-      </div>
-
-      <div class="controls">
-        <select class="sel" id="latestSelect"><option>Loading reports...</option></select>
-        <select class="sel" id="hitsSelect"><option>Potential Hits</option></select>
-        <button id="refreshBtn">Refresh</button>
-        <span class="pill"><input type="checkbox" id="showOnlyComets"><label for="showOnlyComets">AI: Comet</label></span>
-        <span class="pill"><input type="checkbox" id="showOnlyTracks"><label for="showOnlyTracks">Has Track</label></span>
-        <span class="pill"><input type="checkbox" id="exportMarkedOnly"><label for="exportMarkedOnly">Export Marked Only</label></span>
-        <button id="exportAllBtn">Export ALL</button>
-        <a id="downloadAllTxt" hidden download>Download TXT</a>
-        <a id="downloadAllCsv" hidden download>Download CSV</a>
-        <div class="right">Next refresh: <span id="refreshEta">—</span></div>
+<header>
+  <div class="wrap">
+    <h1>SOHO Comet Hunter 2.0</h1>
+    <div class="sub">Live LASCO C2/C3 • AI-detected comets • GitHub-backed</div>
+    <div class="controls">
+      <button id="refreshBtn">Refresh</button>
+      <select id="reportSelect" class="sel"></select>
+      <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
+      <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
+      <label class="pill"><input type="checkbox" id="aiOnly" /> AI ≥0.6</label>
+      <label class="pill"><input type="checkbox" id="markedOnly" /> Marked</label>
+      <div class="right pill">Auto-refresh: <span id="refreshEta">—</span></div>
+      <div class="exportAll">
+        <button id="exportAllBtn">Export</button>
+        <label class="pill"><input type="checkbox" id="exportMarked" /> Marked only</label>
+        <a id="downloadTxt" class="pill" href="#" download style="display:none;">TXT</a>
+        <a id="downloadCsv" class="pill" href="#" download style="display:none;">CSV</a>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="wrap">
+<main class="wrap">
+  <section id="status">
     <div class="row">
-      <h2 id="viewName">—</h2>
-      <div id="reportTime" class="sub"></div>
+      <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
+      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank">GitHub</a></div>
     </div>
+    <div class="stats" id="stats"></div>
+    <div id="errors" class="err" style="display:none;"></div>
+  </section>
 
-    <!-- LIVE SOHO ANIMATIONS -->
-    <div class="live-animations">
-      <div class="anim-card">
-        <img id="c2Anim" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="Live C2 Animation">
-        <div class="label">Live C2 Animation</div>
-      </div>
-      <div class="anim-card">
-        <img id="c3Anim" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="Live C3 Animation">
-        <div class="label">Live C3 Animation</div>
-      </div>
+  <section id="liveGifs" class="gifRow">
+    <div class="gifCard">
+      <div class="gifHead"><b>C2</b> <span id="c2GifTime" class="sub">—</span></div>
+      <img id="c2Gif" class="gif" src="" alt="SOHO LASCO C2 live" />
     </div>
+    <div class="gifCard">
+      <div class="gifHead"><b>C3</b> <span id="c3GifTime" class="sub">—</span></div>
+      <img id="c3Gif" class="gif" src="" alt="SOHO LASCO C3 live" />
+    </div>
+  </section>
 
-    <div id="grid" class="grid" hidden></div>
-    <div id="empty" class="empty" hidden></div>
+  <section id="detections">
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No detections match current filters.</div>
+  </section>
+</main>
 
-    <div class="thumbRow" id="thumbRow" hidden></div>
-  </main>
+<footer class="wrap">
+  <div>Auto-refresh every 5 min • Data from <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank">NAGOHUSA/ONS_SOHOHUNTER</a></div>
+</footer>
 
-  <script>
-    const REPO = 'NAGOHUSA/ONS_SOHOHUNTER';
-    const BRANCH = 'main';
-    const BASE = `https://api.github.com/repos/${REPO}/contents`;
-    const RAW = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`;
-    const REFRESH_SECS = 3600; // 1 hour
-    let refreshTimer, countdown = REFRESH_SECS;
-    let currentReport = null;
+<script>
+/* ==================== CONFIG ==================== */
+const REPO = 'NAGOHUSA/ONS_SOHOHUNTER';
+const BRANCH = 'main';
+const FOLDER = 'detections';
+const RAW = url => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${url}`;
 
-    const el = {
-      latestSelect: $('latestSelect'),
-      hitsSelect: $('hitsSelect'),
-      refreshBtn: $('refreshBtn'),
-      viewName: $('viewName'),
-      reportTime: $('reportTime'),
-      grid: $('grid'),
-      empty: $('empty'),
-      thumbRow: $('thumbRow'),
-      exportAllBtn: $('exportAllBtn'),
-      downloadAllTxt: $('downloadAllTxt'),
-      downloadAllCsv: $('downloadAllCsv'),
-      exportMarkedOnly: $('exportMarkedOnly'),
-      showOnlyComets: $('showOnlyComets'),
-      showOnlyTracks: $('showOnlyTracks'),
-      refreshEta: $('refreshEta'),
-      statusBar: $('statusBar'),
-      statusDot: $('statusDot'),
-      statusText: $('statusText'),
-      statusTime: $('statusTime'),
-      c2Frames: $('c2Frames'),
-      c2Tracks: $('c2Tracks'),
-      c3Frames: $('c3Frames'),
-      c3Tracks: $('c3Tracks'),
-      lastRun: $('lastRun'),
-      c2Anim: $('c2Anim'),
-      c3Anim: $('c3Anim')
+/* ==================== ELEMENTS ==================== */
+const el = {
+  reportSelect: $('#reportSelect'),
+  reportName: $('#reportName'),
+  reportTime: $('#reportTime'),
+  srcLink: $('#srcLink'),
+  stats: $('#stats'),
+  errors: $('#errors'),
+  grid: $('#grid'),
+  empty: $('#empty'),
+  c2Gif: $('#c2Gif'), c2GifTime: $('#c2GifTime'),
+  c3Gif: $('#c3Gif'), c3GifTime: $('#c3GifTime'),
+  refreshBtn: $('#refreshBtn'),
+  refreshEta: $('#refreshEta'),
+  exportAllBtn: $('#exportAllBtn'),
+  exportMarked: $('#exportMarked'),
+  downloadTxt: $('#downloadTxt'),
+  downloadCsv: $('#downloadCsv'),
+  c2Filter: $('#c2Filter'), c3Filter: $('#c3Filter'),
+  aiOnly: $('#aiOnly'), markedOnly: $('#markedOnly')
+};
+
+/* ==================== HELPERS ==================== */
+function $(id){return document.getElementById(id);}
+function pad(n){return n<10?'0'+n:n;}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+}
+function telFromInstr(instr){
+  return instr?.toLowerCase().includes('c2')?'C2':'C3';
+}
+
+/* ==================== STATE ==================== */
+let ALL_ITEMS = [];
+const MARKED_IDS = new Set();
+
+/* ==================== NORMALISE ITEM ==================== */
+function normalise(item){
+  const x = item.bbox?.[0] + 32;   // center of 64×64 crop
+  const y = item.bbox?.[1] + 32;
+  const pos = item.pos || {x, y};
+  return {
+    id: `${item.instrument}-${item.track_id}-${item.timestamp}`,
+    instrument: item.instrument || '',
+    timestamp: item.timestamp || '',
+    track_id: item.track_id ?? '',
+    bbox: item.bbox || [],
+    crop_path: item.crop_path || '',
+    ai_label: item.ai_label || '',
+    ai_score: item.ai_score ?? 0,
+    pos: {x: pos.x ?? 0, y: pos.y ?? 0},
+    telescope: telFromInstr(item.instrument)
+  };
+}
+
+/* ==================== RENDER CARD ==================== */
+function renderCard(it){
+  const cropUrl = RAW(it.crop_path);
+  const githubUrl = `https://github.com/${REPO}/blob/${BRANCH}/${it.crop_path}`;
+  return `
+<div class="card">
+  <a href="${cropUrl}" target="_blank"><img class="thumb" src="${cropUrl}" alt="crop" loading="lazy"></a>
+  <div class="meta">
+    <div class="row">
+      <b>#${it.track_id}</b>
+      <span class="pill">${it.telescope}</span>
+      <span class="pill">AI: ${(it.ai_score*100).toFixed(1)}%</span>
+      <button class="flag" data-id="${it.id}" title="Mark for export">${MARKED_IDS.has(it.id)?'Marked':'Mark'}</button>
+    </div>
+    <div class="kvs">
+      <div class="kv">Time</div><div><b>${fmtDate(it.timestamp)}</b></div>
+      <div class="kv">Pos</div><div><b>${it.pos.x?.toFixed(0)}, ${it.pos.y?.toFixed(0)}</b></div>
+      <div class="kv">Label</div><div><b>${it.ai_label}</b></div>
+      <div class="kv">Crop</div><div><a href="${githubUrl}" target="_blank">GitHub</a></div>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ==================== RENDER GRID ==================== */
+function renderGrid(){
+  const filters = {
+    c2: el.c2Filter.checked,
+    c3: el.c3Filter.checked,
+    ai: el.aiOnly.checked,
+    marked: el.markedOnly.checked
+  };
+  const filtered = ALL_ITEMS.filter(it=>{
+    if (filters.c2 && it.telescope!=='C2') return false;
+    if (filters.c3 && it.telescope!=='C3') return false;
+    if (filters.ai && it.ai_score < 0.6) return false;
+    if (filters.marked && !MARKED_IDS.has(it.id)) return false;
+    return true;
+  });
+
+  el.grid.innerHTML = filtered.length ? filtered.map(renderCard).join('') : '';
+  el.empty.style.display = filtered.length ? 'none' : 'block';
+
+  // bind mark buttons
+  document.querySelectorAll('.flag').forEach(btn=>{
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      if (MARKED_IDS.has(id)) MARKED_IDS.delete(id);
+      else MARKED_IDS.add(id);
+      btn.classList.toggle('on');
+      updateExportHint();
     };
+  });
+}
 
-    function $(id) { return document.getElementById(id); }
-    function $$(sel) { return document.querySelectorAll(sel); }
+/* ==================== STATS ==================== */
+function renderStats(items){
+  const total = items.length;
+  const comets = items.filter(i=>i.ai_label==='comet').length;
+  const c2 = items.filter(i=>i.telescope==='C2').length;
+  const c3 = items.filter(i=>i.telescope==='C3').length;
+  const marked = [...MARKED_IDS].filter(id=>items.some(i=>i.id===id)).length;
 
-    async function fetchJSON(url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+  el.stats.innerHTML = `
+    <div class="stat"><b>${total}</b> detections</div>
+    <div class="stat"><b>${comets}</b> AI comets</div>
+    <div class="stat"><b>${c2}</b> C2</div>
+    <div class="stat"><b>${c3}</b> C3</div>
+    <div class="stat"><b>${marked}</b> marked</div>
+  `;
+}
+
+/* ==================== LOAD REPORT ==================== */
+async function loadReport(file){
+  try{
+    el.errors.style.display='none';
+    el.reportName.textContent = file.replace('.json','').replace('candidates_','');
+    el.reportTime.textContent = '';
+    el.srcLink.href = `https://github.com/${REPO}/blob/${BRANCH}/${FOLDER}/${file}`;
+    el.srcLink.textContent = 'GitHub';
+
+    const resp = await fetch(RAW(`${FOLDER}/${file}`));
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    ALL_ITEMS = Array.isArray(data) ? data.map(normalise) : [];
+
+    if (ALL_ITEMS[0]?.timestamp){
+      el.reportTime.textContent = fmtDate(ALL_ITEMS[0].timestamp);
     }
 
-    function apiURL(path) { return `${BASE}/${path}?ref=${BRANCH}`; }
-    function rawURL(path) { return `${RAW}/${path}`; }
+    renderStats(ALL_ITEMS);
+    renderGrid();
+    updateLiveGifs();
+  }catch(e){
+    el.errors.textContent = `Failed to load ${file}: ${e.message}`;
+    el.errors.style.display='block';
+    console.error(e);
+  }
+}
 
-    // === LIVE STATUS + LAST RUN ===
-    async function updateStatus() {
-      try {
-        const [status, run] = await Promise.all([
-          fetchJSON(rawURL('detections/latest_status.json')),
-          fetchJSON(rawURL('detections/latest_run.json'))
-        ]);
+/* ==================== REFRESH DROPDOWN ==================== */
+async function refreshDropdown(){
+  try{
+    const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}?ref=${BRANCH}`);
+    const files = await resp.json();
 
-        const ts = new Date(status.timestamp_utc);
-        const runTs = new Date(run.last_run_utc);
-        const now = new Date();
-        const ageMin = Math.floor((now - ts) / 60000);
-        const runAgeMin = Math.floor((now - runTs) / 60000);
+    const jsonFiles = files
+      .filter(f=>/^candidates_\d{8}_\d{6}\.json$/.test(f.name))
+      .sort((a,b)=>b.name.localeCompare(a.name));
 
-        el.statusTime.textContent = `${ts.toLocaleString()} UTC (${ageMin}m ago)`;
-        el.c2Frames.textContent = status.detectors.C2.frames;
-        el.c2Tracks.textContent = status.detectors.C2.tracks;
-        el.c3Frames.textContent = status.detectors.C3.frames;
-        el.c3Tracks.textContent = status.detectors.C3.tracks;
-        el.lastRun.textContent = `${runTs.toLocaleString()} UTC (${runAgeMin}m ago)`;
-
-        if (ageMin > 120) {
-          el.statusBar.classList.add('status-offline');
-          el.statusText.textContent = 'Offline (no update in 2h)';
-        } else if (ageMin > 60) {
-          el.statusBar.classList.add('status-warning');
-          el.statusText.textContent = 'Delayed';
-        } else {
-          el.statusBar.classList.remove('status-offline', 'status-warning');
-          el.statusText.textContent = 'Live';
-        }
-      } catch (e) {
-        el.statusText.textContent = 'Status unavailable';
-        el.lastRun.textContent = '—';
-        el.statusBar.classList.add('status-offline');
-        console.warn('Status fetch failed:', e);
-      }
-    }
-
-    // === LOAD REPORT LIST ===
-    async function loadReportList() {
-      try {
-        const res = await fetch(apiURL('detections'));
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const files = (await res.json()).filter(f => f.name.endsWith('.json') && f.name.includes('candidates_'));
-
-        const latestFiles = files.filter(f => !f.name.includes('_hits'));
-        const hitFiles = files.filter(f => f.name.includes('_hits'));
-
-        latestFiles.sort((a,b) => b.name.localeCompare(a.name));
-        hitFiles.sort((a,b) => b.name.localeCompare(a.name));
-
-        el.latestSelect.innerHTML = '<option value="">Latest Reports</option>';
-        latestFiles.forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.name;
-          opt.textContent = f.name.replace('candidates_', '').replace('.json', '');
-          el.latestSelect.appendChild(opt);
-        });
-
-        el.hitsSelect.innerHTML = '<option value="">Potential Hits</option>';
-        hitFiles.forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.name;
-          opt.textContent = f.name.replace('_hits.json', '');
-          el.hitsSelect.appendChild(opt);
-        });
-
-        if (latestFiles.length > 0) {
-          el.latestSelect.value = latestFiles[0].name;
-          await loadReport(latestFiles[0].name, false);
-        } else {
-          el.viewName.textContent = '—';
-          el.reportTime.textContent = '';
-          el.grid.hidden = true; el.empty.hidden = false;
-          el.empty.textContent = 'No candidate files yet.';
-        }
-        await loadThumbs();
-      } catch (e) {
-        showError(`GitHub load failed: ${e.message}`);
-        el.empty.textContent = "Unable to fetch report list.";
-      } finally {
-        refreshLiveGifs();
-        updateStatus();
-      }
-    }
-
-    async function loadReport(name, isHitFile) {
-      try {
-        const data = await fetchJSON(rawURL(name));
-        currentReport = {name, items: Array.isArray(data) ? data : [], isHitFile: !!isHitFile};
-
-        el.viewName.textContent = isHitFile ? `Potential Hits – ${name}` : name;
-        const t = parseReportTime(name);
-        el.reportTime.textContent = t ? `• ${t.local} (local)` : '';
-
-        renderGrid(currentReport.items);
-      } catch (e) {
-        showError(`Failed to load ${name}: ${e.message}`);
-      }
-    }
-
-    function parseReportTime(name) {
-      const m = name.match(/(\d{8}_\d{6})/);
-      if (!m) return null;
-      const dt = new Date(m[1].replace('_', 'T').replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6Z'));
-      return { utc: dt.toISOString(), local: dt.toLocaleString() };
-    }
-
-    function renderGrid(items) {
-      const filtered = applyFilters(items);
-      el.grid.innerHTML = '';
-      if (!filtered.length) {
-        el.grid.hidden = true; el.empty.hidden = false;
-        el.empty.textContent = 'No candidates match current filters.';
-        return;
-      }
-      el.grid.hidden = false; el.empty.hidden = true;
-
-      filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${rawURL(item.crop_path)}" class="thumb" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22/%3E'">
-          <div class="meta">
-            <div class="kvs">
-              <div class="kv"><b>Time</b> ${item.timestamp.split('T')[1].split('.')[0]} UTC</div>
-              <div class="kv"><b>Inst</b> ${item.instrument}</div>
-              <div class="kv"><b>AI</b> ${item.ai_label || '—'}</div>
-              <div class="kv"><b>Score</b> ${(item.ai_score || 0).toFixed(2)}</div>
-            </div>
-            <div class="row">
-              <button onclick="mark('${keyFor(item)}')">Mark</button>
-            </div>
-          </div>
-        `;
-        el.grid.appendChild(card);
-      });
-    }
-
-    function keyFor(item) { return `${item.instrument}_${item.timestamp}_${item.bbox?.join('_')}`; }
-    function marks() { return JSON.parse(localStorage.getItem('marks') || '{}'); }
-    function mark(key) {
-      const m = marks();
-      m[key] = !m[key];
-      localStorage.setItem('marks', JSON.stringify(m));
-    }
-
-    function applyFilters(items) {
-      let res = items;
-      if (el.showOnlyComets.checked) res = res.filter(i => i.ai_label === 'comet');
-      if (el.showOnlyTracks.checked) res = res.filter(i => i.track_id);
-      return res;
-    }
-
-    async function loadThumbs() {
-      try {
-        const res = await fetch(apiURL('detections/animations'));
-        if (!res.ok) return;
-        const files = (await res.json())
-          .filter(f => f.name.endsWith('.mp4') || f.name.endsWith('.gif'))
-          .sort((a,b) => b.name.localeCompare(a.name))
-          .slice(0, 12);
-
-        if (!files.length) return;
-
-        el.thumbRow.innerHTML = '';
-        el.thumbRow.hidden = false;
-
-        files.forEach(f => {
-          const card = document.createElement('div');
-          card.className = 'thumbCard';
-          const src = rawURL(`detections/animations/${f.name}`);
-          card.innerHTML = `
-            <img src="${src}" alt="${f.name}" loading="lazy">
-            <div class="meta">
-              <b>${f.name}</b>
-              <div class="row">
-                <button onclick="window.open('${src}')">Open</button>
-              </div>
-            </div>
-          `;
-          el.thumbRow.appendChild(card);
-        });
-      } catch (e) {
-        console.warn('Failed to load thumbnails:', e);
-      }
-    }
-
-    function refreshLiveGifs() {
-      [el.c2Anim, el.c3Anim].forEach(img => {
-        const src = img.src.split('?')[0];
-        img.src = src + '?' + Date.now();
-      });
-    }
-
-    function showError(msg) {
-      const err = document.createElement('div');
-      err.className = 'err';
-      err.textContent = msg;
-      el.grid.prepend(err);
-      setTimeout(() => err.remove(), 5000);
-    }
-
-    function fmtSec(s) {
-      const h = Math.floor(s / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      return `${h}h ${m}m ${sec}s`;
-    }
-
-    function exportAll() {
-      if (!currentReport) return alert('No report loaded.');
-      let items = applyFilters(currentReport.items);
-      if (el.exportMarkedOnly.checked) items = items.filter(h => marks()[keyFor(h)]);
-      if (!items.length) return alert('No candidates to export (check filters).');
-
-      const txt = items.map(i => `${i.instrument} ${i.timestamp} ${i.bbox}`).join('\n');
-      navigator.clipboard.writeText(txt).catch(() => {});
-      const blob = new Blob([txt], {type: 'text/plain'});
-      el.downloadAllTxt.href = URL.createObjectURL(blob);
-      el.downloadAllTxt.download = `${currentReport.name.replace('.json','')}_export.txt`;
-      el.downloadAllTxt.style.display = 'inline-flex';
-      el.exportAllBtn.textContent = 'Copied!';
-      setTimeout(() => el.exportAllBtn.textContent = 'Export ALL', 1200);
-    }
-
-    el.latestSelect.onchange = e => { if (e.target.value) loadReport(e.target.value, false); };
-    el.hitsSelect.onchange = e => { if (e.target.value) loadReport(e.target.value, true); };
-    el.exportAllBtn.onclick = exportAll;
-    el.refreshBtn.onclick = () => { countdown = REFRESH_SECS; loadReportList(); };
-    $$('input[type=checkbox]').forEach(cb => cb.onchange = () => { if (currentReport) renderGrid(currentReport.items); });
-
-    function startAutoRefresh() {
-      if (refreshTimer) clearInterval(refreshTimer);
-      countdown = REFRESH_SECS;
-      el.refreshEta.textContent = fmtSec(countdown);
-      refreshTimer = setInterval(() => {
-        countdown--;
-        el.refreshEta.textContent = fmtSec(countdown);
-        if (countdown <= 0) {
-          loadReportList();
-          countdown = REFRESH_SECS;
-        }
-      }, 1000);
-    }
-
-    // Update status every 30 seconds
-    setInterval(updateStatus, 30000);
-
-    // Boot
-    loadReportList().then(() => {
-      updateStatus();
-      startAutoRefresh();
-      setInterval(refreshLiveGifs, 60000);
+    el.reportSelect.innerHTML = '<option value="">— Select report —</option>';
+    jsonFiles.forEach(f=>{
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      opt.textContent = f.name.replace('.json','').replace('candidates_','');
+      el.reportSelect.appendChild(opt);
     });
-  </script>
+
+    if (jsonFiles.length){
+      el.reportSelect.value = jsonFiles[0].name;
+      loadReport(jsonFiles[0].name);
+    }else{
+      el.reportName.textContent = 'No reports yet';
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+
+/* ==================== LIVE GIFS ==================== */
+async function updateLiveGifs(){
+  const urls = {
+    c2: "https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif",
+    c3: "https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif"
+  };
+  for (const [tel,url] of Object.entries(urls)){
+    try{
+      const r = await fetch(url,{method:'HEAD'});
+      const last = r.headers.get('last-modified');
+      const timeEl = $(`${tel}GifTime`);
+      const imgEl  = $(`${tel}Gif`);
+      if (last) timeEl.textContent = new Date(last).toLocaleTimeString();
+      imgEl.src = url + '?t=' + Date.now();
+    }catch{}
+  }
+}
+
+/* ==================== EXPORT ==================== */
+function buildTxt(items){
+  return items.map(it=>[
+    it.id, it.telescope, it.track_id,
+    fmtDate(it.timestamp), it.ai_label, (it.ai_score*100).toFixed(1)+'%',
+    it.pos.x?.toFixed(0), it.pos.y?.toFixed(0),
+    it.crop_path
+  ].join('\t')).join('\n');
+}
+function buildCsv(items){
+  const header = ['ID','Telescope','TrackID','Time','Label','Score%','X','Y','CropPath'];
+  const rows = items.map(it=>[
+    it.id, it.telescope, it.track_id,
+    fmtDate(it.timestamp), it.ai_label, (it.ai_score*100).toFixed(1),
+    it.pos.x?.toFixed(0), it.pos.y?.toFixed(0),
+    it.crop_path
+  ]);
+  return [header, ...rows].map(r=>r.join(',')).join('\n');
+}
+function updateExportHint(){
+  const cnt = el.exportMarked.checked ? MARKED_IDS.size : ALL_ITEMS.length;
+  el.exportAllBtn.textContent = `Export (${cnt})`;
+}
+el.exportAllBtn.onclick = ()=>{
+  const useMarked = el.exportMarked.checked;
+  const items = useMarked ? ALL_ITEMS.filter(i=>MARKED_IDS.has(i.id)) : ALL_ITEMS;
+  const txt = buildTxt(items);
+  const csv = buildCsv(items);
+  const blobTxt = new Blob([txt],{type:'text/plain'});
+  const blobCsv = new Blob([csv],{type:'text/csv'});
+  el.downloadTxt.href = URL.createObjectURL(blobTxt);
+  el.downloadTxt.download = `soho_${useMarked?'marked':'all'}_${Date.now()}.txt`;
+  el.downloadTxt.style.display='inline-flex';
+  el.downloadCsv.href = URL.createObjectURL(blobCsv);
+  el.downloadCsv.download = `soho_${useMarked?'marked':'all'}_${Date.now()}.csv`;
+  el.downloadCsv.style.display='inline-flex';
+};
+
+/* ==================== FILTERS ==================== */
+[el.c2Filter, el.c3Filter, el.aiOnly, el.markedOnly, el.exportMarked].forEach(cb=>cb.onchange=renderGrid);
+el.reportSelect.onchange = ()=>{ if(el.reportSelect.value) loadReport(el.reportSelect.value); };
+
+/* ==================== AUTO-REFRESH ==================== */
+let refreshTimer;
+function startAutoRefresh(){
+  clearInterval(refreshTimer);
+  const next = 5*60*1000;
+  const end = Date.now() + next;
+  refreshTimer = setInterval(()=>{
+    const left = Math.max(0, Math.round((end - Date.now())/1000));
+    const m = Math.floor(left/60), s = left%60;
+    el.refreshEta.textContent = `${m}:${pad(s)}`;
+    if (left===0) refreshDropdown();
+  },1000);
+}
+el.refreshBtn.onclick = ()=>{ refreshDropdown(); startAutoRefresh(); };
+
+/* ==================== INIT ==================== */
+refreshDropdown();
+updateLiveGifs();
+startAutoRefresh();
+setInterval(updateLiveGifs, 2*60*1000);
+</script>
 </body>
 </html>
