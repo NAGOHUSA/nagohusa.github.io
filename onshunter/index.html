@@ -403,7 +403,7 @@ function applyFilters(){
   const c2=els.filterC2.checked, c3=els.filterC3.checked, comet=els.filterComet.checked, marked=els.filterMarked.checked;
   const selectedId = els.candidateSelect.value;
   filteredCandidates = allCandidates.filter(c=>{
-    if (HIDE_NOT_COMET && candidate.label === 'not_comet') return true;
+    if (HIDE_NOT_COMET && candidate.label === 'not_comet') return false;
     if(selectedId && c.id !== selectedId) return false;
     if(c2 && c.telescope!=='C2' && c.telescope!=='LASCO') return false;
     if(c3 && c.telescope!=='C3') return false;
