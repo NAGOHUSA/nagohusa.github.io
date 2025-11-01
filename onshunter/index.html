@@ -125,6 +125,8 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 .seg button { background: transparent; color: var(--text-secondary); border: 0; border-right: 1px solid var(--border); padding: 0.4rem 0.8rem; cursor: pointer; }
 .seg button:last-child { border-right: 0; }
 .seg button.active { color: var(--text-primary); background: rgba(59,130,246,0.12); }
+/* make disabled modes obvious & non-clickable */
+.seg button[disabled] { opacity: 0.45; pointer-events: none; }
 
 .three-wrap { background:#000; border:1px solid var(--border); border-radius: 0.5rem; height: 360px; }
 .three-hint { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; }
@@ -158,7 +160,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.4</h1>
+        <h1>🌟 SOHO Comet Hunter 3.6</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -419,7 +421,6 @@ function applyFilters() {
   updateFilterCount();
 }
 
-
 function renderCandidates() {
   const visible = HIDE_NOT_COMET
     ? filteredCandidates.filter(c => (c.label || '').toLowerCase() !== 'not_comet')
@@ -434,7 +435,6 @@ function renderCandidates() {
   els.emptyState.style.display = 'none';
   els.candidatesGrid.innerHTML = visible.map(renderCard).join('');
 
-
   // wire events for visible cards
   document.querySelectorAll('.candidate-card').forEach(card => {
     const id = card.dataset.id;
@@ -445,6 +445,7 @@ function renderCandidates() {
     card.addEventListener('click', () => showCandidateDetail(id));
   });
 }
+
 function updateFilterCount() {
   const hidden = HIDE_NOT_COMET
     ? filteredCandidates.filter(c => (c.label || '').toLowerCase() === 'not_comet').length
@@ -453,7 +454,6 @@ function updateFilterCount() {
   els.filterCount.textContent =
     `Showing ${shown} of ${allCandidates.length} candidates${hidden ? ` (${hidden} hidden as not_comet)` : ''}`;
 }
-
 
 function renderCard(c){
   const isMarked = markedIds.has(c.id);
@@ -502,10 +502,7 @@ function showCandidateDetail(id){
   const body = document.getElementById('modalBody');
   title.textContent = `Candidate: ${c.id}`;
 
-  // Build timelapse sequence for this track
   const sequence = getTrackGroup(c);
-  const hasSeq = sequence && sequence.length > 1;
-
   const hasOrig = !!c.originalPath, hasAnn = !!c.annotatedPath;
   const firstShown = hasAnn ? 'ann' : hasOrig ? 'orig' : 'crop';
   const modeSrc = (cand,mode)=> mode==='ann' ? cand.annotatedPath : mode==='orig' ? cand.originalPath : cand.cropPath;
@@ -515,8 +512,8 @@ function showCandidateDetail(id){
       <!-- Single frame toggle -->
       <div>
         <div class="seg" id="imgSeg">
-          <button data-mode="ann" ${!hasAnn?'disabled':''} class="${firstShown==='ann'?'active':''}">Annotated</button>
-          <button data-mode="orig" ${!hasOrig?'disabled':''} class="${firstShown==='orig'?'active':''}">Original</button>
+          <button data-mode="ann" class="${firstShown==='ann'?'active':''}">Annotated</button>
+          <button data-mode="orig" class="${firstShown==='orig'?'active':''}">Original</button>
           <button data-mode="crop" class="${firstShown==='crop'?'active':''}">Cropped</button>
         </div>
         <div style="margin-top:0.75rem;">
@@ -535,7 +532,7 @@ function showCandidateDetail(id){
         <h4 style="margin-bottom:0.5rem;">Time-lapse from previous detections</h4>
         <div class="tl-controls">
           <div class="seg" id="tlSeg">
-            <button data-mode="ann" class="active">Annotated</button>
+            <button data-mode="ann">Annotated</button>
             <button data-mode="orig">Original</button>
             <button data-mode="crop">Cropped</button>
           </div>
@@ -548,7 +545,6 @@ function showCandidateDetail(id){
           <span class="stat-label" id="tlCounter"></span>
         </div>
         <img id="tlImg" class="tl-img" alt="timelapse">
-        ${!hasSeq ? `<div class="stat-label" style="margin-top:0.5rem;">No prior frames for this track yet.</div>` : ``}
       </div>
 
       <div>
@@ -579,23 +575,36 @@ function showCandidateDetail(id){
     </div>
   `;
 
-  // Wire single-frame segmented toggle
+  // === Single-frame segmented toggle (robust + delegated) ===
   const seg = body.querySelector('#imgSeg');
   const segImg = body.querySelector('#segImg');
-  seg.querySelectorAll('button').forEach(btn=>{
-    btn.onclick = () => {
-      seg.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const m = btn.dataset.mode;
-      const src = RAW_URL(modeSrc(c, m));
-      segImg.src = src;
-    };
+
+  function hasMode(cand, mode) {
+    if (mode === 'ann')  return !!cand.annotatedPath;
+    if (mode === 'orig') return !!cand.originalPath;
+    return !!cand.cropPath;
+  }
+  function setDisabledStates() {
+    seg.querySelectorAll('button').forEach(b=>{
+      const m=b.dataset.mode;
+      if (!hasMode(c,m)) b.setAttribute('disabled','true'); else b.removeAttribute('disabled');
+    });
+  }
+  setDisabledStates();
+
+  seg.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
+    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    const m = btn.dataset.mode;
+    const src = RAW_URL(m==='ann'?c.annotatedPath:m==='orig'?c.originalPath:c.cropPath);
+    if (src) segImg.src = src;
   });
 
-  // Init timelapse
+  // === Timelapse (robust availability + delegated) ===
   initTimelapse(body, sequence, firstShown);
 
-  // 3D
+  // === 3D viewer ===
   initThreeTrack(body.querySelector('#threeWrap'), c);
 
   modal.classList.add('active');
@@ -614,20 +623,34 @@ function initTimelapse(scopeEl, sequence, defaultMode){
   const fpsVal = scopeEl.querySelector('#tlFpsVal');
   const counter = scopeEl.querySelector('#tlCounter');
 
-  let mode = (sequence.some(s => s.annotatedPath) ? 'ann' : (sequence.some(s=>s.originalPath) ? 'orig' : 'crop'));
-  if (defaultMode) mode = defaultMode; // start consistent with top panel
+  function framesFor(mode){
+    return sequence
+      .map(s => {
+        const p = mode==='ann' ? s.annotatedPath : mode==='orig' ? s.originalPath : s.cropPath;
+        return p ? RAW_URL(p) : '';
+      })
+      .filter(Boolean);
+  }
+
+  // reflect availability
+  ['ann','orig','crop'].forEach(m=>{
+    const btn = seg.querySelector(`button[data-mode="${m}"]`);
+    if (!btn) return;
+    const available = framesFor(m).length > 0;
+    if (!available) btn.setAttribute('disabled','true'); else btn.removeAttribute('disabled');
+  });
+
+  // start mode: prefer default, but fall back to first available
+  let mode = defaultMode || 'crop';
+  if (framesFor(mode).length === 0) {
+    mode = ['ann','orig','crop'].find(m=>framesFor(m).length>0) || 'crop';
+  }
+  seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+
+  let frames = framesFor(mode);
   let idx = 0;
   let timer = null;
   let fps = parseInt(fpsRange.value,10);
-
-  function framesFor(mode){
-    const urls = sequence.map(s => {
-      const p = mode==='ann' ? s.annotatedPath : mode==='orig' ? s.originalPath : s.cropPath;
-      return p ? RAW_URL(p) : '';
-    }).filter(Boolean);
-    return urls;
-  }
-  let frames = framesFor(mode);
 
   function show(i){
     if (!frames.length){ img.style.display='none'; counter.textContent=''; return; }
@@ -648,18 +671,16 @@ function initTimelapse(scopeEl, sequence, defaultMode){
     playBtn.textContent = '▶︎ Play';
   }
 
-  seg.querySelectorAll('button').forEach(b=>{
-    b.onclick = ()=>{
-      seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      mode = b.dataset.mode;
-      frames = framesFor(mode);
-      idx = 0;
-      show(idx);
-    };
+  seg.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
+    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    frames = framesFor(mode);
+    idx = 0;
+    pause();
+    show(0);
   });
-  // set active button by mode
-  seg.querySelectorAll('button').forEach(b => { if (b.dataset.mode===mode) b.classList.add('active'); });
 
   playBtn.onclick = ()=> timer ? pause() : play();
   prevBtn.onclick = ()=> { pause(); show(idx-1); };
@@ -700,7 +721,9 @@ function initThreeTrack(host, c){
     const line = new THREE.Line(geom, mat);
     scene.add(line);
 
-    const ptsGeom = new THREE.BufferGeometry().setFromPoints(arr.reduce((acc,_,k)=>(k%3===0 && acc.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2])),acc),[]));
+    const ptsGeom = new THREE.BufferGeometry().setFromPoints(
+      arr.reduce((acc,_,k)=>(k%3===0 && acc.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2])),acc),[])
+    );
     const ptsMat = new THREE.PointsMaterial({size:0.02, color:0xffff00});
     const cloud = new THREE.Points(ptsGeom, ptsMat);
     scene.add(cloud);
