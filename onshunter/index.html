@@ -3,483 +3,1315 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SOHO Comet Hunter – Detection Reports</title>
+<title>SOHO Comet Hunter – Professional Dashboard</title>
 <style>
-:root{
-  --bg:#0b1220;--panel:#0f1b30;--muted:#94a3b8;--text:#e6eefc;--accent:#60a5fa;
-  --chip:#1e293b;--card:#0d1526;--shadow:0 8px 30px rgba(0,0,0,.35);
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #111633;
+  --bg-card: #1a1f3a;
+  --border: #2a3354;
+  --text-primary: #e8edf4;
+  --text-secondary: #8b95b0;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
-.wrap{max-width:1400px;margin:0 auto;padding:14px 16px}
-h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
-.sub{font-size:13px;color:var(--muted)}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
-button,.sel,input[type="checkbox"],input[type="text"]{cursor:pointer}
-button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);transition:all .2s}
-button:hover{border-color:#33508a;background:#13223d}
-button:disabled{opacity:.5;cursor:not-allowed}
-.sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text);min-width:200px}
-input[type="text"]{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 12px;color:var(--text);width:100%;max-width:400px}
-main{padding:16px}
-.section{background:var(--card);border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow)}
-.section h2{margin:0 0 16px;font-size:18px;color:var(--accent)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
-.report-card{background:var(--panel);border:1px solid #1e293b;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.25);transition:all .3s}
-.report-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(96,165,250,.3)}
-.report-header{padding:16px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center}
-.report-date{font-size:16px;font-weight:700;color:var(--accent)}
-.report-count{background:rgba(123,47,247,.3);padding:4px 12px;border-radius:20px;font-size:13px}
-.candidates-list{padding:12px}
-.candidate-item{background:var(--card);border-left:3px solid #7b2ff7;padding:12px;margin-bottom:10px;border-radius:8px}
-.candidate-item:last-child{margin-bottom:0}
-.candidate-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.track-id{font-weight:700;color:var(--text)}
-.kvs{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;margin-bottom:10px}
-.kv{color:var(--muted)}
-.kv b{color:var(--text);font-weight:600}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
-.thumb{width:100%;aspect-ratio:1/1;object-fit:contain;background:#0b1220;border-radius:6px;margin-top:8px}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.right{margin-left:auto}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
-.stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:12px;text-align:center}
-.stat-value{font-size:24px;font-weight:800;color:var(--accent);display:block}
-.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
-.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
-.loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
-.loading::after{content:'...';animation:dots 1.5s infinite}
-@keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-.err{color:#ffb4b4;padding:12px;background:rgba(255,50,50,.1);border:1px solid rgba(255,50,50,.3);border-radius:8px;margin-top:12px}
-.overlay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px}
-.overlay-card{background:var(--panel);border:1px solid #1e293b;border-radius:12px;overflow:hidden}
-.overlay-card h3{padding:12px;margin:0;font-size:14px;color:var(--accent);border-bottom:1px solid #1e293b}
-.overlay-card img{width:100%;display:block;background:#0b1220}
-.config-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
-@media(max-width:768px){
-  .config-row{grid-template-columns:1fr}
-  .stats{grid-template-columns:repeat(2,1fr)}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+  padding: 2rem 0;
+  box-shadow: var(--shadow-lg);
+  border-bottom: 2px solid var(--border);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-title h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, #fff 0%, #bfdbfe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-subtitle {
+  color: #bfdbfe;
+  font-size: 0.9rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Controls Bar */
+.controls-bar {
+  background: var(--bg-secondary);
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+select {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s;
+}
+
+select:hover {
+  border-color: var(--accent);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select-wrapper::after {
+  content: '▼';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.filter-chip:hover {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.filter-chip input[type="checkbox"] {
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent);
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+/* Stats Dashboard */
+.stats-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+  border-color: var(--accent);
+}
+
+/* Live Feed Section */
+.live-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.feed-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.feed-header {
+  padding: 1rem 1.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feed-title {
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+}
+
+.feed-content {
+  aspect-ratio: 1;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed-content img, .feed-content video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.feed-footer {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Candidates Grid */
+.candidates-section {
+  margin: 2rem 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.candidate-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.candidate-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.candidate-card.marked {
+  border-color: var(--success);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.candidate-image {
+  width: 100%;
+  aspect-ratio: 1.6;
+  background: #000;
+  object-fit: contain;
+}
+
+.candidate-body {
+  padding: 1.25rem;
+}
+
+.candidate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.candidate-id {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.candidate-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.score-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.score-badge.comet {
+  background: var(--success);
+  color: white;
+}
+
+.score-badge.not-comet {
+  background: var(--danger);
+  color: white;
+}
+
+.score-badge.unknown {
+  background: var(--text-secondary);
+  color: white;
+}
+
+.score-value {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.candidate-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-label {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.candidate-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent);
+}
+
+.action-btn.marked-btn {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 3px solid rgba(59, 130, 246, 0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .candidates-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .live-feed {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Status Indicator */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-indicator.online {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.status-indicator.online .status-dot {
+  background: var(--success);
+}
+
+/* Auto-refresh timer */
+.refresh-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.countdown {
+  font-weight: 700;
+  color: var(--accent);
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <h1>🌟 SOHO Comet Hunter</h1>
-    <div class="sub">Automated Comet Detection Reports • Real-time Analysis</div>
-    <div class="controls">
-      <button id="refreshBtn">🔄 Refresh</button>
-      <select id="reportSelect" class="sel">
-        <option value="">Loading reports...</option>
-      </select>
-      <div class="right pill">
-        <span id="statusText">Ready</span>
+
+<!-- Header -->
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>🌟 SOHO Comet Hunter 2.6</h1>
+        <div class="header-subtitle">Professional Comet Detection Dashboard</div>
+      </div>
+      <div class="header-actions">
+        <div class="status-indicator online">
+          <span class="status-dot"></span>
+          <span>Live</span>
+        </div>
+        <button class="btn btn-primary" id="refreshBtn">
+          🔄 Refresh
+        </button>
+        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">
+          📦 GitHub
+        </a>
       </div>
     </div>
   </div>
 </header>
 
-<main class="wrap">
-  <!-- Configuration Section -->
-  <section class="section" id="configSection">
-    <h2>⚙️ Configuration</h2>
-    <div class="config-row">
-      <div>
-        <label class="sub" style="display:block;margin-bottom:4px">Repository</label>
-        <input type="text" id="repoPath" placeholder="owner/repository" value="NAGOHUSA/ONS_SOHOHUNTER">
+<!-- Controls -->
+<div class="controls-bar">
+  <div class="container">
+    <div class="controls-grid">
+      <div class="control-group">
+        <label class="control-label">Detection Report</label>
+        <div class="select-wrapper">
+          <select id="reportSelect">
+            <option value="">Loading reports...</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="sub" style="display:block;margin-bottom:4px">Branch</label>
-        <input type="text" id="branch" placeholder="main" value="main">
+      
+      <div class="control-group">
+        <label class="control-label">Candidate</label>
+        <div class="select-wrapper">
+          <select id="candidateSelect">
+            <option value="">Select candidate...</option>
+          </select>
+        </div>
       </div>
-      <button id="loadBtn">Load Data</button>
-    </div>
-  </section>
-
-  <!-- Latest Status Section -->
-  <section class="section" id="statusSection" style="display:none">
-    <h2>📊 Latest Status</h2>
-    <div class="stats" id="statsGrid"></div>
-    <div id="errorDisplay" class="err" style="display:none"></div>
-  </section>
-
-  <!-- Overlay Images Section -->
-  <section class="section" id="overlaySection" style="display:none">
-    <h2>🔭 Latest Overlays</h2>
-    <div class="overlay-grid">
-      <div class="overlay-card">
-        <h3>LASCO C2 Overlay</h3>
-        <img id="overlayC2" src="" alt="C2 Overlay">
+      
+      <div class="control-group">
+        <label class="control-label">Actions</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">📄 Export TXT</button>
+          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">📊 Export CSV</button>
+        </div>
       </div>
-      <div class="overlay-card">
-        <h3>LASCO C3 Overlay</h3>
-        <img id="overlayC3" src="" alt="C3 Overlay">
-      </div>
-      <div class="overlay-card">
-        <h3>C2 Contact Sheet</h3>
-        <img id="contactC2" src="" alt="C2 Contact">
-      </div>
-      <div class="overlay-card">
-        <h3>C3 Contact Sheet</h3>
-        <img id="contactC3" src="" alt="C3 Contact">
+      
+      <div class="control-group">
+        <label class="control-label">Auto-Refresh</label>
+        <div class="refresh-timer">
+          Next update in <span class="countdown" id="countdown">5:00</span>
+        </div>
       </div>
     </div>
-  </section>
-
-  <!-- Detection Reports Section -->
-  <section class="section" id="reportsSection">
-    <h2>📋 Detection Reports</h2>
-    <div id="reportsGrid" class="grid"></div>
-    <div id="loadingIndicator" class="loading">Loading detection reports</div>
-    <div id="emptyState" class="empty" style="display:none">
-      No detection reports found. Make sure the repository and branch are correct.
+    
+    <div class="filters">
+      <label class="filter-chip">
+        <input type="checkbox" id="filterC2">
+        <span>C2 Telescope</span>
+      </label>
+      <label class="filter-chip">
+        <input type="checkbox" id="filterC3">
+        <span>C3 Telescope</span>
+      </label>
+      <label class="filter-chip">
+        <input type="checkbox" id="filterComet">
+        <span>AI Comet Only</span>
+      </label>
+      <label class="filter-chip">
+        <input type="checkbox" id="filterMarked">
+        <span>Marked Only</span>
+      </label>
+      <label class="filter-chip">
+        <input type="checkbox" id="exportMarkedOnly">
+        <span>Export Marked Only</span>
+      </label>
     </div>
-  </section>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="container">
+  <!-- Stats Dashboard -->
+  <div class="stats-dashboard" id="statsDashboard">
+    <div class="stat-card">
+      <div class="stat-label">Total Detections</div>
+      <div class="stat-value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="stat-label">AI Comets</div>
+      <div class="stat-value" id="statComets">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">C2 Detections</div>
+      <div class="stat-value" id="statC2">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">C3 Detections</div>
+      <div class="stat-value" id="statC3">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Marked Items</div>
+      <div class="stat-value" id="statMarked">0</div>
+    </div>
+  </div>
+
+  <!-- Live LASCO Feed -->
+  <div class="live-feed">
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-title">
+          <span>🛰️ LASCO C2</span>
+          <span class="badge">LIVE</span>
+        </div>
+        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+      </div>
+      <div class="feed-content">
+        <img id="c2LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="LASCO C2 Live">
+      </div>
+      <div class="feed-footer">
+        <span>Last Updated:</span>
+        <span id="c2Timestamp">--:--</span>
+      </div>
+    </div>
+    
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-title">
+          <span>🛰️ LASCO C3</span>
+          <span class="badge">LIVE</span>
+        </div>
+        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+      </div>
+      <div class="feed-content">
+        <img id="c3LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="LASCO C3 Live">
+      </div>
+      <div class="feed-footer">
+        <span>Last Updated:</span>
+        <span id="c3Timestamp">--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidates Section -->
+  <div class="candidates-section">
+    <div class="section-header">
+      <h2 class="section-title">Detection Candidates</h2>
+      <div id="filterCount" class="stat-label"></div>
+    </div>
+    
+    <div id="candidatesGrid" class="candidates-grid"></div>
+    
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">No Candidates Found</div>
+      <p>Try adjusting your filters or select a different report</p>
+    </div>
+    
+    <div id="loadingState" style="display: none;">
+      <div class="spinner"></div>
+    </div>
+  </div>
 </main>
 
+<!-- Candidate Detail Modal -->
+<div class="modal" id="candidateModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Candidate Details</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
-/* ==================== CONFIG ==================== */
-let CONFIG = {
+// Configuration
+const CONFIG = {
   repo: 'NAGOHUSA/ONS_SOHOHUNTER',
-  branch: 'main'
+  branch: 'main',
+  folder: 'detections',
+  refreshInterval: 5 * 60 * 1000 // 5 minutes
 };
 
-const FOLDER = 'detections';
-
-/* ==================== ELEMENTS ==================== */
-const el = {
-  repoPath: document.getElementById('repoPath'),
-  branch: document.getElementById('branch'),
-  loadBtn: document.getElementById('loadBtn'),
-  refreshBtn: document.getElementById('refreshBtn'),
-  reportSelect: document.getElementById('reportSelect'),
-  statusText: document.getElementById('statusText'),
-  configSection: document.getElementById('configSection'),
-  statusSection: document.getElementById('statusSection'),
-  overlaySection: document.getElementById('overlaySection'),
-  reportsSection: document.getElementById('reportsSection'),
-  statsGrid: document.getElementById('statsGrid'),
-  errorDisplay: document.getElementById('errorDisplay'),
-  overlayC2: document.getElementById('overlayC2'),
-  overlayC3: document.getElementById('overlayC3'),
-  contactC2: document.getElementById('contactC2'),
-  contactC3: document.getElementById('contactC3'),
-  reportsGrid: document.getElementById('reportsGrid'),
-  loadingIndicator: document.getElementById('loadingIndicator'),
-  emptyState: document.getElementById('emptyState')
-};
-
-/* ==================== HELPERS ==================== */
-function RAW(path) {
+const RAW_URL = (path) => {
+  // Handle paths that might already be complete or need detections/ prefix
+  if (!path) return '';
+  
+  // If path starts with detections/, use as-is
+  if (path.startsWith('detections/')) {
+    return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${path}`;
+  }
+  
+  // If path starts with crops/ or other subfolder, prepend detections/
+  if (path.startsWith('crops/') || path.startsWith('animations/') || path.startsWith('thumbnails/')) {
+    return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/detections/${path}`;
+  }
+  
+  // Otherwise assume it's a full path from root
   return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${path}`;
-}
+};
 
-function formatDate(isoString) {
-  try {
-    const date = new Date(isoString);
-    return date.toLocaleString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch {
-    return isoString;
-  }
-}
+const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
-function formatTimestamp(timestamp) {
-  const year = timestamp.substring(0, 4);
-  const month = timestamp.substring(4, 6);
-  const day = timestamp.substring(6, 8);
-  const hour = timestamp.substring(9, 11);
-  const minute = timestamp.substring(11, 13);
-  return `${year}-${month}-${day} ${hour}:${minute} UTC`;
-}
+// State
+let allCandidates = [];
+let filteredCandidates = [];
+let markedIds = new Set();
+let currentReport = null;
 
-function showError(message) {
-  el.errorDisplay.textContent = message;
-  el.errorDisplay.style.display = 'block';
-}
+// Elements
+const els = {
+  reportSelect: document.getElementById('reportSelect'),
+  candidateSelect: document.getElementById('candidateSelect'),
+  refreshBtn: document.getElementById('refreshBtn'),
+  exportTxtBtn: document.getElementById('exportTxtBtn'),
+  exportCsvBtn: document.getElementById('exportCsvBtn'),
+  filterC2: document.getElementById('filterC2'),
+  filterC3: document.getElementById('filterC3'),
+  filterComet: document.getElementById('filterComet'),
+  filterMarked: document.getElementById('filterMarked'),
+  exportMarkedOnly: document.getElementById('exportMarkedOnly'),
+  candidatesGrid: document.getElementById('candidatesGrid'),
+  emptyState: document.getElementById('emptyState'),
+  loadingState: document.getElementById('loadingState'),
+  countdown: document.getElementById('countdown'),
+  statTotal: document.getElementById('statTotal'),
+  statComets: document.getElementById('statComets'),
+  statC2: document.getElementById('statC2'),
+  statC3: document.getElementById('statC3'),
+  statMarked: document.getElementById('statMarked'),
+  filterCount: document.getElementById('filterCount'),
+  c2LiveGif: document.getElementById('c2LiveGif'),
+  c3LiveGif: document.getElementById('c3LiveGif'),
+  c2Timestamp: document.getElementById('c2Timestamp'),
+  c3Timestamp: document.getElementById('c3Timestamp')
+};
 
-function hideError() {
-  el.errorDisplay.style.display = 'none';
-}
-
-function setStatus(text) {
-  el.statusText.textContent = text;
-}
-
-/* ==================== LOAD LATEST STATUS ==================== */
-async function loadLatestStatus() {
-  try {
-    const response = await fetch(RAW('detections/latest_status.json'));
-    if (!response.ok) throw new Error('Status not found');
-    
-    const data = await response.json();
-    displayStatus(data);
-    el.statusSection.style.display = 'block';
-    hideError();
-  } catch (error) {
-    console.error('Error loading status:', error);
-    showError('Unable to load latest status. The file may not exist yet.');
-  }
-}
-
-function displayStatus(data) {
-  const stats = [
-    { value: formatDate(data.timestamp), label: 'Last Run' },
-    { value: data.frames_processed || 'N/A', label: 'Frames Processed' },
-    { value: data.candidates_found || 0, label: 'Candidates Found' },
-    { value: data.status || 'Unknown', label: 'Status' }
-  ];
-
-  el.statsGrid.innerHTML = stats.map(s => `
-    <div class="stat">
-      <span class="stat-value">${s.value}</span>
-      <div class="stat-label">${s.label}</div>
-    </div>
-  `).join('');
-}
-
-/* ==================== LOAD OVERLAYS ==================== */
-async function loadOverlays() {
-  try {
-    const timestamp = Date.now();
-    el.overlayC2.src = RAW(`detections/overlay_C2.png?t=${timestamp}`);
-    el.overlayC3.src = RAW(`detections/overlay_C3.png?t=${timestamp}`);
-    el.contactC2.src = RAW(`detections/contact_C2.png?t=${timestamp}`);
-    el.contactC3.src = RAW(`detections/contact_C3.png?t=${timestamp}`);
-    
-    el.overlayC2.onerror = () => el.overlayC2.parentElement.style.display = 'none';
-    el.overlayC3.onerror = () => el.overlayC3.parentElement.style.display = 'none';
-    el.contactC2.onerror = () => el.contactC2.parentElement.style.display = 'none';
-    el.contactC3.onerror = () => el.contactC3.parentElement.style.display = 'none';
-    
-    el.overlaySection.style.display = 'block';
-  } catch (error) {
-    console.error('Error loading overlays:', error);
-  }
-}
-
-/* ==================== LOAD DETECTION REPORTS ==================== */
-async function loadDetectionReports() {
-  try {
-    el.loadingIndicator.style.display = 'block';
-    el.emptyState.style.display = 'none';
-    el.reportsGrid.innerHTML = '';
-    
-    const apiUrl = `https://api.github.com/repos/${CONFIG.repo}/contents/detections?ref=${CONFIG.branch}`;
-    const response = await fetch(apiUrl);
-    
-    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
-    
-    const files = await response.json();
-    const candidateFiles = files
-      .filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
-      .sort((a, b) => b.name.localeCompare(a.name))
-      .slice(0, 30);
-
-    if (candidateFiles.length === 0) {
-      el.loadingIndicator.style.display = 'none';
-      el.emptyState.style.display = 'block';
-      return;
-    }
-
-    // Update dropdown
-    el.reportSelect.innerHTML = '<option value="">-- Select a report --</option>';
-    candidateFiles.forEach(file => {
-      const option = document.createElement('option');
-      option.value = file.name;
-      option.textContent = file.name.replace('candidates_', '').replace('.json', '');
-      el.reportSelect.appendChild(option);
-    });
-
-    const detections = [];
-    for (const file of candidateFiles) {
-      try {
-        const res = await fetch(RAW(`detections/${file.name}`));
-        if (res.ok) {
-          const data = await res.json();
-          detections.push({ filename: file.name, data });
-        }
-      } catch (err) {
-        console.error(`Error loading ${file.name}:`, err);
-      }
-    }
-
-    displayDetections(detections);
-    el.loadingIndicator.style.display = 'none';
-  } catch (error) {
-    console.error('Error loading detection reports:', error);
-    el.loadingIndicator.style.display = 'none';
-    el.emptyState.style.display = 'block';
-    showError(`Failed to load reports: ${error.message}`);
-  }
-}
-
-/* ==================== DISPLAY DETECTIONS ==================== */
-function displayDetections(detections) {
-  el.reportsGrid.innerHTML = detections.map(detection => {
-    const timestamp = detection.filename.match(/candidates_(\d{8}_\d{6})\.json/);
-    const dateStr = timestamp ? formatTimestamp(timestamp[1]) : 'Unknown Date';
-    
-    const candidates = Array.isArray(detection.data) 
-      ? detection.data 
-      : (detection.data.candidates || []);
-
-    return createReportCard(dateStr, candidates, detection.filename);
-  }).join('');
-}
-
-function createReportCard(dateStr, candidates, filename) {
-  if (!candidates || candidates.length === 0) {
-    return `
-      <div class="report-card">
-        <div class="report-header">
-          <div class="report-date">${dateStr}</div>
-          <div class="report-count">0 candidates</div>
-        </div>
-        <div class="candidates-list">
-          <div style="color:var(--muted);text-align:center;padding:20px">No candidates in this report</div>
-        </div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="report-card">
-      <div class="report-header">
-        <div class="report-date">${dateStr}</div>
-        <div class="report-count">${candidates.length} candidate${candidates.length !== 1 ? 's' : ''}</div>
-      </div>
-      <div class="candidates-list">
-        ${candidates.map((c, i) => createCandidateItem(c, i, filename)).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function createCandidateItem(candidate, index, filename) {
-  const instrument = candidate.instrument || 'Unknown';
-  const trackId = candidate.track_id ?? index;
-  const timestamp = candidate.timestamp || '';
-  const aiLabel = candidate.ai_label || 'N/A';
-  const aiScore = candidate.ai_score ? (candidate.ai_score * 100).toFixed(1) : 'N/A';
-  const trackLength = candidate.track_length || 'N/A';
-  const avgBrightness = candidate.avg_brightness?.toFixed(1) || 'N/A';
-  const velocity = candidate.velocity?.toFixed(2) || 'N/A';
-  
-  // Use crop_path from JSON - it's already the full path from repo root
-  const cropUrl = candidate.crop_path ? RAW(candidate.crop_path) : '';
-  
-  // Debug logging
-  if (index === 0) {
-    console.log('Sample image URL:', cropUrl);
-    console.log('Expected format: https://raw.githubusercontent.com/REPO/BRANCH/crops/filename.png');
-  }
-
-  return `
-    <div class="candidate-item">
-      <div class="candidate-header">
-        <span class="track-id">Track #${trackId}</span>
-        <div class="row" style="gap:6px">
-          <span class="pill">${instrument}</span>
-          <span class="pill">AI: ${aiScore}%</span>
-        </div>
-      </div>
-      <div class="kvs">
-        <div class="kv">Time:</div>
-        <div class="kv"><b>${timestamp ? formatDate(timestamp) : 'N/A'}</b></div>
-        <div class="kv">Label:</div>
-        <div class="kv"><b>${aiLabel}</b></div>
-        <div class="kv">Track Length:</div>
-        <div class="kv"><b>${trackLength}</b></div>
-        <div class="kv">Brightness:</div>
-        <div class="kv"><b>${avgBrightness}</b></div>
-        <div class="kv">Velocity:</div>
-        <div class="kv"><b>${velocity} px/frame</b></div>
-        <div class="kv">Position:</div>
-        <div class="kv"><b>${candidate.bbox ? `[${candidate.bbox.join(', ')}]` : 'N/A'}</b></div>
-      </div>
-      ${cropUrl ? `
-      <a href="${cropUrl}" target="_blank" title="Click to view full size">
-        <img class="thumb" src="${cropUrl}" alt="Track ${trackId}" loading="lazy" 
-             onerror="this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:var(--muted);background:var(--card);border-radius:6px\\'>❌ Image not found<br><small style=\\'font-size:11px;margin-top:8px;display:block\\'>${candidate.crop_path}</small></div>';">
-      </a>
-      ` : '<div style="padding:40px;text-align:center;color:var(--muted)">No crop path specified</div>'}
-    </div>
-  `;
-}
-
-/* ==================== DEBUG: Log image URLs ==================== */
-function logImageDebug(candidate, index) {
-  console.log(`Candidate ${index}:`, {
-    crop_path: candidate.crop_path,
-    constructed_url: candidate.crop_path ? RAW(candidate.crop_path) : 'N/A'
+// Utilities
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short'
   });
 }
 
-/* ==================== LOAD SINGLE REPORT ==================== */
-async function loadSingleReport(filename) {
-  if (!filename) return;
+function getTelescope(candidate) {
+  return (candidate.instrument || candidate.detector || 'unknown').toUpperCase();
+}
+
+function normalizeCandidate(c, idx) {
+  const telescope = getTelescope(c);
+  const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
+  
+  return {
+    id,
+    telescope,
+    label: (c.ai_label || 'unknown').toLowerCase(),
+    score: c.ai_score ?? 0,
+    timestamp: c.timestamp || '',
+    bbox: c.bbox || [],
+    cropPath: c.crop_path,
+    animationMp4: c.animation_mp4_path,
+    animationGif: c.animation_gif_path,
+    thumbnail: c.thumbnail_path,
+    pathOverlay: c.path_overlay_path,
+    marked: markedIds.has(id),
+    raw: c
+  };
+}
+
+// Load reports dropdown
+async function loadReports() {
+  try {
+    const response = await fetch(API_URL);
+    const files = await response.json();
+    
+    const reports = files
+      .filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
+      .sort((a, b) => b.name.localeCompare(a.name));
+    
+    els.reportSelect.innerHTML = '<option value="">Select a report...</option>';
+    reports.forEach(report => {
+      const option = document.createElement('option');
+      option.value = report.name;
+      option.textContent = report.name.replace('candidates_', '').replace('.json', '');
+      els.reportSelect.appendChild(option);
+    });
+    
+    if (reports.length > 0) {
+      els.reportSelect.value = reports[0].name;
+      await loadReport(reports[0].name);
+    }
+  } catch (error) {
+    console.error('Failed to load reports:', error);
+  }
+}
+
+// Load specific report
+async function loadReport(reportName) {
+  if (!reportName) return;
+  
+  els.loadingState.style.display = 'block';
+  els.candidatesGrid.innerHTML = '';
+  els.emptyState.style.display = 'none';
   
   try {
-    setStatus('Loading report...');
-    const response = await fetch(RAW(`detections/${filename}`));
-    if (!response.ok) throw new Error('Report not found');
-    
+    const response = await fetch(RAW_URL(`${CONFIG.folder}/${reportName}`));
     const data = await response.json();
-    const candidates = Array.isArray(data) ? data : (data.candidates || []);
     
-    const timestamp = filename.match(/candidates_(\d{8}_\d{6})\.json/);
-    const dateStr = timestamp ? formatTimestamp(timestamp[1]) : 'Unknown Date';
+    currentReport = reportName;
+    allCandidates = data.map(normalizeCandidate);
     
-    el.reportsGrid.innerHTML = createReportCard(dateStr, candidates, filename);
-    setStatus('Ready');
+    updateCandidateDropdown();
+    applyFilters();
+    updateStats();
+    updateLiveFeeds();
   } catch (error) {
-    console.error('Error loading report:', error);
-    showError(`Failed to load report: ${error.message}`);
-    setStatus('Error');
+    console.error('Failed to load report:', error);
+    els.emptyState.style.display = 'block';
+  } finally {
+    els.loadingState.style.display = 'none';
   }
 }
 
-/* ==================== UPDATE CONFIG ==================== */
-function updateConfig() {
-  CONFIG.repo = el.repoPath.value.trim() || CONFIG.repo;
-  CONFIG.branch = el.branch.value.trim() || CONFIG.branch;
+// Update candidate dropdown
+function updateCandidateDropdown() {
+  els.candidateSelect.innerHTML = '<option value="">All candidates</option>';
+  
+  allCandidates.forEach(candidate => {
+    const option = document.createElement('option');
+    option.value = candidate.id;
+    option.textContent = `${candidate.id} - ${candidate.label.toUpperCase()} (${(candidate.score * 100).toFixed(1)}%)`;
+    els.candidateSelect.appendChild(option);
+  });
 }
 
-/* ==================== LOAD ALL DATA ==================== */
-async function loadAllData() {
-  updateConfig();
-  setStatus('Loading...');
-  hideError();
+// Apply filters
+function applyFilters() {
+  const c2 = els.filterC2.checked;
+  const c3 = els.filterC3.checked;
+  const comet = els.filterComet.checked;
+  const marked = els.filterMarked.checked;
+  const selectedId = els.candidateSelect.value;
   
-  await Promise.all([
-    loadLatestStatus(),
-    loadOverlays(),
-    loadDetectionReports()
+  filteredCandidates = allCandidates.filter(candidate => {
+    if (selectedId && candidate.id !== selectedId) return false;
+    if (c2 && candidate.telescope !== 'C2' && candidate.telescope !== 'LASCO') return false;
+    if (c3 && candidate.telescope !== 'C3') return false;
+    if (comet && candidate.label !== 'comet') return false;
+    if (marked && !markedIds.has(candidate.id)) return false;
+    return true;
+  });
+  
+  renderCandidates();
+  updateFilterCount();
+}
+
+// Render candidates
+function renderCandidates() {
+  if (filteredCandidates.length === 0) {
+    els.candidatesGrid.innerHTML = '';
+    els.emptyState.style.display = 'block';
+    return;
+  }
+  
+  els.emptyState.style.display = 'none';
+  els.candidatesGrid.innerHTML = filteredCandidates.map(renderCandidateCard).join('');
+  
+  // Attach event listeners
+  document.querySelectorAll('.candidate-card').forEach(card => {
+    const id = card.dataset.id;
+    card.querySelector('.mark-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMark(id);
+    });
+    card.addEventListener('click', () => showCandidateDetail(id));
+  });
+}
+
+// Render single candidate card
+function renderCandidateCard(candidate) {
+  const isMarked = markedIds.has(candidate.id);
+  const imageUrl = candidate.thumbnail || candidate.cropPath;
+  const hasAnimation = candidate.animationMp4 || candidate.animationGif;
+  
+  return `
+    <div class="candidate-card ${isMarked ? 'marked' : ''}" data-id="${candidate.id}">
+      ${imageUrl ? `<img src="${RAW_URL(imageUrl)}" alt="${candidate.id}" class="candidate-image">` : ''}
+      ${hasAnimation && candidate.animationMp4 ? `<video src="${RAW_URL(candidate.animationMp4)}" class="candidate-image" loop muted autoplay></video>` : ''}
+      
+      <div class="candidate-body">
+        <div class="candidate-header">
+          <div class="candidate-id">${candidate.id}</div>
+          <div class="candidate-score">
+            <span class="score-badge ${candidate.label}">${candidate.label.toUpperCase()}</span>
+            <span class="score-value">${(candidate.score * 100).toFixed(1)}%</span>
+          </div>
+        </div>
+        
+        <div class="candidate-meta">
+          <div class="meta-item">
+            <span class="meta-label">Telescope</span>
+            <span class="meta-value">${candidate.telescope}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Track ID</span>
+            <span class="meta-value">${candidate.raw.track_id ?? 'N/A'}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Timestamp</span>
+            <span class="meta-value">${candidate.timestamp ? formatDate(candidate.timestamp) : 'N/A'}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Position</span>
+            <span class="meta-value">${candidate.bbox.length >= 2 ? `${candidate.bbox[0]}, ${candidate.bbox[1]}` : 'N/A'}</span>
+          </div>
+        </div>
+        
+        <div class="candidate-actions">
+          <button class="action-btn mark-btn ${isMarked ? 'marked-btn' : ''}">
+            ${isMarked ? '✓ Marked' : '☆ Mark'}
+          </button>
+          <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${candidate.id}')">
+            👁️ Details
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Toggle mark
+function toggleMark(id) {
+  if (markedIds.has(id)) {
+    markedIds.delete(id);
+  } else {
+    markedIds.add(id);
+  }
+  applyFilters();
+  updateStats();
+}
+
+// Show candidate detail modal
+function showCandidateDetail(id) {
+  const candidate = allCandidates.find(c => c.id === id);
+  if (!candidate) return;
+  
+  const modal = document.getElementById('candidateModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  
+  modalTitle.textContent = `Candidate: ${candidate.id}`;
+  
+  const imageUrl = candidate.thumbnail || candidate.cropPath;
+  const animMp4 = candidate.animationMp4;
+  const animGif = candidate.animationGif;
+  const pathOverlay = candidate.pathOverlay;
+  
+  modalBody.innerHTML = `
+    <div style="display: grid; gap: 1.5rem;">
+      ${imageUrl ? `
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Detection Crop</h4>
+          <img src="${RAW_URL(imageUrl)}" style="width: 100%; border-radius: 0.5rem; background: #000;">
+        </div>
+      ` : ''}
+      
+      ${animMp4 ? `
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Animation (MP4)</h4>
+          <video src="${RAW_URL(animMp4)}" controls loop style="width: 100%; border-radius: 0.5rem; background: #000;"></video>
+        </div>
+      ` : ''}
+      
+      ${animGif ? `
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Animation (GIF)</h4>
+          <img src="${RAW_URL(animGif)}" style="width: 100%; border-radius: 0.5rem; background: #000;">
+        </div>
+      ` : ''}
+      
+      ${pathOverlay ? `
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Path Overlay</h4>
+          <img src="${RAW_URL(pathOverlay)}" style="width: 100%; border-radius: 0.5rem; background: #000;">
+        </div>
+      ` : ''}
+      
+      <div>
+        <h4 style="margin-bottom: 0.5rem;">Details</h4>
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; font-size: 0.9rem;">
+          <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.5rem;">
+            <strong>ID:</strong><span>${candidate.id}</span>
+            <strong>Telescope:</strong><span>${candidate.telescope}</span>
+            <strong>AI Label:</strong><span>${candidate.label.toUpperCase()}</span>
+            <strong>AI Score:</strong><span>${(candidate.score * 100).toFixed(2)}%</span>
+            <strong>Timestamp:</strong><span>${candidate.timestamp ? formatDate(candidate.timestamp) : 'N/A'}</span>
+            <strong>Track ID:</strong><span>${candidate.raw.track_id ?? 'N/A'}</span>
+            <strong>Bounding Box:</strong><span>${candidate.bbox.join(', ') || 'N/A'}</span>
+            <strong>Crop Path:</strong><span style="word-break: break-all;">${candidate.cropPath || 'N/A'}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-primary" onclick="toggleMark('${candidate.id}'); closeModal(); applyFilters();">
+          ${markedIds.has(candidate.id) ? 'Unmark' : 'Mark'} Candidate
+        </button>
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('candidateModal').classList.remove('active');
+}
+
+// Update stats
+function updateStats() {
+  const total = allCandidates.length;
+  const comets = allCandidates.filter(c => c.label === 'comet').length;
+  const c2 = allCandidates.filter(c => c.telescope === 'C2' || c.telescope === 'LASCO').length;
+  const c3 = allCandidates.filter(c => c.telescope === 'C3').length;
+  const marked = Array.from(markedIds).filter(id => allCandidates.some(c => c.id === id)).length;
+  
+  els.statTotal.textContent = total;
+  els.statComets.textContent = comets;
+  els.statC2.textContent = c2;
+  els.statC3.textContent = c3;
+  els.statMarked.textContent = marked;
+}
+
+function updateFilterCount() {
+  els.filterCount.textContent = `Showing ${filteredCandidates.length} of ${allCandidates.length} candidates`;
+}
+
+// Update live feeds
+async function updateLiveFeeds() {
+  const feeds = [
+    { url: 'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif', el: els.c2LiveGif, ts: els.c2Timestamp },
+    { url: 'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif', el: els.c3LiveGif, ts: els.c3Timestamp }
+  ];
+  
+  for (const feed of feeds) {
+    try {
+      const response = await fetch(feed.url, { method: 'HEAD' });
+      const lastModified = response.headers.get('last-modified');
+      if (lastModified) {
+        feed.ts.textContent = new Date(lastModified).toLocaleTimeString();
+      }
+      feed.el.src = `${feed.url}?t=${Date.now()}`;
+    } catch (error) {
+      console.error('Failed to update feed:', error);
+    }
+  }
+}
+
+// Export functions
+function exportTXT() {
+  const candidates = els.exportMarkedOnly.checked
+    ? allCandidates.filter(c => markedIds.has(c.id))
+    : allCandidates;
+  
+  const lines = candidates.map(c => {
+    return [
+      c.id,
+      c.label.toUpperCase(),
+      `${(c.score * 100).toFixed(1)}%`,
+      c.telescope,
+      c.timestamp ? formatDate(c.timestamp) : 'N/A',
+      c.bbox.slice(0, 2).join(', ') || 'N/A'
+    ].join('\t');
+  });
+  
+  const content = lines.join('\n');
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `soho_export_${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  const candidates = els.exportMarkedOnly.checked
+    ? allCandidates.filter(c => markedIds.has(c.id))
+    : allCandidates;
+  
+  const header = ['ID', 'Label', 'Score', 'Telescope', 'Timestamp', 'Track_ID', 'X', 'Y', 'Crop_Path'];
+  const rows = candidates.map(c => [
+    c.id,
+    c.label.toUpperCase(),
+    (c.score * 100).toFixed(1),
+    c.telescope,
+    c.timestamp || 'N/A',
+    c.raw.track_id ?? 'N/A',
+    c.bbox[0] ?? '',
+    c.bbox[1] ?? '',
+    c.cropPath || ''
   ]);
   
-  setStatus('Ready');
+  const csv = [header, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `soho_export_${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
-/* ==================== EVENT LISTENERS ==================== */
-el.loadBtn.onclick = loadAllData;
-el.refreshBtn.onclick = loadAllData;
-el.reportSelect.onchange = (e) => {
-  if (e.target.value) {
-    loadSingleReport(e.target.value);
-  }
-};
+// Auto-refresh countdown
+let countdownInterval;
+function startCountdown() {
+  let seconds = 300; // 5 minutes
+  
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    seconds--;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    els.countdown.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+    
+    if (seconds <= 0) {
+      loadReports();
+      seconds = 300;
+    }
+  }, 1000);
+}
 
-/* ==================== INIT ==================== */
-loadAllData();
+// Event listeners
+els.reportSelect.addEventListener('change', (e) => loadReport(e.target.value));
+els.candidateSelect.addEventListener('change', applyFilters);
+els.refreshBtn.addEventListener('click', () => {
+  loadReports();
+  startCountdown();
+});
+els.exportTxtBtn.addEventListener('click', exportTXT);
+els.exportCsvBtn.addEventListener('click', exportCSV);
+
+[els.filterC2, els.filterC3, els.filterComet, els.filterMarked].forEach(checkbox => {
+  checkbox.addEventListener('change', applyFilters);
+});
+
+// Close modal on outside click
+document.getElementById('candidateModal').addEventListener('click', (e) => {
+  if (e.target.id === 'candidateModal') {
+    closeModal();
+  }
+});
+
+// Initialize
+loadReports();
+startCountdown();
+setInterval(updateLiveFeeds, 2 * 60 * 1000); // Update feeds every 2 minutes
 </script>
 </body>
 </html>
