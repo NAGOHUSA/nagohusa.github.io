@@ -374,12 +374,13 @@ function createCandidateItem(candidate, index, filename) {
   const avgBrightness = candidate.avg_brightness?.toFixed(1) || 'N/A';
   const velocity = candidate.velocity?.toFixed(2) || 'N/A';
   
-  // Use crop_path from JSON if available, otherwise construct fallback
-  let cropUrl = '';
-  if (candidate.crop_path) {
-    cropUrl = RAW(candidate.crop_path);
-  } else {
-    cropUrl = RAW(`detections/${filename.replace('.json', '')}_${index}.png`);
+  // Use crop_path from JSON - it's already the full path from repo root
+  const cropUrl = candidate.crop_path ? RAW(candidate.crop_path) : '';
+  
+  // Debug logging
+  if (index === 0) {
+    console.log('Sample image URL:', cropUrl);
+    console.log('Expected format: https://raw.githubusercontent.com/REPO/BRANCH/crops/filename.png');
   }
 
   return `
@@ -402,12 +403,25 @@ function createCandidateItem(candidate, index, filename) {
         <div class="kv"><b>${avgBrightness}</b></div>
         <div class="kv">Velocity:</div>
         <div class="kv"><b>${velocity} px/frame</b></div>
+        <div class="kv">Position:</div>
+        <div class="kv"><b>${candidate.bbox ? `[${candidate.bbox.join(', ')}]` : 'N/A'}</b></div>
       </div>
-      <a href="${cropUrl}" target="_blank">
-        <img class="thumb" src="${cropUrl}" alt="Candidate ${index}" loading="lazy">
+      ${cropUrl ? `
+      <a href="${cropUrl}" target="_blank" title="Click to view full size">
+        <img class="thumb" src="${cropUrl}" alt="Track ${trackId}" loading="lazy" 
+             onerror="this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:var(--muted);background:var(--card);border-radius:6px\\'>❌ Image not found<br><small style=\\'font-size:11px;margin-top:8px;display:block\\'>${candidate.crop_path}</small></div>';">
       </a>
+      ` : '<div style="padding:40px;text-align:center;color:var(--muted)">No crop path specified</div>'}
     </div>
   `;
+}
+
+/* ==================== DEBUG: Log image URLs ==================== */
+function logImageDebug(candidate, index) {
+  console.log(`Candidate ${index}:`, {
+    crop_path: candidate.crop_path,
+    constructed_url: candidate.crop_path ? RAW(candidate.crop_path) : 'N/A'
+  });
 }
 
 /* ==================== LOAD SINGLE REPORT ==================== */
