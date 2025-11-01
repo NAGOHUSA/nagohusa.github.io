@@ -158,7 +158,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.3</h1>
+        <h1>🌟 SOHO Comet Hunter 3.4</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -264,7 +264,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 
 <script>
 // ===== CONFIG =====
-const HIDE_NOT_COMET = true; // thumbnails only"
+const HIDE_NOT_COMET = true; // thumbnails only
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
@@ -432,7 +432,8 @@ function renderCandidates() {
   }
 
   els.emptyState.style.display = 'none';
-  els.candidatesGrid.innerHTML = visible.map(renderCandidateCard).join('');
+  els.candidatesGrid.innerHTML = visible.map(renderCard).join('');
+
 
   // wire events for visible cards
   document.querySelectorAll('.candidate-card').forEach(card => {
