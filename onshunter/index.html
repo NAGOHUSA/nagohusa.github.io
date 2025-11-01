@@ -374,8 +374,13 @@ function createCandidateItem(candidate, index, filename) {
   const avgBrightness = candidate.avg_brightness?.toFixed(1) || 'N/A';
   const velocity = candidate.velocity?.toFixed(2) || 'N/A';
   
-  const cropPath = candidate.crop_path || `detections/${filename.replace('.json', '')}_${index}.png`;
-  const cropUrl = RAW(cropPath);
+  // Use crop_path from JSON if available, otherwise construct fallback
+  let cropUrl = '';
+  if (candidate.crop_path) {
+    cropUrl = RAW(candidate.crop_path);
+  } else {
+    cropUrl = RAW(`detections/${filename.replace('.json', '')}_${index}.png`);
+  }
 
   return `
     <div class="candidate-item">
