@@ -1,474 +1,466 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOHO Comet Hunter - Detection Reports</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #00d4ff, #7b2ff7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            color: #b0b0b0;
-            font-size: 1.1em;
-        }
-
-        .status-section {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .status-section h2 {
-            margin-bottom: 20px;
-            color: #00d4ff;
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .status-card {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .status-card h3 {
-            font-size: 0.9em;
-            color: #b0b0b0;
-            margin-bottom: 5px;
-        }
-
-        .status-card p {
-            font-size: 1.3em;
-            color: #fff;
-        }
-
-        .overlay-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .overlay-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .overlay-card img {
-            width: 100%;
-            display: block;
-        }
-
-        .overlay-card h3 {
-            padding: 15px;
-            text-align: center;
-            color: #00d4ff;
-        }
-
-        .detections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .detection-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .detection-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-        }
-
-        .detection-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .detection-date {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #00d4ff;
-        }
-
-        .detection-count {
-            background: rgba(123, 47, 247, 0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .candidate-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 3px solid #7b2ff7;
-        }
-
-        .candidate-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .candidate-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .info-item {
-            font-size: 0.9em;
-        }
-
-        .info-label {
-            color: #b0b0b0;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .info-value {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .candidate-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .candidate-images img {
-            width: 100%;
-            border-radius: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            font-size: 1.2em;
-            color: #b0b0b0;
-        }
-
-        .error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: #ff6b6b;
-        }
-
-        .config-section {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .config-section input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            color: #fff;
-            font-size: 1em;
-            margin-top: 10px;
-        }
-
-        .config-section button {
-            background: linear-gradient(45deg, #00d4ff, #7b2ff7);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: opacity 0.3s ease;
-        }
-
-        .config-section button:hover {
-            opacity: 0.8;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SOHO Comet Hunter – Detection Reports</title>
+<style>
+:root{
+  --bg:#0b1220;--panel:#0f1b30;--muted:#94a3b8;--text:#e6eefc;--accent:#60a5fa;
+  --chip:#1e293b;--card:#0d1526;--shadow:0 8px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
+.wrap{max-width:1400px;margin:0 auto;padding:14px 16px}
+h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
+.sub{font-size:13px;color:var(--muted)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button,.sel,input[type="checkbox"],input[type="text"]{cursor:pointer}
+button{border:1px solid #243244;background:#0e1a2b;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);transition:all .2s}
+button:hover{border-color:#33508a;background:#13223d}
+button:disabled{opacity:.5;cursor:not-allowed}
+.sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 10px;color:var(--text);min-width:200px}
+input[type="text"]{background:#0e1a2b;border:1px solid #243244;border-radius:12px;padding:8px 12px;color:var(--text);width:100%;max-width:400px}
+main{padding:16px}
+.section{background:var(--card);border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow)}
+.section h2{margin:0 0 16px;font-size:18px;color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.report-card{background:var(--panel);border:1px solid #1e293b;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.25);transition:all .3s}
+.report-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(96,165,250,.3)}
+.report-header{padding:16px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center}
+.report-date{font-size:16px;font-weight:700;color:var(--accent)}
+.report-count{background:rgba(123,47,247,.3);padding:4px 12px;border-radius:20px;font-size:13px}
+.candidates-list{padding:12px}
+.candidate-item{background:var(--card);border-left:3px solid #7b2ff7;padding:12px;margin-bottom:10px;border-radius:8px}
+.candidate-item:last-child{margin-bottom:0}
+.candidate-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.track-id{font-weight:700;color:var(--text)}
+.kvs{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;margin-bottom:10px}
+.kv{color:var(--muted)}
+.kv b{color:var(--text);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #1e293b;padding:4px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+.thumb{width:100%;aspect-ratio:1/1;object-fit:contain;background:#0b1220;border-radius:6px;margin-top:8px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.right{margin-left:auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
+.stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:12px;text-align:center}
+.stat-value{font-size:24px;font-weight:800;color:var(--accent);display:block}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #253044;border-radius:16px;background:#0b1220}
+.loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
+.loading::after{content:'...';animation:dots 1.5s infinite}
+@keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.err{color:#ffb4b4;padding:12px;background:rgba(255,50,50,.1);border:1px solid rgba(255,50,50,.3);border-radius:8px;margin-top:12px}
+.overlay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px}
+.overlay-card{background:var(--panel);border:1px solid #1e293b;border-radius:12px;overflow:hidden}
+.overlay-card h3{padding:12px;margin:0;font-size:14px;color:var(--accent);border-bottom:1px solid #1e293b}
+.overlay-card img{width:100%;display:block;background:#0b1220}
+.config-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:768px){
+  .config-row{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🌟 SOHO Comet Hunter</h1>
-            <p class="subtitle">Automated Comet Detection Reports</p>
-        </header>
-
-        <div class="config-section">
-            <h3>Configuration</h3>
-            <input type="text" id="repoPath" placeholder="GitHub Repository (e.g., NAGOHUSA/ONS_SOHOHUNTER)" value="NAGOHUSA/ONS_SOHOHUNTER">
-            <input type="text" id="branch" placeholder="Branch (e.g., main)" value="main">
-            <button onclick="loadData()">Load Reports</button>
-        </div>
-
-        <div id="statusSection"></div>
-        <div id="detectionsSection"></div>
+<header>
+  <div class="wrap">
+    <h1>🌟 SOHO Comet Hunter</h1>
+    <div class="sub">Automated Comet Detection Reports • Real-time Analysis</div>
+    <div class="controls">
+      <button id="refreshBtn">🔄 Refresh</button>
+      <select id="reportSelect" class="sel">
+        <option value="">Loading reports...</option>
+      </select>
+      <div class="right pill">
+        <span id="statusText">Ready</span>
+      </div>
     </div>
+  </div>
+</header>
 
-    <script>
-        const CONFIG = {
-            repo: 'NAGOHUSA/ONS_SOHOHUNTER',
-            branch: 'main'
-        };
+<main class="wrap">
+  <!-- Configuration Section -->
+  <section class="section" id="configSection">
+    <h2>⚙️ Configuration</h2>
+    <div class="config-row">
+      <div>
+        <label class="sub" style="display:block;margin-bottom:4px">Repository</label>
+        <input type="text" id="repoPath" placeholder="owner/repository" value="NAGOHUSA/ONS_SOHOHUNTER">
+      </div>
+      <div>
+        <label class="sub" style="display:block;margin-bottom:4px">Branch</label>
+        <input type="text" id="branch" placeholder="main" value="main">
+      </div>
+      <button id="loadBtn">Load Data</button>
+    </div>
+  </section>
 
-        function updateConfig() {
-            CONFIG.repo = document.getElementById('repoPath').value || CONFIG.repo;
-            CONFIG.branch = document.getElementById('branch').value || CONFIG.branch;
+  <!-- Latest Status Section -->
+  <section class="section" id="statusSection" style="display:none">
+    <h2>📊 Latest Status</h2>
+    <div class="stats" id="statsGrid"></div>
+    <div id="errorDisplay" class="err" style="display:none"></div>
+  </section>
+
+  <!-- Overlay Images Section -->
+  <section class="section" id="overlaySection" style="display:none">
+    <h2>🔭 Latest Overlays</h2>
+    <div class="overlay-grid">
+      <div class="overlay-card">
+        <h3>LASCO C2 Overlay</h3>
+        <img id="overlayC2" src="" alt="C2 Overlay">
+      </div>
+      <div class="overlay-card">
+        <h3>LASCO C3 Overlay</h3>
+        <img id="overlayC3" src="" alt="C3 Overlay">
+      </div>
+      <div class="overlay-card">
+        <h3>C2 Contact Sheet</h3>
+        <img id="contactC2" src="" alt="C2 Contact">
+      </div>
+      <div class="overlay-card">
+        <h3>C3 Contact Sheet</h3>
+        <img id="contactC3" src="" alt="C3 Contact">
+      </div>
+    </div>
+  </section>
+
+  <!-- Detection Reports Section -->
+  <section class="section" id="reportsSection">
+    <h2>📋 Detection Reports</h2>
+    <div id="reportsGrid" class="grid"></div>
+    <div id="loadingIndicator" class="loading">Loading detection reports</div>
+    <div id="emptyState" class="empty" style="display:none">
+      No detection reports found. Make sure the repository and branch are correct.
+    </div>
+  </section>
+</main>
+
+<script>
+/* ==================== CONFIG ==================== */
+let CONFIG = {
+  repo: 'NAGOHUSA/ONS_SOHOHUNTER',
+  branch: 'main'
+};
+
+const FOLDER = 'detections';
+
+/* ==================== ELEMENTS ==================== */
+const el = {
+  repoPath: document.getElementById('repoPath'),
+  branch: document.getElementById('branch'),
+  loadBtn: document.getElementById('loadBtn'),
+  refreshBtn: document.getElementById('refreshBtn'),
+  reportSelect: document.getElementById('reportSelect'),
+  statusText: document.getElementById('statusText'),
+  configSection: document.getElementById('configSection'),
+  statusSection: document.getElementById('statusSection'),
+  overlaySection: document.getElementById('overlaySection'),
+  reportsSection: document.getElementById('reportsSection'),
+  statsGrid: document.getElementById('statsGrid'),
+  errorDisplay: document.getElementById('errorDisplay'),
+  overlayC2: document.getElementById('overlayC2'),
+  overlayC3: document.getElementById('overlayC3'),
+  contactC2: document.getElementById('contactC2'),
+  contactC3: document.getElementById('contactC3'),
+  reportsGrid: document.getElementById('reportsGrid'),
+  loadingIndicator: document.getElementById('loadingIndicator'),
+  emptyState: document.getElementById('emptyState')
+};
+
+/* ==================== HELPERS ==================== */
+function RAW(path) {
+  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${path}`;
+}
+
+function formatDate(isoString) {
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return isoString;
+  }
+}
+
+function formatTimestamp(timestamp) {
+  const year = timestamp.substring(0, 4);
+  const month = timestamp.substring(4, 6);
+  const day = timestamp.substring(6, 8);
+  const hour = timestamp.substring(9, 11);
+  const minute = timestamp.substring(11, 13);
+  return `${year}-${month}-${day} ${hour}:${minute} UTC`;
+}
+
+function showError(message) {
+  el.errorDisplay.textContent = message;
+  el.errorDisplay.style.display = 'block';
+}
+
+function hideError() {
+  el.errorDisplay.style.display = 'none';
+}
+
+function setStatus(text) {
+  el.statusText.textContent = text;
+}
+
+/* ==================== LOAD LATEST STATUS ==================== */
+async function loadLatestStatus() {
+  try {
+    const response = await fetch(RAW('detections/latest_status.json'));
+    if (!response.ok) throw new Error('Status not found');
+    
+    const data = await response.json();
+    displayStatus(data);
+    el.statusSection.style.display = 'block';
+    hideError();
+  } catch (error) {
+    console.error('Error loading status:', error);
+    showError('Unable to load latest status. The file may not exist yet.');
+  }
+}
+
+function displayStatus(data) {
+  const stats = [
+    { value: formatDate(data.timestamp), label: 'Last Run' },
+    { value: data.frames_processed || 'N/A', label: 'Frames Processed' },
+    { value: data.candidates_found || 0, label: 'Candidates Found' },
+    { value: data.status || 'Unknown', label: 'Status' }
+  ];
+
+  el.statsGrid.innerHTML = stats.map(s => `
+    <div class="stat">
+      <span class="stat-value">${s.value}</span>
+      <div class="stat-label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+/* ==================== LOAD OVERLAYS ==================== */
+async function loadOverlays() {
+  try {
+    const timestamp = Date.now();
+    el.overlayC2.src = RAW(`detections/overlay_C2.png?t=${timestamp}`);
+    el.overlayC3.src = RAW(`detections/overlay_C3.png?t=${timestamp}`);
+    el.contactC2.src = RAW(`detections/contact_C2.png?t=${timestamp}`);
+    el.contactC3.src = RAW(`detections/contact_C3.png?t=${timestamp}`);
+    
+    el.overlayC2.onerror = () => el.overlayC2.parentElement.style.display = 'none';
+    el.overlayC3.onerror = () => el.overlayC3.parentElement.style.display = 'none';
+    el.contactC2.onerror = () => el.contactC2.parentElement.style.display = 'none';
+    el.contactC3.onerror = () => el.contactC3.parentElement.style.display = 'none';
+    
+    el.overlaySection.style.display = 'block';
+  } catch (error) {
+    console.error('Error loading overlays:', error);
+  }
+}
+
+/* ==================== LOAD DETECTION REPORTS ==================== */
+async function loadDetectionReports() {
+  try {
+    el.loadingIndicator.style.display = 'block';
+    el.emptyState.style.display = 'none';
+    el.reportsGrid.innerHTML = '';
+    
+    const apiUrl = `https://api.github.com/repos/${CONFIG.repo}/contents/detections?ref=${CONFIG.branch}`;
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    
+    const files = await response.json();
+    const candidateFiles = files
+      .filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
+      .sort((a, b) => b.name.localeCompare(a.name))
+      .slice(0, 30);
+
+    if (candidateFiles.length === 0) {
+      el.loadingIndicator.style.display = 'none';
+      el.emptyState.style.display = 'block';
+      return;
+    }
+
+    // Update dropdown
+    el.reportSelect.innerHTML = '<option value="">-- Select a report --</option>';
+    candidateFiles.forEach(file => {
+      const option = document.createElement('option');
+      option.value = file.name;
+      option.textContent = file.name.replace('candidates_', '').replace('.json', '');
+      el.reportSelect.appendChild(option);
+    });
+
+    const detections = [];
+    for (const file of candidateFiles) {
+      try {
+        const res = await fetch(RAW(`detections/${file.name}`));
+        if (res.ok) {
+          const data = await res.json();
+          detections.push({ filename: file.name, data });
         }
+      } catch (err) {
+        console.error(`Error loading ${file.name}:`, err);
+      }
+    }
 
-        function getGitHubRawUrl(path) {
-            return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${path}`;
-        }
+    displayDetections(detections);
+    el.loadingIndicator.style.display = 'none';
+  } catch (error) {
+    console.error('Error loading detection reports:', error);
+    el.loadingIndicator.style.display = 'none';
+    el.emptyState.style.display = 'block';
+    showError(`Failed to load reports: ${error.message}`);
+  }
+}
 
-        async function loadLatestStatus() {
-            try {
-                const response = await fetch(getGitHubRawUrl('detections/latest_status.json'));
-                if (!response.ok) throw new Error('Failed to load status');
-                const data = await response.json();
-                displayStatus(data);
-            } catch (error) {
-                console.error('Error loading status:', error);
-                document.getElementById('statusSection').innerHTML = `
-                    <div class="error">
-                        <p>Unable to load latest status. Please check the repository configuration.</p>
-                    </div>
-                `;
-            }
-        }
+/* ==================== DISPLAY DETECTIONS ==================== */
+function displayDetections(detections) {
+  el.reportsGrid.innerHTML = detections.map(detection => {
+    const timestamp = detection.filename.match(/candidates_(\d{8}_\d{6})\.json/);
+    const dateStr = timestamp ? formatTimestamp(timestamp[1]) : 'Unknown Date';
+    
+    const candidates = Array.isArray(detection.data) 
+      ? detection.data 
+      : (detection.data.candidates || []);
 
-        function displayStatus(data) {
-            const statusHTML = `
-                <div class="status-section">
-                    <h2>Latest Status</h2>
-                    <div class="status-grid">
-                        <div class="status-card">
-                            <h3>Last Run</h3>
-                            <p>${new Date(data.timestamp).toLocaleString()}</p>
-                        </div>
-                        <div class="status-card">
-                            <h3>Frames Processed</h3>
-                            <p>${data.frames_processed || 'N/A'}</p>
-                        </div>
-                        <div class="status-card">
-                            <h3>Candidates Found</h3>
-                            <p>${data.candidates_found || 0}</p>
-                        </div>
-                        <div class="status-card">
-                            <h3>Status</h3>
-                            <p>${data.status || 'Unknown'}</p>
-                        </div>
-                    </div>
-                    <div class="overlay-images">
-                        <div class="overlay-card">
-                            <h3>LASCO C2 Overlay</h3>
-                            <img src="${getGitHubRawUrl('detections/overlay_C2.png')}" alt="C2 Overlay" onerror="this.parentElement.style.display='none'">
-                        </div>
-                        <div class="overlay-card">
-                            <h3>LASCO C3 Overlay</h3>
-                            <img src="${getGitHubRawUrl('detections/overlay_C3.png')}" alt="C3 Overlay" onerror="this.parentElement.style.display='none'">
-                        </div>
-                        <div class="overlay-card">
-                            <h3>C2 Contact Sheet</h3>
-                            <img src="${getGitHubRawUrl('detections/contact_C2.png')}" alt="C2 Contact" onerror="this.parentElement.style.display='none'">
-                        </div>
-                        <div class="overlay-card">
-                            <h3>C3 Contact Sheet</h3>
-                            <img src="${getGitHubRawUrl('detections/contact_C3.png')}" alt="C3 Contact" onerror="this.parentElement.style.display='none'">
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('statusSection').innerHTML = statusHTML;
-        }
+    return createReportCard(dateStr, candidates, detection.filename);
+  }).join('');
+}
 
-        async function loadDetectionReports() {
-            try {
-                const apiUrl = `https://api.github.com/repos/${CONFIG.repo}/contents/detections?ref=${CONFIG.branch}`;
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Failed to load detections');
-                
-                const files = await response.json();
-                const candidateFiles = files
-                    .filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
-                    .sort((a, b) => b.name.localeCompare(a.name));
+function createReportCard(dateStr, candidates, filename) {
+  if (!candidates || candidates.length === 0) {
+    return `
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-date">${dateStr}</div>
+          <div class="report-count">0 candidates</div>
+        </div>
+        <div class="candidates-list">
+          <div style="color:var(--muted);text-align:center;padding:20px">No candidates in this report</div>
+        </div>
+      </div>
+    `;
+  }
 
-                if (candidateFiles.length === 0) {
-                    document.getElementById('detectionsSection').innerHTML = `
-                        <div class="status-section">
-                            <h2>Detection Reports</h2>
-                            <p style="text-align: center; color: #b0b0b0;">No detection reports found yet.</p>
-                        </div>
-                    `;
-                    return;
-                }
+  return `
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-date">${dateStr}</div>
+        <div class="report-count">${candidates.length} candidate${candidates.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="candidates-list">
+        ${candidates.map((c, i) => createCandidateItem(c, i, filename)).join('')}
+      </div>
+    </div>
+  `;
+}
 
-                const detections = await Promise.all(
-                    candidateFiles.slice(0, 20).map(async file => {
-                        try {
-                            const res = await fetch(getGitHubRawUrl(`detections/${file.name}`));
-                            const data = await res.json();
-                            return { filename: file.name, data };
-                        } catch (err) {
-                            console.error(`Error loading ${file.name}:`, err);
-                            return null;
-                        }
-                    })
-                );
+function createCandidateItem(candidate, index, filename) {
+  const instrument = candidate.instrument || 'Unknown';
+  const trackId = candidate.track_id ?? index;
+  const timestamp = candidate.timestamp || '';
+  const aiLabel = candidate.ai_label || 'N/A';
+  const aiScore = candidate.ai_score ? (candidate.ai_score * 100).toFixed(1) : 'N/A';
+  const trackLength = candidate.track_length || 'N/A';
+  const avgBrightness = candidate.avg_brightness?.toFixed(1) || 'N/A';
+  const velocity = candidate.velocity?.toFixed(2) || 'N/A';
+  
+  const cropPath = candidate.crop_path || `detections/${filename.replace('.json', '')}_${index}.png`;
+  const cropUrl = RAW(cropPath);
 
-                displayDetections(detections.filter(d => d !== null));
-            } catch (error) {
-                console.error('Error loading detection reports:', error);
-                document.getElementById('detectionsSection').innerHTML = `
-                    <div class="error">
-                        <p>Unable to load detection reports. Please check the repository configuration.</p>
-                    </div>
-                `;
-            }
-        }
+  return `
+    <div class="candidate-item">
+      <div class="candidate-header">
+        <span class="track-id">Track #${trackId}</span>
+        <div class="row" style="gap:6px">
+          <span class="pill">${instrument}</span>
+          <span class="pill">AI: ${aiScore}%</span>
+        </div>
+      </div>
+      <div class="kvs">
+        <div class="kv">Time:</div>
+        <div class="kv"><b>${timestamp ? formatDate(timestamp) : 'N/A'}</b></div>
+        <div class="kv">Label:</div>
+        <div class="kv"><b>${aiLabel}</b></div>
+        <div class="kv">Track Length:</div>
+        <div class="kv"><b>${trackLength}</b></div>
+        <div class="kv">Brightness:</div>
+        <div class="kv"><b>${avgBrightness}</b></div>
+        <div class="kv">Velocity:</div>
+        <div class="kv"><b>${velocity} px/frame</b></div>
+      </div>
+      <a href="${cropUrl}" target="_blank">
+        <img class="thumb" src="${cropUrl}" alt="Candidate ${index}" loading="lazy">
+      </a>
+    </div>
+  `;
+}
 
-        function displayDetections(detections) {
-            const detectionsHTML = `
-                <div class="status-section">
-                    <h2>Detection Reports (${detections.length} most recent)</h2>
-                    <div class="detections-grid">
-                        ${detections.map(d => createDetectionCard(d)).join('')}
-                    </div>
-                </div>
-            `;
-            document.getElementById('detectionsSection').innerHTML = detectionsHTML;
-        }
+/* ==================== LOAD SINGLE REPORT ==================== */
+async function loadSingleReport(filename) {
+  if (!filename) return;
+  
+  try {
+    setStatus('Loading report...');
+    const response = await fetch(RAW(`detections/${filename}`));
+    if (!response.ok) throw new Error('Report not found');
+    
+    const data = await response.json();
+    const candidates = Array.isArray(data) ? data : (data.candidates || []);
+    
+    const timestamp = filename.match(/candidates_(\d{8}_\d{6})\.json/);
+    const dateStr = timestamp ? formatTimestamp(timestamp[1]) : 'Unknown Date';
+    
+    el.reportsGrid.innerHTML = createReportCard(dateStr, candidates, filename);
+    setStatus('Ready');
+  } catch (error) {
+    console.error('Error loading report:', error);
+    showError(`Failed to load report: ${error.message}`);
+    setStatus('Error');
+  }
+}
 
-        function createDetectionCard(detection) {
-            const timestamp = detection.filename.match(/candidates_(\d{8}_\d{6})\.json/);
-            const dateStr = timestamp ? formatTimestamp(timestamp[1]) : 'Unknown Date';
-            const candidates = detection.data.candidates || [];
+/* ==================== UPDATE CONFIG ==================== */
+function updateConfig() {
+  CONFIG.repo = el.repoPath.value.trim() || CONFIG.repo;
+  CONFIG.branch = el.branch.value.trim() || CONFIG.branch;
+}
 
-            return `
-                <div class="detection-card">
-                    <div class="detection-header">
-                        <div class="detection-date">${dateStr}</div>
-                        <div class="detection-count">${candidates.length} candidate${candidates.length !== 1 ? 's' : ''}</div>
-                    </div>
-                    ${candidates.map((c, i) => createCandidateItem(c, i, detection.filename)).join('')}
-                </div>
-            `;
-        }
+/* ==================== LOAD ALL DATA ==================== */
+async function loadAllData() {
+  updateConfig();
+  setStatus('Loading...');
+  hideError();
+  
+  await Promise.all([
+    loadLatestStatus(),
+    loadOverlays(),
+    loadDetectionReports()
+  ]);
+  
+  setStatus('Ready');
+}
 
-        function createCandidateItem(candidate, index, filename) {
-            const baseFilename = filename.replace('.json', '');
-            return `
-                <div class="candidate-item">
-                    <div class="candidate-info">
-                        <div class="info-item">
-                            <span class="info-label">Instrument:</span>
-                            <span class="info-value">${candidate.instrument || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Track Length:</span>
-                            <span class="info-value">${candidate.track_length || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Avg Brightness:</span>
-                            <span class="info-value">${candidate.avg_brightness?.toFixed(1) || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Velocity:</span>
-                            <span class="info-value">${candidate.velocity?.toFixed(2) || 'N/A'} px/frame</span>
-                        </div>
-                    </div>
-                    <div class="candidate-images">
-                        <img src="${getGitHubRawUrl(`detections/${baseFilename}_${index}.png`)}" 
-                             alt="Candidate ${index}" 
-                             onerror="this.style.display='none'">
-                    </div>
-                </div>
-            `;
-        }
+/* ==================== EVENT LISTENERS ==================== */
+el.loadBtn.onclick = loadAllData;
+el.refreshBtn.onclick = loadAllData;
+el.reportSelect.onchange = (e) => {
+  if (e.target.value) {
+    loadSingleReport(e.target.value);
+  }
+};
 
-        function formatTimestamp(timestamp) {
-            const year = timestamp.substring(0, 4);
-            const month = timestamp.substring(4, 6);
-            const day = timestamp.substring(6, 8);
-            const hour = timestamp.substring(9, 11);
-            const minute = timestamp.substring(11, 13);
-            return `${year}-${month}-${day} ${hour}:${minute} UTC`;
-        }
-
-        async function loadData() {
-            updateConfig();
-            document.getElementById('statusSection').innerHTML = '<div class="loading">Loading status...</div>';
-            document.getElementById('detectionsSection').innerHTML = '<div class="loading">Loading detection reports...</div>';
-            
-            await loadLatestStatus();
-            await loadDetectionReports();
-        }
-
-        // Load data on page load
-        loadData();
-    </script>
+/* ==================== INIT ==================== */
+loadAllData();
+</script>
 </body>
 </html>
