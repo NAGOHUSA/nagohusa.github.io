@@ -3,469 +3,696 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SOHO Comet Hunter — Live Results</title>
+<title>SOHO Comet Hunter – Professional Dashboard</title>
 
-<!-- GIF encoder (canvas fallback) -->
-<script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+<!-- Three.js for 3D track viewer -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
 <style>
-:root{
-  --bg:#0b1220;--panel:#0f1b30;--muted:#94a3b8;--text:#e6eefc;--accent:#60a5fa;
-  --chip:#1e293b;--card:#0d1526;--shadow:0 8px 30px rgba(0,0,0,.35);
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #111633;
+  --bg-card: #1a1f3a;
+  --border: #2a3354;
+  --text-primary: #e8edf4;
+  --text-secondary: #8b95b0;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-header{position:sticky;top:0;z-index:10;
-  background:linear-gradient(180deg,var(--bg),#0b1220f0 80%,#0b122000);
-  backdrop-filter:blur(6px);border-bottom:1px solid #1e293b}
-.wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
-h1{margin:6px 0 0;font-size:20px;font-weight:800;letter-spacing:.3px}
-.sub{font-size:13px;color:var(--muted)}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
-button,.sel,input[type="checkbox"]{cursor:pointer}
-button{border:1px solid #243244;background:#0e1a2b;color:var(--text);
-  padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow)}
-button:hover{border-color:#33508a}
-.sel{background:#0e1a2b;border:1px solid #243244;border-radius:12px;
-  padding:8px 10px;color:var(--text)}
-main{padding:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-.card{background:var(--card);border:1px solid #1e293b;border-radius:16px;
-  overflow:hidden;box-shadow:var(--shadow)}
-.thumb{aspect-ratio:1.6/1;display:block;width:100%;background:#0b1220;object-fit:contain}
-.meta{padding:12px}
-.kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.kv{font-size:12px;color:var(--muted)}
-.kv b{color:var(--text)}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);
-  border:1px solid #1e293b;padding:4px 8px;border-radius:999px;
-  font-size:12px;color:var(--muted)}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.right{margin-left:auto}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-.stat{background:var(--panel);border:1px solid #1e293b;border-radius:12px;padding:10px 12px}
-.stat b{font-size:18px}
-.empty{padding:40px;text-align:center;color:var(--muted);
-  border:1px dashed #253044;border-radius:16px;background:#0b1220}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-footer{color:var(--muted);font-size:12px;padding:20px 0}
-.err{color:#ffb4b4}
-.thumbRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:16px;margin-top:12px}
-.thumbCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
-.thumbHead{padding:10px 12px;border-bottom:1px solid #1e293b;
-  display:flex;align-items:center;gap:10px}
-.gifRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
-  gap:16px;margin-top:12px}
-.gifCard{background:var(--card);border:1px solid #1e293b;border-radius:16px;overflow:hidden}
-.gifHead{padding:10px 12px;border-bottom:1px solid #1e293b;display:flex;gap:10px;align-items:center}
-.gif{display:block;width:100%;background:#0b1220;aspect-ratio:1/1;object-fit:contain}
-.exportAll{display:flex;gap:10px;align-items:center;margin-left:auto}
-.muted{color:var(--muted);font-size:12px}
-.mark{display:flex;gap:8px;align-items:center}
-.flag{padding:4px 8px;border-radius:10px;border:1px solid #1e293b;background:#13223a}
-.flag.on{background:#11351d;border-color:#1d4d2a;color:#b5f7c0}
-.group{background:#0e1a2b;border:1px solid #243244;border-radius:10px;
-  padding:4px 6px;color:var(--text);font-size:12px}
 
-/* segmented toggles */
-.seg{display:inline-flex;border:1px solid #27324a;border-radius:10px;overflow:hidden;background:#0e1a2b}
-.seg button{border:0;border-right:1px solid #27324a;background:transparent;
-  color:#cbd5e1;padding:6px 10px;font-size:12px}
-.seg button:last-child{border-right:0}
-.seg button.active{background:#1b2a46;color:#e6eefc}
-.seg button:disabled{opacity:.45;cursor:not-allowed}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
 
-/* player */
-.player{padding:10px 12px;border-top:1px solid #1e293b;background:#0d1526}
-.canvasWrap{position:relative;width:100%}
-canvas, video.gif{display:block;width:100%;height:auto;background:#000}
-.playerBar{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
-.slider{flex:1}
-.player button.small{padding:6px 10px;border-radius:8px;font-size:12px}
-.player label{font-size:12px;color:var(--muted)}
+/* Header */
+.header { background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); padding: 2rem 0; box-shadow: var(--shadow-lg); border-bottom: 2px solid var(--border); }
+.container { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; }
+.header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.header-title h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; background: linear-gradient(135deg, #fff 0%, #bfdbfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.header-subtitle { color: #bfdbfe; font-size: 0.9rem; }
+.header-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+/* Controls Bar */
+.controls-bar { background: var(--bg-secondary); padding: 1.5rem 0; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+.controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.control-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+.select-wrapper { position: relative; }
+select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-primary); font-size: 0.9rem; cursor: pointer; appearance: none; transition: all 0.2s; }
+select:hover { border-color: var(--accent); }
+select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.select-wrapper::after { content: '▼'; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-secondary); font-size: 0.7rem; }
+
+/* Filters */
+.filters { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border); }
+.filter-chip { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2rem; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; }
+.filter-chip:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.1); }
+.filter-chip input[type="checkbox"] { cursor: pointer; width: 1rem; height: 1rem; accent-color: var(--accent); }
+
+/* Button Styles */
+.btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; text-decoration: none; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.1); }
+.btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+/* Stats Dashboard */
+.stats-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.stat-card { background: var(--bg-card); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.stat-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+.stat-card.highlight { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%); border-color: var(--accent); }
+
+/* Live Feed Section */
+.live-feed { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+.feed-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; box-shadow: var(--shadow); }
+.feed-header { padding: 1rem 1.5rem; background: rgba(59, 130, 246, 0.1); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.feed-title { font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.badge { padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; background: var(--accent); color: white; }
+.feed-content { aspect-ratio: 1; background: #000; display: flex; align-items: center; justify-content: center; }
+.feed-content img, .feed-content video { width: 100%; height: 100%; object-fit: contain; }
+.feed-footer { padding: 0.75rem 1.5rem; background: rgba(0, 0, 0, 0.2); font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+
+/* Candidates Grid */
+.candidates-section { margin: 2rem 0; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.section-title { font-size: 1.5rem; font-weight: 700; }
+.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.candidate-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; box-shadow: var(--shadow); transition: all 0.3s; cursor: pointer; }
+.candidate-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+.candidate-card.marked { border-color: var(--success); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+.candidate-image { width: 100%; aspect-ratio: 1.6; background: #000; object-fit: contain; }
+.candidate-body { padding: 1.25rem; }
+.candidate-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; }
+.candidate-id { font-weight: 700; font-size: 1.1rem; }
+.candidate-score { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+.score-badge { padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 700; }
+.score-badge.comet { background: var(--success); color: white; }
+.score-badge.not-comet { background: var(--danger); color: white; }
+.score-badge.unknown { background: var(--text-secondary); color: white; }
+.score-value { font-size: 0.85rem; color: var(--text-secondary); }
+.candidate-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.85rem; }
+.meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
+.meta-label { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.meta-value { color: var(--text-primary); font-weight: 600; }
+.candidate-actions { display: flex; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.action-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); background: transparent; color: var(--text-primary); border-radius: 0.375rem; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; }
+.action-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
+.action-btn.marked-btn { background: var(--success); border-color: var(--success); color: white; }
+
+/* Empty State */
+.empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-secondary); }
+.empty-state-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+.empty-state-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary); }
+
+/* Loading Spinner */
+.spinner { border: 3px solid rgba(59, 130, 246, 0.1); border-top-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 2rem auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 2rem; overflow-y: auto; }
+.modal.active { display: flex; align-items: center; justify-content: center; }
+.modal-content { background: var(--bg-card); border-radius: 1rem; max-width: 950px; width: 100%; max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-size: 1.5rem; font-weight: 700; }
+.modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
+.modal-body { padding: 1.5rem; }
+
+/* Segmented control for images in modal */
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; }
+.seg button { background: transparent; color: var(--text-secondary); border: 0; border-right: 1px solid var(--border); padding: 0.4rem 0.8rem; cursor: pointer; }
+.seg button:last-child { border-right: 0; }
+.seg button.active { color: var(--text-primary); background: rgba(59,130,246,0.12); }
+
+.three-wrap { background:#000; border:1px solid var(--border); border-radius: 0.5rem; height: 360px; }
+.three-hint { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content { flex-direction: column; align-items: flex-start; }
+  .controls-grid { grid-template-columns: 1fr; }
+  .candidates-grid { grid-template-columns: 1fr; }
+  .live-feed { grid-template-columns: 1fr; }
+}
+
+/* Status Indicator */
+.status-indicator { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 600; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.status-indicator.online { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-indicator.online .status-dot { background: var(--success); }
+
+/* Auto-refresh timer */
+.refresh-timer { display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; }
+.countdown { font-weight: 700; color: var(--accent); }
 </style>
 </head>
-
 <body>
-<header>
-  <div class="wrap">
-    <h1>SOHO Comet Hunter 2.0</h1>
-    <div class="sub">Live NASA animations, detections, and Sungrazer‑ready exports from your GitHub repo.</div>
-    <div class="controls">
-      <button id="refreshBtn">Refresh</button>
-      <select id="reportSelect" class="sel"></select>
-      <label class="pill"><input type="checkbox" id="c2Filter" /> C2</label>
-      <label class="pill"><input type="checkbox" id="c3Filter" /> C3</label>
-      <label class="pill"><input type="checkbox" id="aiOnly" /> AI ‘comet’ only</label>
-      <label class="pill"><input type="checkbox" id="markedOnly" /> Marked only</label>
-      <div class="right pill">Auto‑refresh: <span id="refreshEta">—</span></div>
-      <div class="exportAll">
-        <button id="exportAllBtn">Export ALL</button>
-        <label class="pill"><input type="checkbox" id="exportMarkedOnly" /> Marked only</label>
-        <a id="downloadAllTxt" class="pill" href="#" download style="display:none;">TXT</a>
-        <a id="downloadAllCsv" class="pill" href="#" download style="display:none;">CSV</a>
-        <span id="exportAllHint" class="muted"></span>
+
+<!-- Header -->
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>🌟 SOHO Comet Hunter 2.7</h1>
+        <div class="header-subtitle">Professional Comet Detection Dashboard</div>
+      </div>
+      <div class="header-actions">
+        <div class="status-indicator online">
+          <span class="status-dot"></span>
+          <span>Live</span>
+        </div>
+        <button class="btn btn-primary" id="refreshBtn">🔄 Refresh</button>
+        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">📦 GitHub</a>
       </div>
     </div>
   </div>
 </header>
 
-<main class="wrap">
-  <section id="status">
-    <div class="row">
-      <div>Latest report: <b id="reportName">—</b> <span class="sub" id="reportTime"></span></div>
-      <div class="right sub">Source: <a id="srcLink" href="#" target="_blank">GitHub</a></div>
-    </div>
-    <div class="stats" id="stats"></div>
-  </section>
-
-  <!-- Live official NASA animations -->
-  <section aria-label="Live LASCO animations">
-    <div class="gifRow">
-      <div class="gifCard">
-        <div class="gifHead"><span class="pill">C2 — Live GIF</span>
-          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank">open</a>
-          <span class="right sub" id="c2GifTime"></span>
+<!-- Controls -->
+<div class="controls-bar">
+  <div class="container">
+    <div class="controls-grid">
+      <div class="control-group">
+        <label class="control-label">Detection Report</label>
+        <div class="select-wrapper">
+          <select id="reportSelect">
+            <option value="">Loading reports...</option>
+          </select>
         </div>
-        <img id="c2Gif" class="gif" alt="SOHO LASCO C2 live">
       </div>
-      <div class="gifCard">
-        <div class="gifHead"><span class="pill">C3 — Live GIF</span>
-          <a class="sub" href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank">open</a>
-          <span class="right sub" id="c3GifTime"></span>
+      <div class="control-group">
+        <label class="control-label">Candidate</label>
+        <div class="select-wrapper">
+          <select id="candidateSelect">
+            <option value="">Select candidate...</option>
+          </select>
         </div>
-        <img id="c3Gif" class="gif" alt="SOHO LASCO C3 live">
+      </div>
+      <div class="control-group">
+        <label class="control-label">Actions</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">📄 Export TXT</button>
+          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">📊 Export CSV</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Auto-Refresh</label>
+        <div class="refresh-timer">Next update in <span class="countdown" id="countdown">5:00</span></div>
       </div>
     </div>
-  </section>
 
-  <!-- Last frames (optional) -->
-  <section style="padding-top:10px;">
-    <div class="thumbRow" id="lastFramesRow"></div>
-    <div class="empty" id="errors" style="margin-top:12px;display:none;"></div>
-  </section>
+    <div class="filters">
+      <label class="filter-chip"><input type="checkbox" id="filterC2"><span>C2 Telescope</span></label>
+      <label class="filter-chip"><input type="checkbox" id="filterC3"><span>C3 Telescope</span></label>
+      <label class="filter-chip"><input type="checkbox" id="filterComet"><span>AI Comet Only</span></label>
+      <label class="filter-chip"><input type="checkbox" id="filterMarked"><span>Marked Only</span></label>
+      <label class="filter-chip"><input type="checkbox" id="exportMarkedOnly"><span>Export Marked Only</span></label>
+    </div>
+  </div>
+</div>
 
-  <section id="content" style="margin-top:16px;">
-    <div class="empty" id="empty">No detections yet.</div>
-    <div class="grid" id="grid" hidden></div>
-  </section>
+<!-- Main Content -->
+<main class="container">
+  <!-- Stats Dashboard -->
+  <div class="stats-dashboard" id="statsDashboard">
+    <div class="stat-card"><div class="stat-label">Total Detections</div><div class="stat-value" id="statTotal">0</div></div>
+    <div class="stat-card highlight"><div class="stat-label">AI Comets</div><div class="stat-value" id="statComets">0</div></div>
+    <div class="stat-card"><div class="stat-label">C2 Detections</div><div class="stat-value" id="statC2">0</div></div>
+    <div class="stat-card"><div class="stat-label">C3 Detections</div><div class="stat-value" id="statC3">0</div></div>
+    <div class="stat-card"><div class="stat-label">Marked Items</div><div class="stat-value" id="statMarked">0</div></div>
+  </div>
 
-  <footer>
-    <div>Tip: If an animation exists you’ll see a video player with an Annotated/Clean toggle. Otherwise the canvas player appears with Play/Pause, FPS, path overlay, and one‑loop export (WebM/GIF).</div>
-  </footer>
+  <!-- Live LASCO Feed -->
+  <div class="live-feed">
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-title"><span>🛰️ LASCO C2</span><span class="badge">LIVE</span></div>
+        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+      </div>
+      <div class="feed-content"><img id="c2LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="LASCO C2 Live"></div>
+      <div class="feed-footer"><span>Last Updated:</span><span id="c2Timestamp">--:--</span></div>
+    </div>
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-title"><span>🛰️ LASCO C3</span><span class="badge">LIVE</span></div>
+        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+      </div>
+      <div class="feed-content"><img id="c3LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="LASCO C3 Live"></div>
+      <div class="feed-footer"><span>Last Updated:</span><span id="c3Timestamp">--:--</span></div>
+    </div>
+  </div>
+
+  <!-- Candidates -->
+  <div class="candidates-section">
+    <div class="section-header">
+      <h2 class="section-title">Detection Candidates</h2>
+      <div id="filterCount" class="stat-label"></div>
+    </div>
+    <div id="candidatesGrid" class="candidates-grid"></div>
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">No Candidates Found</div>
+      <p>Try adjusting your filters or select a different report</p>
+    </div>
+    <div id="loadingState" style="display: none;"><div class="spinner"></div></div>
+  </div>
 </main>
 
-<script>
-/* ==================== CONFIG ==================== */
-const REPO   = "NAGOHUSA/ONS_SOHOHUNTER";
-const BRANCH = "main";
-const FOLDER = "detections";
-const RAW    = path => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
+<!-- Candidate Detail Modal -->
+<div class="modal" id="candidateModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Candidate Details</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
 
-/* ==================== ELEMENTS ==================== */
-const $ = id => document.getElementById(id);
-const el = {
-  reportSelect   : $("reportSelect"),
-  refreshBtn     : $("refreshBtn"),
-  c2Filter       : $("c2Filter"),
-  c3Filter       : $("c3Filter"),
-  aiOnly         : $("aiOnly"),
-  markedOnly     : $("markedOnly"),
-  exportAllBtn   : $("exportAllBtn"),
-  exportMarked   : $("exportMarkedOnly"),
-  downloadTxt    : $("downloadAllTxt"),
-  downloadCsv    : $("downloadAllCsv"),
-  exportHint     : $("exportAllHint"),
-  reportName     : $("reportName"),
-  reportTime     : $("reportTime"),
-  srcLink        : $("srcLink"),
-  stats          : $("stats"),
-  grid           : $("grid"),
-  empty          : $("empty"),
-  errors         : $("errors"),
-  lastFramesRow  : $("lastFramesRow"),
-  c2Gif          : $("c2Gif"),
-  c3Gif          : $("c3Gif"),
-  c2GifTime      : $("c2GifTime"),
-  c3GifTime      : $("c3GifTime"),
-  refreshEta     : $("refreshEta")
+<script>
+// ===== CONFIG =====
+const CONFIG = { repo: 'NAGOHUSA/ONS_SOHOHUNTER', branch: 'main', folder: 'detections', refreshInterval: 5 * 60 * 1000 };
+const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
+
+// Robust raw URL builder (works whether paths begin with 'detections/' or subfolders)
+const RAW_URL = (path) => {
+  if (!path) return '';
+  const clean = path.replace(/^\.?\/*/, '');
+  if (clean.startsWith('detections/')) return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${clean}`;
+  if (clean.startsWith('crops/') || clean.startsWith('animations/') || clean.startsWith('thumbnails/') || clean.startsWith('reports/') || clean.startsWith('originals/') || clean.startsWith('annotated/'))
+    return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/detections/${clean}`;
+  // assume full path from repo root
+  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${clean}`;
 };
 
-/* ==================== HELPERS ==================== */
-function fmtDate(s) {
-  const d = new Date(s);
-  return d.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
-}
-function pad(n){return n.toString().padStart(2,'0');}
+// ===== STATE =====
+let allCandidates = [];
+let filteredCandidates = [];
+let markedIds = new Set();
+let currentReport = null;
 
-/* ==================== DATA NORMALISATION ==================== */
-function normalise(c, idx) {
-  const id = `${c.detector || 'unknown'}#${c.track_index ?? idx}`;
-  const label = (c.ai_label || 'unknown').toLowerCase();
-  const score = c.ai_score ?? 0;
-  const pos   = c.positions?.[0] ?? {};
-  const dual  = c.dual_channel_match;
+// ===== ELEMENTS =====
+const els = {
+  reportSelect: document.getElementById('reportSelect'),
+  candidateSelect: document.getElementById('candidateSelect'),
+  refreshBtn: document.getElementById('refreshBtn'),
+  exportTxtBtn: document.getElementById('exportTxtBtn'),
+  exportCsvBtn: document.getElementById('exportCsvBtn'),
+  filterC2: document.getElementById('filterC2'),
+  filterC3: document.getElementById('filterC3'),
+  filterComet: document.getElementById('filterComet'),
+  filterMarked: document.getElementById('filterMarked'),
+  exportMarkedOnly: document.getElementById('exportMarkedOnly'),
+  candidatesGrid: document.getElementById('candidatesGrid'),
+  emptyState: document.getElementById('emptyState'),
+  loadingState: document.getElementById('loadingState'),
+  countdown: document.getElementById('countdown'),
+  statTotal: document.getElementById('statTotal'),
+  statComets: document.getElementById('statComets'),
+  statC2: document.getElementById('statC2'),
+  statC3: document.getElementById('statC3'),
+  statMarked: document.getElementById('statMarked'),
+  filterCount: document.getElementById('filterCount'),
+  c2LiveGif: document.getElementById('c2LiveGif'),
+  c3LiveGif: document.getElementById('c3LiveGif'),
+  c2Timestamp: document.getElementById('c2Timestamp'),
+  c3Timestamp: document.getElementById('c3Timestamp')
+};
 
+// ===== UTILS =====
+const formatDate = (s)=> s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium', timeStyle:'short'}) : 'N/A';
+const getTelescope = (c)=> (c.instrument || c.detector || 'unknown').toUpperCase();
+function normalizeCandidate(c, idx){
+  const telescope = getTelescope(c);
+  const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
   return {
-    id, label, score,
-    marked      : !!c.marked,                     // NEW
-    telescope   : c.telescope?.toUpperCase() ?? '',
-    timestamp   : c.timestamp ?? '',
-    crop        : c.crop_path,
-    animMp4     : c.animation_mp4_path,
-    animGif     : c.animation_gif_path,
-    thumbnail   : c.thumbnail_path,               // NEW
-    pathOverlay : c.path_overlay_path,            // NEW
-    dual,
-    pos,
+    id, telescope,
+    label: (c.ai_label || 'unknown').toLowerCase(),
+    score: c.ai_score ?? 0,
+    timestamp: c.timestamp || '',
+    bbox: c.bbox || [],
+    cropPath: c.crop_path,
+    animationMp4: c.animation_mp4_path,
+    animationGif: c.animation_gif_path,
+    originalPath: c.original_mid_path,
+    annotatedPath: c.annotated_mid_path,
+    thumbnail: c.thumbnail_path || c.crop_path,
+    pathOverlay: c.path_overlay_path,
+    positions: c.positions || [],
+    imageSize: c.image_size || null,
+    trackIndex: c.track_id ?? c.track_index ?? idx,
     raw: c
   };
 }
 
-/* ==================== RENDER CARD ==================== */
-function renderCard(item) {
-  const anim = item.animMp4 ? `<video src="${RAW(item.animMp4)}" controls loop muted class="thumb"></video>`
-            : item.animGif ? `<img src="${RAW(item.animGif)}" class="thumb" alt="anim">`
-            : '';
-
-  const kv = (k,v) => v ? `<div class="kv"><b>${k}</b> ${v}</div>` : '';
-
-  const dualHtml = item.dual
-    ? `<div class="pill">Dual ${item.dual.with} (±${item.dual.pa_diff_deg.toFixed(1)}°)</div>`
-    : '';
-
-  const markBtn = `<button class="small flag ${item.marked?'on':''}" data-id="${item.id}">
-                    ${item.marked?'Marked':'Mark'}
-                  </button>`;
-
-  return `
-    <div class="card" data-id="${item.id}" data-label="${item.label}" data-tel="${item.telescope}" data-marked="${item.marked}">
-      <div class="meta">
-        <div class="row">
-          <div><strong>${item.id}</strong> — ${item.label.toUpperCase()} (${(item.score*100).toFixed(1)}%)</div>
-          <div class="right">${markBtn}</div>
-        </div>
-        <div class="kvs">
-          ${kv('Tel', item.telescope)}
-          ${kv('Time', fmtDate(item.timestamp))}
-          ${kv('X', pos.x?.toFixed(1))}
-          ${kv('Y', pos.y?.toFixed(1))}
-        </div>
-        ${dualHtml}
-        ${item.thumbnail ? `<img src="${RAW(item.thumbnail)}" class="thumb" alt="thumb">` : ''}
-        ${anim}
-      </div>
-    </div>`;
+// ===== LOAD REPORTS =====
+async function loadReports(){
+  try{
+    const r = await fetch(API_URL);
+    const files = await r.json();
+    const reports = files.filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
+                         .sort((a,b)=> b.name.localeCompare(a.name));
+    els.reportSelect.innerHTML = '<option value="">Select a report...</option>';
+    reports.forEach(report=>{
+      const o = document.createElement('option');
+      o.value = report.name;
+      o.textContent = report.name.replace('candidates_','').replace('.json','');
+      els.reportSelect.appendChild(o);
+    });
+    if(reports.length){
+      els.reportSelect.value = reports[0].name;
+      await loadReport(reports[0].name);
+    }
+  }catch(e){ console.error('Failed to load reports:', e); }
 }
 
-/* ==================== RENDER GRID ==================== */
-let ALL_ITEMS = [];          // all candidates of the current report
-let MARKED_IDS = new Set();  // persisted across reports
+async function loadReport(reportName){
+  if(!reportName) return;
+  els.loadingState.style.display='block';
+  els.candidatesGrid.innerHTML='';
+  els.emptyState.style.display='none';
+  try{
+    const r = await fetch(RAW_URL(`${CONFIG.folder}/${reportName}`));
+    const data = await r.json();
+    currentReport = reportName;
+    allCandidates = data.map(normalizeCandidate);
+    updateCandidateDropdown();
+    applyFilters();
+    updateStats();
+    updateLiveFeeds();
+  }catch(e){
+    console.error('Failed to load report:', e);
+    els.emptyState.style.display='block';
+  }finally{
+    els.loadingState.style.display='none';
+  }
+}
 
-function renderGrid() {
-  const c2 = el.c2Filter.checked;
-  const c3 = el.c3Filter.checked;
-  const ai = el.aiOnly.checked;
-  const marked = el.markedOnly.checked;
+function updateCandidateDropdown(){
+  els.candidateSelect.innerHTML = '<option value="">All candidates</option>';
+  allCandidates.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.id;
+    o.textContent=`${c.id} — ${c.label.toUpperCase()} (${(c.score*100).toFixed(1)}%)`;
+    els.candidateSelect.appendChild(o);
+  });
+}
 
-  const filtered = ALL_ITEMS.filter(it => {
-    if (c2 && it.telescope !== 'C2') return false;
-    if (c3 && it.telescope !== 'C3') return false;
-    if (ai && it.label !== 'comet') return false;
-    if (marked && !MARKED_IDS.has(it.id)) return false;
+function applyFilters(){
+  const c2=els.filterC2.checked, c3=els.filterC3.checked, comet=els.filterComet.checked, marked=els.filterMarked.checked;
+  const selectedId = els.candidateSelect.value;
+  filteredCandidates = allCandidates.filter(c=>{
+    if(selectedId && c.id !== selectedId) return false;
+    if(c2 && c.telescope!=='C2' && c.telescope!=='LASCO') return false;
+    if(c3 && c.telescope!=='C3') return false;
+    if(comet && c.label!=='comet') return false;
+    if(marked && !markedIds.has(c.id)) return false;
     return true;
   });
+  renderCandidates();
+  els.filterCount.textContent = `Showing ${filteredCandidates.length} of ${allCandidates.length} candidates`;
+}
 
-  el.grid.innerHTML = filtered.map(renderCard).join('') || '<div class="empty">No candidates match the filters.</div>';
-  el.grid.hidden = filtered.length === 0;
-  el.empty.hidden = filtered.length > 0;
-
-  // wire mark buttons
-  document.querySelectorAll('.flag').forEach(btn => {
-    btn.onclick = () => {
-      const id = btn.dataset.id;
-      if (MARKED_IDS.has(id)) MARKED_IDS.delete(id);
-      else MARKED_IDS.add(id);
-      renderGrid();               // refresh UI
-      updateExportHint();
-    };
+function renderCandidates(){
+  if(!filteredCandidates.length){
+    els.candidatesGrid.innerHTML='';
+    els.emptyState.style.display='block';
+    return;
+  }
+  els.emptyState.style.display='none';
+  els.candidatesGrid.innerHTML = filteredCandidates.map(renderCard).join('');
+  document.querySelectorAll('.candidate-card').forEach(card=>{
+    const id = card.dataset.id;
+    card.querySelector('.mark-btn')?.addEventListener('click', (e)=>{e.stopPropagation(); toggleMark(id);});
+    card.addEventListener('click', ()=> showCandidateDetail(id));
   });
 }
 
-/* ==================== STATS ==================== */
-function renderStats(items) {
-  const total = items.length;
-  const comets = items.filter(i=>i.label==='comet').length;
-  const c2 = items.filter(i=>i.telescope==='C2').length;
-  const c3 = items.filter(i=>i.telescope==='C3').length;
-  const marked = [...MARKED_IDS].filter(id=>items.some(i=>i.id===id)).length;
+// === CARD HTML (adds animations preview row) ===
+function renderCard(c){
+  const isMarked = markedIds.has(c.id);
+  const thumb = c.thumbnail ? RAW_URL(c.thumbnail) : '';
+  const hasAnim = c.animationMp4 || c.animationGif;
+  return `
+  <div class="candidate-card ${isMarked?'marked':''}" data-id="${c.id}">
+    ${thumb ? `<img src="${thumb}" alt="${c.id}" class="candidate-image">` : ''}
+    ${hasAnim ? `
+    <div class="feed-content" style="border-top:1px solid var(--border);">
+      ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" style="width:100%;height:auto;max-height:320px;background:#000" muted loop autoplay playsinline></video>`:``}
+      ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" alt="GIF animation" style="width:100%;height:auto;max-height:320px;object-fit:contain;background:#000">`:``}
+    </div>`:``}
+    <div class="candidate-body">
+      <div class="candidate-header">
+        <div class="candidate-id">${c.id}</div>
+        <div class="candidate-score">
+          <span class="score-badge ${c.label}">${c.label.toUpperCase()}</span>
+          <span class="score-value">${(c.score*100).toFixed(1)}%</span>
+        </div>
+      </div>
+      <div class="candidate-meta">
+        <div class="meta-item"><span class="meta-label">Telescope</span><span class="meta-value">${c.telescope}</span></div>
+        <div class="meta-item"><span class="meta-label">Track ID</span><span class="meta-value">${c.trackIndex ?? 'N/A'}</span></div>
+        <div class="meta-item"><span class="meta-label">Timestamp</span><span class="meta-value">${formatDate(c.timestamp)}</span></div>
+        <div class="meta-item"><span class="meta-label">Position</span><span class="meta-value">${c.bbox.length>=2?`${c.bbox[0]}, ${c.bbox[1]}`:'N/A'}</span></div>
+      </div>
+      <div class="candidate-actions">
+        <button class="action-btn mark-btn ${isMarked?'marked-btn':''}">${isMarked?'✓ Marked':'☆ Mark'}</button>
+        <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${c.id}')">👁️ Details</button>
+      </div>
+    </div>
+  </div>`;
+}
 
-  el.stats.innerHTML = `
-    <div class="stat"><b>${total}</b> detections</div>
-    <div class="stat"><b>${comets}</b> AI comets</div>
-    <div class="stat"><b>${c2}</b> C2</div>
-    <div class="stat"><b>${c3}</b> C3</div>
-    <div class="stat"><b>${marked}</b> marked</div>
+function toggleMark(id){
+  if(markedIds.has(id)) markedIds.delete(id); else markedIds.add(id);
+  applyFilters(); updateStats();
+}
+
+function showCandidateDetail(id){
+  const c = allCandidates.find(x=>x.id===id); if(!c) return;
+  const modal = document.getElementById('candidateModal');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+
+  title.textContent = `Candidate: ${c.id}`;
+
+  // Segmented image selector (Original / Annotated / Crop)
+  const hasOrig = !!c.originalPath, hasAnn = !!c.annotatedPath;
+  const firstShown = hasOrig ? 'orig' : hasAnn ? 'ann' : 'crop';
+  const currentImg = (mode)=> mode==='orig' ? c.originalPath : mode==='ann' ? c.annotatedPath : c.cropPath;
+
+  body.innerHTML = `
+    <div style="display:grid;gap:1rem;">
+      <div>
+        <div class="seg" id="imgSeg">
+          <button data-mode="orig" ${!hasOrig?'disabled':''} class="${firstShown==='orig'?'active':''}">Original</button>
+          <button data-mode="ann" ${!hasAnn?'disabled':''} class="${firstShown==='ann'?'active':''}">Annotated</button>
+          <button data-mode="crop" class="${firstShown==='crop'?'active':''}">Cropped</button>
+        </div>
+        <div style="margin-top:0.75rem;">
+          <img id="segImg" src="${RAW_URL(currentImg(firstShown))}" style="width:100%;border-radius:0.5rem;background:#000;">
+        </div>
+      </div>
+
+      ${(c.animationMp4 || c.animationGif) ? `
+      <div>
+        <h4 style="margin-bottom:0.5rem;">Detected Animation</h4>
+        ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" controls loop style="width:100%;border-radius:0.5rem;background:#000;"></video>`:''}
+        ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" style="width:100%;border-radius:0.5rem;background:#000;margin-top:0.5rem;">`:''}
+      </div>` : ''}
+
+      <div>
+        <h4 style="margin-bottom:0.5rem;">3D Track Viewer</h4>
+        <div class="three-wrap" id="threeWrap"></div>
+        <div class="three-hint">Drag to orbit. Points are plotted in image coordinates and extruded over time (not a physical ephemeris).</div>
+      </div>
+
+      <div>
+        <h4 style="margin-bottom:0.5rem;">Details</h4>
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; font-size: 0.9rem;">
+          <div style="display:grid;grid-template-columns:150px 1fr;gap:0.5rem;">
+            <strong>ID:</strong><span>${c.id}</span>
+            <strong>Telescope:</strong><span>${c.telescope}</span>
+            <strong>AI Label:</strong><span>${c.label.toUpperCase()}</span>
+            <strong>AI Score:</strong><span>${(c.score*100).toFixed(2)}%</span>
+            <strong>Timestamp:</strong><span>${formatDate(c.timestamp)}</span>
+            <strong>Track ID:</strong><span>${c.trackIndex ?? 'N/A'}</span>
+            <strong>Image Size:</strong><span>${c.imageSize ? `${c.imageSize[0]}×${c.imageSize[1]}` : 'N/A'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-primary" onclick="toggleMark('${c.id}'); closeModal(); applyFilters();">${markedIds.has(c.id)?'Unmark':'Mark'} Candidate</button>
+        <a class="btn btn-secondary" href="${RAW_URL('reports/'+(c.telescope)+'_track'+(c.trackIndex)+'_sungrazer.txt')}" target="_blank">TXT</a>
+        <a class="btn btn-secondary" href="${RAW_URL('reports/'+(c.telescope)+'_track'+(c.trackIndex)+'_sungrazer.csv')}" target="_blank">CSV</a>
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
   `;
+
+  // wire segmented image buttons
+  const seg = body.querySelector('#imgSeg');
+  const segImg = body.querySelector('#segImg');
+  seg.querySelectorAll('button').forEach(btn=>{
+    btn.onclick = () => {
+      seg.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const m = btn.dataset.mode;
+      const src = RAW_URL(currentImg(m));
+      segImg.src = src;
+    };
+  });
+
+  // init 3D viewer (simple line/ribbon from positions)
+  initThreeTrack(body.querySelector('#threeWrap'), c);
+
+  modal.classList.add('active');
 }
 
-/* ==================== LOAD REPORT ==================== */
-async function loadReport(file) {
-  try {
-    el.errors.style.display = 'none';
-    el.reportName.textContent = file.replace('.json','').replace('candidates_','');
-    el.reportTime.textContent = '';
-    el.srcLink.href = `https://github.com/${REPO}/blob/${BRANCH}/${FOLDER}/${file}`;
-    el.srcLink.textContent = 'GitHub';
+function closeModal(){ document.getElementById('candidateModal').classList.remove('active'); }
 
-    const resp = await fetch(RAW(`${FOLDER}/${file}`));
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
+// Simple 3D plotting of track points in image-space over time
+function initThreeTrack(host, c){
+  host.innerHTML='';
+  const width = host.clientWidth, height = host.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
+  camera.position.set(0,0,2.5);
 
-    // ---- normalise ----
-    ALL_ITEMS = data.map(normalise);
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(width,height);
+  host.appendChild(renderer.domElement);
 
-    // ---- timestamps (if any) ----
-    if (data[0]?.timestamp) {
-      el.reportTime.textContent = fmtDate(data[0].timestamp);
-    }
-
-    renderStats(ALL_ITEMS);
-    renderGrid();
-    updateLiveGifs();
-  } catch (e) {
-    el.errors.textContent = `Failed to load ${file}: ${e.message}`;
-    el.errors.style.display = 'block';
-    console.error(e);
-  }
-}
-
-/* ==================== REFRESH DROPDOWN ==================== */
-async function refreshDropdown() {
-  try {
-    const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}?ref=${BRANCH}`);
-    const files = await resp.json();
-
-    const jsonFiles = files
-      .filter(f => /^candidates_\d{8}_\d{6}\.json$/.test(f.name))
-      .sort((a,b) => b.name.localeCompare(a.name));
-
-    el.reportSelect.innerHTML = '<option value="">— Select report —</option>';
-    jsonFiles.forEach(f => {
-      const opt = document.createElement('option');
-      opt.value = f.name;
-      opt.textContent = f.name.replace('.json','').replace('candidates_','');
-      el.reportSelect.appendChild(opt);
+  // Normalize positions to [-1,1] using image size
+  const pts = (c.positions||[]).map(p=>({x:p.x, y:p.y}));
+  if(pts.length<2){ 
+    const t = new THREE.Mesh(new THREE.BoxGeometry(1,0.02,0.02), new THREE.MeshBasicMaterial({color:0x66ccff}));
+    scene.add(t);
+  }else{
+    const [W,H] = c.imageSize || [1024,1024];
+    const toN = (x,y)=>[(x/(W||1))*2-1, -((y/(H||1))*2-1)];
+    const geom = new THREE.BufferGeometry();
+    const arr = [];
+    pts.forEach((p,i)=>{
+      const [nx,ny] = toN(p.x,p.y);
+      const nz = (i/(pts.length-1))*0.8 - 0.4; // time extrusion
+      arr.push(nx,ny,nz);
     });
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(arr,3));
+    const mat = new THREE.LineBasicMaterial({color:0x00ffd0});
+    const line = new THREE.Line(geom, mat);
+    scene.add(line);
 
-    if (jsonFiles.length) {
-      el.reportSelect.value = jsonFiles[0].name;
-      loadReport(jsonFiles[0].name);
-    }
-  } catch (e) {
-    console.error(e);
+    // points
+    const ptsGeom = new THREE.BufferGeometry().setFromPoints(arr.reduce((acc,_,k)=>(k%3===0 && acc.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2])),acc),[]));
+    const ptsMat = new THREE.PointsMaterial({size:0.02, color:0xffff00});
+    const cloud = new THREE.Points(ptsGeom, ptsMat);
+    scene.add(cloud);
+  }
+
+  const light = new THREE.AmbientLight(0xffffff, 0.9);
+  scene.add(light);
+
+  // orbit-ish drag
+  let isDown=false, lastX=0,lastY=0, rx=0.3, ry=0.6;
+  host.addEventListener('mousedown',e=>{isDown=true; lastX=e.clientX; lastY=e.clientY;});
+  window.addEventListener('mouseup',()=>isDown=false);
+  window.addEventListener('mousemove',e=>{
+    if(!isDown) return;
+    const dx=(e.clientX-lastX)/200, dy=(e.clientY-lastY)/200;
+    ry+=dx; rx+=dy;
+    lastX=e.clientX; lastY=e.clientY;
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    scene.rotation.set(rx, ry, 0);
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  // handle resize inside modal
+  new ResizeObserver(()=>{
+    const w=host.clientWidth,h=host.clientHeight||360;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+  }).observe(host);
+}
+
+// ===== STATS & LIVE =====
+function updateStats(){
+  const total=allCandidates.length;
+  const comets=allCandidates.filter(c=>c.label==='comet').length;
+  const c2=allCandidates.filter(c=>c.telescope==='C2'||c.telescope==='LASCO').length;
+  const c3=allCandidates.filter(c=>c.telescope==='C3').length;
+  const marked=[...markedIds].filter(id=>allCandidates.some(c=>c.id===id)).length;
+  els.statTotal.textContent=total; els.statComets.textContent=comets; els.statC2.textContent=c2; els.statC3.textContent=c3; els.statMarked.textContent=marked;
+}
+
+async function updateLiveFeeds(){
+  const feeds = [
+    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif', el:els.c2LiveGif, ts:els.c2Timestamp },
+    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif', el:els.c3LiveGif, ts:els.c3Timestamp }
+  ];
+  for(const f of feeds){
+    try{
+      const r = await fetch(f.url,{method:'HEAD'});
+      const lm = r.headers.get('last-modified');
+      if(lm) f.ts.textContent = new Date(lm).toLocaleTimeString();
+      f.el.src = `${f.url}?t=${Date.now()}`;
+    }catch(e){ console.error('feed error', e); }
   }
 }
 
-/* ==================== LIVE GIFS ==================== */
-async function updateLiveGifs() {
-  const urls = {
-    c2: "https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif",
-    c3: "https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif"
-  };
-  for (const [tel, url] of Object.entries(urls)) {
-    try {
-      const r = await fetch(url, {method:'HEAD'});
-      const last = r.headers.get('last-modified');
-      const timeEl = $(`${tel}GifTime`);
-      const imgEl  = $(`${tel}Gif`);
-      if (last) timeEl.textContent = new Date(last).toLocaleTimeString();
-      imgEl.src = url + '?t=' + Date.now();   // cache‑bust
-    } catch {}
-  }
+// ===== EXPORTS =====
+function exportTXT(){
+  const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
+  const lines = list.map(c=>[c.id, c.label.toUpperCase(), `${(c.score*100).toFixed(1)}%`, c.telescope, formatDate(c.timestamp), c.bbox.slice(0,2).join(', ')||'N/A'].join('\t'));
+  const blob = new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_export_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
+}
+function exportCSV(){
+  const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
+  const header = ['ID','Label','Score','Telescope','Timestamp','Track_ID','X','Y','Crop_Path'];
+  const rows = list.map(c=>[c.id,c.label.toUpperCase(),(c.score*100).toFixed(1),c.telescope,c.timestamp||'N/A',c.trackIndex??'N/A',c.bbox[0]??'',c.bbox[1]??'',c.cropPath||'']);
+  const csv = [header,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`soho_export_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(a.href);
 }
 
-/* ==================== EXPORT ALL ==================== */
-function buildTxt(items) {
-  return items.map(it => [
-    it.id,
-    it.label,
-    (it.score*100).toFixed(1)+'%',
-    it.telescope,
-    fmtDate(it.timestamp),
-    it.pos.x?.toFixed(1) ?? '',
-    it.pos.y?.toFixed(1) ?? '',
-    it.dual ? `${it.dual.with} (±${it.dual.pa_diff_deg.toFixed(1)}°)` : ''
-  ].join('\t')).join('\n');
-}
-function buildCsv(items) {
-  const header = ['ID','Label','Score','Telescope','Time','X','Y','Dual'];
-  const rows = items.map(it => [
-    it.id,
-    it.label,
-    (it.score*100).toFixed(1),
-    it.telescope,
-    fmtDate(it.timestamp),
-    it.pos.x?.toFixed(1) ?? '',
-    it.pos.y?.toFixed(1) ?? '',
-    it.dual ? `${it.dual.with} (±${it.dual.pa_diff_deg.toFixed(1)}°)` : ''
-  ]);
-  return [header, ...rows].map(r=>r.join(',')).join('\n');
-}
-function updateExportHint() {
-  const cnt = el.exportMarked.checked ? MARKED_IDS.size : ALL_ITEMS.length;
-  el.exportHint.textContent = `${cnt} item${cnt===1?'':'s'} ready`;
-}
-el.exportAllBtn.onclick = () => {
-  const useMarked = el.exportMarked.checked;
-  const items = useMarked
-    ? ALL_ITEMS.filter(i=>MARKED_IDS.has(i.id))
-    : ALL_ITEMS;
-
-  const txt = buildTxt(items);
-  const csv = buildCsv(items);
-  const blobTxt = new Blob([txt],{type:'text/plain'});
-  const blobCsv = new Blob([csv],{type:'text/csv'});
-
-  el.downloadTxt.href = URL.createObjectURL(blobTxt);
-  el.downloadTxt.download = `soho_export_${useMarked?'marked':'all'}_${Date.now()}.txt`;
-  el.downloadTxt.style.display = 'inline-flex';
-
-  el.downloadCsv.href = URL.createObjectURL(blobCsv);
-  el.downloadCsv.download = `soho_export_${useMarked?'marked':'all'}_${Date.now()}.csv`;
-  el.downloadCsv.style.display = 'inline-flex';
-
-  updateExportHint();
-};
-
-/* ==================== FILTERS ==================== */
-[el.c2Filter, el.c3Filter, el.aiOnly, el.markedOnly, el.exportMarked].forEach(cb=>{
-  cb.onchange = renderGrid;
-});
-
-/* ==================== AUTO‑REFRESH ==================== */
-let refreshTimer;
-function startAutoRefresh() {
-  clearInterval(refreshTimer);
-  const next = 5*60*1000;                // 5 min
-  const end = Date.now() + next;
-  refreshTimer = setInterval(()=>{
-    const left = Math.max(0, Math.round((end - Date.now())/1000));
-    const m = Math.floor(left/60), s = left%60;
-    el.refreshEta.textContent = `${m}:${pad(s)}`;
-    if (left===0) refreshDropdown();
+// ===== COUNTDOWN =====
+let countdownInterval;
+function startCountdown(){
+  let seconds = 300;
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(()=>{
+    seconds--;
+    const m=Math.floor(seconds/60), s=String(seconds%60).padStart(2,'0');
+    els.countdown.textContent=`${m}:${s}`;
+    if(seconds<=0){ loadReports(); seconds=300; }
   },1000);
 }
-el.refreshBtn.onclick = ()=>{ refreshDropdown(); startAutoRefresh(); };
 
-/* ==================== INIT ==================== */
-refreshDropdown();
-updateLiveGifs();
-startAutoRefresh();
-setInterval(updateLiveGifs, 2*60*1000);   // keep GIF timestamps fresh
+// ===== EVENTS =====
+els.reportSelect.addEventListener('change', e=>loadReport(e.target.value));
+els.candidateSelect.addEventListener('change', applyFilters);
+els.refreshBtn.addEventListener('click', ()=>{ loadReports(); startCountdown(); });
+els.exportTxtBtn.addEventListener('click', exportTXT);
+els.exportCsvBtn.addEventListener('click', exportCSV);
+[els.filterC2, els.filterC3, els.filterComet, els.filterMarked].forEach(cb=>cb.addEventListener('change', applyFilters));
+// Close modal on bg click
+document.getElementById('candidateModal').addEventListener('click', (e)=>{ if(e.target.id==='candidateModal') closeModal(); });
+
+// ===== INIT =====
+loadReports();
+startCountdown();
+setInterval(updateLiveFeeds, 2*60*1000);
 </script>
 </body>
 </html>
