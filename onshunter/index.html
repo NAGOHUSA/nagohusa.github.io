@@ -264,7 +264,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 
 <script>
 // ===== CONFIG =====
-const HIDE_NOT_COMET = true; // do not render thumbnails for items flagged as "not_comet"
+const HIDE_NOT_COMET = false; // do not render thumbnails for items flagged as "not_comet"
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
