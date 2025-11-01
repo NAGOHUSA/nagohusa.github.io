@@ -158,7 +158,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.2</h1>
+        <h1>🌟 SOHO Comet Hunter 3.3</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -264,7 +264,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 
 <script>
 // ===== CONFIG =====
-const HIDE_NOT_COMET = false; // do not render thumbnails for items flagged as "not_comet"
+const HIDE_NOT_COMET = true; // thumbnails only"
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
@@ -399,36 +399,60 @@ function updateCandidateDropdown(){
   });
 }
 
-function applyFilters(){
-  const c2=els.filterC2.checked, c3=els.filterC3.checked, comet=els.filterComet.checked, marked=els.filterMarked.checked;
+function applyFilters() {
+  const c2 = els.filterC2.checked;
+  const c3 = els.filterC3.checked;
+  const comet = els.filterComet.checked;
+  const marked = els.filterMarked.checked;
   const selectedId = els.candidateSelect.value;
-  filteredCandidates = allCandidates.filter(c=>{
-    if (HIDE_NOT_COMET && candidate.label === 'not_comet') return false;
-    if(selectedId && c.id !== selectedId) return false;
-    if(c2 && c.telescope!=='C2' && c.telescope!=='LASCO') return false;
-    if(c3 && c.telescope!=='C3') return false;
-    if(comet && c.label!=='comet') return false;
-    if(marked && !markedIds.has(c.id)) return false;
+
+  filteredCandidates = allCandidates.filter(candidate => {
+    if (selectedId && candidate.id !== selectedId) return false;
+    if (c2 && candidate.telescope !== 'C2' && candidate.telescope !== 'LASCO') return false;
+    if (c3 && candidate.telescope !== 'C3') return false;
+    if (comet && candidate.label !== 'comet') return false;
+    if (marked && !markedIds.has(candidate.id)) return false;
     return true;
   });
+
   renderCandidates();
-  els.filterCount.textContent = `Showing ${filteredCandidates.length} of ${allCandidates.length} candidates`;
+  updateFilterCount();
 }
 
-function renderCandidates(){
-  if(!filteredCandidates.length){
-    els.candidatesGrid.innerHTML='';
-    els.emptyState.style.display='block';
+
+function renderCandidates() {
+  const visible = HIDE_NOT_COMET
+    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() !== 'not_comet')
+    : filteredCandidates;
+
+  if (visible.length === 0) {
+    els.candidatesGrid.innerHTML = '';
+    els.emptyState.style.display = 'block';
     return;
   }
-  els.emptyState.style.display='none';
-  els.candidatesGrid.innerHTML = filteredCandidates.map(renderCard).join('');
-  document.querySelectorAll('.candidate-card').forEach(card=>{
+
+  els.emptyState.style.display = 'none';
+  els.candidatesGrid.innerHTML = visible.map(renderCandidateCard).join('');
+
+  // wire events for visible cards
+  document.querySelectorAll('.candidate-card').forEach(card => {
     const id = card.dataset.id;
-    card.querySelector('.mark-btn')?.addEventListener('click', (e)=>{e.stopPropagation(); toggleMark(id);});
-    card.addEventListener('click', ()=> showCandidateDetail(id));
+    card.querySelector('.mark-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMark(id);
+    });
+    card.addEventListener('click', () => showCandidateDetail(id));
   });
 }
+function updateFilterCount() {
+  const hidden = HIDE_NOT_COMET
+    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() === 'not_comet').length
+    : 0;
+  const shown = filteredCandidates.length - hidden;
+  els.filterCount.textContent =
+    `Showing ${shown} of ${allCandidates.length} candidates${hidden ? ` (${hidden} hidden as not_comet)` : ''}`;
+}
+
 
 function renderCard(c){
   const isMarked = markedIds.has(c.id);
