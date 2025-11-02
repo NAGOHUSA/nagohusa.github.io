@@ -28,7 +28,7 @@
     .select-wrapper{position:relative}
     select{width:100%;padding:.75rem 2.5rem .75rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:.5rem;color:var(--text-primary);font-size:.9rem;cursor:pointer;appearance:none;transition:all .2s}
     select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-    .select-wrapper::after{content:'▼';position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-secondary);font-size:.7rem}
+    .select-wrapper::after{content:'down arrow';position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-secondary);font-size:.7rem}
     .filters{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding-top:1rem;border-top:1px solid var(--border)}
     .filter-chip{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:2rem;cursor:pointer;transition:all .2s;font-size:.85rem}
     .filter-chip:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
@@ -100,6 +100,15 @@
       .controls-grid{grid-template-columns:1fr}
       .candidates-grid{grid-template-columns:1fr}
       .live-feed{grid-template-columns:1fr}
+      .header-title h1{font-size:1.5rem}
+      .section-title{font-size:1.2rem}
+      .stat-value{font-size:1.5rem}
+      .btn{padding:.5rem 1rem;font-size:.8rem}
+      .container{padding:0 .75rem}
+      .controls-bar{padding:1rem 0}
+      .modal{padding:1rem}
+      .modal-content{max-width:90vw}
+      .three-wrap{height:240px}
     }
     .status-indicator{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:2rem;font-size:.85rem;font-weight:600}
     .status-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
@@ -116,13 +125,13 @@
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.7</h1>
+        <h1>SOHO Comet Hunter 3.8</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
         <div class="status-indicator online"><span class="status-dot"></span><span>Live</span></div>
-        <button class="btn btn-primary" id="refreshBtn">🔄 Refresh</button>
-        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">📦 GitHub</a>
+        <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">GitHub</a>
       </div>
     </div>
   </div>
@@ -146,8 +155,8 @@
       <div class="control-group">
         <label class="control-label">Actions</label>
         <div style="display:flex;gap:.5rem;">
-          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">📄 Export TXT</button>
-          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">📊 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">Export TXT</button>
+          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">Export CSV</button>
         </div>
       </div>
       <div class="control-group">
@@ -178,7 +187,7 @@
   <div class="live-feed">
     <div class="feed-card">
       <div class="feed-header">
-        <div class="feed-title"><span>🛰️ LASCO C2</span><span class="badge">LIVE</span></div>
+        <div class="feed-title"><span>LASCO C2</span><span class="badge">LIVE</span></div>
         <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
       </div>
       <div class="feed-content"><img id="c2LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="LASCO C2 Live"></div>
@@ -186,7 +195,7 @@
     </div>
     <div class="feed-card">
       <div class="feed-header">
-        <div class="feed-title"><span>🛰️ LASCO C3</span><span class="badge">LIVE</span></div>
+        <div class="feed-title"><span>LASCO C3</span><span class="badge">LIVE</span></div>
         <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
       </div>
       <div class="feed-content"><img id="c3LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="LASCO C3 Live"></div>
@@ -201,7 +210,7 @@
     </div>
     <div id="candidatesGrid" class="candidates-grid"></div>
     <div id="emptyState" class="empty-state" style="display:none;">
-      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-icon">Search</div>
       <div class="empty-state-title">No Candidates Found</div>
       <p>Try adjusting your filters or select a different report</p>
     </div>
@@ -222,26 +231,22 @@
 
 <script>
 // ---------- CONFIG ----------
-const HIDE_NOT_COMET = true; // thumbnails only
-const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
+const HIDE_NOT_COMET = true;
+const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections' };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
-// ---------- RAW URL (fixed to avoid double detections/) ----------
+// ---------- RAW URL (Fixed) ----------
 const RAW_URL = (path) => {
   if (!path) return '';
   let p = String(path).trim().replace(/^\.?\/*/, '').replace(/^detections\//, '');
   if (p.startsWith('http')) return p;
-  if (!p.startsWith('detections/') && !['crops/','animations/','thumbnails/','reports/','originals/','annotated/'].some(prefix=>p.startsWith(prefix))) {
-    p = 'detections/' + p;
-  }
-  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${p}`;
+  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/detections/${p}`;
 };
 
-// ---------- STATE / ELEMENTS ----------
+// ---------- STATE ----------
 let allCandidates = [];
 let filteredCandidates = [];
 let markedIds = new Set();
-let currentReport = null;
 
 const els = {
   reportSelect: document.getElementById('reportSelect'),
@@ -271,18 +276,15 @@ const els = {
 };
 
 // ---------- HELPERS ----------
-const formatDate = (s)=> s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'N/A';
-const getTelescope = (c)=> (c.instrument || c.detector || 'unknown').toUpperCase();
+const formatDate = (s) => s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'N/A';
+const getTelescope = (c) => (c.instrument || c.detector || 'unknown').toUpperCase();
 
-// Normalize with generous fallbacks to match any JSON variant you may have used
 function normalizeCandidate(c, idx){
   const telescope = getTelescope(c);
   const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
-
-  // accept multiple possible keys for safety
   const ann = c.annotated_mid_path || c.annotated_path || c.annotated || c.paths?.annotated;
-  const orig = c.original_mid_path  || c.original_path  || c.original  || c.paths?.original;
-  const crop = c.crop_path          || c.crop           || c.paths?.crop;
+  const orig = c.original_mid_path || c.original_path || c.original || c.paths?.original;
+  const crop = c.crop_path || c.crop || c.paths?.crop;
 
   return {
     id, telescope,
@@ -296,7 +298,6 @@ function normalizeCandidate(c, idx){
     originalPath: orig || '',
     annotatedPath: ann || '',
     thumbnail: c.thumbnail_path || crop || '',
-    pathOverlay: c.path_overlay_path || '',
     positions: c.positions || [],
     imageSize: c.image_size || null,
     trackIndex: c.track_id ?? c.track_index ?? idx,
@@ -304,7 +305,6 @@ function normalizeCandidate(c, idx){
   };
 }
 
-// Group by same track id & telescope
 function getTrackGroup(candidate){
   return allCandidates
     .filter(x => (x.trackIndex === candidate.trackIndex) && (x.telescope === candidate.telescope))
@@ -337,9 +337,8 @@ async function loadReport(reportName){
   els.candidatesGrid.innerHTML='';
   els.emptyState.style.display='none';
   try{
-    const r = await fetch(RAW_URL(`${CONFIG.folder}/${reportName}`));
+    const r = await fetch(RAW_URL(reportName));
     const data = await r.json();
-    currentReport = reportName;
     allCandidates = data.map(normalizeCandidate);
     updateCandidateDropdown();
     applyFilters();
@@ -437,14 +436,19 @@ function renderCard(c){
         <div class="meta-item"><span class="meta-label">Position</span><span class="meta-value">${c.bbox.length>=2?`${c.bbox[0]}, ${c.bbox[1]}`:'N/A'}</span></div>
       </div>
       <div class="candidate-actions">
-        <button class="action-btn mark-btn ${isMarked?'marked-btn':''}">${isMarked?'✓ Marked':'☆ Mark'}</button>
-        <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${c.id}')">👁️ Details</button>
+        <button class="action-btn mark-btn ${isMarked?'marked-btn':''}">${isMarked?'Marked':'Mark'}</button>
+        <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${c.id}')">Details</button>
       </div>
     </div>
   </div>`;
 }
 
-function toggleMark(id){ if(markedIds.has(id)) markedIds.delete(id); else markedIds.add(id); applyFilters(); updateStats(); }
+function toggleMark(id){ 
+  if(markedIds.has(id)) markedIds.delete(id); 
+  else markedIds.add(id); 
+  applyFilters(); 
+  updateStats(); 
+}
 
 // ---------- MODAL ----------
 function showCandidateDetail(id){
@@ -455,19 +459,18 @@ function showCandidateDetail(id){
   title.textContent = `Candidate: ${c.id}`;
 
   const srcMap = {
-    ann:  c.annotatedPath ? RAW_URL(c.annotatedPath) : '',
-    orig: c.originalPath  ? RAW_URL(c.originalPath)  : '',
-    crop: c.cropPath      ? RAW_URL(c.cropPath)      : ''
+    ann: c.annotatedPath ? RAW_URL(c.annotatedPath) : '',
+    orig: c.originalPath ? RAW_URL(c.originalPath) : '',
+    crop: c.cropPath ? RAW_URL(c.cropPath) : ''
   };
   const firstMode = srcMap.ann ? 'ann' : (srcMap.orig ? 'orig' : 'crop');
   const sequence = getTrackGroup(c);
 
   body.innerHTML = `
     <div style="display:grid;gap:1.25rem;">
-      <!-- Single frame toggle -->
       <div>
         <div class="seg" id="imgSeg">
-          <button data-mode="ann"  data-src="${srcMap.ann}">Annotated</button>
+          <button data-mode="ann" data-src="${srcMap.ann}">Annotated</button>
           <button data-mode="orig" data-src="${srcMap.orig}">Original</button>
           <button data-mode="crop" data-src="${srcMap.crop}">Cropped</button>
         </div>
@@ -478,22 +481,22 @@ function showCandidateDetail(id){
 
       ${(c.animationMp4 || c.animationGif) ? `
       <div>
-        <h4 style="margin-bottom:.5rem;">Detected Animation (precomputed)</h4>
+        <h4 style="margin-bottom:.5rem;">Animation</h4>
         ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" controls loop style="width:100%;border-radius:.5rem;background:#000;"></video>`:''}
         ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" style="width:100%;border-radius:.5rem;background:#000;margin-top:.5rem;">`:''}
       </div>` : ''}
 
       <div>
-        <h4 style="margin-bottom:.5rem;">Time-lapse from previous detections</h4>
+        <h4 style="margin-bottom:.5rem;">Time-lapse</h4>
         <div class="tl-controls">
           <div class="seg" id="tlSeg">
             <button data-mode="ann">Annotated</button>
             <button data-mode="orig">Original</button>
             <button data-mode="crop">Cropped</button>
           </div>
-          <button id="tlPlay" class="btn btn-secondary btn-sm">▶︎ Play</button>
-          <button id="tlPrev" class="btn btn-secondary btn-sm">⟨ Prev</button>
-          <button id="tlNext" class="btn btn-secondary btn-sm">Next ⟩</button>
+          <button id="tlPlay" class="btn btn-secondary btn-sm">Play</button>
+          <button id="tlPrev" class="btn btn-secondary btn-sm">Prev</button>
+          <button id="tlNext" class="btn btn-secondary btn-sm">Next</button>
           <label class="control-label" style="margin-left:.5rem;">FPS</label>
           <input id="tlFps" type="range" min="1" max="12" value="4" />
           <span id="tlFpsVal" class="stat-label">4 fps</span>
@@ -503,9 +506,9 @@ function showCandidateDetail(id){
       </div>
 
       <div>
-        <h4 style="margin-bottom:.5rem;">3D Track Viewer</h4>
+        <h4 style="margin-bottom:.5rem;">3D Track</h4>
         <div class="three-wrap" id="threeWrap"></div>
-        <div class="three-hint">Drag to orbit. Points are plotted in image coordinates and extruded over time (not a physical ephemeris).</div>
+        <div class="three-hint">Drag to orbit.</div>
       </div>
 
       <div>
@@ -524,37 +527,29 @@ function showCandidateDetail(id){
       </div>
 
       <div style="display:flex;gap:.5rem;">
-        <button class="btn btn-primary" onclick="toggleMark('${c.id}'); closeModal(); applyFilters();">${markedIds.has(c.id)?'Unmark':'Mark'} Candidate</button>
+        <button class="btn btn-primary" onclick="toggleMark('${c.id}'); closeModal(); applyFilters();">${markedIds.has(c.id)?'Unmark':'Mark'}</button>
         <button class="btn btn-secondary" onclick="closeModal()">Close</button>
       </div>
     </div>
   `;
 
-  // Wire single-frame segmented toggle (precomputed sources)
   const seg = body.querySelector('#imgSeg');
   const segImg = body.querySelector('#segImg');
-
-  // disable missing modes, set active
   seg.querySelectorAll('button').forEach(b=>{
     const src = (b.dataset.src||'').trim();
-    if (!src) b.setAttribute('disabled','true'); else b.removeAttribute('disabled');
+    if (!src) b.disabled = true;
     b.classList.toggle('active', b.dataset.mode === firstMode);
   });
-
   seg.addEventListener('click', (e) => {
     const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
     btn.classList.add('active');
-    const src = (btn.dataset.src||'').trim();
-    if (src) segImg.src = `${src}#${Date.now()}`; // cache-bust so you always see the swap
+    const src = btn.dataset.src.trim();
+    if (src) segImg.src = `${src}#${Date.now()}`;
   });
 
-  // Timelapse
   initTimelapse(body, sequence, firstMode);
-
-  // 3D viewer
   initThreeTrack(body.querySelector('#threeWrap'), c);
-
   modal.classList.add('active');
 }
 
@@ -572,22 +567,18 @@ function initTimelapse(scopeEl, sequence, defaultMode){
   const counter = scopeEl.querySelector('#tlCounter');
 
   const framesFor = (mode)=> sequence
-    .map(s => {
-      const raw = mode==='ann' ? s.annotatedPath : mode==='orig' ? s.originalPath : s.cropPath;
-      return raw ? RAW_URL(raw) : '';
-    })
+    .map(s => mode==='ann' ? s.annotatedPath : mode==='orig' ? s.originalPath : s.cropPath)
+    .map(p => p ? RAW_URL(p) : '')
     .filter(Boolean);
 
-  // reflect availability
   ['ann','orig','crop'].forEach(m=>{
     const btn = seg.querySelector(`button[data-mode="${m}"]`);
     const available = framesFor(m).length > 0;
-    if (!available) btn.setAttribute('disabled','true'); else btn.removeAttribute('disabled');
+    if (!available) btn.disabled = true;
   });
 
   let mode = defaultMode || 'crop';
   if (framesFor(mode).length === 0) mode = ['ann','orig','crop'].find(m=>framesFor(m).length>0) || 'crop';
-
   seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
 
   let frames = framesFor(mode);
@@ -605,13 +596,13 @@ function initTimelapse(scopeEl, sequence, defaultMode){
 
   function play(){
     if (timer) return;
-    playBtn.textContent = '⏸ Pause';
+    playBtn.textContent = 'Pause';
     timer = setInterval(()=> show(idx+1), 1000/Math.max(1,fps));
   }
   function pause(){
     if (!timer) return;
     clearInterval(timer); timer=null;
-    playBtn.textContent = '▶︎ Play';
+    playBtn.textContent = 'Play';
   }
 
   seg.addEventListener('click', (e)=>{
@@ -671,7 +662,6 @@ function initThreeTrack(host, c){
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-  // simple drag orbit
   let isDown=false, lastX=0,lastY=0, rx=0.3, ry=0.6;
   host.addEventListener('mousedown',e=>{isDown=true; lastX=e.clientX; lastY=e.clientY;});
   window.addEventListener('mouseup',()=>isDown=false);
@@ -722,17 +712,17 @@ function exportTXT(){
   const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
   const lines = list.map(c=>[c.id, c.label.toUpperCase(), `${(c.score*100).toFixed(1)}%`, c.telescope, formatDate(c.timestamp), c.bbox.slice(0,2).join(', ')||'N/A'].join('\t'));
   const blob = new Blob([lines.join('\n')],{type:'text/plain'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_export_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_export_${Date.now()}.txt`; a.click();
 }
 function exportCSV(){
   const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
   const header = ['ID','Label','Score','Telescope','Timestamp','Track_ID','X','Y','Crop_Path'];
   const rows = list.map(c=>[c.id,c.label.toUpperCase(),(c.score*100).toFixed(1),c.telescope,c.timestamp||'N/A',c.trackIndex??'N/A',c.bbox[0]??'',c.bbox[1]??'',c.cropPath||'']);
   const csv = [header,...rows].map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`soho_export_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`soho_export_${Date.now()}.csv`; a.click();
 }
 
-// ---------- COUNTDOWN / EVENTS ----------
+// ---------- COUNTDOWN ----------
 let countdownInterval;
 function startCountdown(){
   let seconds = 300;
@@ -745,6 +735,7 @@ function startCountdown(){
   },1000);
 }
 
+// ---------- EVENTS ----------
 els.reportSelect.addEventListener('change', e=>loadReport(e.target.value));
 els.candidateSelect.addEventListener('change', applyFilters);
 els.refreshBtn.addEventListener('click', ()=>{ loadReports(); startCountdown(); });
@@ -756,7 +747,7 @@ document.getElementById('candidateModal').addEventListener('click', (e)=>{ if(e.
 // ---------- INIT ----------
 loadReports();
 startCountdown();
-setInterval(updateLiveFeeds, 2*60*1000);
+setInterval(updateLiveFeeds, 120000);
 </script>
 </body>
 </html>
