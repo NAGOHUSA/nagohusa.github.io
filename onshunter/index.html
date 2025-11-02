@@ -9,7 +9,7 @@
     :root{
       --bg-primary:#0a0e27;--bg-secondary:#111633;--bg-card:#1a1f3a;--border:#2a3354;
       --text-primary:#e8edf4;--text-secondary:#8b95b0;--accent:#3b82f6;--accent-hover:#2563eb;
-      --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+      --success:#10b981;--danger:#ef4444;
       --shadow:0 4px 6px -1px rgb(0 0 0 / .3),0 2px 4px -2px rgb(0 0 0 / .3);
       --shadow-lg:0 20px 25px -5px rgb(0 0 0 / .4),0 8px 10px -6px rgb(0 0 0 / .4);
     }
@@ -107,6 +107,8 @@
     .status-indicator.offline .status-dot{background:var(--danger)}
     .refresh-timer{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary);font-size:.85rem}
     .countdown{font-weight:700;color:var(--accent)}
+    .notification{position:fixed;bottom:1rem;right:1rem;background:rgba(16,185,129,.9);color:#fff;padding:.75rem 1.5rem;border-radius:.5rem;box-shadow:var(--shadow-lg);z-index:10000;font-weight:600;animation:slideIn .3s ease}
+    @keyframes slideIn{0%{transform:translateY(100%);opacity:0}100%{transform:translateY(0);opacity:1}}
     @media (max-width:768px){
       .header-content{flex-direction:column;align-items:flex-start}
       .controls-grid{grid-template-columns:1fr}
@@ -131,7 +133,7 @@
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>SOHO Comet Hunter 1.0</h1>
+        <h1>SOHO Comet Hunter 3.6</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -240,7 +242,6 @@
 const HIDE_NOT_COMET = true;
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections' };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
-const WS_URL = 'ws://localhost:8765'; // Change if server is remote
 
 // ---------- RAW URL ----------
 const RAW_URL = (path) => {
@@ -254,8 +255,6 @@ const RAW_URL = (path) => {
 let allCandidates = [];
 let filteredCandidates = [];
 let markedIds = new Set();
-let ws = null;
-let reconnectTimer = null;
 
 const els = {
   reportSelect: document.getElementById('reportSelect'),
@@ -281,8 +280,7 @@ const els = {
   c2LiveGif: document.getElementById('c2LiveGif'),
   c3LiveGif: document.getElementById('c3LiveGif'),
   c2Timestamp: document.getElementById('c2Timestamp'),
-  c3Timestamp: document.getElementById('c3Timestamp'),
-  wsStatus: document.getElementById('wsStatus')
+  c3Timestamp: document.getElementById('c3Timestamp')
 };
 
 // ---------- HELPERS ----------
@@ -321,69 +319,6 @@ function getTrackGroup(candidate){
     .sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
 }
 
-// ---------- WEBSOCKET ----------
-function connectWebSocket() {
-  if (ws) ws.close();
-  ws = new WebSocket(WS_URL);
-
-  ws.onopen = () => {
-    console.log('WebSocket connected');
-    els.wsStatus.className = 'status-indicator online';
-    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Live</span>';
-    if (reconnectTimer) clearTimeout(reconnectTimer);
-  };
-
-  ws.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
-      if (msg.type === 'new_detection') {
-        const det = normalizeCandidate(msg.data, allCandidates.length);
-        allCandidates.unshift(det);
-        updateCandidateDropdown();
-        applyFilters();
-        updateStats();
-        showNotification(`New detection: ${det.id}`);
-      } else if (msg.type === 'new_report') {
-        loadReport(msg.data.file);
-        showNotification(`New report: ${msg.data.comets} comets`);
-      }
-    } catch (e) { console.error('WS parse error', e); }
-  };
-
-  ws.onerror = (err) => {
-    console.error('WebSocket error', err);
-    els.wsStatus.className = 'status-indicator offline';
-    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Offline</span>';
-  };
-
-  ws.onclose = () => {
-    console.log('WebSocket closed');
-    els.wsStatus.className = 'status-indicator offline';
-    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Reconnecting...</span>';
-    reconnectTimer = setTimeout(connectWebSocket, 3000);
-  };
-}
-
-function showNotification(text)。
-
-{
-  const notif = document.createElement('div');
-  notif.textContent = text;
-  notif.style.position = 'fixed';
-  notif.style.bottom = '1rem';
-  notif.style.right = '1rem';
-  notif.style.background = 'rgba(16,185,129,.9)';
-  notif.style.color = '#fff';
-  notif.style.padding = '.75rem 1.5rem';
-  notif.style.borderRadius = '.5rem';
-  notif.style.boxShadow = 'var(--shadow-lg)';
-  notif.style.zIndex = '10000';
-  notif.style.fontWeight = '600';
-  notif.style.animation = 'slideIn .3s ease';
-  document.body.appendChild(notif);
-  setTimeout(() => notif.remove(), 4000);
-}
-
 // ---------- LOAD ----------
 async function loadReports(){
   try{
@@ -397,11 +332,15 @@ async function loadReports(){
       o.value=report.name; o.textContent=report.name.replace('candidates_','').replace('.json','');
       els.reportSelect.appendChild(o);
     }
-    if(reports.length){
-      els.reportSelect.value=reports[0].name;
+    if (reports.length) {
+      els.reportSelect.value = reports[0].name;
       await loadReport(reports[0].name);
+    } else {
+      els.reportSelect.innerHTML = '<option value="">No reports found</option>';
     }
-  }catch(e){ console.error('Failed to load reports:', e); }
+  }catch(e){ console.error('Failed to load reports:', e);
+    els.reportSelect.innerHTML = '<option value="">Error loading reports</option>';
+  }
 }
 
 async function loadReport(reportName){
@@ -828,7 +767,6 @@ document.getElementById('candidateModal').addEventListener('click', e=>{ if(e.ta
 // ---------- INIT ----------
 loadReports();
 startCountdown();
-connectWebSocket();
 setInterval(updateLiveFeeds, 120000);
 </script>
 </body>
