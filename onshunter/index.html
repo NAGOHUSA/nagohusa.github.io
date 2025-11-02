@@ -116,7 +116,7 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.8</h1>
+        <h1>🌟 SOHO Comet Hunter 3.9</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -226,14 +226,15 @@ const HIDE_NOT_COMET = true; // thumbnails only
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
-// Build raw URL safely
+// ---------- RAW URL (permissive) ----------
 const RAW_URL = (path) => {
   if (!path) return '';
-  const clean = String(path).replace(/^\.?\/*/, '');
-  if (clean.startsWith('detections/')) return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${clean}`;
-  if (['crops/','animations/','thumbnails/','reports/','originals/','annotated/'].some(p=>clean.startsWith(p)))
-    return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/detections/${clean}`;
-  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${clean}`;
+  let p = String(path).trim().replace(/^\.?\/*/, '');
+  if (p.startsWith('http')) return p;                     // already a full URL
+  if (!p.startsWith('detections/') && !['crops/','animations/','thumbnails/','reports/','originals/','annotated/'].some(prefix=>p.startsWith(prefix))) {
+    p = 'detections/' + p;
+  }
+  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${p}`;
 };
 
 // ---------- STATE / ELEMENTS ----------
@@ -271,34 +272,51 @@ const els = {
 
 // ---------- HELPERS ----------
 const formatDate = (s)=> s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'N/A';
-const getTelescope = (c)=> (c.instrument || c.detector || 'unknown').toUpperCase();
+const getTelescope = (c)=> {
+  const instr = c.instrument || c.detector || 'LASCO';
+  return instr.includes('C2') ? 'C2' : instr.includes('C3') ? 'C3' : 'LASCO';
+};
 
-// Normalize with generous fallbacks to match any JSON variant you may have used
+// ---------- NORMALIZE (bullet-proof) ----------
 function normalizeCandidate(c, idx){
   const telescope = getTelescope(c);
   const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
 
-  // accept multiple possible keys for safety
-  const ann = c.annotated_mid_path || c.annotated_path || c.annotated || c.paths?.annotated;
-  const orig = c.original_mid_path  || c.original_path  || c.original  || c.paths?.original;
-  const crop = c.crop_path          || c.crop           || c.paths?.crop;
+  // Merge top-level + c.paths for easier lookup
+  const src = { ...c, ...c.paths };
+
+  const annotatedPath = [
+    src.annotated_mid_path, src.annotated_path, src.annotated,
+    src.annotated_mid, src.annotated_image, src.detection_annotated, src.annotated_path
+  ].find(Boolean) || '';
+
+  const originalPath = [
+    src.original_mid_path, src.original_path, src.original,
+    src.original_mid, src.original_image, src.original_path
+  ].find(Boolean) || '';
+
+  const cropPath = [
+    src.crop_path, src.crop, src.crop_image
+  ].find(Boolean) || '';
+
+  const thumbnail = src.thumbnail_path || cropPath || '';
 
   return {
     id, telescope,
-    label: String(c.ai_label || 'unknown').toLowerCase(),
-    score: c.ai_score ?? 0,
-    timestamp: c.timestamp || '',
-    bbox: c.bbox || [],
-    cropPath: crop || '',
-    animationMp4: c.animation_mp4_path || c.animations?.mp4 || '',
-    animationGif: c.animation_gif_path || c.animations?.gif || '',
-    originalPath: orig || '',
-    annotatedPath: ann || '',
-    thumbnail: c.thumbnail_path || crop || '',
-    pathOverlay: c.path_overlay_path || '',
-    positions: c.positions || [],
-    imageSize: c.image_size || null,
-    trackIndex: c.track_id ?? c.track_index ?? idx,
+    label: String(src.ai_label || src.label || 'unknown').toLowerCase(),
+    score: Number(src.ai_score || src.score || 0),
+    timestamp: src.timestamp || '',
+    bbox: src.bbox || [],
+    cropPath,
+    animationMp4: src.animation_mp4_path || src.animation_mp4 || src.animations?.mp4 || '',
+    animationGif: src.animation_gif_path || src.animation_gif || src.animations?.gif || '',
+    originalPath,
+    annotatedPath,
+    thumbnail,
+    pathOverlay: src.path_overlay_path || '',
+    positions: src.positions || [],
+    imageSize: src.image_size || src.imageSize || null,
+    trackIndex: src.track_id ?? src.track_index ?? idx,
     raw: c
   };
 }
@@ -369,7 +387,7 @@ function applyFilters() {
 
   filteredCandidates = allCandidates.filter(candidate => {
     if (selectedId && candidate.id !== selectedId) return false;
-    if (c2 && candidate.telescope !== 'C2' && candidate.telescope !== 'LASCO') return false;
+    if (c2 && candidate.telescope !== 'C2') return false;
     if (c3 && candidate.telescope !== 'C3') return false;
     if (comet && candidate.label !== 'comet') return false;
     if (marked && !markedIds.has(candidate.id)) return false;
@@ -382,7 +400,7 @@ function applyFilters() {
 
 function renderCandidates() {
   const visible = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() !== 'not_comet')
+    ? filteredCandidates.filter(c => c.label !== 'not_comet')
     : filteredCandidates;
 
   if (!visible.length) {
@@ -403,7 +421,7 @@ function renderCandidates() {
 
 function updateFilterCount() {
   const hidden = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() === 'not_comet').length
+    ? filteredCandidates.filter(c => c.label === 'not_comet').length
     : 0;
   const shown = filteredCandidates.length - hidden;
   els.filterCount.textContent = `Showing ${shown} of ${allCandidates.length} candidates${hidden ? ` (${hidden} hidden as not_comet)` : ''}`;
@@ -453,7 +471,6 @@ function showCandidateDetail(id){
   const body = document.getElementById('modalBody');
   title.textContent = `Candidate: ${c.id}`;
 
-  // Build a clean source map up front (prevents “dead” clicks)
   const srcMap = {
     ann:  c.annotatedPath ? RAW_URL(c.annotatedPath) : '',
     orig: c.originalPath  ? RAW_URL(c.originalPath)  : '',
@@ -461,6 +478,26 @@ function showCandidateDetail(id){
   };
   const firstMode = srcMap.ann ? 'ann' : (srcMap.orig ? 'orig' : 'crop');
   const sequence = getTrackGroup(c);
+  const positions = sequence.map(s => ({x: s.bbox[0] + s.bbox[2]/2, y: s.bbox[1] + s.bbox[3]/2}));
+  const imageSize = sequence[0]?.imageSize || [1024, 1024];
+
+  // Sungrazer preview
+  let sungrazerPreview = '';
+  if (sequence.length > 1) {
+    const firstTs = new Date(sequence[0].timestamp);
+    const date = firstTs.toISOString().split('T')[0];
+    const camera = c.telescope;
+    sungrazerPreview = `Date: ${date}\nCamera: ${camera}\nImage Size: 1024x1024\n(0,0): Bottom Left\nPositions:\n`;
+    sequence.forEach(s => {
+      const ts = new Date(s.timestamp);
+      const hhmm = `${String(ts.getUTCHours()).padStart(2,'0')}${String(ts.getUTCMinutes()).padStart(2,'0')}`;
+      const cx = (s.bbox[0] + s.bbox[2]/2).toFixed(0);
+      const cy = (s.bbox[1] + s.bbox[3]/2).toFixed(0);
+      sungrazerPreview += `${hhmm}   ${cx}   ${cy}\n`;
+    });
+  } else {
+    sungrazerPreview = 'Not enough positions for Sungrazer report (need at least 2-3).';
+  }
 
   body.innerHTML = `
     <div style="display:grid;gap:1.25rem;">
@@ -473,6 +510,11 @@ function showCandidateDetail(id){
         </div>
         <div style="margin-top:.75rem;">
           <img id="segImg" src="${srcMap[firstMode] || ''}" class="tl-img" alt="candidate">
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+          ${srcMap.ann ? `<a href="${srcMap.ann}" target="_blank" class="btn btn-sm btn-secondary">Open Annotated</a>` : ''}
+          ${srcMap.orig ? `<a href="${srcMap.orig}" target="_blank" class="btn btn-sm btn-secondary">Open Original</a>` : ''}
+          ${srcMap.crop ? `<a href="${srcMap.crop}" target="_blank" class="btn btn-sm btn-secondary">Open Crop</a>` : ''}
         </div>
       </div>
 
@@ -518,9 +560,14 @@ function showCandidateDetail(id){
             <strong>AI Score:</strong><span>${(c.score*100).toFixed(2)}%</span>
             <strong>Timestamp:</strong><span>${formatDate(c.timestamp)}</span>
             <strong>Track ID:</strong><span>${c.trackIndex ?? 'N/A'}</span>
-            <strong>Image Size:</strong><span>${c.imageSize ? `${c.imageSize[0]}×${c.imageSize[1]}` : 'N/A'}</span>
+            <strong>Image Size:</strong><span>${c.imageSize ? `${c.imageSize[1]}×${c.imageSize[0]}` : 'N/A'}</span>
           </div>
         </div>
+      </div>
+
+      <div>
+        <h4 style="margin-bottom:.5rem;">Sungrazer Submission Preview</h4>
+        <pre style="background:var(--bg-secondary);padding:1rem;border-radius:.5rem;overflow:auto;">${sungrazerPreview}</pre>
       </div>
 
       <div style="display:flex;gap:.5rem;">
@@ -553,7 +600,7 @@ function showCandidateDetail(id){
   initTimelapse(body, sequence, firstMode);
 
   // 3D viewer
-  initThreeTrack(body.querySelector('#threeWrap'), c);
+  initThreeTrack(body.querySelector('#threeWrap'), {positions, imageSize});
 
   modal.classList.add('active');
 }
@@ -634,7 +681,7 @@ function initTimelapse(scopeEl, sequence, defaultMode){
 }
 
 // ---------- 3D VIEWER ----------
-function initThreeTrack(host, c){
+function initThreeTrack(host, posData){
   host.innerHTML='';
   const width = host.clientWidth, height = host.clientHeight || 360;
   const scene = new THREE.Scene();
@@ -645,18 +692,18 @@ function initThreeTrack(host, c){
   renderer.setSize(width,height);
   host.appendChild(renderer.domElement);
 
-  const pts = (c.positions||[]).map(p=>({x:p.x, y:p.y}));
-  if(pts.length<2){
+  const pts = (posData.positions || []).map(p => ({x: p.x, y: p.y}));
+  if(pts.length < 2){
     const t = new THREE.Mesh(new THREE.BoxGeometry(1,0.02,0.02), new THREE.MeshBasicMaterial({color:0x66ccff}));
     scene.add(t);
   }else{
-    const [W,H] = c.imageSize || [1024,1024];
-    const toN = (x,y)=>[(x/(W||1))*2-1, -((y/(H||1))*2-1)];
+    const [H, W] = posData.imageSize || [1024,1024];  // Note: imageSize [h,w], but toN uses W for x, H for y
+    const toN = (x,y) => [(x / W) * 2 - 1, -((y / H) * 2 - 1)];
     const arr = [];
     pts.forEach((p,i)=>{
-      const [nx,ny] = toN(p.x,p.y);
-      const nz = (i/(pts.length-1))*0.8 - 0.4;
-      arr.push(nx,ny,nz);
+      const [nx,ny] = toN(p.x, p.y);
+      const nz = (i / (pts.length - 1)) * 0.8 - 0.4;
+      arr.push(nx, ny, nz);
     });
 
     const geom = new THREE.BufferGeometry();
@@ -664,7 +711,7 @@ function initThreeTrack(host, c){
     scene.add(new THREE.Line(geom, new THREE.LineBasicMaterial({color:0x00ffd0})));
 
     const pointVecs = [];
-    for (let k=0;k<arr.length;k+=3) pointVecs.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2]));
+    for (let k=0; k<arr.length; k+=3) pointVecs.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2]));
     const ptsGeom = new THREE.BufferGeometry().setFromPoints(pointVecs);
     scene.add(new THREE.Points(ptsGeom, new THREE.PointsMaterial({size:0.02, color:0xffff00})));
   }
@@ -696,7 +743,7 @@ function initThreeTrack(host, c){
 function updateStats(){
   const total=allCandidates.length;
   const comets=allCandidates.filter(c=>c.label==='comet').length;
-  const c2=allCandidates.filter(c=>c.telescope==='C2'||c.telescope==='LASCO').length;
+  const c2=allCandidates.filter(c=>c.telescope==='C2').length;
   const c3=allCandidates.filter(c=>c.telescope==='C3').length;
   const marked=[...markedIds].filter(id=>allCandidates.some(c=>c.id===id)).length;
   els.statTotal.textContent=total; els.statComets.textContent=comets; els.statC2.textContent=c2; els.statC3.textContent=c3; els.statMarked.textContent=marked;
@@ -720,9 +767,38 @@ async function updateLiveFeeds(){
 // ---------- EXPORTS ----------
 function exportTXT(){
   const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
-  const lines = list.map(c=>[c.id, c.label.toUpperCase(), `${(c.score*100).toFixed(1)}%`, c.telescope, formatDate(c.timestamp), c.bbox.slice(0,2).join(', ')||'N/A'].join('\t'));
+  const tracks = {};
+  list.forEach(c => {
+    const tid = c.trackIndex;
+    if (!tracks[tid]) tracks[tid] = [];
+    tracks[tid].push(c);
+  });
+
+  const lines = [];
+  Object.keys(tracks).sort((a,b)=>a-b).forEach(tid => {
+    const track = tracks[tid].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+    if (!track.length) return;
+    const first = track[0];
+    const date = new Date(first.timestamp).toISOString().split('T')[0];
+    const camera = first.telescope;
+    lines.push(`Track: ${tid} (${first.label.toUpperCase()} ${(first.score*100).toFixed(1)}%)`);
+    lines.push(`Date: ${date}`);
+    lines.push(`Camera: ${camera}`);
+    lines.push(`Image Size: 1024x1024`);
+    lines.push(`(0,0): Bottom Left`);
+    lines.push(`Positions:`);
+    track.forEach(pos => {
+      const ts = new Date(pos.timestamp);
+      const hhmm = `${ts.getUTCHours().toString().padStart(2,'0')}${ts.getUTCMinutes().toString().padStart(2,'0')}`;
+      const cx = (pos.bbox[0] + pos.bbox[2]/2).toFixed(0);
+      const cy = (pos.bbox[1] + pos.bbox[3]/2).toFixed(0);
+      lines.push(`${hhmm}   ${cx}   ${cy}`);
+    });
+    lines.push('');
+  });
+
   const blob = new Blob([lines.join('\n')],{type:'text/plain'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_export_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_sungrazer_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
 }
 function exportCSV(){
   const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
