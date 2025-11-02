@@ -96,6 +96,17 @@
     .tl-controls input[type="range"]{width:160px}
     .tl-img{width:100%;background:#000;border-radius:.5rem;border:1px solid var(--border);object-fit:contain}
     .no-data{display:flex;align-items:center;justify-content:center;height:100%;color:#8b95b0;font-size:1rem;background:#111}
+    .gif-wrap{max-height:180px;overflow:hidden;background:#000}
+    .gif-wrap img{width:100%;height:auto;display:block}
+    .status-indicator{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:2rem;font-size:.85rem;font-weight:600}
+    .status-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .status-indicator.online{background:rgba(16,185,129,.1);color:var(--success)}
+    .status-indicator.online .status-dot{background:var(--success)}
+    .status-indicator.offline{background:rgba(239,68,68,.1);color:var(--danger)}
+    .status-indicator.offline .status-dot{background:var(--danger)}
+    .refresh-timer{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary);font-size:.85rem}
+    .countdown{font-weight:700;color:var(--accent)}
     @media (max-width:768px){
       .header-content{flex-direction:column;align-items:flex-start}
       .controls-grid{grid-template-columns:1fr}
@@ -110,14 +121,8 @@
       .modal{padding:1rem}
       .modal-content{max-width:90vw}
       .three-wrap{height:240px}
+      .gif-wrap{max-height:120px}
     }
-    .status-indicator{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:2rem;font-size:.85rem;font-weight:600}
-    .status-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-    .status-indicator.online{background:rgba(16,185,129,.1);color:var(--success)}
-    .status-indicator.online .status-dot{background:var(--success)}
-    .refresh-timer{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary);font-size:.85rem}
-    .countdown{font-weight:700;color:var(--accent)}
   </style>
 </head>
 <body>
@@ -126,11 +131,11 @@
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>SOHO Comet Hunter 3.9</h1>
+        <h1>SOHO Comet Hunter 1.0</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
-        <div class="status-indicator online"><span class="status-dot"></span><span>Live</span></div>
+        <div class="status-indicator online" id="wsStatus"><span class="status-dot"></span><span>Live</span></div>
         <button class="btn btn-primary" id="refreshBtn">Refresh</button>
         <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">GitHub</a>
       </div>
@@ -150,7 +155,7 @@
       <div class="control-group">
         <label class="control-label">Candidate</label>
         <div class="select-wrapper">
-          <select id="candidateSelect"><option value="">Select candidate...</option></select>
+          <select id="candidateSelect"><option value="">All candidates</option></select>
         </div>
       </div>
       <div class="control-group">
@@ -235,6 +240,7 @@
 const HIDE_NOT_COMET = true;
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections' };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
+const WS_URL = 'ws://localhost:8765'; // Change if server is remote
 
 // ---------- RAW URL ----------
 const RAW_URL = (path) => {
@@ -248,6 +254,8 @@ const RAW_URL = (path) => {
 let allCandidates = [];
 let filteredCandidates = [];
 let markedIds = new Set();
+let ws = null;
+let reconnectTimer = null;
 
 const els = {
   reportSelect: document.getElementById('reportSelect'),
@@ -273,7 +281,8 @@ const els = {
   c2LiveGif: document.getElementById('c2LiveGif'),
   c3LiveGif: document.getElementById('c3LiveGif'),
   c2Timestamp: document.getElementById('c2Timestamp'),
-  c3Timestamp: document.getElementById('c3Timestamp')
+  c3Timestamp: document.getElementById('c3Timestamp'),
+  wsStatus: document.getElementById('wsStatus')
 };
 
 // ---------- HELPERS ----------
@@ -294,8 +303,8 @@ function normalizeCandidate(c, idx){
     timestamp: c.timestamp || '',
     bbox: c.bbox || [],
     cropPath: crop || '',
-    animationMp4: c.animation_mp4_path || c.animations?.mp4 || '',
-    animationGif: c.animation_gif_path || c.animations?.gif || '',
+    gifCrop: c.animation_gif_crop || '',
+    gifAnn: c.animation_gif_ann || '',
     originalPath: orig || '',
     annotatedPath: ann || '',
     thumbnail: c.thumbnail_path || crop || '',
@@ -310,6 +319,69 @@ function getTrackGroup(candidate){
   return allCandidates
     .filter(x => (x.trackIndex === candidate.trackIndex) && (x.telescope === candidate.telescope))
     .sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
+}
+
+// ---------- WEBSOCKET ----------
+function connectWebSocket() {
+  if (ws) ws.close();
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    console.log('WebSocket connected');
+    els.wsStatus.className = 'status-indicator online';
+    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Live</span>';
+    if (reconnectTimer) clearTimeout(reconnectTimer);
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'new_detection') {
+        const det = normalizeCandidate(msg.data, allCandidates.length);
+        allCandidates.unshift(det);
+        updateCandidateDropdown();
+        applyFilters();
+        updateStats();
+        showNotification(`New detection: ${det.id}`);
+      } else if (msg.type === 'new_report') {
+        loadReport(msg.data.file);
+        showNotification(`New report: ${msg.data.comets} comets`);
+      }
+    } catch (e) { console.error('WS parse error', e); }
+  };
+
+  ws.onerror = (err) => {
+    console.error('WebSocket error', err);
+    els.wsStatus.className = 'status-indicator offline';
+    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Offline</span>';
+  };
+
+  ws.onclose = () => {
+    console.log('WebSocket closed');
+    els.wsStatus.className = 'status-indicator offline';
+    els.wsStatus.innerHTML = '<span class="status-dot"></span><span>Reconnecting...</span>';
+    reconnectTimer = setTimeout(connectWebSocket, 3000);
+  };
+}
+
+function showNotification(text)。
+
+{
+  const notif = document.createElement('div');
+  notif.textContent = text;
+  notif.style.position = 'fixed';
+  notif.style.bottom = '1rem';
+  notif.style.right = '1rem';
+  notif.style.background = 'rgba(16,185,129,.9)';
+  notif.style.color = '#fff';
+  notif.style.padding = '.75rem 1.5rem';
+  notif.style.borderRadius = '.5rem';
+  notif.style.boxShadow = 'var(--shadow-lg)';
+  notif.style.zIndex = '10000';
+  notif.style.fontWeight = '600';
+  notif.style.animation = 'slideIn .3s ease';
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 4000);
 }
 
 // ---------- LOAD ----------
@@ -397,7 +469,7 @@ function renderCandidates() {
 
   document.querySelectorAll('.candidate-card').forEach(card => {
     const id = card.dataset.id;
-    card.querySelector('.mark-btn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleMark(id); });
+    card.querySelector('.mark-btn')?.addEventListener('click', e => { e.stopPropagation(); toggleMark(id); });
     card.addEventListener('click', () => showCandidateDetail(id));
   });
 }
@@ -413,15 +485,15 @@ function updateFilterCount() {
 function renderCard(c){
   const isMarked = markedIds.has(c.id);
   const thumb = c.thumbnail ? RAW_URL(c.thumbnail) : '';
-  const hasAnim = c.animationMp4 || c.animationGif;
+  const hasGif = c.gifCrop || c.gifAnn;
   return `
   <div class="candidate-card ${isMarked?'marked':''}" data-id="${c.id}">
     ${thumb ? `<img src="${thumb}" alt="${c.id}" class="candidate-image">` : ''}
-    ${hasAnim ? `
-    <div class="feed-content" style="border-top:1px solid var(--border);">
-      ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" style="width:100%;height:auto;max-height:320px;background:#000" muted loop autoplay playsinline></video>`:''}
-      ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" alt="GIF animation" style="width:100%;height:auto;max-height:320px;object-fit:contain;background:#000">`:''}
-    </div>`:''}
+    ${hasGif ? `
+    <div class="gif-wrap" style="border-top:1px solid var(--border);">
+      ${c.gifAnn ? `<img src="${RAW_URL(c.gifAnn)}" alt="Annotated GIF" loading="lazy">` :
+           c.gifCrop ? `<img src="${RAW_URL(c.gifCrop)}" alt="Crop GIF" loading="lazy">` : ''}
+    </div>` : ''}
     <div class="candidate-body">
       <div class="candidate-header">
         <div class="candidate-id">${c.id}</div>
@@ -480,11 +552,11 @@ function showCandidateDetail(id){
         </div>
       </div>
 
-      ${(c.animationMp4 || c.animationGif) ? `
+      ${(c.gifCrop || c.gifAnn) ? `
       <div>
-        <h4 style="margin-bottom:.5rem;">Animation</h4>
-        ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" controls loop style="width:100%;border-radius:.5rem;background:#000;"></video>`:''}
-        ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" style="width:100%;border-radius:.5rem;background:#000;margin-top:.5rem;">`:''}
+        <h4 style="margin-bottom:.5rem;">Animation GIF</h4>
+        ${c.gifAnn ? `<img src="${RAW_URL(c.gifAnn)}" style="width:100%;border-radius:.5rem;background:#000;" loading="lazy">` :
+           c.gifCrop ? `<img src="${RAW_URL(c.gifCrop)}" style="width:100%;border-radius:.5rem;background:#000;" loading="lazy">` : ''}
       </div>` : ''}
 
       <div>
@@ -542,7 +614,7 @@ function showCandidateDetail(id){
     if (!src) b.disabled = true;
     b.classList.toggle('active', b.dataset.mode === firstMode);
   });
-  seg.addEventListener('click', (e) => {
+  seg.addEventListener('click', e => {
     const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
     btn.classList.add('active');
@@ -551,9 +623,7 @@ function showCandidateDetail(id){
   });
 
   initTimelapse(body, sequence, firstMode);
-  if (c.positions && c.positions.length > 0) {
-    initThreeTrack(body.querySelector('#threeWrap'), c);
-  }
+  if (c.positions && c.positions.length > 0) initThreeTrack(body.querySelector('#threeWrap'), c);
   modal.classList.add('active');
 }
 
@@ -609,7 +679,7 @@ function initTimelapse(scopeEl, sequence, defaultMode){
     playBtn.textContent = 'Play';
   }
 
-  seg.addEventListener('click', (e)=>{
+  seg.addEventListener('click', e=>{
     const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
     btn.classList.add('active');
@@ -628,97 +698,69 @@ function initTimelapse(scopeEl, sequence, defaultMode){
   show(0);
 }
 
-// ---------- 3D VIEWER (FIXED) ----------
+// ---------- 3D VIEWER ----------
 function initThreeTrack(host, c){
   host.innerHTML = '';
   const width = host.clientWidth, height = host.clientHeight || 360;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
-  camera.position.set(0, 0, 2.5);
+  camera.position.set(0,0,2.5);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(width, height);
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(width,height);
   renderer.setClearColor(0x000000);
   host.appendChild(renderer.domElement);
 
-  const pts = (c.positions || []).map(p => ({ x: p.x, y: p.y })).filter(p => typeof p.x === 'number' && typeof p.y === 'number');
+  const pts = (c.positions || []).map(p=>({x:p.x,y:p.y})).filter(p=>typeof p.x==='number'&&typeof p.y==='number');
 
   if (pts.length < 1) {
     const msg = document.createElement('div');
-    msg.textContent = 'No position data available for 3D track';
+    msg.textContent = 'No position data';
     msg.className = 'no-data';
     host.appendChild(msg);
     return;
   }
 
-  if (pts.length === 1) {
-    const geometry = new THREE.SphereGeometry(0.05, 16, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-  } else {
-    const [W, H] = c.imageSize || [1024, 1024];
-    const toN = (x, y) => [(x / W) * 2 - 1, -((y / H) * 2 - 1)];
-
-    const positions = [];
-    pts.forEach((p, i) => {
-      const [nx, ny] = toN(p.x, p.y);
-      const nz = (i / (pts.length - 1)) * 0.8 - 0.4;
-      positions.push(nx, ny, nz);
+  if (pts.length===1){
+    const geo = new THREE.SphereGeometry(0.05,16,16);
+    const mat = new THREE.MeshBasicMaterial({color:0x00ff00});
+    scene.add(new THREE.Mesh(geo,mat));
+  }else{
+    const [W,H] = c.imageSize||[1024,1024];
+    const toN = (x,y)=>[(x/W)*2-1, -((y/H)*2-1)];
+    const pos = [];
+    pts.forEach((p,i)=>{
+      const [nx,ny] = toN(p.x,p.y);
+      const nz = (i/(pts.length-1))*0.8-0.4;
+      pos.push(nx,ny,nz);
     });
-
     const lineGeom = new THREE.BufferGeometry();
-    lineGeom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    const line = new THREE.Line(lineGeom, new THREE.LineBasicMaterial({ color: 0x00ffd0 }));
-    scene.add(line);
+    lineGeom.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+    scene.add(new THREE.Line(lineGeom, new THREE.LineBasicMaterial({color:0x00ffd0})));
 
     const pointVecs = [];
-    for (let i = 0; i < positions.length; i += 3) {
-      pointVecs.push(new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2]));
-    }
-    const pointsGeom = new THREE.BufferGeometry().setFromPoints(pointVecs);
-    scene.add(new THREE.Points(pointsGeom, new THREE.PointsMaterial({ size: 0.03, color: 0xffff00 })));
+    for (let i=0;i<pos.length;i+=3) pointVecs.push(new THREE.Vector3(pos[i],pos[i+1],pos[i+2]));
+    const ptsGeom = new THREE.BufferGeometry().setFromPoints(pointVecs);
+    scene.add(new THREE.Points(ptsGeom, new THREE.PointsMaterial({size:0.03,color:0xffff00})));
   }
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  scene.add(new THREE.AmbientLight(0xffffff,0.9));
 
-  let isDown = false, lastX = 0, lastY = 0, rx = 0.3, ry = 0.6;
-  const onDown = e => { isDown = true; lastX = e.clientX; lastY = e.clientY; };
-  const onUp = () => isDown = false;
-  const onMove = e => {
-    if (!isDown) return;
-    const dx = (e.clientX - lastX) / 200, dy = (e.clientY - lastY) / 200;
-    ry += dx; rx += dy;
-    lastX = e.clientX; lastY = e.clientY;
-  };
+  let isDown=false,lastX=0,lastY=0,rx=0.3,ry=0.6;
+  const down=e=>{isDown=true;lastX=e.clientX;lastY=e.clientY;};
+  const up=()=>{isDown=false;};
+  const move=e=>{if(!isDown)return;const dx=(e.clientX-lastX)/200,dy=(e.clientY-lastY)/200;ry+=dx;rx+=dy;lastX=e.clientX;lastY=e.clientY;};
+  host.addEventListener('mousedown',down);
+  host.addEventListener('touchstart',e=>{const t=e.touches[0];lastX=t.clientX;lastY=t.clientY;isDown=true;});
+  window.addEventListener('mouseup',up);
+  window.addEventListener('touchend',up);
+  window.addEventListener('mousemove',move);
+  window.addEventListener('touchmove',e=>{if(!isDown)return;const t=e.touches[0];move({clientX:t.clientX,clientY:t.clientY});});
 
-  host.addEventListener('mousedown', onDown);
-  host.addEventListener('touchstart', e => {
-    const touch = e.touches[0];
-    lastX = touch.clientX; lastY = touch.clientY; isDown = true;
-  });
-  window.addEventListener('mouseup', onUp);
-  window.addEventListener('touchend', onUp);
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('touchmove', e => {
-    if (!isDown) return;
-    const touch = e.touches[0];
-    onMove({ clientX: touch.clientX, clientY: touch.clientY });
-  });
-
-  function animate() {
-    requestAnimationFrame(animate);
-    scene.rotation.set(rx, ry, 0);
-    renderer.render(scene, camera);
-  }
+  function animate(){requestAnimationFrame(animate);scene.rotation.set(rx,ry,0);renderer.render(scene,camera);}
   animate();
 
-  new ResizeObserver(() => {
-    const w = host.clientWidth, h = host.clientHeight || 360;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }).observe(host);
+  new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight||360;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}).observe(host);
 }
 
 // ---------- STATS / LIVE ----------
@@ -733,16 +775,16 @@ function updateStats(){
 
 async function updateLiveFeeds(){
   const feeds = [
-    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif', el:els.c2LiveGif, ts:els.c2Timestamp },
-    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif', el:els.c3LiveGif, ts:els.c3Timestamp }
+    {url:'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif',el:els.c2LiveGif,ts:els.c2Timestamp},
+    {url:'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif',el:els.c3LiveGif,ts:els.c3Timestamp}
   ];
   for(const f of feeds){
     try{
-      const r = await fetch(f.url,{method:'HEAD'});
-      const lm = r.headers.get('last-modified');
-      if(lm) f.ts.textContent = new Date(lm).toLocaleTimeString();
-      f.el.src = `${f.url}?t=${Date.now()}`;
-    }catch(e){ console.error('feed error', e); }
+      const r=await fetch(f.url,{method:'HEAD'});
+      const lm=r.headers.get('last-modified');
+      if(lm) f.ts.textContent=new Date(lm).toLocaleTimeString();
+      f.el.src=`${f.url}?t=${Date.now()}`;
+    }catch(e){console.error('feed error',e);}
   }
 }
 
@@ -781,11 +823,12 @@ els.refreshBtn.addEventListener('click', ()=>{ loadReports(); startCountdown(); 
 els.exportTxtBtn.addEventListener('click', exportTXT);
 els.exportCsvBtn.addEventListener('click', exportCSV);
 [els.filterC2, els.filterC3, els.filterComet, els.filterMarked].forEach(cb=>cb.addEventListener('change', applyFilters));
-document.getElementById('candidateModal').addEventListener('click', (e)=>{ if(e.target.id==='candidateModal') closeModal(); });
+document.getElementById('candidateModal').addEventListener('click', e=>{ if(e.target.id==='candidateModal') closeModal(); });
 
 // ---------- INIT ----------
 loadReports();
 startCountdown();
+connectWebSocket();
 setInterval(updateLiveFeeds, 120000);
 </script>
 </body>
