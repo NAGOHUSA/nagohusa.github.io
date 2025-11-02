@@ -1,114 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SOHO Comet Hunter – Professional Dashboard</title>
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<style>
-:root{
-  --bg-primary:#0a0e27;--bg-secondary:#111633;--bg-card:#1a1f3a;--border:#2a3354;
-  --text-primary:#e8edf4;--text-secondary:#8b95b0;--accent:#3b82f6;--accent-hover:#2563eb;
-  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
-  --shadow:0 4px 6px -1px rgb(0 0 0 / .3),0 2px 4px -2px rgb(0 0 0 / .3);
-  --shadow-lg:0 20px 25px -5px rgb(0 0 0 / .4),0 8px 10px -6px rgb(0 0 0 / .4);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh}
-.header{background:linear-gradient(135deg,#1e3a8a 0%,#3730a3 100%);padding:2rem 0;box-shadow:var(--shadow-lg);border-bottom:2px solid var(--border)}
-.container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
-.header-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.header-title h1{font-size:2rem;font-weight:800;margin-bottom:.25rem;background:linear-gradient(135deg,#fff 0%,#bfdbfe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header-subtitle{color:#bfdbfe;font-size:.9rem}
-.header-actions{display:flex;gap:.75rem;align-items:center}
-.controls-bar{background:var(--bg-secondary);padding:1.5rem 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
-.controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
-.control-group{display:flex;flex-direction:column;gap:.5rem}
-.control-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary)}
-.select-wrapper{position:relative}
-select{width:100%;padding:.75rem 2.5rem .75rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:.5rem;color:var(--text-primary);font-size:.9rem;cursor:pointer;appearance:none;transition:all .2s}
-select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-.select-wrapper::after{content:'▼';position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-secondary);font-size:.7rem}
-.filters{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding-top:1rem;border-top:1px solid var(--border)}
-.filter-chip{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:2rem;cursor:pointer;transition:all .2s;font-size:.85rem}
-.filter-chip:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
-.filter-chip input[type="checkbox"]{cursor:pointer;width:1rem;height:1rem;accent-color:var(--accent)}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:.5rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;text-decoration:none}
-.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow)}
-.btn-secondary{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
-.btn-sm{padding:.5rem 1rem;font-size:.8rem}
-.stats-dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
-.stat-card{background:var(--bg-card);padding:1.5rem;border-radius:.75rem;border:1px solid var(--border);box-shadow:var(--shadow)}
-.stat-label{font-size:.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
-.stat-value{font-size:2rem;font-weight:800;color:var(--text-primary)}
-.stat-card.highlight{background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,rgba(37,99,235,.05) 100%);border-color:var(--accent)}
-.live-feed{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:1.5rem;margin:1.5rem 0}
-.feed-card{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;box-shadow:var(--shadow)}
-.feed-header{padding:1rem 1.5rem;background:rgba(59,130,246,.1);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.feed-title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:.5rem}
-.badge{padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:600;background:var(--accent);color:#fff}
-.feed-content{aspect-ratio:1;background:#000;display:flex;align-items:center;justify-content:center}
-.feed-content img,.feed-content video{width:100%;height:100%;object-fit:contain}
-.feed-footer{padding:.75rem 1.5rem;background:rgba(0,0,0,.2);font-size:.8rem;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center}
-.candidates-section{margin:2rem 0}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
-.section-title{font-size:1.5rem;font-weight:700}
-.candidates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-.candidate-card{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;box-shadow:var(--shadow);transition:all .3s;cursor:pointer}
-.candidate-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
-.candidate-card.marked{border-color:var(--success);box-shadow:0 0 0 2px rgba(16,185,129,.2)}
-.candidate-image{width:100%;aspect-ratio:1.6;background:#000;object-fit:contain}
-.candidate-body{padding:1.25rem}
-.candidate-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem}
-.candidate-id{font-weight:700;font-size:1.1rem}
-.candidate-score{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem}
-.score-badge{padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:700}
-.score-badge.comet{background:var(--success);color:#fff}
-.score-badge.not-comet{background:var(--danger);color:#fff}
-.score-badge.unknown{background:var(--text-secondary);color:#fff}
-.score-value{font-size:.85rem;color:var(--text-secondary)}
-.candidate-meta{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;font-size:.85rem}
-.meta-item{display:flex;flex-direction:column;gap:.25rem}.meta-label{color:var(--text-secondary);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
-.meta-value{color:var(--text-primary);font-weight:600}
-.candidate-actions{display:flex;gap:.5rem;padding-top:1rem;border-top:1px solid var(--border)}
-.action-btn{flex:1;padding:.5rem;border:1px solid var(--border);background:transparent;color:var(--text-primary);border-radius:.375rem;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .2s}
-.action-btn:hover{background:rgba(59,130,246,.1);border-color:var(--accent)}
-.action-btn.marked-btn{background:var(--success);border-color:var(--success);color:#fff}
-.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-secondary)}
-.empty-state-icon{font-size:4rem;margin-bottom:1rem;opacity:.3}
-.empty-state-title{font-size:1.5rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)}
-.spinner{border:3px solid rgba(59,130,246,.1);border-top-color:var(--accent);border-radius:50%;width:40px;height:40px;animation:spin .8s linear infinite;margin:2rem auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;padding:2rem;overflow-y:auto}
-.modal.active{display:flex;align-items:center;justify-content:center}
-.modal-content{background:var(--bg-card);border-radius:1rem;max-width:950px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
-.modal-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700}
-.modal-close{background:none;border:none;color:var(--text-secondary);font-size:1.5rem;cursor:pointer;padding:.5rem;line-height:1}
-.modal-body{padding:1.5rem}
-.seg{display:inline-flex;border:1px solid var(--border);border-radius:.5rem;overflow:hidden}
-.seg button{background:transparent;color:var(--text-secondary);border:0;border-right:1px solid var(--border);padding:.4rem .8rem;cursor:pointer}
-.seg button:last-child{border-right:0}
-.seg button.active{color:var(--text-primary);background:rgba(59,130,246,.12)}
-.seg button[disabled]{opacity:.45;pointer-events:none}
-.three-wrap{background:#000;border:1px solid var(--border);border-radius:.5rem;height:360px}
-.three-hint{font-size:.85rem;color:var(--text-secondary);margin-top:.5rem}
-.tl-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
-.tl-controls input[type="range"]{width:160px}
-.tl-img{width:100%;background:#000;border-radius:.5rem;border:1px solid var(--border);object-fit:contain}
-@media (max-width:768px){
-  .header-content{flex-direction:column;align-items:flex-start}
-  .controls-grid{grid-template-columns:1fr}
-  .candidates-grid{grid-template-columns:1fr}
-  .live-feed{grid-template-columns:1fr}
-}
-.status-indicator{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:2rem;font-size:.85rem;font-weight:600}
-.status-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.status-indicator.online{background:rgba(16,185,129,.1);color:var(--success)}
-.status-indicator.online .status-dot{background:var(--success)}
-.refresh-timer{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary);font-size:.85rem}
-.countdown{font-weight:700;color:var(--accent)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOHO Comet Hunter – Comet Detection Dashboard</title>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <style>
+    :root{
+      --bg-primary:#0a0e27;--bg-secondary:#111633;--bg-card:#1a1f3a;--border:#2a3354;
+      --text-primary:#e8edf4;--text-secondary:#8b95b0;--accent:#3b82f6;--accent-hover:#2563eb;
+      --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+      --shadow:0 4px 6px -1px rgb(0 0 0 / .3),0 2px 4px -2px rgb(0 0 0 / .3);
+      --shadow-lg:0 20px 25px -5px rgb(0 0 0 / .4),0 8px 10px -6px rgb(0 0 0 / .4);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh}
+    .header{background:linear-gradient(135deg,#1e3a8a 0%,#3730a3 100%);padding:2rem 0;box-shadow:var(--shadow-lg);border-bottom:2px solid var(--border)}
+    .container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
+    .header-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .header-title h1{font-size:2rem;font-weight:800;margin-bottom:.25rem;background:linear-gradient(135deg,#fff 0%,#bfdbfe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header-subtitle{color:#bfdbfe;font-size:.9rem}
+    .header-actions{display:flex;gap:.75rem;align-items:center}
+    .controls-bar{background:var(--bg-secondary);padding:1.5rem 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+    .controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
+    .control-group{display:flex;flex-direction:column;gap:.5rem}
+    .control-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary)}
+    .select-wrapper{position:relative}
+    select{width:100%;padding:.75rem 2.5rem .75rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:.5rem;color:var(--text-primary);font-size:.9rem;cursor:pointer;appearance:none;transition:all .2s}
+    select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+    .select-wrapper::after{content:'down arrow';position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-secondary);font-size:.7rem}
+    .filters{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding-top:1rem;border-top:1px solid var(--border)}
+    .filter-chip{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:2rem;cursor:pointer;transition:all .2s;font-size:.85rem}
+    .filter-chip:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
+    .filter-chip input[type="checkbox"]{cursor:pointer;width:1rem;height:1rem;accent-color:var(--accent)}
+    .btn{padding:.75rem 1.5rem;border:none;border-radius:.5rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;text-decoration:none}
+    .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow)}
+    .btn-secondary{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
+    .btn-sm{padding:.5rem 1rem;font-size:.8rem}
+    .stats-dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+    .stat-card{background:var(--bg-card);padding:1.5rem;border-radius:.75rem;border:1px solid var(--border);box-shadow:var(--shadow)}
+    .stat-label{font-size:.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+    .stat-value{font-size:2rem;font-weight:800;color:var(--text-primary)}
+    .stat-card.highlight{background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,rgba(37,99,235,.05) 100%);border-color:var(--accent)}
+    .live-feed{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:1.5rem;margin:1.5rem 0}
+    .feed-card{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;box-shadow:var(--shadow)}
+    .feed-header{padding:1rem 1.5rem;background:rgba(59,130,246,.1);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .feed-title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+    .badge{padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:600;background:var(--accent);color:#fff}
+    .feed-content{aspect-ratio:1;background:#000;display:flex;align-items:center;justify-content:center}
+    .feed-content img,.feed-content video{width:100%;height:100%;object-fit:contain}
+    .feed-footer{padding:.75rem 1.5rem;background:rgba(0,0,0,.2);font-size:.8rem;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center}
+    .candidates-section{margin:2rem 0}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+    .section-title{font-size:1.5rem;font-weight:700}
+    .candidates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+    .candidate-card{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;box-shadow:var(--shadow);transition:all .3s;cursor:pointer}
+    .candidate-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+    .candidate-card.marked{border-color:var(--success);box-shadow:0 0 0 2px rgba(16,185,129,.2)}
+    .candidate-image{width:100%;aspect-ratio:1.6;background:#222;display:flex;align-items:center;justify-content:center;color:#999;font-size:1rem}
+    .candidate-image img{width:100%;height:100%;object-fit:contain}
+    .candidate-body{padding:1.25rem}
+    .candidate-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem}
+    .candidate-id{font-weight:700;font-size:1.1rem}
+    .candidate-score{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem}
+    .score-badge{padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:700}
+    .score-badge.comet{background:var(--success);color:#fff}
+    .score-badge.not_comet{background:var(--danger);color:#fff}
+    .score-badge.unknown{background:var(--text-secondary);color:#fff}
+    .score-value{font-size:.85rem;color:var(--text-secondary)}
+    .candidate-meta{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;font-size:.85rem}
+    .meta-item{display:flex;flex-direction:column;gap:.25rem}.meta-label{color:var(--text-secondary);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
+    .meta-value{color:var(--text-primary);font-weight:600}
+    .candidate-actions{display:flex;gap:.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+    .action-btn{flex:1;padding:.5rem;border:1px solid var(--border);background:transparent;color:var(--text-primary);border-radius:.375rem;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .2s}
+    .action-btn:hover{background:rgba(59,130,246,.1);border-color:var(--accent)}
+    .action-btn.marked-btn{background:var(--success);border-color:var(--success);color:#fff}
+    .empty-state{text-align:center;padding:4rem 2rem;color:var(--text-secondary)}
+    .empty-state-icon{font-size:4rem;margin-bottom:1rem;opacity:.3}
+    .empty-state-title{font-size:1.5rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)}
+    .spinner{border:3px solid rgba(59,130,246,.1);border-top-color:var(--accent);border-radius:50%;width:40px;height:40px;animation:spin .8s linear infinite;margin:2rem auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;padding:2rem;overflow-y:auto}
+    .modal.active{display:flex;align-items:center;justify-content:center}
+    .modal-content{background:var(--bg-card);border-radius:1rem;max-width:950px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+    .modal-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .modal-title{font-size:1.5rem;font-weight:700}
+    .modal-close{background:none;border:none;color:var(--text-secondary);font-size:1.5rem;cursor:pointer;padding:.5rem;line-height:1}
+    .modal-body{padding:1.5rem}
+    .seg{display:inline-flex;border:1px solid var(--border);border-radius:.5rem;overflow:hidden}
+    .seg button{background:transparent;color:var(--text-secondary);border:0;border-right:1px solid var(--border);padding:.4rem .8rem;cursor:pointer}
+    .seg button:last-child{border-right:0}
+    .seg button.active{color:var(--text-primary);background:rgba(59,130,246,.12)}
+    .seg button[disabled]{opacity:.45;pointer-events:none}
+    .three-wrap{background:#000;border:1px solid var(--border);border-radius:.5rem;height:360px}
+    .three-hint{font-size:.85rem;color:var(--text-secondary);margin-top:.5rem}
+    .tl-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+    .tl-controls input[type="range"]{width:160px}
+    .tl-img{width:100%;background:#000;border-radius:.5rem;border:1px solid var(--border);object-fit:contain}
+    @media (max-width:768px){
+      .header-content{flex-direction:column;align-items:flex-start}
+      .controls-grid{grid-template-columns:1fr}
+      .candidates-grid{grid-template-columns:1fr}
+      .live-feed{grid-template-columns:1fr}
+    }
+    .status-indicator{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:2rem;font-size:.85rem;font-weight:600}
+    .status-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite;background:var(--success)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .status-indicator.online{background:rgba(16,185,129,.1);color:var(--success)}
+    .refresh-timer{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary);font-size:.85rem}
+    .countdown{font-weight:700;color:var(--accent)}
+  </style>
 </head>
 <body>
 
@@ -116,13 +116,13 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>🌟 SOHO Comet Hunter 3.9</h1>
-        <div class="header-subtitle">Professional Comet Detection Dashboard</div>
+        <h1>SOHO Comet Hunter 3.0</h1>
+        <div class="header-subtitle">Live NASA LASCO • AI Comets • Sungrazer Exports</div>
       </div>
       <div class="header-actions">
         <div class="status-indicator online"><span class="status-dot"></span><span>Live</span></div>
-        <button class="btn btn-primary" id="refreshBtn">🔄 Refresh</button>
-        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">📦 GitHub</a>
+        <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+        <a href="https://github.com/NAGOHUSA/ONS_SOHOHUNTER" target="_blank" class="btn btn-secondary">GitHub</a>
       </div>
     </div>
   </div>
@@ -134,20 +134,20 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
       <div class="control-group">
         <label class="control-label">Detection Report</label>
         <div class="select-wrapper">
-          <select id="reportSelect"><option value="">Loading reports...</option></select>
+          <select id="reportSelect"><option>Loading reports...</option></select>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label">Candidate</label>
         <div class="select-wrapper">
-          <select id="candidateSelect"><option value="">Select candidate...</option></select>
+          <select id="candidateSelect"><option>All candidates</option></select>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label">Actions</label>
         <div style="display:flex;gap:.5rem;">
-          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">📄 Export TXT</button>
-          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">📊 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" id="exportTxtBtn">Export TXT</button>
+          <button class="btn btn-secondary btn-sm" id="exportCsvBtn">Export CSV</button>
         </div>
       </div>
       <div class="control-group">
@@ -157,8 +157,8 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
     </div>
 
     <div class="filters">
-      <label class="filter-chip"><input type="checkbox" id="filterC2"><span>C2 Telescope</span></label>
-      <label class="filter-chip"><input type="checkbox" id="filterC3"><span>C3 Telescope</span></label>
+      <label class="filter-chip"><input type="checkbox" id="filterC2"><span>C2</span></label>
+      <label class="filter-chip"><input type="checkbox" id="filterC3"><span>C3</span></label>
       <label class="filter-chip"><input type="checkbox" id="filterComet"><span>AI Comet Only</span></label>
       <label class="filter-chip"><input type="checkbox" id="filterMarked"><span>Marked Only</span></label>
       <label class="filter-chip"><input type="checkbox" id="exportMarkedOnly"><span>Export Marked Only</span></label>
@@ -168,28 +168,26 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
 
 <main class="container">
   <div class="stats-dashboard" id="statsDashboard">
-    <div class="stat-card"><div class="stat-label">Total Detections</div><div class="stat-value" id="statTotal">0</div></div>
+    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="statTotal">0</div></div>
     <div class="stat-card highlight"><div class="stat-label">AI Comets</div><div class="stat-value" id="statComets">0</div></div>
-    <div class="stat-card"><div class="stat-label">C2 Detections</div><div class="stat-value" id="statC2">0</div></div>
-    <div class="stat-card"><div class="stat-label">C3 Detections</div><div class="stat-value" id="statC3">0</div></div>
-    <div class="stat-card"><div class="stat-label">Marked Items</div><div class="stat-value" id="statMarked">0</div></div>
+    <div class="stat-card"><div class="stat-label">C2</div><div class="stat-value" id="statC2">0</div></div>
+    <div class="stat-card"><div class="stat-label">C3</div><div class="stat-value" id="statC3">0</div></div>
+    <div class="stat-card"><div class="stat-label">Marked</div><div class="stat-value" id="statMarked">0</div></div>
   </div>
 
   <div class="live-feed">
     <div class="feed-card">
       <div class="feed-header">
-        <div class="feed-title"><span>🛰️ LASCO C2</span><span class="badge">LIVE</span></div>
-        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+        <div class="feed-title">C2 – Live GIF <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" target="_blank" class="btn btn-sm btn-secondary">open</a></div>
       </div>
-      <div class="feed-content"><img id="c2LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="LASCO C2 Live"></div>
+      <div class="feed-content"><img id="c2LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" alt="LASCO C2"></div>
       <div class="feed-footer"><span>Last Updated:</span><span id="c2Timestamp">--:--</span></div>
     </div>
     <div class="feed-card">
       <div class="feed-header">
-        <div class="feed-title"><span>🛰️ LASCO C3</span><span class="badge">LIVE</span></div>
-        <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" class="btn btn-sm btn-secondary">Open</a>
+        <div class="feed-title">C3 – Live GIF <a href="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" target="_blank" class="btn btn-sm btn-secondary">open</a></div>
       </div>
-      <div class="feed-content"><img id="c3LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="LASCO C3 Live"></div>
+      <div class="feed-content"><img id="c3LiveGif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" alt="LASCO C3"></div>
       <div class="feed-footer"><span>Last Updated:</span><span id="c3Timestamp">--:--</span></div>
     </div>
   </div>
@@ -201,19 +199,18 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
     </div>
     <div id="candidatesGrid" class="candidates-grid"></div>
     <div id="emptyState" class="empty-state" style="display:none;">
-      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-icon">magnifying glass</div>
       <div class="empty-state-title">No Candidates Found</div>
-      <p>Try adjusting your filters or select a different report</p>
+      <p>Try adjusting filters or select a report</p>
     </div>
     <div id="loadingState" style="display:none;"><div class="spinner"></div></div>
   </div>
 </main>
 
-<!-- Modal -->
 <div class="modal" id="candidateModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="modal-title" id="modalTitle">Candidate Details</h3>
+      <h3 class="modal-title" id="modalTitle">Candidate</h3>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
@@ -221,618 +218,339 @@ select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:v
 </div>
 
 <script>
-// ---------- CONFIG ----------
-const HIDE_NOT_COMET = true; // thumbnails only
-const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections', refreshInterval:5*60*1000 };
-const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
-
-// ---------- RAW URL (permissive) ----------
-const RAW_URL = (path) => {
-  if (!path) return '';
-  let p = String(path).trim().replace(/^\.?\/*/, '');
-  if (p.startsWith('http')) return p;                     // already a full URL
-  if (!p.startsWith('detections/') && !['crops/','animations/','thumbnails/','reports/','originals/','annotated/'].some(prefix=>p.startsWith(prefix))) {
-    p = 'detections/' + p;
-  }
-  return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${p}`;
-};
-
-// ---------- STATE / ELEMENTS ----------
-let allCandidates = [];
-let filteredCandidates = [];
-let markedIds = new Set();
-let currentReport = null;
-
-const els = {
-  reportSelect: document.getElementById('reportSelect'),
-  candidateSelect: document.getElementById('candidateSelect'),
-  refreshBtn: document.getElementById('refreshBtn'),
-  exportTxtBtn: document.getElementById('exportTxtBtn'),
-  exportCsvBtn: document.getElementById('exportCsvBtn'),
-  filterC2: document.getElementById('filterC2'),
-  filterC3: document.getElementById('filterC3'),
-  filterComet: document.getElementById('filterComet'),
-  filterMarked: document.getElementById('filterMarked'),
-  exportMarkedOnly: document.getElementById('exportMarkedOnly'),
-  candidatesGrid: document.getElementById('candidatesGrid'),
-  emptyState: document.getElementById('emptyState'),
-  loadingState: document.getElementById('loadingState'),
-  countdown: document.getElementById('countdown'),
-  statTotal: document.getElementById('statTotal'),
-  statComets: document.getElementById('statComets'),
-  statC2: document.getElementById('statC2'),
-  statC3: document.getElementById('statC3'),
-  statMarked: document.getElementById('statMarked'),
-  filterCount: document.getElementById('filterCount'),
-  c2LiveGif: document.getElementById('c2LiveGif'),
-  c3LiveGif: document.getElementById('c3LiveGif'),
-  c2Timestamp: document.getElementById('c2Timestamp'),
-  c3Timestamp: document.getElementById('c3Timestamp')
-};
-
-// ---------- HELPERS ----------
-const formatDate = (s)=> s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'N/A';
-const getTelescope = (c)=> {
-  const instr = c.instrument || c.detector || 'LASCO';
-  return instr.includes('C2') ? 'C2' : instr.includes('C3') ? 'C3' : 'LASCO';
-};
-
-// ---------- NORMALIZE (bullet-proof) ----------
-function normalizeCandidate(c, idx){
-  const telescope = getTelescope(c);
-  const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
-
-  // Merge top-level + c.paths for easier lookup
-  const src = { ...c, ...c.paths };
-
-  const annotatedPath = [
-    src.annotated_mid_path, src.annotated_path, src.annotated,
-    src.annotated_mid, src.annotated_image, src.detection_annotated, src.annotated_path
-  ].find(Boolean) || '';
-
-  const originalPath = [
-    src.original_mid_path, src.original_path, src.original,
-    src.original_mid, src.original_image, src.original_path
-  ].find(Boolean) || '';
-
-  const cropPath = [
-    src.crop_path, src.crop, src.crop_image
-  ].find(Boolean) || '';
-
-  const thumbnail = src.thumbnail_path || cropPath || '';
-
-  return {
-    id, telescope,
-    label: String(src.ai_label || src.label || 'unknown').toLowerCase(),
-    score: Number(src.ai_score || src.score || 0),
-    timestamp: src.timestamp || '',
-    bbox: src.bbox || [],
-    cropPath,
-    animationMp4: src.animation_mp4_path || src.animation_mp4 || src.animations?.mp4 || '',
-    animationGif: src.animation_gif_path || src.animation_gif || src.animations?.gif || '',
-    originalPath,
-    annotatedPath,
-    thumbnail,
-    pathOverlay: src.path_overlay_path || '',
-    positions: src.positions || [],
-    imageSize: src.image_size || src.imageSize || null,
-    trackIndex: src.track_id ?? src.track_index ?? idx,
-    raw: c
-  };
-}
-
-// Group by same track id & telescope
-function getTrackGroup(candidate){
-  return allCandidates
-    .filter(x => (x.trackIndex === candidate.trackIndex) && (x.telescope === candidate.telescope))
-    .sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
-}
-
-// ---------- LOAD ----------
-async function loadReports(){
-  try{
-    const r = await fetch(API_URL);
-    const files = await r.json();
-    const reports = files.filter(f=>f.name.startsWith('candidates_') && f.name.endsWith('.json'))
-                         .sort((a,b)=> b.name.localeCompare(a.name));
-    els.reportSelect.innerHTML = '<option value="">Select a report...</option>';
-    for (const report of reports){
-      const o=document.createElement('option');
-      o.value=report.name; o.textContent=report.name.replace('candidates_','').replace('.json','');
-      els.reportSelect.appendChild(o);
+  // CONFIG
+  const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections' };
+  const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
+  const RAW_URL = (p) => {
+    if (!p) return '';
+    let path = String(p).trim().replace(/^\.?\/*/, '');
+    if (!path.startsWith('detections/') && !['crops/','originals/','annotated/'].some(prefix=>path.startsWith(prefix))) {
+      path = 'detections/' + path;
     }
-    if(reports.length){
-      els.reportSelect.value=reports[0].name;
-      await loadReport(reports[0].name);
-    }
-  }catch(e){ console.error('Failed to load reports:', e); }
-}
-
-async function loadReport(reportName){
-  if(!reportName) return;
-  els.loadingState.style.display='block';
-  els.candidatesGrid.innerHTML='';
-  els.emptyState.style.display='none';
-  try{
-    const r = await fetch(RAW_URL(`${CONFIG.folder}/${reportName}`));
-    const data = await r.json();
-    currentReport = reportName;
-    allCandidates = data.map(normalizeCandidate);
-    updateCandidateDropdown();
-    applyFilters();
-    updateStats();
-    updateLiveFeeds();
-  }catch(e){
-    console.error('Failed to load report:', e);
-    els.emptyState.style.display='block';
-  }finally{ els.loadingState.style.display='none'; }
-}
-
-function updateCandidateDropdown(){
-  els.candidateSelect.innerHTML = '<option value="">All candidates</option>';
-  for (const c of allCandidates){
-    const o=document.createElement('option');
-    o.value=c.id; o.textContent=`${c.id} — ${c.label.toUpperCase()} (${(c.score*100).toFixed(1)}%)`;
-    els.candidateSelect.appendChild(o);
-  }
-}
-
-// ---------- FILTER / RENDER ----------
-function applyFilters() {
-  const c2 = els.filterC2.checked;
-  const c3 = els.filterC3.checked;
-  const comet = els.filterComet.checked;
-  const marked = els.filterMarked.checked;
-  const selectedId = els.candidateSelect.value;
-
-  filteredCandidates = allCandidates.filter(candidate => {
-    if (selectedId && candidate.id !== selectedId) return false;
-    if (c2 && candidate.telescope !== 'C2') return false;
-    if (c3 && candidate.telescope !== 'C3') return false;
-    if (comet && candidate.label !== 'comet') return false;
-    if (marked && !markedIds.has(candidate.id)) return false;
-    return true;
-  });
-
-  renderCandidates();
-  updateFilterCount();
-}
-
-function renderCandidates() {
-  const visible = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => c.label !== 'not_comet')
-    : filteredCandidates;
-
-  if (!visible.length) {
-    els.candidatesGrid.innerHTML = '';
-    els.emptyState.style.display = 'block';
-    return;
-  }
-
-  els.emptyState.style.display = 'none';
-  els.candidatesGrid.innerHTML = visible.map(renderCard).join('');
-
-  document.querySelectorAll('.candidate-card').forEach(card => {
-    const id = card.dataset.id;
-    card.querySelector('.mark-btn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleMark(id); });
-    card.addEventListener('click', () => showCandidateDetail(id));
-  });
-}
-
-function updateFilterCount() {
-  const hidden = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => c.label === 'not_comet').length
-    : 0;
-  const shown = filteredCandidates.length - hidden;
-  els.filterCount.textContent = `Showing ${shown} of ${allCandidates.length} candidates${hidden ? ` (${hidden} hidden as not_comet)` : ''}`;
-}
-
-function renderCard(c){
-  const isMarked = markedIds.has(c.id);
-  const thumb = c.thumbnail ? RAW_URL(c.thumbnail) : '';
-  const hasAnim = c.animationMp4 || c.animationGif;
-  return `
-  <div class="candidate-card ${isMarked?'marked':''}" data-id="${c.id}">
-    ${thumb ? `<img src="${thumb}" alt="${c.id}" class="candidate-image">` : ''}
-    ${hasAnim ? `
-    <div class="feed-content" style="border-top:1px solid var(--border);">
-      ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" style="width:100%;height:auto;max-height:320px;background:#000" muted loop autoplay playsinline></video>`:''}
-      ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" alt="GIF animation" style="width:100%;height:auto;max-height:320px;object-fit:contain;background:#000">`:''}
-    </div>`:''}
-    <div class="candidate-body">
-      <div class="candidate-header">
-        <div class="candidate-id">${c.id}</div>
-        <div class="candidate-score">
-          <span class="score-badge ${c.label}">${c.label.toUpperCase()}</span>
-          <span class="score-value">${(c.score*100).toFixed(1)}%</span>
-        </div>
-      </div>
-      <div class="candidate-meta">
-        <div class="meta-item"><span class="meta-label">Telescope</span><span class="meta-value">${c.telescope}</span></div>
-        <div class="meta-item"><span class="meta-label">Track ID</span><span class="meta-value">${c.trackIndex ?? 'N/A'}</span></div>
-        <div class="meta-item"><span class="meta-label">Timestamp</span><span class="meta-value">${formatDate(c.timestamp)}</span></div>
-        <div class="meta-item"><span class="meta-label">Position</span><span class="meta-value">${c.bbox.length>=2?`${c.bbox[0]}, ${c.bbox[1]}`:'N/A'}</span></div>
-      </div>
-      <div class="candidate-actions">
-        <button class="action-btn mark-btn ${isMarked?'marked-btn':''}">${isMarked?'✓ Marked':'☆ Mark'}</button>
-        <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${c.id}')">👁️ Details</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function toggleMark(id){ if(markedIds.has(id)) markedIds.delete(id); else markedIds.add(id); applyFilters(); updateStats(); }
-
-// ---------- MODAL ----------
-function showCandidateDetail(id){
-  const c = allCandidates.find(x=>x.id===id); if(!c) return;
-  const modal = document.getElementById('candidateModal');
-  const title = document.getElementById('modalTitle');
-  const body = document.getElementById('modalBody');
-  title.textContent = `Candidate: ${c.id}`;
-
-  const srcMap = {
-    ann:  c.annotatedPath ? RAW_URL(c.annotatedPath) : '',
-    orig: c.originalPath  ? RAW_URL(c.originalPath)  : '',
-    crop: c.cropPath      ? RAW_URL(c.cropPath)      : ''
+    return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/${path}`;
   };
-  const firstMode = srcMap.ann ? 'ann' : (srcMap.orig ? 'orig' : 'crop');
-  const sequence = getTrackGroup(c);
-  const positions = sequence.map(s => ({x: s.bbox[0] + s.bbox[2]/2, y: s.bbox[1] + s.bbox[3]/2}));
-  const imageSize = sequence[0]?.imageSize || [1024, 1024];
 
-  // Sungrazer preview
-  let sungrazerPreview = '';
-  if (sequence.length > 1) {
-    const firstTs = new Date(sequence[0].timestamp);
-    const date = firstTs.toISOString().split('T')[0];
-    const camera = c.telescope;
-    sungrazerPreview = `Date: ${date}\nCamera: ${camera}\nImage Size: 1024x1024\n(0,0): Bottom Left\nPositions:\n`;
-    sequence.forEach(s => {
-      const ts = new Date(s.timestamp);
-      const hhmm = `${String(ts.getUTCHours()).padStart(2,'0')}${String(ts.getUTCMinutes()).padStart(2,'0')}`;
-      const cx = (s.bbox[0] + s.bbox[2]/2).toFixed(0);
-      const cy = (s.bbox[1] + s.bbox[3]/2).toFixed(0);
-      sungrazerPreview += `${hhmm}   ${cx}   ${cy}\n`;
+  // STATE
+  let allCandidates = [], filteredCandidates = [], markedIds = new Set(), currentReport = null;
+  const els = {
+    reportSelect: document.getElementById('reportSelect'),
+    candidateSelect: document.getElementById('candidateSelect'),
+    refreshBtn: document.getElementById('refreshBtn'),
+    exportTxtBtn: document.getElementById('exportTxtBtn'),
+    exportCsvBtn: document.getElementById('exportCsvBtn'),
+    filterC2: document.getElementById('filterC2'),
+    filterC3: document.getElementById('filterC3'),
+    filterComet: document.getElementById('filterComet'),
+    filterMarked: document.getElementById('filterMarked'),
+    exportMarkedOnly: document.getElementById('exportMarkedOnly'),
+    candidatesGrid: document.getElementById('candidatesGrid'),
+    emptyState: document.getElementById('emptyState'),
+    loadingState: document.getElementById('loadingState'),
+    countdown: document.getElementById('countdown'),
+    statTotal: document.getElementById('statTotal'),
+    statComets: document.getElementById('statComets'),
+    statC2: document.getElementById('statC2'),
+    statC3: document.getElementById('statC3'),
+    statMarked: document.getElementById('statMarked'),
+    filterCount: document.getElementById('filterCount'),
+    c2LiveGif: document.getElementById('c2LiveGif'),
+    c3LiveGif: document.getElementById('c3LiveGif'),
+    c2Timestamp: document.getElementById('c2Timestamp'),
+    c3Timestamp: document.getElementById('c3Timestamp')
+  };
+
+  // HELPERS
+  const formatDate = (s) => s ? new Date(s).toLocaleString() : 'N/A';
+  const getTelescope = (c) => (c.instrument || '').includes('C2') ? 'C2' : (c.instrument || '').includes('C3') ? 'C3' : 'LASCO';
+
+  function normalizeCandidate(c, idx) {
+    const tel = getTelescope(c);
+    const id = `${tel}#${c.track_id ?? idx}`;
+    const src = { ...c, ...c.paths };
+    return {
+      id, telescope: tel,
+      label: String(c.ai_label || 'unknown').toLowerCase(),
+      score: Number(c.ai_score || 0),
+      timestamp: c.timestamp || '',
+      bbox: c.bbox || [],
+      cropPath: src.crop_path || '',
+      originalPath: src.original_path || '',
+      annotatedPath: src.annotated_path || '',
+      thumbnail: src.thumbnail_path || src.crop_path || '',
+      trackIndex: c.track_id ?? idx,
+      raw: c
+    };
+  }
+
+  function getTrackGroup(c) {
+    return allCandidates
+      .filter(x => x.trackIndex === c.trackIndex && x.telescope === c.telescope)
+      .sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
+  }
+
+  // LOAD
+  async function loadReports() {
+    try {
+      const r = await fetch(API_URL);
+      const files = await r.json();
+      const reports = files.filter(f => f.name.startsWith('candidates_') && f.name.endsWith('.json'))
+                           .sort((a,b) => b.name.localeCompare(a.name));
+      els.reportSelect.innerHTML = '<option value="">Select report...</option>';
+      reports.forEach(r => {
+        const o = document.createElement('option');
+        o.value = r.name; o.textContent = r.name.replace('candidates_','').replace('.json','');
+        els.reportSelect.appendChild(o);
+      });
+      if (reports.length) {
+        els.reportSelect.value = reports[0].name;
+        await loadReport(reports[0].name);
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadReport(name) {
+    if (!name) return;
+    els.loadingState.style.display = 'block';
+    els.candidatesGrid.innerHTML = ''; els.emptyState.style.display = 'none';
+    try {
+      const r = await fetch(RAW_URL(`${CONFIG.folder}/${name}`));
+      const data = await r.json();
+      currentReport = name;
+      allCandidates = data.map(normalizeCandidate);
+      updateCandidateDropdown();
+      applyFilters();
+      updateStats();
+      updateLiveFeeds();
+    } catch (e) {
+      console.error(e);
+      els.emptyState.style.display = 'block';
+    } finally { els.loadingState.style.display = 'none'; }
+  }
+
+  function updateCandidateDropdown() {
+    els.candidateSelect.innerHTML = '<option value="">All candidates</option>';
+    allCandidates.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.id; o.textContent = `${c.id} — ${c.label.toUpperCase()} (${(c.score*100).toFixed(1)}%)`;
+      els.candidateSelect.appendChild(o);
     });
-  } else {
-    sungrazerPreview = 'Not enough positions for Sungrazer report (need at least 2-3).';
   }
 
-  body.innerHTML = `
-    <div style="display:grid;gap:1.25rem;">
-      <!-- Single frame toggle -->
-      <div>
-        <div class="seg" id="imgSeg">
-          <button data-mode="ann"  data-src="${srcMap.ann}">Annotated</button>
-          <button data-mode="orig" data-src="${srcMap.orig}">Original</button>
-          <button data-mode="crop" data-src="${srcMap.crop}">Cropped</button>
-        </div>
-        <div style="margin-top:.75rem;">
-          <img id="segImg" src="${srcMap[firstMode] || ''}" class="tl-img" alt="candidate">
-        </div>
-        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
-          ${srcMap.ann ? `<a href="${srcMap.ann}" target="_blank" class="btn btn-sm btn-secondary">Open Annotated</a>` : ''}
-          ${srcMap.orig ? `<a href="${srcMap.orig}" target="_blank" class="btn btn-sm btn-secondary">Open Original</a>` : ''}
-          ${srcMap.crop ? `<a href="${srcMap.crop}" target="_blank" class="btn btn-sm btn-secondary">Open Crop</a>` : ''}
-        </div>
-      </div>
+  // FILTER & RENDER
+  function applyFilters() {
+    const sel = els.candidateSelect.value;
+    filteredCandidates = allCandidates.filter(c => {
+      if (sel && c.id !== sel) return false;
+      if (els.filterC2.checked && c.telescope !== 'C2') return false;
+      if (els.filterC3.checked && c.telescope !== 'C3') return false;
+      if (els.filterComet.checked && c.label !== 'comet') return false;
+      if (els.filterMarked.checked && !markedIds.has(c.id)) return false;
+      return true;
+    });
+    renderCandidates();
+    updateFilterCount();
+  }
 
-      ${(c.animationMp4 || c.animationGif) ? `
-      <div>
-        <h4 style="margin-bottom:.5rem;">Detected Animation (precomputed)</h4>
-        ${c.animationMp4 ? `<video src="${RAW_URL(c.animationMp4)}" controls loop style="width:100%;border-radius:.5rem;background:#000;"></video>`:''}
-        ${c.animationGif ? `<img src="${RAW_URL(c.animationGif)}" style="width:100%;border-radius:.5rem;background:#000;margin-top:.5rem;">`:''}
-      </div>` : ''}
+  function renderCandidates() {
+    const visible = filteredCandidates;
+    if (!visible.length) {
+      els.candidatesGrid.innerHTML = ''; els.emptyState.style.display = 'block'; return;
+    }
+    els.emptyState.style.display = 'none';
+    els.candidatesGrid.innerHTML = visible.map(renderCard).join('');
+    document.querySelectorAll('.candidate-card').forEach(card => {
+      const id = card.dataset.id;
+      card.querySelector('.mark-btn')?.addEventListener('click', e => { e.stopPropagation(); toggleMark(id); });
+      card.addEventListener('click', () => showCandidateDetail(id));
+    });
+  }
 
-      <div>
-        <h4 style="margin-bottom:.5rem;">Time-lapse from previous detections</h4>
-        <div class="tl-controls">
-          <div class="seg" id="tlSeg">
-            <button data-mode="ann">Annotated</button>
-            <button data-mode="orig">Original</button>
-            <button data-mode="crop">Cropped</button>
+  function updateFilterCount() {
+    els.filterCount.textContent = `Showing ${filteredCandidates.length} of ${allCandidates.length} candidates`;
+  }
+
+  function renderCard(c) {
+    const isMarked = markedIds.has(c.id);
+    const thumbSrc = c.thumbnail ? RAW_URL(c.thumbnail) : c.cropPath ? RAW_URL(c.cropPath) : '';
+    return `
+      <div class="candidate-card ${isMarked?'marked':''}" data-id="${c.id}">
+        <div class="candidate-image">
+          ${thumbSrc ? `<img src="${thumbSrc}" alt="${c.id}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAyNCIgaGVpZ2h0PSI1NzYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMjQiIGhlaWdodD0iNTc2IiBmaWxsPSIjMjIyIj48L3JlY3Q+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">` : 'No Image'}
+        </div>
+        <div class="candidate-body">
+          <div class="candidate-header">
+            <div class="candidate-id">${c.id}</div>
+            <div class="candidate-score">
+              <span class="score-badge ${c.label}">${c.label.toUpperCase()}</span>
+              <span class="score-value">${(c.score*100).toFixed(1)}%</span>
+            </div>
           </div>
-          <button id="tlPlay" class="btn btn-secondary btn-sm">▶︎ Play</button>
-          <button id="tlPrev" class="btn btn-secondary btn-sm">⟨ Prev</button>
-          <button id="tlNext" class="btn btn-secondary btn-sm">Next ⟩</button>
-          <label class="control-label" style="margin-left:.5rem;">FPS</label>
-          <input id="tlFps" type="range" min="1" max="12" value="4" />
-          <span id="tlFpsVal" class="stat-label">4 fps</span>
-          <span class="stat-label" id="tlCounter"></span>
-        </div>
-        <img id="tlImg" class="tl-img" alt="timelapse">
-      </div>
-
-      <div>
-        <h4 style="margin-bottom:.5rem;">3D Track Viewer</h4>
-        <div class="three-wrap" id="threeWrap"></div>
-        <div class="three-hint">Drag to orbit. Points are plotted in image coordinates and extruded over time (not a physical ephemeris).</div>
-      </div>
-
-      <div>
-        <h4 style="margin-bottom:.5rem;">Details</h4>
-        <div style="background:var(--bg-secondary);padding:1rem;border-radius:.5rem;font-size:.9rem;">
-          <div style="display:grid;grid-template-columns:150px 1fr;gap:.5rem;">
-            <strong>ID:</strong><span>${c.id}</span>
-            <strong>Telescope:</strong><span>${c.telescope}</span>
-            <strong>AI Label:</strong><span>${c.label.toUpperCase()}</span>
-            <strong>AI Score:</strong><span>${(c.score*100).toFixed(2)}%</span>
-            <strong>Timestamp:</strong><span>${formatDate(c.timestamp)}</span>
-            <strong>Track ID:</strong><span>${c.trackIndex ?? 'N/A'}</span>
-            <strong>Image Size:</strong><span>${c.imageSize ? `${c.imageSize[1]}×${c.imageSize[0]}` : 'N/A'}</span>
+          <div class="candidate-meta">
+            <div class="meta-item"><span class="meta-label">Telescope</span><span class="meta-value">${c.telescope}</span></div>
+            <div class="meta-item"><span class="meta-label">Track ID</span><span class="meta-value">${c.trackIndex}</span></div>
+            <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">${formatDate(c.timestamp).split(',')[1]?.trim() || 'N/A'}</span></div>
+            <div class="meta-item"><span class="meta-label">Pos</span><span class="meta-value">${c.bbox[0]}, ${c.bbox[1]}</span></div>
+          </div>
+          <div class="candidate-actions">
+            <button class="action-btn mark-btn ${isMarked?'marked-btn':''}">${isMarked?'Marked':'Mark'}</button>
+            <button class="action-btn" onclick="event.stopPropagation(); showCandidateDetail('${c.id}')">Details</button>
           </div>
         </div>
-      </div>
-
-      <div>
-        <h4 style="margin-bottom:.5rem;">Sungrazer Submission Preview</h4>
-        <pre style="background:var(--bg-secondary);padding:1rem;border-radius:.5rem;overflow:auto;">${sungrazerPreview}</pre>
-      </div>
-
-      <div style="display:flex;gap:.5rem;">
-        <button class="btn btn-primary" onclick="toggleMark('${c.id}'); closeModal(); applyFilters();">${markedIds.has(c.id)?'Unmark':'Mark'} Candidate</button>
-        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
-      </div>
-    </div>
-  `;
-
-  // Wire single-frame segmented toggle (precomputed sources)
-  const seg = body.querySelector('#imgSeg');
-  const segImg = body.querySelector('#segImg');
-
-  // disable missing modes, set active
-  seg.querySelectorAll('button').forEach(b=>{
-    const src = (b.dataset.src||'').trim();
-    if (!src) b.setAttribute('disabled','true'); else b.removeAttribute('disabled');
-    b.classList.toggle('active', b.dataset.mode === firstMode);
-  });
-
-  seg.addEventListener('click', (e) => {
-    const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
-    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-    btn.classList.add('active');
-    const src = (btn.dataset.src||'').trim();
-    if (src) segImg.src = `${src}#${Date.now()}`; // cache-bust so you always see the swap
-  });
-
-  // Timelapse
-  initTimelapse(body, sequence, firstMode);
-
-  // 3D viewer
-  initThreeTrack(body.querySelector('#threeWrap'), {positions, imageSize});
-
-  modal.classList.add('active');
-}
-
-function closeModal(){ document.getElementById('candidateModal').classList.remove('active'); }
-
-// ---------- TIME-LAPSE ----------
-function initTimelapse(scopeEl, sequence, defaultMode){
-  const img = scopeEl.querySelector('#tlImg');
-  const seg = scopeEl.querySelector('#tlSeg');
-  const playBtn = scopeEl.querySelector('#tlPlay');
-  const prevBtn = scopeEl.querySelector('#tlPrev');
-  const nextBtn = scopeEl.querySelector('#tlNext');
-  const fpsRange = scopeEl.querySelector('#tlFps');
-  const fpsVal = scopeEl.querySelector('#tlFpsVal');
-  const counter = scopeEl.querySelector('#tlCounter');
-
-  const framesFor = (mode)=> sequence
-    .map(s => {
-      const raw = mode==='ann' ? s.annotatedPath : mode==='orig' ? s.originalPath : s.cropPath;
-      return raw ? RAW_URL(raw) : '';
-    })
-    .filter(Boolean);
-
-  // reflect availability
-  ['ann','orig','crop'].forEach(m=>{
-    const btn = seg.querySelector(`button[data-mode="${m}"]`);
-    const available = framesFor(m).length > 0;
-    if (!available) btn.setAttribute('disabled','true'); else btn.removeAttribute('disabled');
-  });
-
-  let mode = defaultMode || 'crop';
-  if (framesFor(mode).length === 0) mode = ['ann','orig','crop'].find(m=>framesFor(m).length>0) || 'crop';
-
-  seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-
-  let frames = framesFor(mode);
-  let idx = 0;
-  let timer = null;
-  let fps = parseInt(fpsRange.value,10);
-
-  function show(i){
-    if (!frames.length){ img.style.display='none'; counter.textContent=''; return; }
-    img.style.display='block';
-    idx = (i+frames.length) % frames.length;
-    img.src = `${frames[idx]}#${Date.now()}`;
-    counter.textContent = `${idx+1}/${frames.length} — ${formatDate(sequence[idx].timestamp || '')}`;
+      </div>`;
   }
 
-  function play(){
-    if (timer) return;
-    playBtn.textContent = '⏸ Pause';
-    timer = setInterval(()=> show(idx+1), 1000/Math.max(1,fps));
-  }
-  function pause(){
-    if (!timer) return;
-    clearInterval(timer); timer=null;
-    playBtn.textContent = '▶︎ Play';
+  function toggleMark(id) {
+    if (markedIds.has(id)) markedIds.delete(id); else markedIds.add(id);
+    applyFilters(); updateStats();
   }
 
-  seg.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
-    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-    btn.classList.add('active');
-    mode = btn.dataset.mode;
-    frames = framesFor(mode);
-    idx = 0;
-    pause();
-    show(0);
-  });
+  // MODAL
+  function showCandidateDetail(id) {
+    const c = allCandidates.find(x => x.id === id); if (!c) return;
+    const seq = getTrackGroup(c);
+    const sungrazer = seq.length > 1 ? seq.map(s => {
+      const t = new Date(s.timestamp);
+      const hhmm = `${String(t.getUTCHours()).padStart(2,'0')}${String(t.getUTCMinutes()).padStart(2,'0')}`;
+      const cx = Math.round(s.bbox[0] + s.bbox[2]/2);
+      const cy = Math.round(s.bbox[1] + s.bbox[3]/2);
+      return `${hhmm}   ${cx}   ${cy}`;
+    }).join('\n') : 'Need 2+ frames';
 
-  playBtn.onclick = ()=> timer ? pause() : play();
-  prevBtn.onclick = ()=> { pause(); show(idx-1); };
-  nextBtn.onclick = ()=> { pause(); show(idx+1); };
-  fpsRange.oninput = ()=> { fps = parseInt(fpsRange.value,10); fpsVal.textContent = `${fps} fps`; if (timer){ pause(); play(); } };
+    document.getElementById('modalTitle').textContent = `Candidate: ${c.id}`;
+    document.getElementById('modalBody').innerHTML = `
+      <div style="display:grid;gap:1.25rem;">
+        <div>
+          <div class="seg" id="imgSeg">
+            <button data-mode="ann" data-src="${RAW_URL(c.annotatedPath)}">Annotated</button>
+            <button data-mode="orig" data-src="${RAW_URL(c.originalPath)}">Original</button>
+            <button data-mode="crop" data-src="${RAW_URL(c.cropPath)}">Crop</button>
+          </div>
+          <img id="segImg" src="${RAW_URL(c.annotatedPath || c.originalPath || c.cropPath)}" class="tl-img" alt="">
+        </div>
+        <div>
+          <h4>Sungrazer Report</h4>
+          <pre style="background:#111;padding:1rem;border-radius:.5rem;font-size:.9rem;">Date: ${new Date(c.timestamp).toISOString().split('T')[0]}
+Camera: ${c.telescope}
+Image Size: 1024x1024
+(0,0): Bottom Left
+Positions:
+${sungrazer}</pre>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <button class="btn btn-primary" onclick="toggleMark('${c.id}'); closeModal(); applyFilters();">${markedIds.has(c.id)?'Unmark':'Mark'}</button>
+          <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    `;
 
-  show(0);
-}
-
-// ---------- 3D VIEWER ----------
-function initThreeTrack(host, posData){
-  host.innerHTML='';
-  const width = host.clientWidth, height = host.clientHeight || 360;
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
-  camera.position.set(0,0,2.5);
-
-  const renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setSize(width,height);
-  host.appendChild(renderer.domElement);
-
-  const pts = (posData.positions || []).map(p => ({x: p.x, y: p.y}));
-  if(pts.length < 2){
-    const t = new THREE.Mesh(new THREE.BoxGeometry(1,0.02,0.02), new THREE.MeshBasicMaterial({color:0x66ccff}));
-    scene.add(t);
-  }else{
-    const [H, W] = posData.imageSize || [1024,1024];  // Note: imageSize [h,w], but toN uses W for x, H for y
-    const toN = (x,y) => [(x / W) * 2 - 1, -((y / H) * 2 - 1)];
-    const arr = [];
-    pts.forEach((p,i)=>{
-      const [nx,ny] = toN(p.x, p.y);
-      const nz = (i / (pts.length - 1)) * 0.8 - 0.4;
-      arr.push(nx, ny, nz);
+    const seg = document.getElementById('imgSeg');
+    seg.querySelectorAll('button').forEach(b => {
+      const src = b.dataset.src;
+      b.disabled = !src;
+      b.classList.toggle('active', src && b.dataset.src === (c.annotatedPath || c.originalPath || c.cropPath));
+    });
+    seg.addEventListener('click', e => {
+      const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
+      seg.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('segImg').src = btn.dataset.src + '#' + Date.now();
     });
 
-    const geom = new THREE.BufferGeometry();
-    geom.setAttribute('position', new THREE.Float32BufferAttribute(arr,3));
-    scene.add(new THREE.Line(geom, new THREE.LineBasicMaterial({color:0x00ffd0})));
-
-    const pointVecs = [];
-    for (let k=0; k<arr.length; k+=3) pointVecs.push(new THREE.Vector3(arr[k],arr[k+1],arr[k+2]));
-    const ptsGeom = new THREE.BufferGeometry().setFromPoints(pointVecs);
-    scene.add(new THREE.Points(ptsGeom, new THREE.PointsMaterial({size:0.02, color:0xffff00})));
+    document.getElementById('candidateModal').classList.add('active');
   }
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  function closeModal() { document.getElementById('candidateModal').classList.remove('active'); }
 
-  // simple drag orbit
-  let isDown=false, lastX=0,lastY=0, rx=0.3, ry=0.6;
-  host.addEventListener('mousedown',e=>{isDown=true; lastX=e.clientX; lastY=e.clientY;});
-  window.addEventListener('mouseup',()=>isDown=false);
-  window.addEventListener('mousemove',e=>{
-    if(!isDown) return;
-    const dx=(e.clientX-lastX)/200, dy=(e.clientY-lastY)/200;
-    ry+=dx; rx+=dy;
-    lastX=e.clientX; lastY=e.clientY;
-  });
-
-  function animate(){ requestAnimationFrame(animate); scene.rotation.set(rx,ry,0); renderer.render(scene,camera); }
-  animate();
-
-  new ResizeObserver(()=>{
-    const w=host.clientWidth,h=host.clientHeight||360;
-    renderer.setSize(w,h,false);
-    camera.aspect=w/h; camera.updateProjectionMatrix();
-  }).observe(host);
-}
-
-// ---------- STATS / LIVE ----------
-function updateStats(){
-  const total=allCandidates.length;
-  const comets=allCandidates.filter(c=>c.label==='comet').length;
-  const c2=allCandidates.filter(c=>c.telescope==='C2').length;
-  const c3=allCandidates.filter(c=>c.telescope==='C3').length;
-  const marked=[...markedIds].filter(id=>allCandidates.some(c=>c.id===id)).length;
-  els.statTotal.textContent=total; els.statComets.textContent=comets; els.statC2.textContent=c2; els.statC3.textContent=c3; els.statMarked.textContent=marked;
-}
-
-async function updateLiveFeeds(){
-  const feeds = [
-    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif', el:els.c2LiveGif, ts:els.c2Timestamp },
-    { url:'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif', el:els.c3LiveGif, ts:els.c3Timestamp }
-  ];
-  for(const f of feeds){
-    try{
-      const r = await fetch(f.url,{method:'HEAD'});
-      const lm = r.headers.get('last-modified');
-      if(lm) f.ts.textContent = new Date(lm).toLocaleTimeString();
-      f.el.src = `${f.url}?t=${Date.now()}`;
-    }catch(e){ console.error('feed error', e); }
-  }
-}
-
-// ---------- EXPORTS ----------
-function exportTXT(){
-  const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
-  const tracks = {};
-  list.forEach(c => {
-    const tid = c.trackIndex;
-    if (!tracks[tid]) tracks[tid] = [];
-    tracks[tid].push(c);
-  });
-
-  const lines = [];
-  Object.keys(tracks).sort((a,b)=>a-b).forEach(tid => {
-    const track = tracks[tid].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
-    if (!track.length) return;
-    const first = track[0];
-    const date = new Date(first.timestamp).toISOString().split('T')[0];
-    const camera = first.telescope;
-    lines.push(`Track: ${tid} (${first.label.toUpperCase()} ${(first.score*100).toFixed(1)}%)`);
-    lines.push(`Date: ${date}`);
-    lines.push(`Camera: ${camera}`);
-    lines.push(`Image Size: 1024x1024`);
-    lines.push(`(0,0): Bottom Left`);
-    lines.push(`Positions:`);
-    track.forEach(pos => {
-      const ts = new Date(pos.timestamp);
-      const hhmm = `${ts.getUTCHours().toString().padStart(2,'0')}${ts.getUTCMinutes().toString().padStart(2,'0')}`;
-      const cx = (pos.bbox[0] + pos.bbox[2]/2).toFixed(0);
-      const cy = (pos.bbox[1] + pos.bbox[3]/2).toFixed(0);
-      lines.push(`${hhmm}   ${cx}   ${cy}`);
+  // EXPORTS
+  function exportTXT() {
+    const list = els.exportMarkedOnly.checked ? allCandidates.filter(c => markedIds.has(c.id)) : allCandidates;
+    const tracks = {};
+    list.forEach(c => { const tid = c.trackIndex; if (!tracks[tid]) tracks[tid] = []; tracks[tid].push(c); });
+    const lines = [];
+    Object.keys(tracks).sort((a,b)=>+a-+b).forEach(tid => {
+      const t = tracks[tid].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+      if (!t.length) return;
+      const first = t[0];
+      lines.push(`Track: ${tid} (${first.label.toUpperCase()} ${(first.score*100).toFixed(1)}%)`);
+      lines.push(`Date: ${new Date(first.timestamp).toISOString().split('T')[0]}`);
+      lines.push(`Camera: ${first.telescope}`);
+      lines.push(`Image Size: 1024x1024`);
+      lines.push(`(0,0): Bottom Left`);
+      lines.push(`Positions:`);
+      t.forEach(p => {
+        const ts = new Date(p.timestamp);
+        const hhmm = `${String(ts.getUTCHours()).padStart(2,'0')}${String(ts.getUTCMinutes()).padStart(2,'0')}`;
+        const cx = Math.round(p.bbox[0] + p.bbox[2]/2);
+        const cy = Math.round(p.bbox[1] + p.bbox[3]/2);
+        lines.push(`${hhmm}   ${cx}   ${cy}`);
+      });
+      lines.push('');
     });
-    lines.push('');
-  });
+    const blob = new Blob([lines.join('\n')], {type: 'text/plain'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sungrazer_${Date.now()}.txt`; a.click();
+  }
 
-  const blob = new Blob([lines.join('\n')],{type:'text/plain'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`soho_sungrazer_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
-}
-function exportCSV(){
-  const list = els.exportMarkedOnly.checked ? allCandidates.filter(c=>markedIds.has(c.id)) : allCandidates;
-  const header = ['ID','Label','Score','Telescope','Timestamp','Track_ID','X','Y','Crop_Path'];
-  const rows = list.map(c=>[c.id,c.label.toUpperCase(),(c.score*100).toFixed(1),c.telescope,c.timestamp||'N/A',c.trackIndex??'N/A',c.bbox[0]??'',c.bbox[1]??'',c.cropPath||'']);
-  const csv = [header,...rows].map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`soho_export_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(a.href);
-}
+  function exportCSV() {
+    const list = els.exportMarkedOnly.checked ? allCandidates.filter(c => markedIds.has(c.id)) : allCandidates;
+    const rows = list.map(c => [
+      c.id, c.label.toUpperCase(), (c.score*100).toFixed(1), c.telescope, c.timestamp,
+      c.trackIndex, c.bbox[0], c.bbox[1], RAW_URL(c.cropPath)
+    ]);
+    const csv = [['ID','Label','Score','Tel','Time','Track','X','Y','Crop_URL'], ...rows].map(r=>r.join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = `soho_${Date.now()}.csv`; a.click();
+  }
 
-// ---------- COUNTDOWN / EVENTS ----------
-let countdownInterval;
-function startCountdown(){
-  let seconds = 300;
-  clearInterval(countdownInterval);
-  countdownInterval = setInterval(()=>{
-    seconds--;
-    const m=Math.floor(seconds/60), s=String(seconds%60).padStart(2,'0');
-    els.countdown.textContent=`${m}:${s}`;
-    if(seconds<=0){ loadReports(); seconds=300; }
-  },1000);
-}
+  // STATS & LIVE
+  function updateStats() {
+    const total = allCandidates.length;
+    const comets = allCandidates.filter(c=>c.label==='comet').length;
+    const c2 = allCandidates.filter(c=>c.telescope==='C2').length;
+    const c3 = allCandidates.filter(c=>c.telescope==='C3').length;
+    const marked = [...markedIds].filter(id=>allCandidates.some(c=>c.id===id)).length;
+    els.statTotal.textContent=total; els.statComets.textContent=comets; els.statC2.textContent=c2; els.statC3.textContent=c3; els.statMarked.textContent=marked;
+  }
 
-els.reportSelect.addEventListener('change', e=>loadReport(e.target.value));
-els.candidateSelect.addEventListener('change', applyFilters);
-els.refreshBtn.addEventListener('click', ()=>{ loadReports(); startCountdown(); });
-els.exportTxtBtn.addEventListener('click', exportTXT);
-els.exportCsvBtn.addEventListener('click', exportCSV);
-[els.filterC2, els.filterC3, els.filterComet, els.filterMarked].forEach(cb=>cb.addEventListener('change', applyFilters));
-document.getElementById('candidateModal').addEventListener('click', (e)=>{ if(e.target.id==='candidateModal') closeModal(); });
+  async function updateLiveFeeds() {
+    const feeds = [
+      {url:'https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif', el:els.c2LiveGif, ts:els.c2Timestamp},
+      {url:'https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif', el:els.c3LiveGif, ts:els.c3Timestamp}
+    ];
+    for (const f of feeds) {
+      try {
+        const r = await fetch(f.url, {method:'HEAD'});
+        const lm = r.headers.get('last-modified');
+        if (lm) f.ts.textContent = new Date(lm).toLocaleTimeString();
+        f.el.src = f.url + '?t=' + Date.now();
+      } catch (e) { console.error(e); }
+    }
+  }
 
-// ---------- INIT ----------
-loadReports();
-startCountdown();
-setInterval(updateLiveFeeds, 2*60*1000);
+  // COUNTDOWN
+  let countdownInterval;
+  function startCountdown() {
+    let s = 300;
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      s--;
+      const m = Math.floor(s/60), sec = String(s%60).padStart(2,'0');
+      els.countdown.textContent = `${m}:${sec}`;
+      if (s <= 0) { loadReports(); s = 300; }
+    }, 1000);
+  }
+
+  // EVENTS
+  els.reportSelect.addEventListener('change', e => loadReport(e.target.value));
+  els.candidateSelect.addEventListener('change', applyFilters);
+  els.refreshBtn.addEventListener('click', () => { loadReports(); startCountdown(); });
+  els.exportTxtBtn.addEventListener('click', exportTXT);
+  els.exportCsvBtn.addEventListener('click', exportCSV);
+  [els.filterC2, els.filterC3, els.filterComet, els.filterMarked].forEach(cb => cb.addEventListener('change', applyFilters));
+  document.getElementById('candidateModal').addEventListener('click', e => { if (e.target.id === 'candidateModal') closeModal(); });
+
+  // INIT
+  loadReports();
+  startCountdown();
+  setInterval(updateLiveFeeds, 120000);
 </script>
 </body>
 </html>
