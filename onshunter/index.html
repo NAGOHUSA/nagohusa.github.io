@@ -63,7 +63,7 @@
     .candidate-score{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem}
     .score-badge{padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:700}
     .score-badge.comet{background:var(--success);color:#fff}
-    .score-badge.not-comet{background:var(--danger);color:#fff}
+    .score-badge.not_comet{background:var(--danger);color:#fff}
     .score-badge.unknown{background:var(--text-secondary);color:#fff}
     .score-value{font-size:.85rem;color:var(--text-secondary)}
     .candidate-meta{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;font-size:.85rem}
@@ -90,11 +90,12 @@
     .seg button:last-child{border-right:0}
     .seg button.active{color:var(--text-primary);background:rgba(59,130,246,.12)}
     .seg button[disabled]{opacity:.45;pointer-events:none}
-    .three-wrap{background:#000;border:1px solid var(--border);border-radius:.5rem;height:360px}
+    .three-wrap{background:#000;border:1px solid var(--border);border-radius:.5rem;height:360px;position:relative}
     .three-hint{font-size:.85rem;color:var(--text-secondary);margin-top:.5rem}
     .tl-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
     .tl-controls input[type="range"]{width:160px}
     .tl-img{width:100%;background:#000;border-radius:.5rem;border:1px solid var(--border);object-fit:contain}
+    .no-data{display:flex;align-items:center;justify-content:center;height:100%;color:#8b95b0;font-size:1rem;background:#111}
     @media (max-width:768px){
       .header-content{flex-direction:column;align-items:flex-start}
       .controls-grid{grid-template-columns:1fr}
@@ -125,7 +126,7 @@
   <div class="container">
     <div class="header-content">
       <div class="header-title">
-        <h1>SOHO Comet Hunter 3.8</h1>
+        <h1>SOHO Comet Hunter 3.9</h1>
         <div class="header-subtitle">Professional Comet Detection Dashboard</div>
       </div>
       <div class="header-actions">
@@ -235,10 +236,10 @@ const HIDE_NOT_COMET = true;
 const CONFIG = { repo:'NAGOHUSA/ONS_SOHOHUNTER', branch:'main', folder:'detections' };
 const API_URL = `https://api.github.com/repos/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
 
-// ---------- RAW URL (Fixed) ----------
+// ---------- RAW URL ----------
 const RAW_URL = (path) => {
   if (!path) return '';
-  let p = String(path).trim().replace(/^\.?\/*/, '').replace(/^detections\//, '');
+  let p = String(path).trim().replace(/^\.?\/*/, '');
   if (p.startsWith('http')) return p;
   return `https://raw.githubusercontent.com/${CONFIG.repo}/${CONFIG.branch}/detections/${p}`;
 };
@@ -277,14 +278,14 @@ const els = {
 
 // ---------- HELPERS ----------
 const formatDate = (s) => s ? new Date(s).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'N/A';
-const getTelescope = (c) => (c.instrument || c.detector || 'unknown').toUpperCase();
+const getTelescope = (c) => (c.instrument || 'unknown').toUpperCase();
 
 function normalizeCandidate(c, idx){
   const telescope = getTelescope(c);
-  const id = `${telescope}#${c.track_id ?? c.track_index ?? idx}`;
-  const ann = c.annotated_mid_path || c.annotated_path || c.annotated || c.paths?.annotated;
-  const orig = c.original_mid_path || c.original_path || c.original || c.paths?.original;
-  const crop = c.crop_path || c.crop || c.paths?.crop;
+  const id = `${telescope}#${c.track_id ?? idx}`;
+  const ann = c.annotated_path || c.paths?.annotated;
+  const orig = c.original_path || c.paths?.original;
+  const crop = c.crop_path || c.paths?.crop;
 
   return {
     id, telescope,
@@ -300,7 +301,7 @@ function normalizeCandidate(c, idx){
     thumbnail: c.thumbnail_path || crop || '',
     positions: c.positions || [],
     imageSize: c.image_size || null,
-    trackIndex: c.track_id ?? c.track_index ?? idx,
+    trackIndex: c.track_id ?? idx,
     raw: c
   };
 }
@@ -369,8 +370,8 @@ function applyFilters() {
 
   filteredCandidates = allCandidates.filter(candidate => {
     if (selectedId && candidate.id !== selectedId) return false;
-    if (c2 && candidate.telescope !== 'C2' && candidate.telescope !== 'LASCO') return false;
-    if (c3 && candidate.telescope !== 'C3') return false;
+    if (c2 && candidate.telescope !== 'LASCO C2') return false;
+    if (c3 && candidate.telescope !== 'LASCO C3') return false;
     if (comet && candidate.label !== 'comet') return false;
     if (marked && !markedIds.has(candidate.id)) return false;
     return true;
@@ -382,7 +383,7 @@ function applyFilters() {
 
 function renderCandidates() {
   const visible = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() !== 'not_comet')
+    ? filteredCandidates.filter(c => c.label !== 'not_comet')
     : filteredCandidates;
 
   if (!visible.length) {
@@ -403,7 +404,7 @@ function renderCandidates() {
 
 function updateFilterCount() {
   const hidden = HIDE_NOT_COMET
-    ? filteredCandidates.filter(c => (c.label || '').toLowerCase() === 'not_comet').length
+    ? filteredCandidates.filter(c => c.label === 'not_comet').length
     : 0;
   const shown = filteredCandidates.length - hidden;
   els.filterCount.textContent = `Showing ${shown} of ${allCandidates.length} candidates${hidden ? ` (${hidden} hidden as not_comet)` : ''}`;
@@ -505,11 +506,12 @@ function showCandidateDetail(id){
         <img id="tlImg" class="tl-img" alt="timelapse">
       </div>
 
+      ${(c.positions && c.positions.length > 0) ? `
       <div>
-        <h4 style="margin-bottom:.5rem;">3D Track</h4>
+        <h4 style="margin-bottom:.5rem;">3D Track Viewer</h4>
         <div class="three-wrap" id="threeWrap"></div>
-        <div class="three-hint">Drag to orbit.</div>
-      </div>
+        <div class="three-hint">Drag to orbit • Points extruded over time</div>
+      </div>` : ''}
 
       <div>
         <h4 style="margin-bottom:.5rem;">Details</h4>
@@ -549,7 +551,9 @@ function showCandidateDetail(id){
   });
 
   initTimelapse(body, sequence, firstMode);
-  initThreeTrack(body.querySelector('#threeWrap'), c);
+  if (c.positions && c.positions.length > 0) {
+    initThreeTrack(body.querySelector('#threeWrap'), c);
+  }
   modal.classList.add('active');
 }
 
@@ -640,25 +644,19 @@ function initThreeTrack(host, c){
   const pts = (c.positions || []).map(p => ({ x: p.x, y: p.y })).filter(p => typeof p.x === 'number' && typeof p.y === 'number');
 
   if (pts.length < 1) {
-    // Show fallback message
     const msg = document.createElement('div');
     msg.textContent = 'No position data available for 3D track';
-    msg.style.color = '#8b95b0';
-    msg.style.fontSize = '0.9rem';
-    msg.style.textAlign = 'center';
-    msg.style.padding = '2rem';
+    msg.className = 'no-data';
     host.appendChild(msg);
     return;
   }
 
   if (pts.length === 1) {
-    // Single point
     const geometry = new THREE.SphereGeometry(0.05, 16, 16);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
   } else {
-    // Line + points
     const [W, H] = c.imageSize || [1024, 1024];
     const toN = (x, y) => [(x / W) * 2 - 1, -((y / H) * 2 - 1)];
 
@@ -684,7 +682,6 @@ function initThreeTrack(host, c){
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-  // Orbit controls
   let isDown = false, lastX = 0, lastY = 0, rx = 0.3, ry = 0.6;
   const onDown = e => { isDown = true; lastX = e.clientX; lastY = e.clientY; };
   const onUp = () => isDown = false;
@@ -728,8 +725,8 @@ function initThreeTrack(host, c){
 function updateStats(){
   const total=allCandidates.length;
   const comets=allCandidates.filter(c=>c.label==='comet').length;
-  const c2=allCandidates.filter(c=>c.telescope==='C2'||c.telescope==='LASCO').length;
-  const c3=allCandidates.filter(c=>c.telescope==='C3').length;
+  const c2=allCandidates.filter(c=>c.telescope==='LASCO C2').length;
+  const c3=allCandidates.filter(c=>c.telescope==='LASCO C3').length;
   const marked=[...markedIds].filter(id=>allCandidates.some(c=>c.id===id)).length;
   els.statTotal.textContent=total; els.statComets.textContent=comets; els.statC2.textContent=c2; els.statC3.textContent=c3; els.statMarked.textContent=marked;
 }
