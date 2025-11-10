@@ -1,1 +1,149 @@
-TEMP.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Night Sky ALERTS</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+    }
+    header {
+      background: linear-gradient(to bottom, #ff6a00cc, #ff6a00a8), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?fit=crop&w=1350&q=80') no-repeat center center/cover;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 3em;
+      margin: 0 0 10px;
+    }
+    header p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    header a {
+      background: #fff;
+      color: #ff6a00;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    section {
+      padding: 50px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .features {
+      display: grid;
+      gap: 30px;
+    }
+    .feature-item {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .feature-item h3 {
+      margin-top: 0;
+      color: #ffa94d;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .gallery-item {
+      background: #1e1e1e;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .gallery-item div {
+      padding: 15px;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Our Night Sky ALERTS</h1>
+  <p>Your hourly dashboard for celestial activity and breaking space alerts.</p>
+  <a href="#alerts">View Latest Alerts</a>
+</header>
+
+<section>
+  <h2>What You’ll Get Notified About</h2>
+  <div class="features">
+    <div class="feature-item">
+      <h3>Meteor Showers & Fireballs</h3>
+      <p>Instant alerts for bright meteors and regional fireball sightings.</p>
+    </div>
+    <div class="feature-item">
+      <h3>Solar Flares & CME Events</h3>
+      <p>Track sun activity and potential geomagnetic storm impacts.</p>
+    </div>
+    <div class="feature-item">
+      <h3>Comets & Near-Earth Objects</h3>
+      <p>Discover which celestial visitors are visible tonight.</p>
+    </div>
+    <div class="feature-item">
+      <h3>Aurora Borealis Alerts</h3>
+      <p>Know when and where to catch the northern lights.</p>
+    </div>
+  </div>
+</section>
+
+<section id="alerts">
+  <h2>Trending Space Alerts</h2>
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?fit=crop&w=800&q=80" alt="Northern Lights"/>
+      <div>
+        <h4>Aurora Over Scandinavia</h4>
+        <p>Massive geomagnetic storm paints skies green and purple.</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?fit=crop&w=800&q=80" alt="Meteor"/>
+      <div>
+        <h4>Fireball Over Arizona</h4>
+        <p>Dozens report a bright meteor over the desert, caught on dashcams.</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Solar_flare_September_2017.jpg" alt="Solar Flare"/>
+      <div>
+        <h4>Solar Flare Disrupts Signals</h4>
+        <p>X-class solar flare causes blackouts across North America.</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1581090700227-1e37b1904184?fit=crop&w=800&q=80" alt="Comet"/>
+      <div>
+        <h4>Comet Nishimura Reappears</h4>
+        <p>Stunning tail visible again before dawn in eastern skies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 Our Night Sky ALERTS — [ournightsky.us](http://ournightsky.us)<br>
+  Stay updated with hourly alerts about comets, meteor showers, solar flares, auroras, and more.
+</footer>
+
+</body>
+</html>
