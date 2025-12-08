@@ -5,3 +5,9 @@ server {
         return 301 https://srv.adstxtmanager.com/19390/nagoh.us;
     }
 }
+
+server {
+    location ~ /ads.txt {
+        return 301 https://srv.adstxtmanager.com/19390/live.ournightsky.us;
+    }
+}
