@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: rgba(67, 97, 238, 0.2);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
@@ -23,6 +23,7 @@
             line-height: 1.4;
             padding: 0;
             margin: 0;
+            -webkit-touch-callout: none;
         }
         
         /* Header */
@@ -83,6 +84,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
         
         /* Church Quick Searches */
@@ -119,12 +121,15 @@
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
-        .search-tag:hover, .search-tag.active {
+        .search-tag:active {
             background: #4361ee;
             color: white;
             border-color: #4361ee;
+            transform: scale(0.95);
         }
         
         /* Results */
@@ -159,6 +164,16 @@
             display: flex;
             gap: 10px;
             align-items: flex-start;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+        
+        .person-card:active {
+            transform: scale(0.98);
+            background: #f8faff;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.1);
         }
         
         .person-avatar {
@@ -235,10 +250,45 @@
             font-size: 11px;
         }
         
-        .contact-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Clickable Phone Number */
+        .phone-link {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(67, 97, 238, 0.2);
+        }
+        
+        .phone-link:active {
+            background: rgba(67, 97, 238, 0.1);
+            color: #3a0ca3;
+            transform: scale(0.95);
+        }
+        
+        /* Call Action Button */
+        .call-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        
+        .call-btn:active {
+            background: #059669;
+            transform: scale(0.95);
         }
         
         /* Family Indicator */
@@ -297,10 +347,94 @@
             margin-top: 10px;
         }
         
+        /* Phone Dialer Modal */
+        .dialer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .dialer-content {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: modalSlide 0.3s ease;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .dialer-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .dialer-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4361ee;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8faff;
+            border-radius: 10px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+        
+        .dialer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .dialer-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .dialer-cancel {
+            background: #f0f4ff;
+            color: #4361ee;
+        }
+        
+        .dialer-call {
+            background: #10b981;
+            color: white;
+        }
+        
+        .dialer-cancel:active, .dialer-call:active {
+            transform: scale(0.95);
+        }
+        
         /* iPhone Optimizations */
         @supports (-webkit-touch-callout: none) {
             .search-input {
                 font-size: 16px;
+            }
+            
+            .phone-link {
+                font-size: 13px;
             }
         }
         
@@ -332,7 +466,7 @@
                 color: #93c5fd;
             }
             
-            .search-tag.active {
+            .search-tag:active {
                 background: #3b82f6;
                 border-color: #3b82f6;
             }
@@ -365,6 +499,38 @@
                 color: #cbd5e1;
             }
             
+            .phone-link {
+                color: #60a5fa;
+            }
+            
+            .phone-link:active {
+                background: rgba(59, 130, 246, 0.2);
+                color: #93c5fd;
+            }
+            
+            .call-btn {
+                background: #10b981;
+            }
+            
+            .dialer-content {
+                background: #1e293b;
+                color: #e2e8f0;
+            }
+            
+            .dialer-name {
+                color: #f1f5f9;
+            }
+            
+            .dialer-number {
+                color: #60a5fa;
+                background: #0f172a;
+            }
+            
+            .dialer-cancel {
+                background: #334155;
+                color: #93c5fd;
+            }
+            
             .category-label {
                 color: #94a3b8;
             }
@@ -388,6 +554,10 @@
             .search-tag {
                 padding: 5px 10px;
                 font-size: 11px;
+            }
+            
+            .dialer-content {
+                padding: 15px;
             }
         }
     </style>
@@ -458,7 +628,24 @@
     
     <div class="footer">
         <div>Grace Church Directory &copy; <span id="currentYear"></span></div>
-        <div id="dataInfo" style="margin-top: 3px; font-size: 10px; opacity: 0.7;">Loading church family...</div>
+        <div id="dataInfo" style="margin-top: 3px; font-size: 10px; opacity: 0.7;">Tap phone number to call • Tap card for details</div>
+    </div>
+    
+    <!-- Phone Dialer Modal -->
+    <div id="dialerModal" class="dialer-modal">
+        <div class="dialer-content">
+            <i class="fas fa-phone-alt" style="font-size: 32px; color: #10b981; margin-bottom: 10px;"></i>
+            <div class="dialer-name" id="dialerName"></div>
+            <div style="color: #666; font-size: 12px; margin-bottom: 10px;" id="dialerRole"></div>
+            <div class="dialer-number" id="dialerNumber"></div>
+            <div style="color: #999; font-size: 11px; margin-bottom: 5px;">This will open your phone app</div>
+            <div class="dialer-actions">
+                <button id="dialerCancel" class="dialer-btn dialer-cancel">Cancel</button>
+                <button id="dialerCall" class="dialer-btn dialer-call">
+                    <i class="fas fa-phone"></i> Call
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -517,7 +704,7 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
             sortData();
             displayResults(directoryData);
             document.getElementById('dataInfo').textContent = 
-                `${directoryData.length} church family members`;
+                `${directoryData.length} church family members • Tap phone to call`;
         }
         
         // Sort data
@@ -534,9 +721,32 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
             return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
         }
         
-        // Get family count for same last name
-        function getFamilyCount(lastName, data) {
-            return data.filter(person => person.last_name === lastName).length;
+        // Format phone number for display
+        function formatPhoneNumber(phone) {
+            // Format as (XXX) XXX-XXXX if not already formatted
+            const cleaned = phone.replace(/\D/g, '');
+            if (cleaned.length === 10) {
+                return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6)}`;
+            }
+            return phone;
+        }
+        
+        // Show phone dialer
+        function showPhoneDialer(name, role, phone) {
+            document.getElementById('dialerName').textContent = name;
+            document.getElementById('dialerRole').textContent = role;
+            document.getElementById('dialerNumber').textContent = formatPhoneNumber(phone);
+            document.getElementById('dialerModal').style.display = 'flex';
+            
+            // Set up call button
+            document.getElementById('dialerCall').onclick = function() {
+                // Initiate phone call
+                window.location.href = `tel:${phone}`;
+                // Close modal after a short delay
+                setTimeout(() => {
+                    document.getElementById('dialerModal').style.display = 'none';
+                }, 300);
+            };
         }
         
         // Display results as compact cards
@@ -568,13 +778,13 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
                 const initials = getInitials(person.first_name, person.last_name);
                 const familyCount = familyCounts[person.last_name];
                 const hasChildren = person.has_children === 'Yes';
+                const formattedPhone = formatPhoneNumber(person.phone);
                 
                 cardsHTML += `
                     <div class="person-card" 
                          data-person="${person.first_name} ${person.last_name}" 
                          data-role="${person.role}"
-                         data-family="${person.last_name}"
-                         data-children="${hasChildren}">
+                         data-phone="${person.phone}">
                         <div class="person-avatar">${initials}</div>
                         <div class="person-info">
                             <div class="person-name">
@@ -593,7 +803,10 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
                                 </div>
                                 <div class="contact-item">
                                     <i class="fas fa-phone"></i>
-                                    <span class="contact-text">${person.phone}</span>
+                                    <span class="phone-link" data-phone="${person.phone}" data-name="${person.first_name} ${person.last_name}">${formattedPhone}</span>
+                                    <button class="call-btn" data-phone="${person.phone}" data-name="${person.first_name} ${person.last_name}">
+                                        <i class="fas fa-phone"></i> Call
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -604,35 +817,52 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
             container.innerHTML = cardsHTML;
             count.textContent = `${data.length} ${data.length !== 1 ? 'members' : 'member'} found`;
             
-            // Add click handlers to cards
+            // Add click handlers to phone links
+            document.querySelectorAll('.phone-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card click from firing
+                    const phone = this.dataset.phone;
+                    const name = this.dataset.name;
+                    const role = this.closest('.person-card').dataset.role;
+                    showPhoneDialer(name, role, phone);
+                });
+            });
+            
+            // Add click handlers to call buttons
+            document.querySelectorAll('.call-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card click from firing
+                    const phone = this.dataset.phone;
+                    const name = this.dataset.name;
+                    const role = this.closest('.person-card').dataset.role;
+                    showPhoneDialer(name, role, phone);
+                });
+            });
+            
+            // Add click handlers to cards for details
             document.querySelectorAll('.person-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    // Visual feedback
-                    this.style.transform = 'scale(0.98)';
-                    this.style.backgroundColor = '#f8faff';
-                    
-                    setTimeout(() => {
-                        this.style.transform = '';
-                        this.style.backgroundColor = '';
-                    }, 200);
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on phone link or call button
+                    if (e.target.closest('.phone-link') || e.target.closest('.call-btn')) {
+                        return;
+                    }
                     
                     const name = this.dataset.person;
                     const role = this.dataset.role;
-                    const family = this.dataset.family;
                     
-                    // Show church-specific options
-                    showContactOptions(name, role, family);
+                    // Show contact options
+                    showContactOptions(name, role);
                 });
             });
         }
         
         // Show church contact options
-        function showContactOptions(name, role, family) {
+        function showContactOptions(name, role) {
             const actions = `
 1. Pray for ${name.split(' ')[0]}
 2. Contact for ministry needs
-3. View family members
-4. Send encouragement
+3. Send encouragement email
+4. View family information
 5. Cancel`;
 
             const choice = prompt(`Church Member: ${name}\nRole: ${role}\n\nWhat would you like to do?\n\n${actions}`);
@@ -642,12 +872,9 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
             } else if (choice === '2') {
                 alert(`📞 Contact details have been saved for ministry coordination`);
             } else if (choice === '3') {
-                // Filter to show family members
-                const familyMembers = directoryData.filter(p => p.last_name === family);
-                const familyList = familyMembers.map(m => `• ${m.first_name} ${m.last_name} (${m.role})`).join('\n');
-                alert(`👨‍👩‍👧‍👦 ${family} Family Members:\n\n${familyList}`);
+                alert(`✉️ Preparing email to ${name}...`);
             } else if (choice === '4') {
-                alert(`✉️ Send encouragement to ${name} via church messaging`);
+                alert(`👨‍👩‍👧‍👦 Family information will be shown here`);
             }
         }
         
@@ -735,6 +962,18 @@ Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,
             const query = document.getElementById('searchInput').value;
             const results = query ? searchDirectory(query) : directoryData;
             displayResults(results);
+        });
+        
+        // Dialer modal close
+        document.getElementById('dialerCancel').addEventListener('click', () => {
+            document.getElementById('dialerModal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('dialerModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('dialerModal')) {
+                document.getElementById('dialerModal').style.display = 'none';
+            }
         });
         
         // Initialize
