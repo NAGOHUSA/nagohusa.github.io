@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Grace People Directory</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -10,71 +12,91 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             background-color: #f5f7fa;
             color: #333;
             line-height: 1.6;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -webkit-overflow-scrolling: touch;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        /* iPhone X/XS/11 Pro notch area handling */
+        @supports(padding: max(0px)) {
+            .container {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-top: max(15px, env(safe-area-inset-top));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+            }
         }
         
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e1e5eb;
+            padding: 20px 15px 15px;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
         }
         
         h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 2.2rem;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         
         .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95rem;
+            font-weight: 400;
         }
         
         .dashboard {
             display: flex;
             flex-direction: column;
-            gap: 25px;
-        }
-        
-        @media (min-width: 768px) {
-            .dashboard {
-                flex-direction: row;
-            }
-            
-            .search-panel {
-                flex: 1;
-                max-width: 350px;
-            }
-            
-            .results-panel {
-                flex: 2;
-            }
+            gap: 0;
         }
         
         .panel {
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            padding: 25px;
+            padding: 20px 15px;
+            margin-bottom: 0;
+        }
+        
+        .search-panel {
+            border-bottom: 1px solid #e1e5eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 120px;
+            z-index: 90;
+        }
+        
+        .results-panel {
+            padding-top: 15px;
         }
         
         .search-panel h2, .results-panel h2 {
             color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -82,45 +104,57 @@
         
         .search-box {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            width: 100%;
         }
         
         .search-input {
             flex-grow: 1;
-            padding: 15px;
+            padding: 14px 15px;
             border: 1px solid #ddd;
-            border-radius: 8px 0 0 8px;
-            font-size: 16px;
+            border-radius: 12px 0 0 12px;
+            font-size: 16px; /* Prevents iOS zoom on focus */
             transition: border 0.3s;
+            background-color: #f8f9fa;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
+        /* Fix for iOS input styling */
         .search-input:focus {
             outline: none;
             border-color: #3498db;
+            background-color: white;
         }
         
         .search-btn {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 15px 20px;
-            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            border-radius: 0 12px 12px 0;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 1rem;
+            min-width: 60px;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
-        .search-btn:hover {
+        .search-btn:active {
             background-color: #2980b9;
+            transform: scale(0.98);
         }
         
         .search-options {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .search-options h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 10px;
             color: #555;
+            font-weight: 600;
         }
         
         .option-tags {
@@ -132,14 +166,17 @@
         .option-tag {
             background-color: #ecf0f1;
             border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
+            padding: 8px 14px;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
-        .option-tag:hover {
+        .option-tag:active {
             background-color: #d5dbdb;
+            transform: scale(0.96);
         }
         
         .option-tag.active {
@@ -147,10 +184,26 @@
             color: white;
         }
         
+        .search-tips {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .search-tips p {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        
         .results-count {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #7f8c8d;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0 5px;
         }
         
         .results-table {
@@ -158,34 +211,42 @@
             border-collapse: collapse;
             overflow-x: auto;
             display: block;
+            -webkit-overflow-scrolling: touch;
         }
         
         .results-table thead {
             background-color: #f8f9fa;
+            position: sticky;
+            top: 200px;
+            z-index: 80;
         }
         
         .results-table th {
             text-align: left;
-            padding: 15px;
+            padding: 12px 10px;
             font-weight: 600;
             color: #2c3e50;
             border-bottom: 2px solid #e1e5eb;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         
         .results-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            padding: 15px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+            font-size: 0.95rem;
         }
         
-        .results-table tr:hover {
+        .results-table tr:active {
             background-color: #f9f9f9;
         }
         
         .no-results {
             text-align: center;
-            padding: 40px;
+            padding: 50px 20px;
             color: #7f8c8d;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         
         .no-results i {
@@ -197,32 +258,37 @@
         .person-name {
             font-weight: 600;
             color: #2c3e50;
+            font-size: 1rem;
+            margin-bottom: 4px;
         }
         
         .person-contact {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
         
         .person-email, .person-phone {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #555;
+            word-break: break-all;
         }
         
         .person-email i, .person-phone i {
             margin-right: 8px;
             color: #3498db;
+            min-width: 16px;
         }
         
         .person-address {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #777;
+            line-height: 1.4;
         }
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             color: #7f8c8d;
         }
         
@@ -243,27 +309,181 @@
         
         footer {
             text-align: center;
-            margin-top: 40px;
+            padding: 20px 15px;
             color: #95a5a6;
-            font-size: 0.9rem;
-            padding-top: 20px;
+            font-size: 0.85rem;
+            background-color: #f8f9fa;
             border-top: 1px solid #ecf0f1;
+        }
+        
+        /* iPhone-specific optimizations */
+        @media screen and (max-width: 768px) {
+            .results-table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .person-name {
+                font-size: 0.95rem;
+            }
+            
+            .person-email, .person-phone, .person-address {
+                font-size: 0.82rem;
+            }
+        }
+        
+        /* iPhone 5/SE and smaller */
+        @media screen and (max-width: 320px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.85rem;
+            }
+            
+            .search-input, .search-btn {
+                padding: 12px 10px;
+            }
+            
+            .option-tag {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 10px 6px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* iPhone landscape optimization */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            header {
+                padding: 10px 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+            
+            .search-panel {
+                position: relative;
+                top: 0;
+            }
+            
+            .results-table thead {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        /* Dark mode support for iOS */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #e0e0e0;
+            }
+            
+            .panel, .search-tips, footer {
+                background-color: #1e1e1e;
+                color: #e0e0e0;
+            }
+            
+            header {
+                background: linear-gradient(135deg, #1a5276 0%, #1c2833 100%);
+            }
+            
+            .search-input {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+            
+            .search-input:focus {
+                background-color: #333;
+                border-color: #3498db;
+            }
+            
+            .search-tips {
+                background-color: #252525;
+                border-left-color: #3498db;
+            }
+            
+            .results-table thead {
+                background-color: #252525;
+            }
+            
+            .results-table th {
+                color: #e0e0e0;
+                border-bottom-color: #444;
+            }
+            
+            .results-table td {
+                border-bottom-color: #333;
+            }
+            
+            .person-name {
+                color: #e0e0e0;
+            }
+            
+            .person-email, .person-phone, .person-address {
+                color: #b0b0b0;
+            }
+            
+            .option-tag {
+                background-color: #333;
+                color: #e0e0e0;
+            }
+            
+            .option-tag.active {
+                background-color: #3498db;
+            }
+            
+            .no-results i, .loading {
+                color: #666;
+            }
+        }
+        
+        /* iOS Safari specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            .search-input, .search-btn {
+                height: 48px; /* Better touch target for iOS */
+            }
+            
+            .option-tag {
+                padding: 10px 14px; /* Larger touch target */
+            }
+            
+            .results-table tr {
+                min-height: 44px; /* Apple's recommended minimum touch target */
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-address-book"></i> Grace People Directory</h1>
-            <p class="subtitle">Search and connect with members of our community</p>
+            <h1><i class="fas fa-address-book"></i> Grace Directory</h1>
+            <p class="subtitle">Search and connect with community members</p>
         </header>
         
         <div class="dashboard">
             <div class="panel search-panel">
-                <h2><i class="fas fa-search"></i> Search Directory</h2>
+                <h2><i class="fas fa-search"></i> Search</h2>
                 
                 <div class="search-box">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search by name, email, city, etc...">
+                    <input type="search" id="searchInput" class="search-input" placeholder="Search name, email, city..." autocapitalize="none" autocomplete="off">
                     <button id="searchBtn" class="search-btn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -272,24 +492,21 @@
                 <div class="search-options">
                     <h3>Quick Search</h3>
                     <div class="option-tags">
-                        <div class="option-tag" data-search="New York">New York</div>
-                        <div class="option-tag" data-search="Los Angeles">Los Angeles</div>
-                        <div class="option-tag" data-search="Manager">Manager</div>
-                        <div class="option-tag" data-search="Developer">Developer</div>
-                        <div class="option-tag" data-search="202-">202 Area Code</div>
+                        <div class="option-tag" data-search="New York">NYC</div>
+                        <div class="option-tag" data-search="Los Angeles">LA</div>
+                        <div class="option-tag" data-search="Chicago">Chicago</div>
+                        <div class="option-tag" data-search="202-">DC Area</div>
+                        <div class="option-tag" data-search="CA">California</div>
                     </div>
                 </div>
                 
-                <div class="search-options">
-                    <h3>Search Tips</h3>
-                    <p style="font-size: 0.9rem; color: #7f8c8d;">
-                        You can search by first name, last name, email, phone, city, state, or any combination. Try searching for "John" or "CA" for California.
-                    </p>
+                <div class="search-tips">
+                    <p><i class="fas fa-lightbulb"></i> <strong>Tip:</strong> You can search by first name, last name, email, phone, city, or state.</p>
                 </div>
             </div>
             
             <div class="panel results-panel">
-                <h2><i class="fas fa-users"></i> Directory Results</h2>
+                <h2><i class="fas fa-users"></i> Results</h2>
                 <div class="results-count" id="resultsCount">Loading directory...</div>
                 
                 <div id="resultsContainer">
@@ -302,7 +519,7 @@
         </div>
         
         <footer>
-            <p>Grace People Directory &copy; <span id="currentYear"></span> | Data updates automatically from CSV file</p>
+            <p>Grace People Directory &copy; <span id="currentYear"></span> | <span id="resultCountFooter">Loading...</span></p>
         </footer>
     </div>
 
@@ -361,34 +578,37 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
         function loadDirectoryData() {
             directoryData = parseCSV(csvData);
             displayResults(directoryData);
+            document.getElementById('resultCountFooter').textContent = `${directoryData.length} contacts`;
         }
         
         // Display results in the table
         function displayResults(data) {
             const resultsContainer = document.getElementById('resultsContainer');
             const resultsCount = document.getElementById('resultsCount');
+            const footerCount = document.getElementById('resultCountFooter');
             
             if (data.length === 0) {
                 resultsContainer.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-user-slash"></i>
                         <h3>No Results Found</h3>
-                        <p>Try adjusting your search terms</p>
+                        <p>Try different search terms</p>
                     </div>
                 `;
-                resultsCount.textContent = `0 people found`;
+                resultsCount.textContent = `0 contacts found`;
+                footerCount.textContent = `0 contacts`;
                 return;
             }
             
             // Create table structure
             let tableHTML = `
-                <div style="overflow-x:auto;">
+                <div style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
                     <table class="results-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Contact</th>
-                                <th>Address</th>
+                                <th>Location</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -396,7 +616,8 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             
             // Add rows for each person
             data.forEach(person => {
-                const fullAddress = `${person.street}${person.street_2 ? ', ' + person.street_2 : ''}<br>${person.city}, ${person.state} ${person.postal_code}`;
+                const addressLine2 = person.street_2 ? `<br>${person.street_2}` : '';
+                const fullAddress = `${person.street}${addressLine2}<br>${person.city}, ${person.state}`;
                 
                 tableHTML += `
                     <tr>
@@ -423,7 +644,19 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             `;
             
             resultsContainer.innerHTML = tableHTML;
-            resultsCount.textContent = `${data.length} ${data.length === 1 ? 'person' : 'people'} found`;
+            resultsCount.textContent = `${data.length} ${data.length === 1 ? 'contact' : 'contacts'} found`;
+            footerCount.textContent = `${data.length} contacts`;
+            
+            // Add touch event listeners to table rows for better iOS interaction
+            document.querySelectorAll('.results-table tr').forEach(row => {
+                row.addEventListener('touchstart', function() {
+                    this.style.backgroundColor = '#f5f5f5';
+                });
+                
+                row.addEventListener('touchend', function() {
+                    this.style.backgroundColor = '';
+                });
+            });
         }
         
         // Search directory data
@@ -453,6 +686,8 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             const query = document.getElementById('searchInput').value;
             const results = searchDirectory(query);
             displayResults(results);
+            // Hide iOS keyboard after search
+            document.getElementById('searchInput').blur();
         });
         
         // Handle Enter key in search input
@@ -461,10 +696,12 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
                 const query = document.getElementById('searchInput').value;
                 const results = searchDirectory(query);
                 displayResults(results);
+                // Hide iOS keyboard after search
+                document.getElementById('searchInput').blur();
             }
         });
         
-        // Handle quick search option tags
+        // Handle quick search option tags with touch feedback
         document.querySelectorAll('.option-tag').forEach(tag => {
             tag.addEventListener('click', () => {
                 // Remove active class from all tags
@@ -482,20 +719,53 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
                 const results = searchDirectory(searchValue);
                 displayResults(results);
             });
+            
+            // Add touch feedback for iOS
+            tag.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            tag.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
         });
         
         // Initialize the directory when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            // In a real implementation, you would fetch the CSV file here
-            // For example: fetch('GRACE_PEOPLE_DIRECTORY.csv')
-            //   .then(response => response.text())
-            //   .then(csvText => {
-            //       directoryData = parseCSV(csvText);
-            //       displayResults(directoryData);
-            //   });
+            // Add a slight delay to show loading state (better UX)
+            setTimeout(() => {
+                loadDirectoryData();
+            }, 500);
             
-            // For this demo, we'll use the embedded CSV data
-            loadDirectoryData();
+            // Fix for iOS viewport height issue
+            function setVH() {
+                let vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+            
+            setVH();
+            window.addEventListener('resize', setVH);
+            window.addEventListener('orientationchange', setVH);
+            
+            // Prevent iOS zoom on input focus
+            document.getElementById('searchInput').addEventListener('touchstart', function(e) {
+                this.style.fontSize = '16px'; // Prevents zoom on focus
+            });
+            
+            // Handle iOS back button in search
+            document.getElementById('searchInput').addEventListener('search', function() {
+                if (this.value === '') {
+                    displayResults(directoryData);
+                }
+            });
+        });
+        
+        // Handle page visibility for iOS (when switching apps)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // Page is visible again, refresh if needed
+                displayResults(directoryData);
+            }
         });
     </script>
 </body>
