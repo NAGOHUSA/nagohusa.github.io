@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grace People Directory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e1e5eb;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .dashboard {
+                flex-direction: row;
+            }
+            
+            .search-panel {
+                flex: 1;
+                max-width: 350px;
+            }
+            
+            .results-panel {
+                flex: 2;
+            }
+        }
+        
+        .panel {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+        
+        .search-panel h2, .results-panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .search-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .search-options {
+            margin-bottom: 20px;
+        }
+        
+        .search-options h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .option-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .option-tag {
+            background-color: #ecf0f1;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-tag:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .option-tag.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .results-count {
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        .results-table thead {
+            background-color: #f8f9fa;
+        }
+        
+        .results-table th {
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e1e5eb;
+        }
+        
+        .results-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .results-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        .person-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .person-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .person-email, .person-phone {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .person-email i, .person-phone i {
+            margin-right: 8px;
+            color: #3498db;
+        }
+        
+        .person-address {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-address-book"></i> Grace People Directory</h1>
+            <p class="subtitle">Search and connect with members of our community</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="panel search-panel">
+                <h2><i class="fas fa-search"></i> Search Directory</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by name, email, city, etc...">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="search-options">
+                    <h3>Quick Search</h3>
+                    <div class="option-tags">
+                        <div class="option-tag" data-search="New York">New York</div>
+                        <div class="option-tag" data-search="Los Angeles">Los Angeles</div>
+                        <div class="option-tag" data-search="Manager">Manager</div>
+                        <div class="option-tag" data-search="Developer">Developer</div>
+                        <div class="option-tag" data-search="202-">202 Area Code</div>
+                    </div>
+                </div>
+                
+                <div class="search-options">
+                    <h3>Search Tips</h3>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">
+                        You can search by first name, last name, email, phone, city, state, or any combination. Try searching for "John" or "CA" for California.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="panel results-panel">
+                <h2><i class="fas fa-users"></i> Directory Results</h2>
+                <div class="results-count" id="resultsCount">Loading directory...</div>
+                
+                <div id="resultsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading directory data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Grace People Directory &copy; <span id="currentYear"></span> | Data updates automatically from CSV file</p>
+        </footer>
+    </div>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Sample CSV data (in a real scenario, this would be loaded from a file)
+        const csvData = `first_name,last_name,email,phone,street,street_2,city,state,postal_code
+John,Smith,john.smith@example.com,202-555-0101,123 Main St,Apt 4B,New York,NY,10001
+Emma,Johnson,emma.johnson@example.com,310-555-0102,456 Oak Ave,,Los Angeles,CA,90001
+Michael,Brown,michael.brown@example.com,415-555-0103,789 Pine Rd,Suite 200,San Francisco,CA,94102
+Sarah,Davis,sarah.davis@example.com,202-555-0104,321 Elm St,,Washington,DC,20001
+James,Wilson,james.wilson@example.com,312-555-0105,654 Maple Dr,Unit 12,Chicago,IL,60601
+Patricia,Moore,patricia.moore@example.com,713-555-0106,987 Birch Ln,,Houston,TX,77001
+Robert,Taylor,robert.taylor@example.com,305-555-0107,147 Cedar Blvd,Apt 5C,Miami,FL,33101
+Jennifer,Anderson,jennifer.anderson@example.com,617-555-0108,258 Spruce Ct,,Boston,MA,02101
+David,Thomas,david.thomas@example.com,702-555-0109,369 Willow Way,,Las Vegas,NV,89101
+Linda,Jackson,linda.jackson@example.com,214-555-0110,741 Aspen St,Floor 3,Dallas,TX,75201
+William,White,william.white@example.com,404-555-0111,852 Redwood Ave,,Atlanta,GA,30301
+Elizabeth,Harris,elizabeth.harris@example.com,503-555-0112,963 Fir Pl,,Portland,OR,97201
+Christopher,Martin,christopher.martin@example.com,602-555-0113,159 Magnolia Dr,,Phoenix,AZ,85001
+Susan,Thompson,susan.thompson@example.com,202-555-0114,753 Sycamore Rd,,Baltimore,MD,21201
+Joseph,Garcia,joseph.garcia@example.com,619-555-0115,357 Palm St,Apt 7B,San Diego,CA,92101
+Margaret,Martinez,margaret.martinez@example.com,212-555-0116,852 Olive Ave,,New York,NY,10002
+Charles,Robinson,charles.robinson@example.com,310-555-0117,456 Juniper Ln,,Los Angeles,CA,90002
+Jessica,Clark,jessica.clark@example.com,415-555-0118,789 Cypress Dr,Suite 100,San Francisco,CA,94103
+Thomas,Rodriguez,thomas.rodriguez@example.com,202-555-0119,321 Poplar St,,Washington,DC,20002
+Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,IL,60602`;
+        
+        // Parse CSV data into array of objects
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',');
+            
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim() === '') continue;
+                
+                const obj = {};
+                const currentLine = lines[i].split(',');
+                
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j].trim()] = currentLine[j] ? currentLine[j].trim() : '';
+                }
+                
+                result.push(obj);
+            }
+            
+            return result;
+        }
+        
+        // Load and display directory data
+        let directoryData = [];
+        
+        function loadDirectoryData() {
+            directoryData = parseCSV(csvData);
+            displayResults(directoryData);
+        }
+        
+        // Display results in the table
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            if (data.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>No Results Found</h3>
+                        <p>Try adjusting your search terms</p>
+                    </div>
+                `;
+                resultsCount.textContent = `0 people found`;
+                return;
+            }
+            
+            // Create table structure
+            let tableHTML = `
+                <div style="overflow-x:auto;">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add rows for each person
+            data.forEach(person => {
+                const fullAddress = `${person.street}${person.street_2 ? ', ' + person.street_2 : ''}<br>${person.city}, ${person.state} ${person.postal_code}`;
+                
+                tableHTML += `
+                    <tr>
+                        <td>
+                            <div class="person-name">${person.first_name} ${person.last_name}</div>
+                        </td>
+                        <td>
+                            <div class="person-contact">
+                                <div class="person-email"><i class="fas fa-envelope"></i> ${person.email}</div>
+                                <div class="person-phone"><i class="fas fa-phone"></i> ${person.phone}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="person-address">${fullAddress}</div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = tableHTML;
+            resultsCount.textContent = `${data.length} ${data.length === 1 ? 'person' : 'people'} found`;
+        }
+        
+        // Search directory data
+        function searchDirectory(query) {
+            if (!query.trim()) {
+                return directoryData;
+            }
+            
+            const searchTerms = query.toLowerCase().split(' ').filter(term => term);
+            
+            return directoryData.filter(person => {
+                // Combine all person data into a single string for searching
+                const searchableText = `
+                    ${person.first_name} ${person.last_name} 
+                    ${person.email} ${person.phone} 
+                    ${person.street} ${person.street_2} 
+                    ${person.city} ${person.state} ${person.postal_code}
+                `.toLowerCase();
+                
+                // Check if all search terms are found in the searchable text
+                return searchTerms.every(term => searchableText.includes(term));
+            });
+        }
+        
+        // Handle search button click
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value;
+            const results = searchDirectory(query);
+            displayResults(results);
+        });
+        
+        // Handle Enter key in search input
+        document.getElementById('searchInput').addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                const query = document.getElementById('searchInput').value;
+                const results = searchDirectory(query);
+                displayResults(results);
+            }
+        });
+        
+        // Handle quick search option tags
+        document.querySelectorAll('.option-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                // Remove active class from all tags
+                document.querySelectorAll('.option-tag').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Add active class to clicked tag
+                tag.classList.add('active');
+                
+                // Set search input value and trigger search
+                const searchValue = tag.getAttribute('data-search');
+                document.getElementById('searchInput').value = searchValue;
+                
+                const results = searchDirectory(searchValue);
+                displayResults(results);
+            });
+        });
+        
+        // Initialize the directory when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // In a real implementation, you would fetch the CSV file here
+            // For example: fetch('GRACE_PEOPLE_DIRECTORY.csv')
+            //   .then(response => response.text())
+            //   .then(csvText => {
+            //       directoryData = parseCSV(csvText);
+            //       displayResults(directoryData);
+            //   });
+            
+            // For this demo, we'll use the embedded CSV data
+            loadDirectoryData();
+        });
+    </script>
+</body>
+</html>
