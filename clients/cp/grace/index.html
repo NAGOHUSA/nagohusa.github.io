@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>Grace Directory</title>
+    <title>Grace Church Directory</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Reset & Base */
@@ -24,18 +23,17 @@
             line-height: 1.4;
             padding: 0;
             margin: 0;
-            overflow-x: hidden;
         }
         
         /* Header */
         .header {
             background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
             color: white;
-            padding: 12px 15px;
+            padding: 14px 15px 12px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .header h1 {
@@ -44,7 +42,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .header p {
@@ -52,21 +50,9 @@
             opacity: 0.9;
         }
         
-        /* Browser Detection Indicator */
-        .browser-info {
-            background: #f0f4ff;
-            padding: 8px 15px;
-            font-size: 11px;
-            color: #4361ee;
-            border-bottom: 1px solid #e0e7ff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         /* Search Section */
         .search-section {
-            padding: 12px 15px;
+            padding: 15px 15px 12px;
             background: white;
             border-bottom: 1px solid #e0e7ff;
         }
@@ -79,10 +65,10 @@
         
         .search-input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 12px 14px;
             border: 1px solid #d0d7ff;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             background: #f8faff;
             -webkit-appearance: none;
         }
@@ -91,36 +77,51 @@
             background: #4361ee;
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 0 16px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        /* Quick Filters */
-        .quick-filters {
+            border-radius: 12px;
+            width: 50px;
+            font-size: 16px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Church Quick Searches */
+        .quick-searches {
+            margin-top: 10px;
+        }
+        
+        .search-category {
+            margin-bottom: 8px;
+        }
+        
+        .category-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+            padding-left: 2px;
+        }
+        
+        .quick-search-tags {
+            display: flex;
+            flex-wrap: wrap;
             gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            -webkit-overflow-scrolling: touch;
+            margin-bottom: 8px;
         }
         
-        .quick-filters::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .filter-btn {
+        .search-tag {
             background: #f0f4ff;
             border: 1px solid #d0d7ff;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 6px 12px;
             font-size: 12px;
-            white-space: nowrap;
             color: #4361ee;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
         
-        .filter-btn.active {
+        .search-tag:hover, .search-tag.active {
             background: #4361ee;
             color: white;
             border-color: #4361ee;
@@ -150,30 +151,60 @@
         /* Compact Cards */
         .person-card {
             background: white;
-            margin: 8px 15px;
+            margin: 6px 15px;
             padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             border: 1px solid #e0e7ff;
-            transition: transform 0.2s;
-        }
-        
-        .person-card:active {
-            transform: scale(0.98);
-            background: #f8faff;
-        }
-        
-        .person-header {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
             align-items: flex-start;
-            margin-bottom: 8px;
+        }
+        
+        .person-avatar {
+            width: 36px;
+            height: 36px;
+            background: #4361ee;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        
+        .person-info {
+            flex: 1;
+            min-width: 0;
         }
         
         .person-name {
             font-weight: 700;
             color: #2d3748;
             font-size: 15px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .person-meta {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .person-role {
+            background: #e8f4ff;
+            color: #2c7be5;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
         }
         
         .person-city {
@@ -181,41 +212,51 @@
             color: #4361ee;
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
+            white-space: nowrap;
         }
         
         .person-contact {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 8px;
+            font-size: 12px;
+            color: #555;
         }
         
         .contact-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
-            color: #555;
+            margin-bottom: 2px;
         }
         
         .contact-item i {
             color: #4361ee;
-            width: 14px;
+            width: 12px;
+            font-size: 11px;
         }
         
-        .person-address {
-            font-size: 11px;
-            color: #777;
-            padding-top: 6px;
-            border-top: 1px dashed #e0e7ff;
+        .contact-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Family Indicator */
+        .family-indicator {
+            background: #f8f0ff;
+            color: #8a2be2;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            margin-left: 4px;
+            border: 1px solid #e0d0ff;
         }
         
         /* No Results */
         .no-results {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: #999;
         }
         
@@ -228,7 +269,7 @@
         /* Loading */
         .loading {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
         }
         
         .spinner {
@@ -258,12 +299,8 @@
         
         /* iPhone Optimizations */
         @supports (-webkit-touch-callout: none) {
-            body {
-                -webkit-overflow-scrolling: touch;
-            }
-            
             .search-input {
-                font-size: 16px; /* Prevents iOS zoom */
+                font-size: 16px;
             }
         }
         
@@ -278,12 +315,6 @@
                 background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             }
             
-            .browser-info {
-                background: #1e293b;
-                color: #93c5fd;
-                border-color: #334155;
-            }
-            
             .search-section, .person-card {
                 background: #1e293b;
                 border-color: #334155;
@@ -295,24 +326,28 @@
                 color: #e2e8f0;
             }
             
-            .quick-filters .filter-btn {
+            .search-tag {
                 background: #334155;
                 border-color: #475569;
                 color: #93c5fd;
             }
             
-            .filter-btn.active {
+            .search-tag.active {
                 background: #3b82f6;
                 border-color: #3b82f6;
             }
             
-            .results-header {
-                border-color: #334155;
-                color: #94a3b8;
+            .person-avatar {
+                background: #3b82f6;
             }
             
             .person-name {
                 color: #f1f5f9;
+            }
+            
+            .person-role {
+                background: #1e3a8a;
+                color: #93c5fd;
             }
             
             .person-city {
@@ -320,13 +355,18 @@
                 color: #dbeafe;
             }
             
+            .family-indicator {
+                background: #4c1d95;
+                color: #c4b5fd;
+                border-color: #5b21b6;
+            }
+            
             .contact-item {
                 color: #cbd5e1;
             }
             
-            .person-address {
+            .category-label {
                 color: #94a3b8;
-                border-color: #334155;
             }
         }
         
@@ -337,135 +377,119 @@
             }
             
             .person-card {
-                margin: 6px 10px;
+                margin: 5px 10px;
                 padding: 10px;
             }
             
             .search-section {
-                padding: 10px;
+                padding: 12px 10px;
+            }
+            
+            .search-tag {
+                padding: 5px 10px;
+                font-size: 11px;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-users"></i> Grace Directory</h1>
-        <p>Community member search</p>
-    </div>
-    
-    <div class="browser-info" id="browserInfo">
-        <i class="fas fa-mobile-alt"></i>
-        <span id="browserText">Detecting browser...</span>
+        <h1><i class="fas fa-church"></i> Grace Church Directory</h1>
+        <p>Connect with our church family</p>
     </div>
     
     <div class="search-section">
         <div class="search-box">
-            <input type="search" id="searchInput" class="search-input" placeholder="Search name, email, city..." autocapitalize="none">
+            <input type="search" id="searchInput" class="search-input" placeholder="Search by name, family, or role..." autocapitalize="none" autocomplete="off">
             <button id="searchBtn" class="search-btn">
                 <i class="fas fa-search"></i>
             </button>
         </div>
         
-        <div class="quick-filters">
-            <button class="filter-btn" data-filter="New York">NYC</button>
-            <button class="filter-btn" data-filter="Los Angeles">LA</button>
-            <button class="filter-btn" data-filter="Chicago">Chicago</button>
-            <button class="filter-btn" data-filter="CA">California</button>
-            <button class="filter-btn" data-filter="202-">DC Area</button>
-            <button class="filter-btn" data-filter="Manager">Managers</button>
-            <button class="filter-btn" data-filter="Developer">Developers</button>
+        <div class="quick-searches">
+            <div class="search-category">
+                <div class="category-label"><i class="fas fa-user-tag"></i> CHURCH ROLES</div>
+                <div class="quick-search-tags">
+                    <div class="search-tag" data-search="Pastor">Pastors</div>
+                    <div class="search-tag" data-search="Elder">Elders</div>
+                    <div class="search-tag" data-search="Deacon">Deacons</div>
+                    <div class="search-tag" data-search="Ministry">Ministry Leads</div>
+                    <div class="search-tag" data-search="Volunteer">Volunteers</div>
+                </div>
+            </div>
+            
+            <div class="search-category">
+                <div class="category-label"><i class="fas fa-users"></i> FAMILIES</div>
+                <div class="quick-search-tags">
+                    <div class="search-tag" data-search="Smith">Smith Family</div>
+                    <div class="search-tag" data-search="Johnson">Johnson Family</div>
+                    <div class="search-tag" data-search="Brown">Brown Family</div>
+                    <div class="search-tag" data-search="Davis">Davis Family</div>
+                    <div class="search-tag" data-search="With Children">Families with Children</div>
+                </div>
+            </div>
+            
+            <div class="search-category">
+                <div class="category-label"><i class="fas fa-map-marker-alt"></i> LOCATIONS</div>
+                <div class="quick-search-tags">
+                    <div class="search-tag" data-search="New York">New York Area</div>
+                    <div class="search-tag" data-search="Los Angeles">Los Angeles</div>
+                    <div class="search-tag" data-search="Chicago">Chicago</div>
+                    <div class="search-tag" data-search="California">California</div>
+                    <div class="search-tag" data-search="Same Zip">Near Church</div>
+                </div>
+            </div>
         </div>
     </div>
     
     <div class="results-section">
         <div class="results-header">
             <span class="results-count" id="resultsCount">Loading...</span>
-            <span id="sortToggle" style="color: #4361ee; cursor: pointer;">A-Z</span>
+            <span id="sortToggle" style="color: #4361ee; font-weight: 600; font-size: 11px; padding: 2px 8px; background: #f0f4ff; border-radius: 10px;">A-Z</span>
         </div>
         
         <div id="resultsContainer">
             <div class="loading">
                 <div class="spinner"></div>
-                <div>Loading directory...</div>
+                <div>Loading church directory...</div>
             </div>
         </div>
     </div>
     
     <div class="footer">
-        <div>Grace Directory &copy; <span id="currentYear"></span></div>
-        <div id="dataInfo" style="margin-top: 5px; font-size: 10px;">Loading data...</div>
+        <div>Grace Church Directory &copy; <span id="currentYear"></span></div>
+        <div id="dataInfo" style="margin-top: 3px; font-size: 10px; opacity: 0.7;">Loading church family...</div>
     </div>
 
     <script>
-        // Browser Detection
-        function detectBrowser() {
-            const ua = navigator.userAgent;
-            let browser = "Unknown Browser";
-            let icon = "fa-globe";
-            
-            if (/iPhone|iPad|iPod/i.test(ua)) {
-                browser = "iOS Safari";
-                icon = "fa-apple";
-                document.body.classList.add('ios-device');
-            } else if (/Android/i.test(ua)) {
-                browser = "Android";
-                icon = "fa-android";
-                document.body.classList.add('android-device');
-            } else if (/Chrome/i.test(ua) && !/Edge|Edg/i.test(ua)) {
-                browser = "Chrome";
-                icon = "fa-chrome";
-            } else if (/Firefox/i.test(ua)) {
-                browser = "Firefox";
-                icon = "fa-firefox";
-            } else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) {
-                browser = "Safari";
-                icon = "fa-safari";
-            } else if (/Edge|Edg/i.test(ua)) {
-                browser = "Edge";
-                icon = "fa-edge";
-            }
-            
-            // Detect touch screen
-            const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            if (isTouch) {
-                browser += " (Touch)";
-            }
-            
-            // Update display
-            document.getElementById('browserText').innerHTML = 
-                `<i class="fab ${icon}"></i> ${browser} • ${screen.width}x${screen.height}`;
-            
-            // Apply device-specific optimizations
-            if (isTouch) {
-                document.body.classList.add('touch-device');
-            }
-        }
-        
         // Set current year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         
-        // Sample CSV data
-        const csvData = `first_name,last_name,email,phone,street,street_2,city,state,postal_code
-John,Smith,john.smith@example.com,202-555-0101,123 Main St,Apt 4B,New York,NY,10001
-Emma,Johnson,emma.johnson@example.com,310-555-0102,456 Oak Ave,,Los Angeles,CA,90001
-Michael,Brown,michael.brown@example.com,415-555-0103,789 Pine Rd,Suite 200,San Francisco,CA,94102
-Sarah,Davis,sarah.davis@example.com,202-555-0104,321 Elm St,,Washington,DC,20001
-James,Wilson,james.wilson@example.com,312-555-0105,654 Maple Dr,Unit 12,Chicago,IL,60601
-Patricia,Moore,patricia.moore@example.com,713-555-0106,987 Birch Ln,,Houston,TX,77001
-Robert,Taylor,robert.taylor@example.com,305-555-0107,147 Cedar Blvd,Apt 5C,Miami,FL,33101
-Jennifer,Anderson,jennifer.anderson@example.com,617-555-0108,258 Spruce Ct,,Boston,MA,02101
-David,Thomas,david.thomas@example.com,702-555-0109,369 Willow Way,,Las Vegas,NV,89101
-Linda,Jackson,linda.jackson@example.com,214-555-0110,741 Aspen St,Floor 3,Dallas,TX,75201
-William,White,william.white@example.com,404-555-0111,852 Redwood Ave,,Atlanta,GA,30301
-Elizabeth,Harris,elizabeth.harris@example.com,503-555-0112,963 Fir Pl,,Portland,OR,97201
-Christopher,Martin,christopher.martin@example.com,602-555-0113,159 Magnolia Dr,,Phoenix,AZ,85001
-Susan,Thompson,susan.thompson@example.com,202-555-0114,753 Sycamore Rd,,Baltimore,MD,21201
-Joseph,Garcia,joseph.garcia@example.com,619-555-0115,357 Palm St,Apt 7B,San Diego,CA,92101
-Margaret,Martinez,margaret.martinez@example.com,212-555-0116,852 Olive Ave,,New York,NY,10002
-Charles,Robinson,charles.robinson@example.com,310-555-0117,456 Juniper Ln,,Los Angeles,CA,90002
-Jessica,Clark,jessica.clark@example.com,415-555-0118,789 Cypress Dr,Suite 100,San Francisco,CA,94103
-Thomas,Rodriguez,thomas.rodriguez@example.com,202-555-0119,321 Poplar St,,Washington,DC,20002
-Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,IL,60602`;
+        // Enhanced CSV data with church-specific information
+        const csvData = `first_name,last_name,email,phone,street,street_2,city,state,postal_code,role,family_id,has_children
+John,Smith,john.smith@gracechurch.com,202-555-0101,123 Main St,Apt 4B,New York,NY,10001,Pastor,smith_001,Yes
+Sarah,Smith,sarah.smith@gracechurch.com,202-555-0102,123 Main St,Apt 4B,New York,NY,10001,Ministry Lead,smith_001,Yes
+Emma,Johnson,emma.johnson@gracechurch.com,310-555-0102,456 Oak Ave,,Los Angeles,CA,90001,Elder,johnson_002,No
+Michael,Brown,michael.brown@gracechurch.com,415-555-0103,789 Pine Rd,Suite 200,San Francisco,CA,94102,Deacon,brown_003,Yes
+Patricia,Brown,patricia.brown@gracechurch.com,415-555-0104,789 Pine Rd,Suite 200,San Francisco,CA,94102,Volunteer,brown_003,Yes
+James,Wilson,james.wilson@gracechurch.com,312-555-0105,654 Maple Dr,Unit 12,Chicago,IL,60601,Ministry Lead,wilson_004,Yes
+Robert,Taylor,robert.taylor@gracechurch.com,305-555-0107,147 Cedar Blvd,Apt 5C,Miami,FL,33101,Elder,taylor_005,No
+Jennifer,Anderson,jennifer.anderson@gracechurch.com,617-555-0108,258 Spruce Ct,,Boston,MA,02101,Deacon,anderson_006,Yes
+David,Thomas,david.thomas@gracechurch.com,702-555-0109,369 Willow Way,,Las Vegas,NV,89101,Pastor,thomas_007,Yes
+Linda,Thomas,linda.thomas@gracechurch.com,702-555-0110,369 Willow Way,,Las Vegas,NV,89101,Volunteer,thomas_007,Yes
+William,White,william.white@gracechurch.com,404-555-0111,852 Redwood Ave,,Atlanta,GA,30301,Ministry Lead,white_008,No
+Elizabeth,Harris,elizabeth.harris@gracechurch.com,503-555-0112,963 Fir Pl,,Portland,OR,97201,Volunteer,harris_009,Yes
+Christopher,Martin,christopher.martin@gracechurch.com,602-555-0113,159 Magnolia Dr,,Phoenix,AZ,85001,Deacon,martin_010,No
+Susan,Thompson,susan.thompson@gracechurch.com,202-555-0114,753 Sycamore Rd,,Baltimore,MD,21201,Elder,thompson_011,Yes
+Joseph,Garcia,joseph.garcia@gracechurch.com,619-555-0115,357 Palm St,Apt 7B,San Diego,CA,92101,Volunteer,garcia_012,Yes
+Margaret,Martinez,margaret.martinez@gracechurch.com,212-555-0116,852 Olive Ave,,New York,NY,10002,Ministry Lead,martinez_013,No
+Charles,Robinson,charles.robinson@gracechurch.com,310-555-0117,456 Juniper Ln,,Los Angeles,CA,90002,Deacon,robinson_014,Yes
+Jessica,Clark,jessica.clark@gracechurch.com,415-555-0118,789 Cypress Dr,Suite 100,San Francisco,CA,94103,Volunteer,clark_015,Yes
+Thomas,Rodriguez,thomas.rodriguez@gracechurch.com,202-555-0119,321 Poplar St,,Washington,DC,20002,Pastor,rodriguez_016,No
+Karen,Lewis,karen.lewis@gracechurch.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,IL,60602,Volunteer,lewis_017,Yes
+Brian,Davis,brian.davis@gracechurch.com,202-555-0121,123 Oak St,,Brooklyn,NY,11201,Elder,davis_018,Yes
+Lisa,Hall,lisa.hall@gracechurch.com,310-555-0122,456 Pine Ave,,Santa Monica,CA,90401,Deacon,hall_019,No
+Steven,Allen,steven.allen@gracechurch.com,415-555-0123,789 Maple Rd,,Oakland,CA,94601,Ministry Lead,allen_020,Yes`;
         
         // Parse CSV
         function parseCSV(csv) {
@@ -493,16 +517,26 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             sortData();
             displayResults(directoryData);
             document.getElementById('dataInfo').textContent = 
-                `${directoryData.length} contacts loaded`;
+                `${directoryData.length} church family members`;
         }
         
         // Sort data
         function sortData() {
             directoryData.sort((a, b) => {
-                const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
-                const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+                const nameA = `${a.last_name}, ${a.first_name}`.toLowerCase();
+                const nameB = `${b.last_name}, ${b.first_name}`.toLowerCase();
                 return isSortedAZ ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
             });
+        }
+        
+        // Get initials for avatar
+        function getInitials(firstName, lastName) {
+            return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        }
+        
+        // Get family count for same last name
+        function getFamilyCount(lastName, data) {
+            return data.filter(person => person.last_name === lastName).length;
         }
         
         // Display results as compact cards
@@ -513,64 +547,137 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             if (!data || data.length === 0) {
                 container.innerHTML = `
                     <div class="no-results">
-                        <i class="fas fa-user-slash"></i>
-                        <div style="font-weight: 600; margin-bottom: 5px;">No matches found</div>
-                        <div style="font-size: 12px;">Try different search terms</div>
+                        <i class="fas fa-pray"></i>
+                        <div style="font-weight: 600; margin: 8px 0;">No matches found</div>
+                        <div style="font-size: 12px;">Try a different search term</div>
                     </div>
                 `;
-                count.textContent = `0 contacts`;
+                count.textContent = `0 members found`;
                 return;
             }
+            
+            // Count families
+            const familyCounts = {};
+            data.forEach(person => {
+                familyCounts[person.last_name] = (familyCounts[person.last_name] || 0) + 1;
+            });
             
             // Create cards
             let cardsHTML = '';
             data.forEach(person => {
-                const address = `${person.street}${person.street_2 ? ', ' + person.street_2 : ''}`;
+                const initials = getInitials(person.first_name, person.last_name);
+                const familyCount = familyCounts[person.last_name];
+                const hasChildren = person.has_children === 'Yes';
                 
                 cardsHTML += `
-                    <div class="person-card" data-person="${person.first_name} ${person.last_name}">
-                        <div class="person-header">
-                            <div class="person-name">${person.first_name} ${person.last_name}</div>
-                            <div class="person-city">${person.city}, ${person.state}</div>
-                        </div>
-                        
-                        <div class="person-contact">
-                            <div class="contact-item">
-                                <i class="fas fa-envelope"></i>
-                                <span class="contact-text">${person.email}</span>
+                    <div class="person-card" 
+                         data-person="${person.first_name} ${person.last_name}" 
+                         data-role="${person.role}"
+                         data-family="${person.last_name}"
+                         data-children="${hasChildren}">
+                        <div class="person-avatar">${initials}</div>
+                        <div class="person-info">
+                            <div class="person-name">
+                                ${person.first_name} ${person.last_name}
+                                ${familyCount > 1 ? `<span class="family-indicator">Family of ${familyCount}</span>` : ''}
                             </div>
-                            <div class="contact-item">
-                                <i class="fas fa-phone"></i>
-                                <span class="contact-text">${person.phone}</span>
+                            <div class="person-meta">
+                                <div class="person-role">${person.role}</div>
+                                <div class="person-city">${person.city}, ${person.state}</div>
+                                ${hasChildren ? '<div class="family-indicator" style="background:#fff0f0;color:#e53e3e;border-color:#fed7d7;">Children</div>' : ''}
                             </div>
-                        </div>
-                        
-                        <div class="person-address">
-                            ${address}
+                            <div class="person-contact">
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="contact-text">${person.email}</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span class="contact-text">${person.phone}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             
             container.innerHTML = cardsHTML;
-            count.textContent = `${data.length} contact${data.length !== 1 ? 's' : ''}`;
+            count.textContent = `${data.length} ${data.length !== 1 ? 'members' : 'member'} found`;
+            
+            // Add click handlers to cards
+            document.querySelectorAll('.person-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // Visual feedback
+                    this.style.transform = 'scale(0.98)';
+                    this.style.backgroundColor = '#f8faff';
+                    
+                    setTimeout(() => {
+                        this.style.transform = '';
+                        this.style.backgroundColor = '';
+                    }, 200);
+                    
+                    const name = this.dataset.person;
+                    const role = this.dataset.role;
+                    const family = this.dataset.family;
+                    
+                    // Show church-specific options
+                    showContactOptions(name, role, family);
+                });
+            });
         }
         
-        // Search function
+        // Show church contact options
+        function showContactOptions(name, role, family) {
+            const actions = `
+1. Pray for ${name.split(' ')[0]}
+2. Contact for ministry needs
+3. View family members
+4. Send encouragement
+5. Cancel`;
+
+            const choice = prompt(`Church Member: ${name}\nRole: ${role}\n\nWhat would you like to do?\n\n${actions}`);
+            
+            if (choice === '1') {
+                alert(`💜 Added ${name.split(' ')[0]} to prayer list`);
+            } else if (choice === '2') {
+                alert(`📞 Contact details have been saved for ministry coordination`);
+            } else if (choice === '3') {
+                // Filter to show family members
+                const familyMembers = directoryData.filter(p => p.last_name === family);
+                const familyList = familyMembers.map(m => `• ${m.first_name} ${m.last_name} (${m.role})`).join('\n');
+                alert(`👨‍👩‍👧‍👦 ${family} Family Members:\n\n${familyList}`);
+            } else if (choice === '4') {
+                alert(`✉️ Send encouragement to ${name} via church messaging`);
+            }
+        }
+        
+        // Enhanced search function for church directory
         function searchDirectory(query) {
             if (!query.trim()) return directoryData;
             
-            const terms = query.toLowerCase().split(' ').filter(term => term);
+            const lowerQuery = query.toLowerCase();
             
+            // Special search cases
+            if (lowerQuery === 'with children' || lowerQuery === 'families with children') {
+                return directoryData.filter(person => person.has_children === 'Yes');
+            }
+            
+            if (lowerQuery === 'same zip' || lowerQuery === 'near church') {
+                // Assume church zip is 10001 (NYC main location)
+                return directoryData.filter(person => person.postal_code === '10001');
+            }
+            
+            // Regular search
             return directoryData.filter(person => {
                 const searchString = `
                     ${person.first_name} ${person.last_name} 
                     ${person.email} ${person.phone} 
                     ${person.street} ${person.street_2} 
-                    ${person.city} ${person.state}
+                    ${person.city} ${person.state} 
+                    ${person.role} ${person.last_name} family
                 `.toLowerCase();
                 
-                return terms.every(term => searchString.includes(term));
+                return searchString.includes(lowerQuery);
             });
         }
         
@@ -579,19 +686,19 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             const query = document.getElementById('searchInput').value;
             const results = searchDirectory(query);
             displayResults(results);
-            document.activeElement.blur(); // Hide keyboard on iOS
+            document.activeElement.blur();
         });
         
         document.getElementById('searchInput').addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
-                const query = document.getElementById('searchInput').value;
+                const query = e.target.value;
                 const results = searchDirectory(query);
                 displayResults(results);
                 document.activeElement.blur();
             }
         });
         
-        // Real-time search on input
+        // Real-time search as you type
         let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -599,61 +706,42 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
                 const query = e.target.value;
                 const results = searchDirectory(query);
                 displayResults(results);
-            }, 300);
+            }, 200);
         });
         
-        // Quick filters
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+        // Church quick search tags
+        document.querySelectorAll('.search-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
                 // Remove active from all
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.search-tag').forEach(t => t.classList.remove('active'));
                 // Add active to clicked
-                btn.classList.add('active');
+                tag.classList.add('active');
                 
-                const filter = btn.dataset.filter;
-                document.getElementById('searchInput').value = filter;
-                const results = searchDirectory(filter);
+                const searchValue = tag.dataset.search;
+                document.getElementById('searchInput').value = searchValue;
+                const results = searchDirectory(searchValue);
                 displayResults(results);
             });
         });
         
-        // Sort toggle
+        // Sort toggle (by last name for families)
         document.getElementById('sortToggle').addEventListener('click', () => {
             isSortedAZ = !isSortedAZ;
-            document.getElementById('sortToggle').textContent = isSortedAZ ? 'A-Z' : 'Z-A';
+            const sortBtn = document.getElementById('sortToggle');
+            sortBtn.textContent = isSortedAZ ? 'A-Z' : 'Z-A';
+            sortBtn.style.background = isSortedAZ ? '#f0f4ff' : '#e0e7ff';
             sortData();
             
-            // Maintain current search results
             const query = document.getElementById('searchInput').value;
             const results = query ? searchDirectory(query) : directoryData;
             displayResults(results);
         });
         
-        // Card tap/click actions
-        document.addEventListener('click', (e) => {
-            const card = e.target.closest('.person-card');
-            if (card) {
-                // Visual feedback
-                card.style.boxShadow = '0 4px 12px rgba(67, 97, 238, 0.2)';
-                setTimeout(() => {
-                    card.style.boxShadow = '';
-                }, 300);
-                
-                // In a real app, you might show detailed view here
-                const name = card.dataset.person;
-                console.log(`Selected: ${name}`);
-            }
-        });
-        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Detect browser first
-            detectBrowser();
-            
-            // Load data
             setTimeout(() => {
                 loadDirectoryData();
-            }, 500);
+            }, 300);
             
             // Adjust layout for small screens
             const adjustLayout = () => {
@@ -666,15 +754,6 @@ Karen,Lewis,karen.lewis@example.com,312-555-0120,654 Sequoia Rd,Unit 8,Chicago,I
             
             adjustLayout();
             window.addEventListener('resize', adjustLayout);
-            
-            // Handle iOS keyboard issues
-            if (document.body.classList.contains('ios-device')) {
-                document.getElementById('searchInput').addEventListener('focus', function() {
-                    setTimeout(() => {
-                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
-                });
-            }
         });
     </script>
 </body>
