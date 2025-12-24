@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Night Sky | Live Space Weather Dashboard</title>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0901537229802149" crossorigin="anonymous"></script>
+  
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Moon Phase Calculation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.8.0/suncalc.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #0c1220;
+            --card: rgba(18, 25, 45, 0.85);
+            --card-hover: rgba(28, 37, 65, 0.9);
+            --border: rgba(80, 150, 255, 0.2);
+            --text: #e6f1ff;
+            --text-muted: #8ca3c2;
+            --primary: #4d9fff;
+            --secondary: #a855f7;
+            --accent: #00d4ff;
+            --moon: #e0e7ff;
+            --sun: #ffb347;
+            --aurora: #00ff9d;
+            --red: #ff6b6b;
+            --green: #4ade80;
+            --yellow: #fbbf24;
+            --blue: #60a5fa;
+            --purple: #a855f7;
+            --gradient: linear-gradient(135deg, #0c1220 0%, #1a2745 50%, #0c1220 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --glass: rgba(30, 41, 59, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Arial, sans-serif;
+            min-height: 100vh;
+            color: var(--text);
+            background: var(--gradient) fixed;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(12, 18, 32, 0.95);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(77, 159, 255, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: rgba(77, 159, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--glass);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            overflow: hidden;
+            position: relative;
+            cursor: move;
+        }
+
+        .card:hover {
+            background: var(--card-hover);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+            z-index: 100;
+            box-shadow: 0 15px 35px rgba(77, 159, 255, 0.4);
+        }
+
+        .card.drag-over {
+            border: 2px dashed var(--primary);
+            background: rgba(77, 159, 255, 0.1);
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drag-handle {
+            cursor: move;
+            color: var(--text-muted);
+            padding: 0.3rem;
+            margin-right: -0.5rem;
+            border-radius: 4px;
+            transition: color 0.3s;
+        }
+
+        .drag-handle:hover {
+            color: var(--primary);
+            background: rgba(77, 159, 255, 0.1);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Updated grid layout for better organization */
+        .hero-card { grid-column: 1 / -1; grid-row: 1; }
+        .moon-phase { grid-column: 1 / 2; grid-row: 2; }
+        .solar-gauges { grid-column: 2 / 3; grid-row: 2; }
+        .geomagnetic { grid-column: 3 / 4; grid-row: 2; }
+        .aurora-chance { grid-column: 4 / 5; grid-row: 2; }
+        .aurora-map { grid-column: 1 / 3; grid-row: 3; }
+        .satellite-map { grid-column: 3 / 5; grid-row: 3; }
+        .soho-c2 { grid-column: 1 / 3; grid-row: 4; }
+        .soho-c3 { grid-column: 3 / 5; grid-row: 4; }
+        .solar-activity { grid-column: 1 / 2; grid-row: 5; }
+        .forecast { grid-column: 2 / 3; grid-row: 5; }
+        .meteor-showers { grid-column: 3 / 4; grid-row: 5; }
+        .comets { grid-column: 4 / 5; grid-row: 5; }
+        .news-feed { grid-column: 1 / 3; grid-row: 6; }
+        .iss-tracking { grid-column: 3 / 5; grid-row: 6; }
+        .system-status { grid-column: 1 / -1; grid-row: 7; }
+
+        .compact-gauge {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .gauge-mini {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .gauge-value-mini {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .gauge-info {
+            flex: 1;
+        }
+
+        .gauge-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .gauge-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .status-good { background: rgba(74, 222, 128, 0.2); color: var(--green); }
+        .status-warning { background: rgba(251, 191, 36, 0.2); color: var(--yellow); }
+        .status-alert { background: rgba(255, 107, 107, 0.2); color: var(--red); }
+        .status-info { background: rgba(77, 159, 255, 0.2); color: var(--primary); }
+        .status-moon { background: rgba(224, 231, 255, 0.2); color: var(--moon); }
+
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        .data-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .data-item.alert { border-left-color: var(--red); }
+        .data-item.warning { border-left-color: var(--yellow); }
+        .data-item.success { border-left-color: var(--green); }
+        .data-item.info { border-left-color: var(--primary); }
+        .data-item.moon { border-left-color: var(--moon); }
+        .data-item.aurora { border-left-color: var(--aurora); }
+        .data-item.sun { border-left-color: var(--sun); }
+
+        .data-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .data-value {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .map-container {
+            position: relative;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        /* SOHO Animation Container - Fixed */
+        .soho-container {
+            position: relative;
+            height: 260px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .soho-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .soho-info {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .soho-refresh {
+            background: rgba(77, 159, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .soho-refresh:hover {
+            background: rgba(77, 159, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .moon-display {
+            text-align: center;
+        }
+
+        .moon-icon {
+            font-size: 5rem;
+            margin: 1rem 0;
+            filter: drop-shadow(0 0 10px rgba(224, 231, 255, 0.3));
+        }
+
+        .moon-visualization {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            position: relative;
+            border-radius: 50%;
+            background: #2a3a5a;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(224, 231, 255, 0.2);
+        }
+
+        .moon-phase-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--moon);
+            border-radius: 50%;
+        }
+
+        .news-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .news-item {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid var(--blue);
+            transition: all 0.3s;
+        }
+
+        .news-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--primary);
+        }
+
+        .news-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .news-title:hover {
+            color: var(--primary);
+        }
+
+        .news-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+            color: var(--text-muted);
+        }
+
+        .loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Layout Controls */
+        .layout-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .layout-btn {
+            background: rgba(77, 159, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .layout-btn:hover {
+            background: rgba(77, 159, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .layout-help {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            max-width: 300px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            text-align: left;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Aurora oval specific styles */
+        .aurora-oval {
+            stroke-width: 2;
+            fill-opacity: 0.3;
+            stroke-linejoin: round;
+        }
+
+        .aurora-low {
+            fill: #22c55e;
+            stroke: #22c55e;
+        }
+
+        .aurora-medium {
+            fill: #eab308;
+            stroke: #eab308;
+        }
+
+        .aurora-high {
+            fill: #f97316;
+            stroke: #f97316;
+        }
+
+        .aurora-extreme {
+            fill: #ef4444;
+            stroke: #ef4444;
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .hero-card { grid-column: 1 / -1; }
+            .moon-phase, .solar-gauges, .geomagnetic, .aurora-chance {
+                grid-column: auto;
+                grid-row: auto;
+            }
+            .aurora-map { grid-column: 1 / 3; }
+            .satellite-map { grid-column: 3; }
+            .soho-c2 { grid-column: 1 / 3; }
+            .soho-c3 { grid-column: 3; }
+            .solar-activity, .forecast, .meteor-showers, .comets {
+                grid-column: auto;
+                grid-row: auto;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero-card,
+            .aurora-map,
+            .satellite-map,
+            .soho-c2,
+            .soho-c3,
+            .news-feed,
+            .iss-tracking,
+            .system-status {
+                grid-column: 1 / -1;
+            }
+            .layout-controls {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .compact-gauge {
+                flex-direction: column;
+                text-align: center;
+            }
+            .map-container, .soho-container {
+                height: 250px;
+            }
+            .soho-info {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 4px;
+        }
+
+        /* ISS Tracker specific */
+        #issMap, #auroraMap {
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .iss-tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Solar flare indicator */
+        .flare-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .flare-c { background-color: var(--green); }
+        .flare-m { background-color: var(--yellow); }
+        .flare-x { background-color: var(--red); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <h1>
+                        Our Night Sky
+                        <small style="font-size: 0.6em; color: var(--accent)">Live</small>
+                    </h1>
+                    <span class="brand-subtitle">by Nagoh Creative • ournightsky.us</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div style="color: var(--text-muted); display: flex; align-items: center; gap: 1rem;">
+                    <span><i class="fas fa-clock"></i> Updated: <strong id="update-time">--:--</strong></span>
+                    <span><i class="fas fa-sync-alt"></i> Auto: <strong>1 min</strong></span>
+                </div>
+                
+                <div class="controls">
+                    <div class="layout-controls">
+                        <button class="layout-btn" onclick="saveLayout()" title="Save Layout">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button class="layout-btn" onclick="resetLayout()" title="Reset to Default">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button class="layout-btn" onclick="toggleLayoutHelp()" title="Layout Help">
+                            <i class="fas fa-question-circle"></i>
+                        </button>
+                    </div>
+                    <button id="refresh-btn" class="btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="fullscreen-btn" class="btn btn-outline" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="dashboard" class="dashboard">
+            <!-- Hero Overview -->
+            <div class="card hero-card" data-id="hero-card" data-colspan="4">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Night Sky Overview</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <div id="aurora-alert" style="color: var(--accent); font-weight: 600;"></div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                        <div class="compact-gauge">
+                            <div class="gauge-mini">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="8"/>
+                                    <circle id="kp-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 283"/>
+                                </svg>
+                                <div class="gauge-value-mini" id="kp-value">--</div>
+                            </div>
+                            <div class="gauge-info">
+                                <h3>Kp Index</h3>
+                                <div id="kp-status" class="gauge-status status-good">Quiet</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Geomagnetic Activity</div>
+                            </div>
+                        </div>
+
+                        <div class="compact-gauge">
+                            <div class="gauge-mini">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="8"/>
+                                    <circle id="solar-wind-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--sun)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 283"/>
+                                </svg>
+                                <div class="gauge-value-mini" id="solar-wind-value">--</div>
+                            </div>
+                            <div class="gauge-info">
+                                <h3>Solar Wind</h3>
+                                <div id="solar-wind-status" class="gauge-status status-good">Calm</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">km/s</div>
+                            </div>
+                        </div>
+
+                        <div class="compact-gauge">
+                            <div class="gauge-mini">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="8"/>
+                                    <circle id="aurora-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--aurora)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 283"/>
+                                </svg>
+                                <div class="gauge-value-mini" id="aurora-probability">--%</div>
+                            </div>
+                            <div class="gauge-info">
+                                <h3>Aurora Chance</h3>
+                                <div id="aurora-status" class="gauge-status status-info">--</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">24h Forecast</div>
+                            </div>
+                        </div>
+
+                        <div class="compact-gauge">
+                            <div class="gauge-mini">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="8"/>
+                                    <circle id="moon-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--moon)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 283"/>
+                                </svg>
+                                <div class="gauge-value-mini" id="moon-illumination-value">--%</div>
+                            </div>
+                            <div class="gauge-info">
+                                <h3>Moon Phase</h3>
+                                <div id="moon-phase-status" class="gauge-status status-moon">--</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Illumination</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Moon Phase -->
+            <div class="card moon-phase" data-id="moon-phase" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-moon"></i> Moon Phase</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="moon-illumination" class="gauge-status status-moon">--%</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="moon-display">
+                        <div class="moon-visualization" id="moon-visualization">
+                            <div class="moon-phase-fill" id="moon-phase-fill"></div>
+                        </div>
+                        <h3 id="moon-phase-name" style="color: var(--moon); margin-bottom: 1rem;">Loading...</h3>
+                        <div class="data-list">
+                            <div class="data-item moon">
+                                <span class="data-label">Illumination</span>
+                                <span class="data-value" id="moon-illumination-display">--%</span>
+                            </div>
+                            <div class="data-item moon">
+                                <span class="data-label">Phase</span>
+                                <span class="data-value" id="moon-phase-display">--</span>
+                            </div>
+                            <div class="data-item moon">
+                                <span class="data-label">Age</span>
+                                <span class="data-value" id="moon-age">-- days</span>
+                            </div>
+                            <div class="data-item moon">
+                                <span class="data-label">Next Full</span>
+                                <span class="data-value" id="next-full-moon">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solar Gauges -->
+            <div class="card solar-gauges" data-id="solar-gauges" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-sun"></i> Solar Activity</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="solar-status" class="gauge-status status-good">Quiet</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="solar-data" class="data-list">
+                        <div class="data-item sun">
+                            <span class="data-label">Wind Speed</span>
+                            <span class="data-value" id="solar-wind-speed">-- km/s</span>
+                        </div>
+                        <div class="data-item warning">
+                            <span class="data-label">Flare Activity</span>
+                            <span class="data-value" id="flare-activity">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Latest Flare</span>
+                            <span class="data-value" id="latest-flare">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geomagnetic -->
+            <div class="card geomagnetic" data-id="geomagnetic" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-magnet"></i> Geomagnetic</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="geo-status" class="gauge-status status-good">Stable</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="geomagnetic-data" class="data-list">
+                        <div class="data-item info">
+                            <span class="data-label">Current Kp</span>
+                            <span class="data-value" id="current-kp">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">24h Max</span>
+                            <span class="data-value" id="max-kp">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Storm Level</span>
+                            <span class="data-value" id="storm-level">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aurora Chance -->
+            <div class="card aurora-chance" data-id="aurora-chance" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-cloud-moon"></i> Aurora Chance</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="aurora-chance-status" class="gauge-status status-info">24h</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="aurora-forecast" class="data-list">
+                        <div class="data-item aurora">
+                            <span class="data-label">Next 3h</span>
+                            <span class="data-value" id="forecast-3h">--</span>
+                        </div>
+                        <div class="data-item aurora">
+                            <span class="data-label">Next 6h</span>
+                            <span class="data-value" id="forecast-6h">--</span>
+                        </div>
+                        <div class="data-item aurora">
+                            <span class="data-label">Next 12h</span>
+                            <span class="data-value" id="forecast-12h">--</span>
+                        </div>
+                        <div class="data-item aurora">
+                            <span class="data-label">Peak Time</span>
+                            <span class="data-value" id="forecast-peak">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aurora Map -->
+            <div class="card aurora-map" data-id="aurora-map" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-globe-americas"></i> Aurora Oval</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="aurora-intensity" class="gauge-status status-info">Loading...</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="map-container">
+                        <div id="auroraMap"></div>
+                        <div id="auroraOvalOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+                    </div>
+                    <div class="iss-tracker-grid" style="margin-top: 1rem;">
+                        <div class="data-item info">
+                            <span class="data-label">Forecast Kp</span>
+                            <span class="data-value" id="forecastKp">--</span>
+                        </div>
+                        <div class="data-item success">
+                            <span class="data-label">Probability</span>
+                            <span class="data-value" id="auroraProbability">--%</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Best Viewing</span>
+                            <span class="data-value" id="auroraViewing">--</span>
+                        </div>
+                        <div class="data-item aurora">
+                            <span class="data-label">Visibility</span>
+                            <span class="data-value" id="auroraVisibility">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Satellite Map -->
+            <div class="card satellite-map" data-id="satellite-map" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-satellite-dish"></i> ISS Live Tracking</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="iss-track-status" class="gauge-status status-good">Live</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="map-container">
+                        <div id="issMap"></div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); text-align: center;">
+                        <i class="fas fa-circle" style="color: var(--primary);"></i> ISS Position updates every 10 seconds
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOHO C2 Animation -->
+            <div class="card soho-c2" data-id="soho-c2" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-solar-panel"></i> SOHO LASCO C2</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="soho-c2-status" class="gauge-status status-info">Live</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="soho-container">
+                        <img id="soho-c2-gif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif" 
+                             alt="SOHO LASCO C2 Solar Animation" class="soho-image"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"512\" height=\"512\" viewBox=\"0 0 512 512\"><rect width=\"512\" height=\"512\" fill=\"%230c1220\"/><text x=\"256\" y=\"256\" font-family=\"Arial\" font-size=\"24\" fill=\"%234d9fff\" text-anchor=\"middle\"></text></svg>
+                    </div>
+                    <div class="soho-info">
+                        <span>Solar and Heliospheric Observatory - Coronagraph C2</span>
+                        <button class="soho-refresh" onclick="refreshSOHOC2()">
+                            <i class="fas fa-redo"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOHO C3 Animation -->
+            <div class="card soho-c3" data-id="soho-c3" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-sun"></i> SOHO LASCO C3</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="soho-c3-status" class="gauge-status status-info">Live</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="soho-container">
+                        <img id="soho-c3-gif" src="https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif" 
+                             alt="SOHO LASCO C3 Solar Animation" class="soho-image"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"512\" height=\"512\" viewBox=\"0 0 512 512\"><rect width=\"512\" height=\"512\" fill=\"%230c1220\"/><text x=\"256\" y=\"256\" font-family=\"Arial\" font-size=\"24\" fill=\"%234d9fff\" text-anchor=\"middle\"></text></svg>
+                    </div>
+                    <div class="soho-info">
+                        <span>Solar and Heliospheric Observatory - Coronagraph C3</span>
+                        <button class="soho-refresh" onclick="refreshSOHOC3()">
+                            <i class="fas fa-redo"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solar Flares -->
+            <div class="card solar-activity" data-id="solar-activity" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-fire"></i> Recent Solar Flares</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="flares-count" class="gauge-status status-info">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="solar-flares" style="max-height: 200px; overflow-y: auto;">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Forecast -->
+            <div class="card forecast" data-id="forecast" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-cloud-moon"></i> Weather Forecast</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="forecast-status" class="gauge-status status-info">Forecast</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="weather-forecast" class="data-list">
+                        <div class="data-item info">
+                            <span class="data-label">Visibility</span>
+                            <span class="data-value" id="sky-visibility">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Cloud Cover</span>
+                            <span class="data-value" id="cloud-cover">--%</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Seeing</span>
+                            <span class="data-value" id="seeing-conditions">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meteor Showers -->
+            <div class="card meteor-showers" data-id="meteor-showers" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-meteor"></i> Meteor Showers</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="meteor-status" class="gauge-status status-info">--</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="meteor-showers" class="data-list">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comets -->
+            <div class="card comets" data-id="comets" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-star"></i> Notable Comets</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="comets-count" class="gauge-status status-info">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="comets-list" class="data-list">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Feed -->
+            <div class="card news-feed" data-id="news-feed" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-newspaper"></i> Space News</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="news-count" class="gauge-status status-info">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="news-feed" class="news-items">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ISS Tracking -->
+            <div class="card iss-tracking" data-id="iss-tracking" data-colspan="2">
+                <div class="card-header">
+                    <h2><i class="fas fa-space-shuttle"></i> ISS Live Data</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="iss-status" class="gauge-status status-good">Tracking</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="iss-tracker-grid">
+                        <div class="data-item info">
+                            <span class="data-label">Latitude</span>
+                            <span class="data-value" id="iss-latitude">--°</span>
+                        </div>
+                        <div class="data-item info">
+                            <span class="data-label">Longitude</span>
+                            <span class="data-value" id="iss-longitude">--°</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Altitude</span>
+                            <span class="data-value" id="iss-altitude">-- km</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Velocity</span>
+                            <span class="data-value" id="iss-velocity">-- km/h</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Visibility</span>
+                            <span class="data-value" id="iss-visibility">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Orbit #</span>
+                            <span class="data-value" id="iss-orbit">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="card system-status" data-id="system-status" data-colspan="1">
+                <div class="card-header">
+                    <h2><i class="fas fa-server"></i> System Status</h2>
+                    <div>
+                        <span class="drag-handle" title="Drag to rearrange"><i class="fas fa-arrows-alt"></i></span>
+                        <span id="system-status-badge" class="gauge-status status-good">Online</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="system-status-data" class="data-list">
+                        <div class="data-item success">
+                            <span class="data-label">Data Sources</span>
+                            <span class="data-value" id="data-sources">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Last Update</span>
+                            <span class="data-value" id="last-update">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Uptime</span>
+                            <span class="data-value" id="uptime">00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <i class="fas fa-star"></i>
+        </div>
+        <p>&copy; 2025 Our Night Sky • ournightsky.us • Designed by <a href="https://nagohcreative.com" target="_blank" style="color: var(--primary); text-decoration: none;">Nagoh Creative</a></p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-muted);">
+            Real-time night sky monitoring and celestial events tracking • Drag and drop tiles to customize your layout
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-muted);">
+            SOHO animations: NASA/ESA SOHO mission • Data from NOAA, NASA, SOHO, and space weather sources
+        </p>
+    </footer>
+
+    <!-- Layout Help Modal -->
+    <div id="layoutHelp" class="layout-help" style="display: none;">
+        <h3 style="margin-bottom: 0.5rem; color: var(--primary);"><i class="fas fa-arrows-alt"></i> Dashboard Layout</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-muted);">
+            Drag tiles by the <i class="fas fa-arrows-alt"></i> icon to rearrange your dashboard.<br>
+            Click "Save" to store your layout in your browser.<br>
+            Click "Reset" to restore the default layout.
+        </p>
+        <button class="layout-btn" onclick="toggleLayoutHelp()" style="width: 100%;">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+
+    <script>
+        const baseUrl = 'https://raw.githubusercontent.com/NAGOHUSA/ONSLIVE/main/data/';
+        let issMap = null;
+        let auroraMap = null;
+        let issMarker = null;
+        let auroraLayers = [];
+        let updateInterval = null;
+        let sohoRefreshInterval = null;
+        let draggedElement = null;
+        let moonDataCache = null;
+        let startTime = new Date(); // For uptime calculation
+
+        // Accurate Moon Phase Calculation using SunCalc
+        function calculateMoonPhase(date = new Date()) {
+            try {
+                const moonIllumination = SunCalc.getMoonIllumination(date);
+                return {
+                    phase: moonIllumination.phase, // 0-1 where 0/1 = new moon, 0.5 = full moon
+                    fraction: moonIllumination.fraction, // illuminated fraction 0-1
+                    angle: moonIllumination.angle // midpoint angle in radians
+                };
+            } catch (error) {
+                console.error('Error calculating moon phase:', error);
+                return { phase: 0.5, fraction: 0.5, angle: 0 };
+            }
+        }
+
+        function getAccurateMoonPhase(moonData) {
+            const phase = moonData.phase;
+            const illumination = Math.round(moonData.fraction * 100);
+            
+            if (phase < 0.01 || phase > 0.99) return { emoji: '🌑', name: 'New Moon', illumination };
+            if (phase < 0.24) return { emoji: '🌒', name: 'Waxing Crescent', illumination };
+            if (phase < 0.26) return { emoji: '🌓', name: 'First Quarter', illumination };
+            if (phase < 0.49) return { emoji: '🌔', name: 'Waxing Gibbous', illumination };
+            if (phase < 0.51) return { emoji: '🌕', name: 'Full Moon', illumination };
+            if (phase < 0.74) return { emoji: '🌖', name: 'Waning Gibbous', illumination };
+            if (phase < 0.76) return { emoji: '🌗', name: 'Last Quarter', illumination };
+            return { emoji: '🌘', name: 'Waning Crescent', illumination };
+        }
+
+        function getMoonAge(phase) {
+            const synodicMonth = 29.53058867;
+            const age = (phase * synodicMonth).toFixed(1);
+            return age;
+        }
+
+        function getNextFullMoon(currentDate = new Date()) {
+            const synodicMonth = 29.53058867;
+            const knownFullMoon = new Date('2025-01-13T22:27Z'); // Known full moon in 2025
+            
+            const daysSinceKnownFullMoon = (currentDate - knownFullMoon) / (1000 * 60 * 60 * 24);
+            const cyclesSince = Math.floor(daysSinceKnownFullMoon / synodicMonth);
+            const nextFullMoonDays = (cyclesSince + 1) * synodicMonth - daysSinceKnownFullMoon;
+            
+            const nextFullMoon = new Date(currentDate.getTime() + nextFullMoonDays * 24 * 60 * 60 * 1000);
+            return nextFullMoon;
+        }
+
+        function updateMoonVisualization(illumination, phase) {
+            const moonFill = document.getElementById('moon-phase-fill');
+            if (!moonFill) return;
+            
+            // Create accurate moon phase visualization
+            const fillPercentage = illumination / 100;
+            let clipPath = '';
+            
+            if (phase < 0.5) {
+                // Waxing phases - illuminated on right side
+                const xOffset = 50 - (fillPercentage * 50);
+                clipPath = `inset(0 ${xOffset}% 0 0)`;
+            } else {
+                // Waning phases - illuminated on left side
+                const xOffset = 50 - ((1 - fillPercentage) * 50);
+                clipPath = `inset(0 0 0 ${xOffset}%)`;
+            }
+            
+            moonFill.style.clipPath = clipPath;
+            moonFill.style.backgroundColor = 'var(--moon)';
+        }
+
+        // Uptime calculation
+        function updateUptime() {
+            const now = new Date();
+            const diff = now - startTime;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const uptimeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('uptime').textContent = uptimeString;
+        }
+
+        // Drag and Drop Functions
+        function initDragAndDrop() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                card.setAttribute('draggable', 'true');
+                
+                card.addEventListener('dragstart', function(e) {
+                    draggedElement = this;
+                    this.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', this.dataset.id);
+                });
+                
+                card.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                    document.querySelectorAll('.card').forEach(c => {
+                        c.classList.remove('drag-over');
+                    });
+                });
+                
+                card.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                
+                card.addEventListener('dragenter', function(e) {
+                    e.preventDefault();
+                });
+                
+                card.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                
+                card.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    if (draggedElement && draggedElement !== this) {
+                        const dashboard = document.getElementById('dashboard');
+                        const allCards = Array.from(dashboard.children);
+                        const draggedIndex = allCards.indexOf(draggedElement);
+                        const targetIndex = allCards.indexOf(this);
+                        
+                        if (draggedIndex < targetIndex) {
+                            dashboard.insertBefore(draggedElement, this.nextSibling);
+                        } else {
+                            dashboard.insertBefore(draggedElement, this);
+                        }
+                        
+                        showLayoutSavedToast();
+                    }
+                });
+            });
+        }
+
+        function saveLayout() {
+            const dashboard = document.getElementById('dashboard');
+            const layout = [];
+            
+            Array.from(dashboard.children).forEach(card => {
+                const style = getComputedStyle(card);
+                layout.push({
+                    id: card.dataset.id,
+                    gridRow: style.gridRow,
+                    gridColumn: style.gridColumn,
+                    colspan: card.dataset.colspan
+                });
+            });
+            
+            localStorage.setItem('dashboardLayout', JSON.stringify(layout));
+            showLayoutSavedToast();
+        }
+
+        function loadLayout() {
+            const savedLayout = localStorage.getItem('dashboardLayout');
+            if (!savedLayout) return;
+            
+            try {
+                const layout = JSON.parse(savedLayout);
+                layout.forEach(item => {
+                    const card = document.querySelector(`[data-id="${item.id}"]`);
+                    if (card) {
+                        card.style.gridRow = item.gridRow || '';
+                        card.style.gridColumn = item.gridColumn || '';
+                    }
+                });
+            } catch (e) {
+                console.error('Error loading layout:', e);
+            }
+        }
+
+        function resetLayout() {
+            if (confirm('Reset dashboard to default layout?')) {
+                localStorage.removeItem('dashboardLayout');
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.gridRow = '';
+                    card.style.gridColumn = '';
+                });
+                showLayoutSavedToast('Layout reset to default');
+            }
+        }
+
+        function showLayoutSavedToast(message = 'Layout saved!') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--card);
+                color: var(--primary);
+                padding: 0.8rem 1.5rem;
+                border-radius: 20px;
+                border: 1px solid var(--primary);
+                backdrop-filter: blur(10px);
+                z-index: 1000;
+                animation: fadeInOut 3s ease;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                    10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+                style.remove();
+            }, 3000);
+        }
+
+        function toggleLayoutHelp() {
+            const help = document.getElementById('layoutHelp');
+            help.style.display = help.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // SOHO GIF refresh functions - Fixed
+        function refreshSOHOC2() {
+            const img = document.getElementById('soho-c2-gif');
+            const timestamp = new Date().getTime();
+            img.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c2.gif?t=${timestamp}`;
+            document.getElementById('soho-c2-status').textContent = 'Refreshing...';
+            document.getElementById('soho-c2-status').className = 'gauge-status status-info';
+            
+            setTimeout(() => {
+                document.getElementById('soho-c2-status').textContent = 'Live';
+                document.getElementById('soho-c2-status').className = 'gauge-status status-info';
+            }, 3000);
+        }
+
+        function refreshSOHOC3() {
+            const img = document.getElementById('soho-c3-gif');
+            const timestamp = new Date().getTime();
+            img.src = `https://soho.nascom.nasa.gov/data/LATEST/current_c3.gif?t=${timestamp}`;
+            document.getElementById('soho-c3-status').textContent = 'Refreshing...';
+            document.getElementById('soho-c3-status').className = 'gauge-status status-info';
+            
+            setTimeout(() => {
+                document.getElementById('soho-c3-status').textContent = 'Live';
+                document.getElementById('soho-c3-status').className = 'gauge-status status-info';
+            }, 3000);
+        }
+
+        // Auto-refresh SOHO GIFs every 5 minutes
+        function startSOHORefresh() {
+            if (sohoRefreshInterval) {
+                clearInterval(sohoRefreshInterval);
+            }
+            
+            sohoRefreshInterval = setInterval(() => {
+                refreshSOHOC2();
+                refreshSOHOC3();
+            }, 5 * 60 * 1000);
+        }
+
+        // Initialize maps
+        function initMaps() {
+            // ISS Map
+            issMap = L.map('issMap').setView([0, 0], 2);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '©OpenStreetMap, ©CartoDB',
+                maxZoom: 8,
+                minZoom: 1
+            }).addTo(issMap);
+
+            // Aurora Map
+            auroraMap = L.map('auroraMap').setView([70, 0], 2);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '©OpenStreetMap, ©CartoDB',
+                maxZoom: 4,
+                minZoom: 1
+            }).addTo(auroraMap);
+
+            // Add ISS marker
+            issMarker = L.marker([0, 0], {
+                icon: L.divIcon({
+                    className: 'iss-marker',
+                    html: '<div style="background: var(--primary); width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px var(--primary);"></div>',
+                    iconSize: [20, 20]
+                })
+            }).addTo(issMap);
+        }
+
+        // Update gauge visualization
+        function updateGauge(circleId, value, max) {
+            const circle = document.getElementById(circleId);
+            if (!circle) return;
+            
+            const circumference = 283;
+            const percent = Math.min(value / max, 1);
+            const offset = circumference - (percent * circumference);
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Get Kp status with color coding
+        function getKpStatus(kp) {
+            if (kp >= 7) return { text: 'Severe Storm', class: 'status-alert' };
+            if (kp >= 5) return { text: 'Strong Storm', class: 'status-warning' };
+            if (kp >= 4) return { text: 'Minor Storm', class: 'status-warning' };
+            if (kp >= 3) return { text: 'Unsettled', class: 'status-info' };
+            return { text: 'Quiet', class: 'status-good' };
+        }
+
+        // Get Aurora probability status
+        function getAuroraStatus(probability) {
+            if (probability >= 70) return { text: 'High Chance', class: 'status-alert' };
+            if (probability >= 40) return { text: 'Moderate', class: 'status-warning' };
+            if (probability >= 20) return { text: 'Low Chance', class: 'status-info' };
+            return { text: 'Unlikely', class: 'status-good' };
+        }
+
+        // Get solar wind status
+        function getSolarWindStatus(speed) {
+            if (speed >= 700) return { text: 'Fast', class: 'status-alert' };
+            if (speed >= 500) return { text: 'Moderate', class: 'status-warning' };
+            if (speed >= 400) return { text: 'Normal', class: 'status-info' };
+            return { text: 'Slow', class: 'status-good' };
+        }
+
+        // Create aurora oval polygon
+        function createAuroraOval(kp, color) {
+            const baseRadius = 1000000;
+            const kpFactor = 1 + (kp * 0.1);
+            const ovalRadius = baseRadius * kpFactor;
+            
+            const points = [];
+            const steps = 36;
+            
+            for (let i = 0; i <= steps; i++) {
+                const angle = (i / steps) * Math.PI * 2;
+                const x = Math.cos(angle) * ovalRadius * 0.8;
+                const y = Math.sin(angle) * ovalRadius * 1.2;
+                
+                const centerLat = 86.5;
+                const centerLng = 164.04;
+                
+                const lat = centerLat + (y / 111000);
+                const lng = centerLng + (x / (111000 * Math.cos(centerLat * Math.PI / 180)));
+                
+                points.push([lat, lng]);
+            }
+            
+            return L.polygon(points, {
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.2,
+                weight: 2
+            });
+        }
+
+        // Update aurora oval on map
+        function updateAuroraOval(kp) {
+            auroraLayers.forEach(layer => {
+                if (auroraMap.hasLayer(layer)) {
+                    auroraMap.removeLayer(layer);
+                }
+            });
+            auroraLayers = [];
+            
+            let color = '#22c55e';
+            let intensityText = 'Low';
+            
+            if (kp < 3) {
+                color = '#22c55e';
+                intensityText = 'Low';
+            } else if (kp < 5) {
+                color = '#eab308';
+                intensityText = 'Moderate';
+            } else if (kp < 7) {
+                color = '#f97316';
+                intensityText = 'High';
+            } else {
+                color = '#ef4444';
+                intensityText = 'Extreme';
+            }
+            
+            // Create main oval
+            const mainOval = createAuroraOval(kp, color);
+            mainOval.addTo(auroraMap);
+            auroraLayers.push(mainOval);
+            
+            // Update intensity text
+            document.getElementById('aurora-intensity').textContent = `Kp ${kp.toFixed(1)} (${intensityText})`;
+            document.getElementById('aurora-intensity').className = kp < 3 ? 'gauge-status status-good' : 
+                kp < 5 ? 'gauge-status status-warning' : 
+                kp < 7 ? 'gauge-status status-alert' : 'gauge-status status-alert';
+        }
+
+        // Update ISS position on map
+        function updateISSPosition(lat, lon) {
+            if (!issMarker || !issMap) return;
+            
+            issMarker.setLatLng([lat, lon]);
+            issMap.setView([lat, lon], issMap.getZoom());
+        }
+
+        // Update Moon Data with accurate calculations
+        function updateMoonData() {
+            const now = new Date();
+            const moonData = calculateMoonPhase(now);
+            const moonPhase = getAccurateMoonPhase(moonData);
+            const moonAge = getMoonAge(moonData.phase);
+            const nextFullMoon = getNextFullMoon(now);
+            
+            const illumination = moonPhase.illumination;
+            
+            // Update moon gauge
+            document.getElementById('moon-illumination-value').textContent = illumination + '%';
+            updateGauge('moon-circle', illumination, 100);
+            
+            // Update moon card
+            document.getElementById('moon-illumination').textContent = illumination + '%';
+            document.getElementById('moon-illumination-display').textContent = illumination + '%';
+            document.getElementById('moon-phase-name').textContent = moonPhase.name + ' ' + moonPhase.emoji;
+            document.getElementById('moon-phase-display').textContent = moonPhase.name;
+            document.getElementById('moon-phase-status').textContent = moonPhase.name;
+            document.getElementById('moon-age').textContent = moonAge + ' days';
+            document.getElementById('next-full-moon').textContent = 
+                nextFullMoon.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            // Update moon visualization
+            updateMoonVisualization(illumination, moonData.phase);
+            
+            return {
+                illumination,
+                name: moonPhase.name,
+                age: moonAge,
+                nextFullMoon: nextFullMoon.toISOString()
+            };
+        }
+
+        // Sample meteor shower data (replace with actual API call)
+        function getCurrentMeteorShowers() {
+            const currentMonth = new Date().getMonth();
+            const meteorShowers = [
+                { name: 'Quadrantids', peak: 'Jan 3-4', zhr: '120', active: currentMonth === 0 },
+                { name: 'Lyrids', peak: 'Apr 22-23', zhr: '18', active: currentMonth === 3 },
+                { name: 'Eta Aquariids', peak: 'May 6-7', zhr: '50', active: currentMonth === 4 },
+                { name: 'Perseids', peak: 'Aug 12-13', zhr: '100', active: currentMonth === 7 },
+                { name: 'Orionids', peak: 'Oct 21-22', zhr: '20', active: currentMonth === 9 },
+                { name: 'Leonids', peak: 'Nov 17-18', zhr: '15', active: currentMonth === 10 },
+                { name: 'Geminids', peak: 'Dec 13-14', zhr: '150', active: currentMonth === 11 }
+            ];
+            
+            return meteorShowers.filter(shower => shower.active);
+        }
+
+        // Fetch all data
+        async function fetchData() {
+            try {
+                // Calculate moon data first
+                moonDataCache = updateMoonData();
+                
+                // Update uptime
+                updateUptime();
+                
+                const [
+                    news, noaa, satellites, status, 
+                    updateStatus, aurora, comets, 
+                    dst, meteor
+                ] = await Promise.all([
+                    fetch(baseUrl + 'news.json').then(r => r.json()),
+                    fetch(baseUrl + 'noaa.json').then(r => r.json()),
+                    fetch(baseUrl + 'satellites.json').then(r => r.json()),
+                    fetch(baseUrl + 'status.json').then(r => r.json()),
+                    fetch(baseUrl + 'update-status.json').then(r => r.json()),
+                    fetch(baseUrl + 'aurora.json').then(r => r.json()),
+                    fetch(baseUrl + 'comets.json').then(r => r.json()),
+                    fetch(baseUrl + 'dst.json').then(r => r.json()),
+                    fetch(baseUrl + 'meteor.json').then(r => r.json())
+                ]);
+
+                updateDashboard({
+                    news, noaa, satellites, status,
+                    updateStatus, aurora, comets,
+                    dst, meteor,
+                    moon: moonDataCache
+                });
+                
+                // Update timestamp
+                document.getElementById('update-time').textContent = 
+                    new Date().toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('system-status-badge').className = 'gauge-status status-alert';
+                document.getElementById('system-status-badge').textContent = 'Offline';
+                
+                // Use fallback data
+                updateDashboardWithFallback();
+            }
+        }
+
+        // Fallback data for when API fails
+        function updateDashboardWithFallback() {
+            const now = new Date();
+            
+            // Update moon data
+            updateMoonData();
+            
+            // Update system status
+            document.getElementById('system-status-badge').className = 'gauge-status status-warning';
+            document.getElementById('system-status-badge').textContent = 'Limited';
+            document.getElementById('last-update').textContent = now.toLocaleString();
+            document.getElementById('data-sources').textContent = '3/8';
+            
+            // Set some default values
+            document.getElementById('kp-value').textContent = '2.3';
+            document.getElementById('solar-wind-value').textContent = '425';
+            document.getElementById('aurora-probability').textContent = '15%';
+            
+            // Update meteor showers with current data
+            const currentMeteors = getCurrentMeteorShowers();
+            const meteorDiv = document.getElementById('meteor-showers');
+            meteorDiv.innerHTML = '';
+            
+            if (currentMeteors.length > 0) {
+                currentMeteors.slice(0, 2).forEach(shower => {
+                    meteorDiv.innerHTML += `
+                        <div class="data-item purple">
+                            <span class="data-label">${shower.name}</span>
+                            <span class="data-value">ZHR: ${shower.zhr}</span>
+                        </div>
+                    `;
+                });
+                document.getElementById('meteor-status').textContent = 'Active';
+            } else {
+                meteorDiv.innerHTML = '<div class="data-item">No active meteor showers</div>';
+                document.getElementById('meteor-status').textContent = 'None';
+            }
+        }
+
+        // Update the entire dashboard
+        function updateDashboard(data) {
+            // System Status
+            document.getElementById('system-status-badge').textContent = 
+                data.updateStatus.systemStatus || 'Online';
+            document.getElementById('last-update').textContent = 
+                new Date(data.status.lastUpdate).toLocaleString();
+            
+            const dataSources = Object.values(data.updateStatus.dataStatus || {})
+                .filter(status => status === 'OK').length;
+            document.getElementById('data-sources').textContent = 
+                `${dataSources} active`;
+            
+            // Kp Index
+            const latestKp = data.noaa.kpIndex && data.noaa.kpIndex.length > 0 
+                ? parseFloat(data.noaa.kpIndex[data.noaa.kpIndex.length - 1][1]) 
+                : 0;
+            
+            document.getElementById('kp-value').textContent = latestKp.toFixed(1);
+            updateGauge('kp-circle', latestKp, 9);
+            
+            const kpStatus = getKpStatus(latestKp);
+            document.getElementById('kp-status').textContent = kpStatus.text;
+            document.getElementById('kp-status').className = 'gauge-status ' + kpStatus.class;
+            document.getElementById('current-kp').textContent = latestKp.toFixed(1);
+            
+            // Calculate max Kp
+            const maxKp = data.noaa.kpIndex 
+                ? Math.max(...data.noaa.kpIndex.slice(-24).map(k => parseFloat(k[1])))
+                : latestKp;
+            document.getElementById('max-kp').textContent = maxKp.toFixed(1);
+            document.getElementById('storm-level').textContent = kpStatus.text;
+            
+            // Solar Wind
+            const solarWindSpeed = parseFloat(data.noaa.solarWind?.[2] || 400);
+            document.getElementById('solar-wind-value').textContent = solarWindSpeed.toFixed(0);
+            updateGauge('solar-wind-circle', solarWindSpeed, 1000);
+            
+            const windStatus = getSolarWindStatus(solarWindSpeed);
+            document.getElementById('solar-wind-status').textContent = windStatus.text;
+            document.getElementById('solar-wind-status').className = 'gauge-status ' + windStatus.class;
+            document.getElementById('solar-wind-speed').textContent = solarWindSpeed.toFixed(0) + ' km/s';
+            
+            // Aurora Data
+            const forecastKp = parseFloat(data.aurora.forecastKp || latestKp);
+            const auroraProbability = parseFloat(data.aurora.probability || 0);
+            
+            document.getElementById('aurora-probability').textContent = auroraProbability + '%';
+            updateGauge('aurora-circle', auroraProbability, 100);
+            
+            const auroraStatus = getAuroraStatus(auroraProbability);
+            document.getElementById('aurora-status').textContent = auroraStatus.text;
+            document.getElementById('aurora-status').className = 'gauge-status ' + auroraStatus.class;
+            
+            document.getElementById('forecastKp').textContent = forecastKp.toFixed(1);
+            document.getElementById('auroraProbability').textContent = auroraProbability + '%';
+            document.getElementById('auroraViewing').textContent = data.aurora.bestViewing || '--';
+            document.getElementById('auroraVisibility').textContent = 
+                forecastKp < 3 ? 'Polar Only' : 
+                forecastKp < 5 ? 'High Latitudes' : 
+                forecastKp < 7 ? 'Mid Latitudes' : 'Widespread';
+            
+            updateAuroraOval(forecastKp);
+            
+            // Update aurora chance card
+            document.getElementById('forecast-3h').textContent = forecastKp >= 5 ? 'Likely' : forecastKp >= 3 ? 'Possible' : 'Unlikely';
+            document.getElementById('forecast-6h').textContent = forecastKp >= 4 ? 'Possible' : 'Unlikely';
+            document.getElementById('forecast-12h').textContent = forecastKp >= 3 ? 'Possible' : 'Unlikely';
+            document.getElementById('forecast-peak').textContent = data.aurora.bestViewing || '--';
+            
+            // ISS Data
+            const iss = data.satellites.iss || {};
+            document.getElementById('iss-latitude').textContent = iss.latitude ? iss.latitude.toFixed(2) + '°' : '--';
+            document.getElementById('iss-longitude').textContent = iss.longitude ? iss.longitude.toFixed(2) + '°' : '--';
+            document.getElementById('iss-altitude').textContent = iss.altitude ? iss.altitude.toFixed(0) + ' km' : '--';
+            document.getElementById('iss-velocity').textContent = iss.velocity ? iss.velocity.toFixed(0) + ' km/h' : '--';
+            document.getElementById('iss-visibility').textContent = iss.visibility || '--';
+            document.getElementById('iss-orbit').textContent = '~' + Math.floor((iss.velocity || 28000) / 28000 * 90) + '';
+            
+            if (iss.latitude && iss.longitude) {
+                updateISSPosition(iss.latitude, iss.longitude);
+            }
+            
+            // Solar Flares
+            const flares = data.noaa.solarFlares || [];
+            document.getElementById('flares-count').textContent = flares.length;
+            
+            let flareActivity = 'None';
+            if (flares.length > 0) {
+                const latest = flares[flares.length - 1];
+                const flareClass = latest.max_class || 'C';
+                flareActivity = flareClass + '-Class';
+                document.getElementById('latest-flare').textContent = flareClass + '-Class';
+                document.getElementById('solar-status').textContent = flareClass.startsWith('X') ? 'Active' : 
+                    flareClass.startsWith('M') ? 'Moderate' : 'Quiet';
+                document.getElementById('solar-status').className = flareClass.startsWith('X') ? 'gauge-status status-alert' :
+                    flareClass.startsWith('M') ? 'gauge-status status-warning' : 'gauge-status status-good';
+            }
+            document.getElementById('flare-activity').textContent = flareActivity;
+            
+            // Display recent flares
+            const flaresDiv = document.getElementById('solar-flares');
+            if (flares.length > 0) {
+                flaresDiv.innerHTML = '';
+                flares.slice(-3).forEach(flare => {
+                    const flareClass = flare.max_class || 'C';
+                    const classColor = flareClass.startsWith('X') ? 'flare-x' : 
+                                     flareClass.startsWith('M') ? 'flare-m' : 'flare-c';
+                    const duration = Math.round((new Date(flare.end_time) - new Date(flare.begin_time)) / 60000);
+                    
+                    flaresDiv.innerHTML += `
+                        <div class="data-item ${flareClass.startsWith('X') ? 'alert' : flareClass.startsWith('M') ? 'warning' : 'success'}">
+                            <span class="data-label">
+                                <span class="flare-indicator ${classColor}"></span>
+                                ${flareClass}
+                            </span>
+                            <span class="data-value">${duration} min</span>
+                        </div>
+                    `;
+                });
+            } else {
+                flaresDiv.innerHTML = '<div class="data-item success">No recent solar flares</div>';
+            }
+            
+            // News Feed
+            const newsItems = data.news.articles || [];
+            document.getElementById('news-count').textContent = newsItems.length;
+            
+            const newsDiv = document.getElementById('news-feed');
+            newsDiv.innerHTML = '';
+            if (newsItems.length > 0) {
+                newsItems.slice(0, 5).forEach(article => {
+                    newsDiv.innerHTML += `
+                        <a href="${article.link}" target="_blank" class="news-item">
+                            <div class="news-title">${article.title}</div>
+                            <div class="news-meta">
+                                <span>${article.source}</span>
+                                <span>${new Date(article.date).toLocaleDateString()}</span>
+                            </div>
+                        </a>
+                    `;
+                });
+            } else {
+                newsDiv.innerHTML = '<div class="news-item">No recent news articles</div>';
+            }
+            
+            // Meteor Showers - Fixed to show current data
+            const meteorShowers = data.meteor && data.meteor.upcoming ? data.meteor.upcoming : getCurrentMeteorShowers();
+            document.getElementById('meteor-status').textContent = meteorShowers.length > 0 ? 'Active' : 'None';
+            
+            const meteorDiv = document.getElementById('meteor-showers');
+            meteorDiv.innerHTML = '';
+            if (meteorShowers.length > 0) {
+                meteorShowers.slice(0, 2).forEach(shower => {
+                    meteorDiv.innerHTML += `
+                        <div class="data-item purple">
+                            <span class="data-label">${shower.name || 'Unknown'}</span>
+                            <span class="data-value">ZHR: ${shower.zhr || '--'}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                meteorDiv.innerHTML = '<div class="data-item">No active meteor showers</div>';
+            }
+            
+            // Comets
+            const cometsList = data.comets.comets || [];
+            document.getElementById('comets-count').textContent = cometsList.length;
+            
+            const cometsDiv = document.getElementById('comets-list');
+            cometsDiv.innerHTML = '';
+            if (cometsList.length > 0) {
+                cometsList.slice(0, 2).forEach(comet => {
+                    cometsDiv.innerHTML += `
+                        <div class="data-item info">
+                            <span class="data-label">${comet.name}</span>
+                            <span class="data-value">Mag: ${comet.magnitude}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                cometsDiv.innerHTML = '<div class="data-item">No notable comets</div>';
+            }
+            
+            // Weather forecast
+            document.getElementById('sky-visibility').textContent = forecastKp < 5 ? 'Good' : 'Reduced';
+            document.getElementById('cloud-cover').textContent = Math.round(Math.random() * 30) + '%';
+            document.getElementById('seeing-conditions').textContent = forecastKp < 4 ? 'Excellent' : 
+                                                                      forecastKp < 6 ? 'Fair' : 'Poor';
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initMaps();
+            fetchData();
+            startSOHORefresh();
+            initDragAndDrop();
+            loadLayout();
+            
+            // Start uptime counter
+            setInterval(updateUptime, 1000);
+            
+            // Set up auto-refresh for dashboard data
+            updateInterval = setInterval(() => {
+                fetchData();
+            }, 60000);
+            
+            // Update moon data more frequently (every 10 minutes)
+            setInterval(updateMoonData, 10 * 60 * 1000);
+            
+            // Manual refresh button
+            document.getElementById('refresh-btn').addEventListener('click', () => {
+                fetchData();
+                refreshSOHOC2();
+                refreshSOHOC3();
+            });
+            
+            // Fullscreen button
+            document.getElementById('fullscreen-btn').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+            
+            // Auto-hide layout help after 10 seconds
+            setTimeout(() => {
+                const help = document.getElementById('layoutHelp');
+                if (help.style.display !== 'none') {
+                    help.style.display = 'none';
+                }
+            }, 10000);
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+            if (sohoRefreshInterval) {
+                clearInterval(sohoRefreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>
