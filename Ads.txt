@@ -1,13 +1,13 @@
 google.com, pub-0901537229802149, DIRECT, f08c47fec0942fa0
 
 server {
-    location ~ /ads.txt {
+    location ~ /Ads.txt {
         return 301 https://srv.adstxtmanager.com/19390/nagoh.us;
     }
 }
 
 server {
-    location ~ /ads.txt {
+    location ~ /Ads.txt {
         return 301 https://srv.adstxtmanager.com/19390/live.ournightsky.us;
     }
 }
