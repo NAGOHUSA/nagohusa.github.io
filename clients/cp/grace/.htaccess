@@ -1,28 +1,25 @@
-# Enable Basic Authentication
+# Enable password protection
 AuthType Basic
-AuthName "Church Directory - Restricted Access"
-AuthUserFile /path/to/your/.htpasswd
+AuthName "Church Directory - Private Access"
+AuthUserFile https://nagoh.us/clients/cp/grace/.htpasswd
 Require valid-user
 
 # Block directory listing
 Options -Indexes
 
-# Prevent access to CSV files
-<FilesMatch "\.(csv|json)$">
+# Security - deny access to .ht* files
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to CSV files
+<FilesMatch "\.(csv|txt)$">
+    Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Allow only HTML, CSS, JS files
-<FilesMatch "\.(html|css|js|png|jpg|gif)$">
-    Allow from all
-</FilesMatch>
-
-# Security headers
-Header set X-Content-Type-Options "nosniff"
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-XSS-Protection "1; mode=block"
-
-# Cache control for static files
+# Cache settings
 <FilesMatch "\.(html|css|js)$">
-    Header set Cache-Control "max-age=3600, public"
+    Header set Cache-Control "max-age=3600, must-revalidate"
 </FilesMatch>
