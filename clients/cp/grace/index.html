@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Church Directory</title>
+    <title>Church Directory - Members Only</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -25,6 +25,91 @@
             min-height: 100vh;
         }
         
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .login-logo {
+            font-size: 36px;
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+        
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border 0.3s;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #4361ee;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-btn:hover {
+            background: #3a0ca3;
+        }
+        
+        .login-error {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Directory Screen */
+        .directory-screen {
+            display: none;
+            min-height: 100vh;
+        }
+        
         /* Header */
         .header {
             background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
@@ -36,18 +121,32 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
         .header h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 5px;
         }
         
-        .header p {
-            font-size: 13px;
-            opacity: 0.9;
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         /* Search Section */
@@ -64,10 +163,10 @@
         
         .search-input {
             flex: 1;
-            padding: 14px 16px;
+            padding: 12px 14px;
             border: 1px solid #d0d7ff;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             background: #f8faff;
             -webkit-appearance: none;
         }
@@ -77,8 +176,8 @@
             color: white;
             border: none;
             border-radius: 12px;
-            width: 56px;
-            font-size: 18px;
+            width: 50px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,8 +190,8 @@
         }
         
         .results-header {
-            padding: 0 15px 10px;
-            font-size: 13px;
+            padding: 0 15px 8px;
+            font-size: 12px;
             color: #666;
             border-bottom: 1px solid #e0e7ff;
             margin-bottom: 5px;
@@ -106,25 +205,31 @@
         /* Simple Cards */
         .person-card {
             background: white;
-            margin: 8px 15px;
-            padding: 14px;
+            margin: 6px 15px;
+            padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             border: 1px solid #e0e7ff;
         }
         
         .person-name {
             font-weight: 700;
             color: #2d3748;
-            font-size: 17px;
+            font-size: 16px;
             margin-bottom: 8px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+        }
+        
+        .person-city {
+            font-size: 12px;
+            color: #666;
+            font-weight: normal;
         }
         
         .person-contact {
-            font-size: 14px;
+            font-size: 13px;
             color: #555;
         }
         
@@ -132,15 +237,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         
         .contact-row i {
             color: #4361ee;
-            width: 16px;
+            width: 14px;
         }
         
-        /* Phone Link */
         .phone-link {
             color: #4361ee;
             text-decoration: none;
@@ -162,7 +266,7 @@
         }
         
         .no-results i {
-            font-size: 40px;
+            font-size: 32px;
             margin-bottom: 10px;
             color: #d0d7ff;
         }
@@ -170,17 +274,17 @@
         /* Loading */
         .loading {
             text-align: center;
-            padding: 50px 20px;
+            padding: 40px 20px;
         }
         
         .spinner {
-            border: 4px solid #f0f4ff;
-            border-top: 4px solid #4361ee;
+            border: 3px solid #f0f4ff;
+            border-top: 3px solid #4361ee;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 10px;
         }
         
         @keyframes spin {
@@ -198,41 +302,14 @@
             margin-top: 10px;
         }
         
-        /* Error Message */
-        .error-message {
-            background: #fff5f5;
-            border: 1px solid #fed7d7;
-            color: #e53e3e;
-            padding: 15px;
-            margin: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        /* Refresh Button */
-        .refresh-btn {
-            background: #4361ee;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 10px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         @media (max-width: 320px) {
             .header h1 {
-                font-size: 18px;
+                font-size: 16px;
             }
             
             .person-card {
-                margin: 6px 10px;
-                padding: 12px;
+                margin: 5px 10px;
+                padding: 10px;
             }
             
             .search-section {
@@ -243,6 +320,24 @@
         @media (prefers-color-scheme: dark) {
             body {
                 background: #0f172a;
+                color: #e2e8f0;
+            }
+            
+            .login-container {
+                background: #1e293b;
+            }
+            
+            .login-title {
+                color: #f1f5f9;
+            }
+            
+            .login-subtitle {
+                color: #94a3b8;
+            }
+            
+            .password-input {
+                background: #0f172a;
+                border-color: #475569;
                 color: #e2e8f0;
             }
             
@@ -265,6 +360,10 @@
                 color: #f1f5f9;
             }
             
+            .person-city {
+                color: #94a3b8;
+            }
+            
             .contact-row {
                 color: #cbd5e1;
             }
@@ -272,47 +371,71 @@
             .phone-link {
                 color: #60a5fa;
             }
-            
-            .error-message {
-                background: #4c1d1d;
-                border-color: #7b341e;
-                color: #fc8181;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1><i class="fas fa-church"></i> Church Directory</h1>
-        <p>Search for members by name</p>
-    </div>
-    
-    <div class="search-section">
-        <div class="search-box">
-            <input type="search" id="searchInput" class="search-input" placeholder="Type a name to search..." autocomplete="off">
-            <button id="searchBtn" class="search-btn">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </div>
-    
-    <div class="results-section">
-        <div class="results-header">
-            <span class="results-count" id="resultsCount">Loading directory...</span>
-        </div>
-        
-        <div id="resultsContainer">
-            <div class="loading">
-                <div class="spinner"></div>
-                <div>Loading directory data...</div>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-church"></i>
+            </div>
+            <h1 class="login-title">Grace Church Directory</h1>
+            <p class="login-subtitle">Private access for members only</p>
+            
+            <input type="password" id="passwordInput" class="password-input" placeholder="Enter access password">
+            <button id="loginBtn" class="login-btn">Enter Directory</button>
+            
+            <div class="login-error" id="loginError">
+                Incorrect password. Please try again.
+            </div>
+            
+            <div style="margin-top: 20px; font-size: 11px; color: #999;">
+                <i class="fas fa-shield-alt"></i> Secured access • Private directory
             </div>
         </div>
     </div>
     
-    <div class="footer">
-        <div>Church Directory &copy; <span id="currentYear"></span> • Private Access</div>
-        <div style="margin-top: 3px; font-size: 10px; opacity: 0.7;">
-            <i class="fas fa-mobile-alt"></i> Tap phone numbers to call
+    <!-- Directory Screen -->
+    <div class="directory-screen" id="directoryScreen">
+        <div class="header">
+            <div class="header-top">
+                <h1><i class="fas fa-users"></i> Church Directory</h1>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            <p style="font-size: 12px; opacity: 0.9;">Search members by name</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input type="search" id="searchInput" class="search-input" placeholder="Search by name..." autocomplete="off">
+                <button id="searchBtn" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div class="results-header">
+                <span class="results-count" id="resultsCount">Loading directory...</span>
+            </div>
+            
+            <div id="resultsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading church directory...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>Grace Church Directory &copy; <span id="currentYear"></span></div>
+            <div style="margin-top: 3px; font-size: 10px; opacity: 0.7;">
+                <i class="fas fa-mobile-alt"></i> Tap phone numbers to call • Private access
+            </div>
         </div>
     </div>
 
@@ -320,24 +443,80 @@
         // Set current year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         
-        // Your Google Sheet CSV URL (after publishing to web)
-        // Replace this with your actual Google Sheets CSV URL
-        // File → Share → Publish to web → Select CSV → Copy link
-        const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNaUWM4zaQakTSVSVBkP1PtybmY-LiYWuxwRQOb0LKIKMLb6AVbbM_B019diDcd0GG3lD7fEw0yHJE/pub?output=csv";
+        // ====== CONFIGURATION ======
+        // 1. SET YOUR PASSWORD HERE (CHANGE THIS!)
+        const DIRECTORY_PASSWORD = "grace2024";
         
-        // Cache for directory data
-        let directoryData = [];
+        // 2. Your Google Sheets CSV URL (Get this by publishing your sheet to web)
+        const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTgV_KsZw6YJqT05bTM2m8yK9gLqj40HqKF8yQEGM-TOOJWRLQ7dJIFeJ7o2jchf3rRSTcmnNSzJtME/pub?output=csv";
         
-        // Load data from Google Sheets CSV
+        // Alternative format (if the above doesn't work):
+        // const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv";
+        // ============================
+        
+        // Check if user is already logged in
+        function checkLogin() {
+            const loginToken = sessionStorage.getItem('churchDirectoryAuth');
+            if (loginToken === DIRECTORY_PASSWORD) {
+                showDirectory();
+                loadDirectoryData();
+                return true;
+            }
+            return false;
+        }
+        
+        // Show directory screen
+        function showDirectory() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('directoryScreen').style.display = 'block';
+        }
+        
+        // Show login screen
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('directoryScreen').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+        
+        // Login function
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === DIRECTORY_PASSWORD) {
+                sessionStorage.setItem('churchDirectoryAuth', password);
+                showDirectory();
+                loadDirectoryData();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('churchDirectoryAuth');
+            showLogin();
+        }
+        
+        // Load data from Google Sheets
         async function loadDirectoryData() {
             try {
                 console.log('Loading data from Google Sheets...');
                 
-                // Fetch CSV data
-                const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+                // Fetch CSV data with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(GOOGLE_SHEETS_CSV_URL, {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
+                    throw new Error(`Failed to load data: ${response.status}`);
                 }
                 
                 const csvText = await response.text();
@@ -346,28 +525,27 @@
                     throw new Error('No data received from Google Sheets');
                 }
                 
-                // Parse CSV data
+                // Parse CSV
                 directoryData = parseCSV(csvText);
                 
                 if (directoryData.length === 0) {
-                    throw new Error('No contacts found in the directory');
+                    throw new Error('No contacts found in directory');
                 }
                 
                 console.log(`Loaded ${directoryData.length} contacts`);
                 displayResults(directoryData);
                 
             } catch (error) {
-                console.error('Error loading directory:', error);
+                console.error('Error:', error);
                 
-                // Show error message
                 document.getElementById('resultsContainer').innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div style="text-align: center; padding: 40px 20px; color: #e53e3e;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 10px;"></i>
                         <div style="font-weight: 600; margin: 5px 0;">Unable to load directory</div>
-                        <div style="font-size: 13px; margin-bottom: 10px;">${error.message}</div>
-                        <button onclick="loadDirectoryData()" class="refresh-btn">
-                            <i class="fas fa-redo"></i> Try Again
-                        </button>
+                        <div style="font-size: 13px; margin-bottom: 15px;">${error.message}</div>
+                        <div style="font-size: 12px; color: #666; margin-top: 20px;">
+                            Check Google Sheets URL in settings
+                        </div>
                     </div>
                 `;
                 
@@ -375,12 +553,12 @@
             }
         }
         
-        // Simple CSV parser
+        // Parse CSV data
         function parseCSV(csvText) {
             const lines = csvText.split('\n');
             if (lines.length < 2) return [];
             
-            // Extract headers (first row)
+            // Get headers (first row)
             const headers = lines[0].split(',').map(h => h.trim());
             
             // Parse data rows
@@ -390,10 +568,25 @@
                 const line = lines[i].trim();
                 if (!line) continue;
                 
-                // Simple CSV parsing (handles basic cases)
-                const values = parseCSVLine(line);
-                const entry = {};
+                // Simple CSV parsing
+                const values = [];
+                let current = '';
+                let inQuotes = false;
                 
+                for (let char of line) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current);
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current);
+                
+                // Create object
+                const entry = {};
                 headers.forEach((header, index) => {
                     if (values[index] !== undefined) {
                         entry[header] = values[index].trim();
@@ -401,7 +594,7 @@
                 });
                 
                 // Only add if we have at least a name
-                if (entry.first_name || entry.last_name) {
+                if (entry.first_name || entry.last_name || entry['First Name'] || entry['Last Name']) {
                     data.push(entry);
                 }
             }
@@ -409,42 +602,13 @@
             return data;
         }
         
-        // Simple CSV line parser
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            
-            result.push(current);
-            return result;
-        }
-        
         // Format phone number
         function formatPhone(phone) {
             if (!phone) return '';
-            
-            // Remove all non-digits
             const digits = phone.replace(/\D/g, '');
-            
-            // Format as (XXX) XXX-XXXX
             if (digits.length === 10) {
                 return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
             }
-            
-            // Return original if not standard US number
             return phone;
         }
         
@@ -458,25 +622,26 @@
                     <div class="no-results">
                         <i class="fas fa-users-slash"></i>
                         <div style="font-weight: 600; margin: 8px 0;">No members found</div>
-                        <div style="font-size: 13px;">Try a different search term</div>
+                        <div style="font-size: 12px;">Try a different search term</div>
                     </div>
                 `;
                 count.textContent = '0 members';
                 return;
             }
             
-            // Sort alphabetically by last name
+            // Sort by last name
             data.sort((a, b) => {
-                const nameA = `${a.last_name || ''} ${a.first_name || ''}`.toLowerCase();
-                const nameB = `${b.last_name || ''} ${b.first_name || ''}`.toLowerCase();
+                const nameA = `${a.last_name || a['Last Name'] || ''} ${a.first_name || a['First Name'] || ''}`.toLowerCase();
+                const nameB = `${b.last_name || b['Last Name'] || ''} ${b.first_name || b['First Name'] || ''}`.toLowerCase();
                 return nameA.localeCompare(nameB);
             });
             
-            // Generate cards
+            // Create cards
             let html = '';
             data.forEach(person => {
-                const firstName = person.first_name || person.FirstName || '';
-                const lastName = person.last_name || person.LastName || '';
+                // Handle different column name formats
+                const firstName = person.first_name || person.FirstName || person['First Name'] || '';
+                const lastName = person.last_name || person.LastName || person['Last Name'] || '';
                 const fullName = `${firstName} ${lastName}`.trim();
                 
                 const phone = person.phone || person.Phone || '';
@@ -489,8 +654,8 @@
                 html += `
                     <div class="person-card">
                         <div class="person-name">
-                            ${fullName}
-                            ${city ? `<span style="font-size: 12px; font-weight: normal; color: #666; margin-left: auto;">${city}, ${state}</span>` : ''}
+                            ${fullName || 'Unnamed Member'}
+                            ${city ? `<span class="person-city">${city}, ${state}</span>` : ''}
                         </div>
                         <div class="person-contact">
                             ${phone ? `
@@ -516,15 +681,13 @@
         
         // Search function
         function searchDirectory(query) {
-            if (!query.trim()) {
-                return directoryData;
-            }
+            if (!query.trim()) return directoryData;
             
             const searchTerm = query.toLowerCase();
             
             return directoryData.filter(person => {
-                const firstName = (person.first_name || person.FirstName || '').toLowerCase();
-                const lastName = (person.last_name || person.LastName || '').toLowerCase();
+                const firstName = (person.first_name || person.FirstName || person['First Name'] || '').toLowerCase();
+                const lastName = (person.last_name || person.LastName || person['Last Name'] || '').toLowerCase();
                 const fullName = `${firstName} ${lastName}`;
                 const email = (person.email || person.Email || '').toLowerCase();
                 
@@ -536,6 +699,13 @@
         }
         
         // Event listeners
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('passwordInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') login();
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        
         document.getElementById('searchBtn').addEventListener('click', () => {
             const query = document.getElementById('searchInput').value;
             const results = searchDirectory(query);
@@ -563,13 +733,13 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Load data immediately
-            loadDirectoryData();
-            
-            // Auto-focus search input
-            setTimeout(() => {
-                document.getElementById('searchInput').focus();
-            }, 500);
+            // Check if already logged in
+            if (!checkLogin()) {
+                // Focus password field
+                setTimeout(() => {
+                    document.getElementById('passwordInput').focus();
+                }, 300);
+            }
         });
     </script>
 </body>
