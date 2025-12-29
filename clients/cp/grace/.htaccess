@@ -1,0 +1,28 @@
+# Enable Basic Authentication
+AuthType Basic
+AuthName "Church Directory - Restricted Access"
+AuthUserFile /path/to/your/.htpasswd
+Require valid-user
+
+# Block directory listing
+Options -Indexes
+
+# Prevent access to CSV files
+<FilesMatch "\.(csv|json)$">
+    Deny from all
+</FilesMatch>
+
+# Allow only HTML, CSS, JS files
+<FilesMatch "\.(html|css|js|png|jpg|gif)$">
+    Allow from all
+</FilesMatch>
+
+# Security headers
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+
+# Cache control for static files
+<FilesMatch "\.(html|css|js)$">
+    Header set Cache-Control "max-age=3600, public"
+</FilesMatch>
