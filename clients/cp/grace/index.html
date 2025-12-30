@@ -254,7 +254,16 @@
             display: inline-block;
         }
         
-        .phone-link:active {
+        .email-link {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .phone-link:active, .email-link:active {
             background: rgba(67, 97, 238, 0.1);
         }
         
@@ -368,7 +377,7 @@
                 color: #cbd5e1;
             }
             
-            .phone-link {
+            .phone-link, .email-link {
                 color: #60a5fa;
             }
         }
@@ -434,7 +443,7 @@
         <div class="footer">
             <div>Grace Church Directory &copy; <span id="currentYear"></span></div>
             <div style="margin-top: 3px; font-size: 10px; opacity: 0.7;">
-                <i class="fas fa-mobile-alt"></i> Tap phone numbers to call • Private access
+                <i class="fas fa-mobile-alt"></i> Tap phone numbers to call • Tap email addresses to email • Private access
             </div>
         </div>
     </div>
@@ -667,7 +676,7 @@
                             ${email ? `
                             <div class="contact-row">
                                 <i class="fas fa-envelope"></i>
-                                <span>${email}</span>
+                                <a href="mailto:${email}" class="email-link">${email}</a>
                             </div>
                             ` : ''}
                         </div>
