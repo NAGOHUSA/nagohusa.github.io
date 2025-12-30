@@ -202,69 +202,128 @@
             color: #4361ee;
         }
         
-        /* Simple Cards */
+        /* Person Cards */
         .person-card {
             background: white;
             margin: 6px 15px;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border: 1px solid #e0e7ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .person-card.expanded {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-color: #4361ee;
+        }
+        
+        .person-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .person-name {
             font-weight: 700;
             color: #2d3748;
             font-size: 16px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex: 1;
         }
         
         .person-city {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
             font-weight: normal;
+            margin-left: 8px;
         }
         
-        .person-contact {
-            font-size: 13px;
-            color: #555;
+        .expand-icon {
+            color: #4361ee;
+            transition: transform 0.3s ease;
+            font-size: 14px;
         }
         
-        .contact-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .person-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .person-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, margin-top 0.3s ease;
+            opacity: 0;
+        }
+        
+        .person-card.expanded .person-details {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 16px;
+        }
+        
+        .detail-section {
+            margin-bottom: 12px;
+            border-top: 1px solid #f0f4ff;
+            padding-top: 12px;
+        }
+        
+        .detail-section:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+        
+        .detail-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 4px;
+            font-weight: 600;
         }
         
-        .contact-row i {
-            color: #4361ee;
-            width: 14px;
+        .detail-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
         }
         
-        .phone-link {
-            color: #4361ee;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        
-        .email-link {
+        .contact-link {
             color: #4361ee;
             text-decoration: none;
             font-weight: 500;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 6px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 12px;
+            margin-bottom: 6px;
+            transition: background-color 0.2s;
         }
         
-        .phone-link:active, .email-link:active {
+        .contact-link:hover, .contact-link:active {
             background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .address-link {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        
+        .address-link:hover, .address-link:active {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .contact-icon {
+            font-size: 12px;
+            width: 14px;
         }
         
         /* No Results */
@@ -318,7 +377,7 @@
             
             .person-card {
                 margin: 5px 10px;
-                padding: 10px;
+                padding: 14px;
             }
             
             .search-section {
@@ -373,12 +432,24 @@
                 color: #94a3b8;
             }
             
-            .contact-row {
-                color: #cbd5e1;
+            .detail-label {
+                color: #94a3b8;
             }
             
-            .phone-link, .email-link {
+            .detail-content {
+                color: #e2e8f0;
+            }
+            
+            .contact-link, .address-link {
                 color: #60a5fa;
+            }
+            
+            .expand-icon {
+                color: #60a5fa;
+            }
+            
+            .detail-section {
+                border-color: #334155;
             }
         }
     </style>
@@ -443,7 +514,7 @@
         <div class="footer">
             <div>Grace Church Directory &copy; <span id="currentYear"></span></div>
             <div style="margin-top: 3px; font-size: 10px; opacity: 0.7;">
-                <i class="fas fa-mobile-alt"></i> Tap phone numbers to call • Tap email addresses to email • Private access
+                <i class="fas fa-mobile-alt"></i> Tap cards to expand details • Tap links to contact
             </div>
         </div>
     </div>
@@ -462,6 +533,8 @@
         // Alternative format (if the above doesn't work):
         // const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv";
         // ============================
+        
+        let directoryData = [];
         
         // Check if user is already logged in
         function checkLogin() {
@@ -621,6 +694,24 @@
             return phone;
         }
         
+        // Format address for Google Maps
+        function formatAddress(person) {
+            const address = person.address || person.Address || '';
+            const city = person.city || person.City || '';
+            const state = person.state || person.State || '';
+            const zip = person.zip || person.Zip || person['Zip Code'] || '';
+            
+            if (!address && !city && !state) return '';
+            
+            return `${address || ''}${address && city ? ', ' : ''}${city || ''}${(city && state) ? ', ' : ''}${state || ''} ${zip || ''}`.trim();
+        }
+        
+        // Create Google Maps URL
+        function createMapsUrl(address) {
+            if (!address) return '';
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        }
+        
         // Display results
         function displayResults(data) {
             const container = document.getElementById('resultsContainer');
@@ -647,38 +738,29 @@
             
             // Create cards
             let html = '';
-            data.forEach(person => {
+            data.forEach((person, index) => {
                 // Handle different column name formats
                 const firstName = person.first_name || person.FirstName || person['First Name'] || '';
                 const lastName = person.last_name || person.LastName || person['Last Name'] || '';
                 const fullName = `${firstName} ${lastName}`.trim();
                 
-                const phone = person.phone || person.Phone || '';
-                const email = person.email || person.Email || '';
                 const city = person.city || person.City || '';
                 const state = person.state || person.State || '';
-                
-                const formattedPhone = formatPhone(phone);
+                const phone = person.phone || person.Phone || '';
+                const email = person.email || person.Email || '';
+                const address = formatAddress(person);
                 
                 html += `
-                    <div class="person-card">
-                        <div class="person-name">
-                            ${fullName || 'Unnamed Member'}
-                            ${city ? `<span class="person-city">${city}, ${state}</span>` : ''}
+                    <div class="person-card" data-index="${index}">
+                        <div class="person-card-header">
+                            <div class="person-name">
+                                ${fullName || 'Unnamed Member'}
+                                ${city ? `<span class="person-city">${city}, ${state}</span>` : ''}
+                            </div>
+                            <i class="fas fa-chevron-down expand-icon"></i>
                         </div>
-                        <div class="person-contact">
-                            ${phone ? `
-                            <div class="contact-row">
-                                <i class="fas fa-phone"></i>
-                                <a href="tel:${phone}" class="phone-link">${formattedPhone}</a>
-                            </div>
-                            ` : ''}
-                            ${email ? `
-                            <div class="contact-row">
-                                <i class="fas fa-envelope"></i>
-                                <a href="mailto:${email}" class="email-link">${email}</a>
-                            </div>
-                            ` : ''}
+                        <div class="person-details">
+                            ${generateDetailsHTML(person)}
                         </div>
                     </div>
                 `;
@@ -686,6 +768,119 @@
             
             container.innerHTML = html;
             count.textContent = `${data.length} ${data.length === 1 ? 'member' : 'members'}`;
+            
+            // Add click events to cards
+            document.querySelectorAll('.person-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on a link
+                    if (e.target.tagName === 'A' || e.target.closest('a')) {
+                        return;
+                    }
+                    
+                    // Toggle expanded state
+                    const isExpanded = this.classList.contains('expanded');
+                    
+                    // Close all other expanded cards
+                    document.querySelectorAll('.person-card.expanded').forEach(otherCard => {
+                        if (otherCard !== this) {
+                            otherCard.classList.remove('expanded');
+                        }
+                    });
+                    
+                    // Toggle this card
+                    this.classList.toggle('expanded', !isExpanded);
+                });
+            });
+        }
+        
+        // Generate details HTML from person object
+        function generateDetailsHTML(person) {
+            let html = '';
+            
+            // Standardize field names
+            const fields = {
+                'Phone': person.phone || person.Phone || '',
+                'Email': person.email || person.Email || '',
+                'Address': formatAddress(person),
+                'Birthday': person.birthday || person.Birthday || person.dob || person.DOB || '',
+                'Anniversary': person.anniversary || person.Anniversary || '',
+                'Family Members': person.family || person.Family || person['Family Members'] || '',
+                'Notes': person.notes || person.Notes || '',
+                'Ministry': person.ministry || person.Ministry || '',
+                'Groups': person.groups || person.Groups || ''
+            };
+            
+            // Remove empty fields
+            Object.keys(fields).forEach(key => {
+                if (!fields[key]) {
+                    delete fields[key];
+                }
+            });
+            
+            // Add all other fields that weren't caught above
+            for (const [key, value] of Object.entries(person)) {
+                if (value && ![
+                    'first_name', 'last_name', 'FirstName', 'LastName', 'First Name', 'Last Name',
+                    'phone', 'Phone', 'email', 'Email', 'city', 'City', 'state', 'State',
+                    'address', 'Address', 'zip', 'Zip', 'Zip Code',
+                    'birthday', 'Birthday', 'dob', 'DOB',
+                    'anniversary', 'Anniversary',
+                    'family', 'Family', 'Family Members',
+                    'notes', 'Notes',
+                    'ministry', 'Ministry',
+                    'groups', 'Groups'
+                ].includes(key)) {
+                    fields[key] = value;
+                }
+            }
+            
+            // Generate sections for each field
+            Object.entries(fields).forEach(([label, value]) => {
+                if (!value) return;
+                
+                let content = '';
+                
+                if (label === 'Phone') {
+                    const phones = value.split(/[,;]/).map(p => p.trim()).filter(p => p);
+                    phones.forEach(phone => {
+                        const formattedPhone = formatPhone(phone);
+                        content += `
+                            <a href="tel:${phone}" class="contact-link">
+                                <i class="fas fa-phone contact-icon"></i>${formattedPhone}
+                            </a>
+                        `;
+                    });
+                } else if (label === 'Email') {
+                    const emails = value.split(/[,;]/).map(e => e.trim()).filter(e => e);
+                    emails.forEach(email => {
+                        content += `
+                            <a href="mailto:${email}" class="contact-link">
+                                <i class="fas fa-envelope contact-icon"></i>${email}
+                            </a>
+                        `;
+                    });
+                } else if (label === 'Address') {
+                    const mapsUrl = createMapsUrl(value);
+                    content = `
+                        <a href="${mapsUrl}" target="_blank" class="address-link">
+                            <i class="fas fa-map-marker-alt"></i> ${value}
+                        </a>
+                    `;
+                } else {
+                    content = `<div class="detail-content">${value}</div>`;
+                }
+                
+                if (content) {
+                    html += `
+                        <div class="detail-section">
+                            <div class="detail-label">${label}</div>
+                            ${content}
+                        </div>
+                    `;
+                }
+            });
+            
+            return html || '<div class="detail-content">No additional information available</div>';
         }
         
         // Search function
@@ -699,11 +894,15 @@
                 const lastName = (person.last_name || person.LastName || person['Last Name'] || '').toLowerCase();
                 const fullName = `${firstName} ${lastName}`;
                 const email = (person.email || person.Email || '').toLowerCase();
+                const city = (person.city || person.City || '').toLowerCase();
+                const state = (person.state || person.State || '').toLowerCase();
                 
                 return fullName.includes(searchTerm) || 
                        firstName.includes(searchTerm) || 
                        lastName.includes(searchTerm) ||
-                       email.includes(searchTerm);
+                       email.includes(searchTerm) ||
+                       city.includes(searchTerm) ||
+                       state.includes(searchTerm);
             });
         }
         
