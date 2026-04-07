@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Native Plant Conservation – Solevia.Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:   #2C5F2D;
+    --moss:     #6B8F4E;
+    --sage:     #A8BC8F;
+    --cream:    #F6F2EA;
+    --bark:     #4A3728;
+    --gold:     #C8A84B;
+    --soil:     #7B5E3A;
+    --white:    #FDFCF8;
+    --charcoal: #1E2419;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--white);
+    color: var(--charcoal);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--forest);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    color: var(--cream);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.8rem; }
+  .nav-links a {
+    color: var(--sage);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Source Serif 4', serif;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--forest);
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 2.5rem 5rem;
+    text-align: center;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 40%, rgba(107,143,78,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 70%, rgba(44,95,45,0.35) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  /* decorative leaf silhouettes */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 50%; transform: translateX(-50%);
+    width: 120%; height: 60px;
+    background: var(--white);
+    border-radius: 50% 50% 0 0 / 40px 40px 0 0;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(200,168,75,0.12);
+    border: 1px solid rgba(200,168,75,0.35);
+    padding: 0.3rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 1.4rem;
+    position: relative; z-index: 1;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    color: var(--cream);
+    line-height: 1.2;
+    max-width: 780px;
+    margin: 0 auto 1.2rem;
+    position: relative; z-index: 1;
+  }
+  .hero h1 em { color: var(--sage); font-style: italic; }
+  .hero-sub {
+    color: rgba(246,242,234,0.78);
+    max-width: 600px;
+    margin: 0 auto 2.2rem;
+    font-size: 1.05rem;
+    font-weight: 300;
+    position: relative; z-index: 1;
+  }
+  .hero-cta {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bark);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.85rem 2.2rem;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+    position: relative; z-index: 1;
+  }
+  .hero-cta:hover { background: #dbb84a; transform: translateY(-2px); }
+
+  /* ── SECTION WRAPPER ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── INTRO STRIP ── */
+  .intro-strip {
+    background: var(--cream);
+    padding: 3.5rem 2.5rem;
+    text-align: center;
+  }
+  .intro-strip p {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    color: var(--soil);
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  /* ── SECTION HEADINGS ── */
+  .section-header {
+    padding: 4rem 0 2rem;
+    text-align: center;
+  }
+  .section-number {
+    display: inline-block;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--forest);
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    line-height: 36px;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.95rem;
+    color: var(--forest);
+    margin-bottom: 0.6rem;
+  }
+  .section-header .lead {
+    color: var(--soil);
+    max-width: 580px;
+    margin: 0 auto;
+    font-size: 1rem;
+  }
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--gold);
+    margin: 1.2rem auto 0;
+    border-radius: 2px;
+  }
+
+  /* ── CONTENT SECTIONS ── */
+  .content-section { padding: 3rem 0 4rem; }
+  .content-section + .content-section {
+    border-top: 1px solid rgba(107,143,78,0.15);
+  }
+
+  .content-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
+    color: var(--forest);
+    margin-bottom: 0.9rem;
+  }
+  .content-section p { margin-bottom: 1rem; color: #2e3a2c; }
+  .content-section p:last-child { margin-bottom: 0; }
+
+  .takeaway-box {
+    background: linear-gradient(135deg, rgba(44,95,45,0.07), rgba(168,188,143,0.12));
+    border-left: 3px solid var(--forest);
+    padding: 1rem 1.4rem;
+    margin-top: 1.4rem;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: var(--forest);
+    font-size: 0.97rem;
+  }
+  .takeaway-box strong { font-style: normal; }
+
+  /* ── EVIDENCE BULLETS ── */
+  .evidence-list {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+  }
+  .evidence-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    color: #3a4e37;
+    font-size: 0.95rem;
+    border-bottom: 1px dotted rgba(107,143,78,0.25);
+  }
+  .evidence-list li:last-child { border-bottom: none; }
+  .evidence-list li::before {
+    content: '•';
+    position: absolute; left: 0;
+    color: var(--moss);
+    font-size: 1.1rem;
+  }
+
+  /* ── FORMULA BLOCK ── */
+  .formula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 2rem 1.5rem;
+    background: var(--forest);
+    border-radius: 6px;
+    margin: 1.8rem 0;
+  }
+  .formula-step {
+    background: rgba(246,242,234,0.12);
+    color: var(--cream);
+    padding: 0.6rem 1.2rem;
+    border-radius: 3px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .formula-arrow {
+    color: var(--gold);
+    font-size: 1.4rem;
+    font-weight: 300;
+    flex-shrink: 0;
+  }
+
+  /* ── KEYSTONE GRID ── */
+  .keystone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .keystone-card {
+    background: var(--cream);
+    border: 1px solid rgba(107,143,78,0.2);
+    border-radius: 4px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .keystone-card:hover { border-color: var(--forest); transform: translateY(-3px); }
+  .keystone-card .k-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .keystone-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--forest);
+    margin-bottom: 0.3rem;
+    font-style: italic;
+  }
+  .keystone-card p { font-size: 0.85rem; color: var(--soil); margin: 0; }
+
+  /* ── STEP CARDS (practical) ── */
+  .step-list { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .step-card {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1.2rem;
+    background: var(--white);
+    border: 1px solid rgba(107,143,78,0.18);
+    border-radius: 4px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--moss);
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    line-height: 32px;
+    text-align: center;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .step-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--forest);
+    margin-bottom: 0.3rem;
+  }
+  .step-card p { font-size: 0.92rem; color: #3a4e37; margin: 0; }
+
+  /* ── COMMUNITY SPOTS ── */
+  .spots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.8rem;
+    margin: 1.5rem 0;
+  }
+  .spot {
+    background: linear-gradient(135deg, var(--forest), var(--moss));
+    color: var(--cream);
+    padding: 1.1rem 0.8rem;
+    text-align: center;
+    border-radius: 4px;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* ── SHOP CTA ── */
+  .shop-cta-section {
+    background: var(--bark);
+    padding: 4.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .shop-cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(200,168,75,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .shop-cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+    position: relative; z-index: 1;
+  }
+  .shop-cta-section p {
+    color: rgba(246,242,234,0.7);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    position: relative; z-index: 1;
+  }
+  .btn-shop {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bark);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 1rem 2.6rem;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+    position: relative; z-index: 1;
+  }
+  .btn-shop:hover { background: #dbb84a; transform: translateY(-2px); }
+
+  /* ── PRODUCT TEASE ── */
+  .products-section { padding: 4rem 0; background: var(--cream); }
+  .products-section .container { text-align: center; }
+  .products-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--forest);
+    margin-bottom: 0.5rem;
+  }
+  .products-section .sub { color: var(--soil); margin-bottom: 2rem; font-style: italic; }
+  .product-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    text-align: left;
+    margin-top: 1.5rem;
+  }
+  .product-card {
+    background: var(--white);
+    border: 1px solid rgba(107,143,78,0.2);
+    border-radius: 4px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+  .product-card:hover { box-shadow: 0 4px 18px rgba(44,95,45,0.12); }
+  .product-card .tag {
+    font-size: 0.73rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .product-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--forest);
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+  .product-card p { font-size: 0.88rem; color: var(--soil); margin: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    padding: 2.5rem;
+    text-align: center;
+    color: rgba(246,242,234,0.45);
+    font-size: 0.82rem;
+  }
+  footer a { color: var(--sage); text-decoration: none; }
+  footer a:hover { color: var(--gold); }
+  .footer-nav { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+
+  /* ── FADE-IN ANIMATION ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.15s; }
+  .delay-2 { animation-delay: 0.3s; }
+  .delay-3 { animation-delay: 0.45s; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 4rem 1.5rem 4.5rem; }
+    nav { padding: 0 1.2rem; }
+    .nav-links { gap: 1rem; }
+    .formula { gap: 0.4rem; }
+    .formula-step { font-size: 0.88rem; padding: 0.5rem 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="https://soleviapath.org/">Solevia.Path</a>
+  <div class="nav-links">
+    <a href="https://soleviapath.org/">Home</a>
+    <a href="https://soleviapath.org/collections/all">Catalog</a>
+    <a href="https://eco.soleviapath.org" target="_blank">Shop Plants</a>
+    <a href="https://soleviapath.org/pages/contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Native Plant Conservation</div>
+  <h1 class="fade-up">A <em>Practical Approach</em> for Home Landscapes &amp; Community Projects</h1>
+  <p class="hero-sub fade-up delay-1">Native plant conservation restores ecological function by reintroducing species adapted to local soils, hydrology, seasons, and wildlife dependencies.</p>
+  <a href="#why-natives" class="hero-cta fade-up delay-2">Explore the Guide ↓</a>
+</section>
+
+<!-- INTRO STRIP -->
+<div class="intro-strip">
+  <p>Unlike ornamental plantings, native systems rebuild habitat, stabilize food webs, and lower long-term maintenance — one yard, one community plot, one keystone species at a time.</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+<div class="container">
+
+  <!-- SECTION 1 -->
+  <div class="section-header" id="why-natives">
+    <div class="section-number">1</div>
+    <h2>Why Native Plants Matter</h2>
+    <p class="lead">Complex ecological interactions — simplified for your landscape.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="content-section">
+    <p>Native plants support intricate relationships across insects, birds, fungi, and soil organisms. Loss of native cover results in reduced biodiversity, unstable food chains, and increased reliance on irrigation and chemical inputs. Conventional landscaping is built for appearance; habitat landscaping is built for function — layered structure, seasonal bloom sequences, larval host plants, seed sources, and winter cover.</p>
+    <p>Even a single residential yard can function as a critical node in a wider ecological network. Restoration does not require acreage. Pollinators, beetles, solitary bees, overwintering insects, and seed-eaters all respond quickly to small interventions.</p>
+    <ul class="evidence-list">
+      <li><strong>Tallamy, <em>Bringing Nature Home</em>, 2007:</strong> Native plants support far more lepidopteran and insect biomass than ornamentals, increasing bird and pollinator survival.</li>
+      <li><strong>Burghardt et al., PNAS, 2009:</strong> Higher native plant density in home landscapes correlates with significant increases in caterpillar diversity and bird reproductive success.</li>
+    </ul>
+    <div class="takeaway-box"><strong>Key idea:</strong> Native plants repair ecological function at the smallest scale. Habitat emerges from structure, not decoration.</div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2>The Conservation Formula</h2>
+    <p class="lead">A four-step sequence aligned with ecological succession.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="content-section">
+    <p>Successful restoration follows a predictable sequence that mirrors how natural plant communities recover after disturbance. Skipping steps — especially assessment and invasive removal — wastes effort and often makes conditions worse.</p>
+
+    <div class="formula">
+      <div class="formula-step">Assess</div>
+      <div class="formula-arrow">→</div>
+      <div class="formula-step">Remove</div>
+      <div class="formula-arrow">→</div>
+      <div class="formula-step">Rebuild</div>
+      <div class="formula-arrow">→</div>
+      <div class="formula-step">Maintain</div>
+    </div>
+
+    <ul class="evidence-list">
+      <li><strong>SER International Standards, 2019:</strong> Restoration success requires assessment, invasive species control, reintroduction of native structure, and multi-year maintenance.</li>
+      <li><strong>Miller et al., Restoration Ecology, 2017:</strong> Staged removal of invasives prevents soil disturbance and improves long-term resilience.</li>
+    </ul>
+    <div class="takeaway-box"><strong>Takeaway:</strong> Restoration is built through maintenance, not one-time planting. Stewardship creates lasting value through selective weeding, litter management, soil protection, and long-term structure.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2>Keystone Species</h2>
+    <p class="lead">Disproportionate ecological function from a handful of genera.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="content-section">
+    <p>Keystone species provide ecological function far beyond their numbers, supporting pollinators, birds, and nutrient cycles that the broader community depends upon. Prioritize these in any planting plan.</p>
+
+    <div class="keystone-grid">
+      <div class="keystone-card">
+        <div class="k-icon">🌳</div>
+        <h4>Quercus (Oak)</h4>
+        <p>Supports 500+ insect species; essential larval host for moths and butterflies.</p>
+      </div>
+      <div class="keystone-card">
+        <div class="k-icon">🌿</div>
+        <h4>Salix (Willow)</h4>
+        <p>Critical early-season pollen source for native bees; larval host for multiple species.</p>
+      </div>
+      <div class="keystone-card">
+        <div class="k-icon">🌼</div>
+        <h4>Solidago (Goldenrod)</h4>
+        <p>Supports 100+ insect species and provides late-season nectar for migrating monarchs.</p>
+      </div>
+      <div class="keystone-card">
+        <div class="k-icon">🍂</div>
+        <h4>Prunus (Native Cherry)</h4>
+        <p>Hosts over 450 caterpillar species; fruit critical for migratory birds.</p>
+      </div>
+    </div>
+
+    <ul class="evidence-list">
+      <li><strong>Narango et al., PNAS, 2018:</strong> Yards dominated by keystone native trees — especially oaks — support 8–10× more caterpillars than non-native landscapes.</li>
+      <li><strong>Tallamy &amp; Shropshire, Natural History, 2009:</strong> Certain plant genera support hundreds of insect species critical for ecosystem stability.</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <h2>Practical Restoration for Homeowners</h2>
+    <p class="lead">Start contained. Scale deliberately.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="content-section">
+    <p>Most southeastern natives respond well to simple propagation: direct-sown cold stratification, sand-flat methods, and stem cutting timing. The key is matching technique to species, not trying to force every plant through the same process.</p>
+
+    <div class="step-list">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div>
+          <h4>Define a Contained Zone</h4>
+          <p>Begin with one bed or section. A 10×10 ft focused planting beats five scattered individual plants for ecological impact and maintenance efficiency.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div>
+          <h4>Use Mid- to High-Density Planting</h4>
+          <p>Dense plantings suppress weeds, reduce maintenance, and accelerate ecological recovery. Avoid ornamental-style sparse layouts with wide mulched gaps.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div>
+          <h4>Propagate from Local Ecotypes</h4>
+          <p>Locally-sourced seed performs significantly better than commercially-grown transplants. Collect from nearby wild populations when permitted, or source from regional native plant societies.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div>
+          <h4>Retain Leaf Litter &amp; Winter Structure</h4>
+          <p>Leave seed heads and stems through winter. Overwintering insects, cavity-nesting bees, and dozens of bird species depend on this "messiness" for survival.</p>
+        </div>
+      </div>
+    </div>
+
+    <ul class="evidence-list">
+      <li><strong>Rowe &amp; Getter, Ecological Engineering, 2016:</strong> Dense native plantings reduce weed pressure and minimize early maintenance demand.</li>
+      <li><strong>Hitchmough &amp; Wagner, Journal of Applied Ecology, 2011:</strong> Higher-density native meadow plantings outperform sparse installations in survival and weed resistance.</li>
+    </ul>
+    <div class="takeaway-box"><strong>Takeaway:</strong> Size matters less than intention. Propagation is predictable when timing and technique match the species.</div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <h2>Community Conservation</h2>
+    <p class="lead">Micro-refuges at scale — anywhere people gather.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="content-section">
+    <p>Individual properties matter. But community-scale plantings create functional pollinator corridors and biodiversity gains that no single yard can achieve. Underutilized spaces become ecological assets with surprisingly modest effort.</p>
+
+    <div class="spots-grid">
+      <div class="spot">Cemeteries</div>
+      <div class="spot">Rights-of-Way</div>
+      <div class="spot">Schoolyards</div>
+      <div class="spot">Church Grounds</div>
+      <div class="spot">Stormwater Basins</div>
+      <div class="spot">Parking Medians</div>
+    </div>
+
+    <ul class="evidence-list">
+      <li><strong>Lerman et al., Biological Conservation, 2014:</strong> Small urban green spaces create measurable biodiversity gains when planted with native species.</li>
+      <li><strong>Threlfall et al., Landscape &amp; Urban Planning, 2017:</strong> Community-scale native plantings form functional pollinator corridors even in fragmented landscapes.</li>
+    </ul>
+    <div class="takeaway-box"><strong>Takeaway:</strong> Community grows and shared stewardship create pollinator corridors and a shared culture of curiosity — the Solevia "rabbit warren" of interconnected discoveries.</div>
+  </div>
+
+</div><!-- /container -->
+</main>
+
+<!-- SHOP THE MESSAGE -->
+<section class="shop-cta-section">
+  <h2>Shop the Message</h2>
+  <p>Carry native plant conservation beyond your yard. Every Solevia product supports the mission — and starts a conversation.</p>
+  <a class="btn-shop" href="https://eco.soleviapath.org" target="_blank">Explore Native Plant Products →</a>
+</section>
+
+<!-- PRODUCT TEASE -->
+<section class="products-section">
+  <div class="container">
+    <h2>Featured Designs</h2>
+    <p class="sub">Wear the science. Start the conversation.</p>
+    <div class="product-cards">
+      <div class="product-card">
+        <span class="tag">Apparel</span>
+        <h4>"Plant the Path"</h4>
+        <p>Native wildflower silhouette with keystone species callout. A quiet declaration for every walk, trail, and backyard.</p>
+      </div>
+      <div class="product-card">
+        <span class="tag">Apparel</span>
+        <h4>"Restoration Formula"</h4>
+        <p>Assess → Remove → Rebuild — the four-step sequence as wearable art for the ecological restorer in all of us.</p>
+      </div>
+      <div class="product-card">
+        <span class="tag">Apparel</span>
+        <h4>"Rabbit Warren Roots"</h4>
+        <p>Underground mycelium meets native plants — a nod to the hidden network beneath every healthy ecosystem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-nav">
+    <a href="https://soleviapath.org/">Home</a>
+    <a href="https://soleviapath.org/collections/all">Catalog</a>
+    <a href="https://eco.soleviapath.org" target="_blank">Native Plants Shop</a>
+    <a href="https://soleviapath.org/pages/contact">Contact</a>
+    <a href="https://soleviapath.org/policies/privacy-policy">Privacy Policy</a>
+  </div>
+  <p>© 2026 Solevia.Path &nbsp;·&nbsp; info@soleviapath.org &nbsp;·&nbsp; References available on request.</p>
+</footer>
+
+</body>
+</html>
