@@ -339,14 +339,14 @@
 // ── Configuration ─────────────────────────────────────────────────────────────
 // The Worker API URL.  In development, set window.ASO_API_BASE before this
 // script loads.  In production the Worker is reachable at the route defined
-// in wrangler.toml (nagoh.us/aso-optimizer/api/*), so ASO_API_BASE should be
-// set to '' (empty string) to make requests relative to the current origin.
+// in wrangler.toml (nagoh.us/aso-optimizer/api/*), so ASO_API_BASE defaults
+// to '/aso-optimizer' to make requests resolve to the correct route.
 //
 // For a standalone Workers.dev deployment, set it to the full workers.dev URL,
 // e.g. window.ASO_API_BASE = 'https://aso-optimizer.<account>.workers.dev';
 const API_BASE = window.ASO_API_BASE !== undefined
   ? window.ASO_API_BASE
-  : '';
+  : '/aso-optimizer';
 
 // ── State (sessionStorage-backed, no database) ────────────────────────────────
 const State = {
