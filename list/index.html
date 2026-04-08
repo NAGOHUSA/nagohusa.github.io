@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>List Your iOS App — nagoh.us</title>
+  <meta name="description" content="Submit your iOS Xcode project to the nagoh.us marketplace. Fill in your app details, pay a one-time listing fee, and reach buyers instantly." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            surface: {
+              DEFAULT: '#111114',
+              card:    '#1c1c1e',
+              hover:   '#2c2c2e',
+              border:  '#3a3a3c',
+            },
+            accent: {
+              blue:   '#0a84ff',
+              purple: '#bf5af2',
+              green:  '#30d158',
+              orange: '#ff9f0a',
+            },
+          },
+          boxShadow: {
+            card: '0 1px 3px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)',
+            glow: '0 0 32px rgba(10,132,255,0.25)',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.35s ease both',
+          },
+          keyframes: {
+            fadeIn: { from: { opacity: '0', transform: 'translateY(10px)' }, to: { opacity: '1', transform: 'none' } },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Nav blur */
+    .nav-blur {
+      background: rgba(17,17,20,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+    }
+
+    /* Gradient button */
+    .btn-primary {
+      background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+      transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(10,132,255,0.45);
+    }
+    .btn-primary:active { transform: translateY(0); filter: brightness(0.95); }
+
+    /* Form field */
+    .field {
+      background: #1c1c1e;
+      border: 1px solid #3a3a3c;
+      color: #ffffff;
+      border-radius: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      width: 100%;
+      font-size: 0.875rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .field:focus {
+      border-color: #0a84ff;
+      box-shadow: 0 0 0 3px rgba(10,132,255,0.18);
+    }
+    .field::placeholder { color: #6b7280; }
+    textarea.field { resize: vertical; min-height: 100px; }
+
+    /* Step indicator */
+    .step-dot {
+      width: 2rem; height: 2rem;
+      border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+    .step-dot.active   { background: #0a84ff; color: #fff; }
+    .step-dot.complete { background: #30d158; color: #fff; }
+    .step-dot.pending  { background: #3a3a3c; color: #9ca3af; }
+    .step-line { flex: 1; height: 2px; background: #3a3a3c; margin: 0 4px; }
+    .step-line.done { background: #30d158; }
+
+    /* Tag pill remove button */
+    .tag-remove { cursor: pointer; margin-left: 4px; opacity: 0.6; }
+    .tag-remove:hover { opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 3px; }
+  </style>
+</head>
+
+<body class="bg-surface text-white min-h-screen antialiased">
+
+  <!-- ─── Navigation ──────────────────────────────────────────── -->
+  <nav class="nav-blur sticky top-0 z-50 border-b border-surface-border">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 group">
+        <span class="text-2xl select-none">🧑‍💻</span>
+        <span class="font-semibold tracking-tight text-white group-hover:text-accent-blue transition-colors">
+          nagoh.us
+        </span>
+        <span class="hidden sm:inline text-xs text-gray-500 font-normal ml-1 mt-px">iOS Source Market</span>
+      </a>
+      <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors">← Back to store</a>
+    </div>
+  </nav>
+
+  <!-- ─── Page header ─────────────────────────────────────────── -->
+  <header class="pt-12 pb-8 px-4 text-center">
+    <div class="inline-flex items-center gap-2 bg-surface-card border border-surface-border rounded-full px-4 py-1.5 mb-5 text-xs text-gray-400">
+      <span class="w-2 h-2 rounded-full bg-accent-orange inline-block"></span>
+      One-time listing fee · No monthly charges
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3">List Your iOS App</h1>
+    <p class="text-gray-400 max-w-lg mx-auto text-sm leading-relaxed">
+      Fill in your app details, review the summary, then pay the one-time listing fee.
+      We'll publish your project to the marketplace and handle buyer payments automatically.
+    </p>
+  </header>
+
+  <!-- ─── Main form container ─────────────────────────────────── -->
+  <main class="max-w-2xl mx-auto px-4 pb-20">
+
+    <!-- Step progress bar -->
+    <div class="flex items-center mb-10" id="stepBar" aria-label="Form progress"></div>
+
+    <!-- ── Step panels ── -->
+    <form id="listingForm" novalidate>
+
+      <!-- ═══════════════════════════════════════════════════════
+           STEP 1 — App Details
+           ═══════════════════════════════════════════════════════ -->
+      <section id="step1" class="animate-fade-in space-y-5">
+        <h2 class="text-lg font-semibold">Step 1 — App Details</h2>
+
+        <!-- App Name -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="appName">App name <span class="text-red-500">*</span></label>
+          <input id="appName" type="text" class="field" placeholder="e.g. SwiftCommerce Kit" maxlength="80" required />
+        </div>
+
+        <!-- Tagline -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="tagline">Tagline <span class="text-red-500">*</span></label>
+          <input id="tagline" type="text" class="field" placeholder="One-liner shown under the app name (≤ 100 chars)" maxlength="100" required />
+          <p class="text-xs text-gray-500 mt-1">Keep it short and descriptive — this is the first thing buyers read.</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="description">Description <span class="text-red-500">*</span></label>
+          <textarea id="description" class="field" rows="4"
+                    placeholder="Describe what the app does, what's included in the Xcode project, backend dependencies, etc."
+                    maxlength="1000" required></textarea>
+          <p class="text-xs text-gray-500 mt-1"><span id="descCount">0</span> / 1000 characters</p>
+        </div>
+
+        <!-- Icon -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="icon">App icon emoji <span class="text-red-500">*</span></label>
+          <div class="flex items-center gap-3">
+            <input id="icon" type="text" class="field w-20 text-center text-2xl" placeholder="🛍️" maxlength="4" required />
+            <span class="text-sm text-gray-400">Pick an emoji that represents your app.</span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="price">Buyer price (USD) <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">$</span>
+            <input id="price" type="number" class="field pl-7" placeholder="49" min="1" max="9999" required />
+          </div>
+          <p class="text-xs text-gray-500 mt-1">The price buyers will pay for access to your source code.</p>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button type="button" onclick="goToStep(2)"
+                  class="btn-primary text-white font-semibold px-6 py-2.5 rounded-xl text-sm">
+            Next — Tech Stack →
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           STEP 2 — Tech Stack & Features
+           ═══════════════════════════════════════════════════════ -->
+      <section id="step2" class="hidden animate-fade-in space-y-5">
+        <h2 class="text-lg font-semibold">Step 2 — Tech Stack &amp; Features</h2>
+
+        <!-- Tags -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Tech tags <span class="text-red-500">*</span></label>
+          <div class="field flex flex-wrap gap-1.5 min-h-[2.75rem] cursor-text" id="tagContainer" onclick="document.getElementById('tagInput').focus()">
+            <input id="tagInput" type="text" class="bg-transparent outline-none text-sm placeholder-gray-500 flex-1 min-w-[8rem]"
+                   placeholder="Type a tag and press Enter (e.g. SwiftUI)" />
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Suggested: SwiftUI, UIKit, HealthKit, Firebase, Xcode 16, iOS 17+, OpenAI…</p>
+          <input type="hidden" id="tagsHidden" required />
+        </div>
+
+        <!-- Features -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="features">Key features <span class="text-red-500">*</span></label>
+          <textarea id="features" class="field" rows="5"
+                    placeholder="One feature per line, e.g.:&#10;Complete Xcode project (SPM)&#10;Stripe Payment Sheet integration&#10;Firebase Auth + Firestore&#10;Full source code &amp; inline comments"
+                    required></textarea>
+          <p class="text-xs text-gray-500 mt-1">Each line becomes a bullet point on your listing card.</p>
+        </div>
+
+        <!-- GitHub Repo -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="repoName">GitHub private repo name <span class="text-red-500">*</span></label>
+          <input id="repoName" type="text" class="field font-mono" placeholder="my-awesome-app-ios" maxlength="100"
+                 pattern="[a-zA-Z0-9._\-]+" required />
+          <p class="text-xs text-gray-500 mt-1">The short name of the private repo you'll share with buyers (no full URL needed).</p>
+        </div>
+
+        <div class="flex justify-between pt-2">
+          <button type="button" onclick="goToStep(1)"
+                  class="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2.5">
+            ← Back
+          </button>
+          <button type="button" onclick="goToStep(3)"
+                  class="btn-primary text-white font-semibold px-6 py-2.5 rounded-xl text-sm">
+            Next — Your Info →
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           STEP 3 — Contact & Review
+           ═══════════════════════════════════════════════════════ -->
+      <section id="step3" class="hidden animate-fade-in space-y-5">
+        <h2 class="text-lg font-semibold">Step 3 — Your Info &amp; Review</h2>
+
+        <!-- GitHub username (seller) -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="githubUsername">Your GitHub username <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+            <input id="githubUsername" type="text" class="field pl-7 font-mono" placeholder="octocat"
+                   pattern="[a-zA-Z0-9\-]+" maxlength="39" required />
+          </div>
+          <p class="text-xs text-gray-500 mt-1">We use this to confirm you own the repo and to set you up as the seller.</p>
+        </div>
+
+        <!-- Contact email -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="email">Contact email <span class="text-red-500">*</span></label>
+          <input id="email" type="email" class="field" placeholder="you@example.com" required />
+          <p class="text-xs text-gray-500 mt-1">We'll send a confirmation when your listing goes live. Not shared publicly.</p>
+        </div>
+
+        <!-- Notes -->
+        <div>
+          <label class="block text-sm font-medium mb-1.5" for="notes">Additional notes <span class="text-gray-500 font-normal">(optional)</span></label>
+          <textarea id="notes" class="field" rows="3"
+                    placeholder="Anything else we should know — e.g. demo video link, live App Store URL, support email…"
+                    maxlength="500"></textarea>
+        </div>
+
+        <!-- Agree to terms -->
+        <div class="flex items-start gap-3 bg-surface-card border border-surface-border rounded-xl p-4">
+          <input id="terms" type="checkbox" class="mt-0.5 w-4 h-4 accent-accent-blue flex-shrink-0" required />
+          <label for="terms" class="text-sm text-gray-400 leading-relaxed cursor-pointer">
+            I confirm I own the rights to this source code and have read the
+            <a href="mailto:hello@nagoh.us" class="text-accent-blue hover:underline">seller terms</a>.
+            I understand the listing fee is non-refundable once the listing goes live.
+          </label>
+        </div>
+
+        <!-- Live preview card -->
+        <div class="mt-2">
+          <h3 class="text-sm font-medium text-gray-400 mb-3">Preview — your listing card</h3>
+          <div id="previewCard"
+               class="relative bg-surface-card border border-surface-border rounded-2xl overflow-hidden shadow-card p-5">
+            <div class="flex items-start gap-4">
+              <div id="prevIcon" class="text-5xl leading-none select-none flex-shrink-0 mt-1">📦</div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 id="prevName" class="font-bold text-base truncate text-gray-400 italic">Your app name</h4>
+                  <span id="prevPrice"
+                        class="text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                        style="background: linear-gradient(135deg, #0a84ff 0%, #bf5af2 100%)">$—</span>
+                </div>
+                <p id="prevTagline" class="text-xs text-gray-400 mt-0.5 italic">Your tagline…</p>
+              </div>
+            </div>
+            <p id="prevDesc" class="text-sm text-gray-500 mt-3 italic">Your description…</p>
+            <div id="prevTags" class="flex flex-wrap gap-1.5 mt-3"></div>
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-2">
+          <button type="button" onclick="goToStep(2)"
+                  class="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2.5">
+            ← Back
+          </button>
+          <button type="button" onclick="goToStep(4)"
+                  class="btn-primary text-white font-semibold px-6 py-2.5 rounded-xl text-sm">
+            Review &amp; Pay →
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           STEP 4 — Payment
+           ═══════════════════════════════════════════════════════ -->
+      <section id="step4" class="hidden animate-fade-in">
+        <h2 class="text-lg font-semibold mb-5">Step 4 — Submit &amp; Pay</h2>
+
+        <!-- Summary box -->
+        <div id="summaryBox" class="bg-surface-card border border-surface-border rounded-2xl p-5 mb-6 space-y-3 text-sm"></div>
+
+        <!-- How it works -->
+        <div class="bg-surface-card border border-surface-border rounded-2xl p-5 mb-6">
+          <h3 class="font-semibold mb-3 text-sm">What happens next?</h3>
+          <ol class="space-y-2 text-sm text-gray-400 list-none">
+            <li class="flex gap-3">
+              <span class="w-6 h-6 rounded-full bg-accent-blue/20 text-accent-blue flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+              <span>Click <strong class="text-white">Submit &amp; Pay Listing Fee</strong> below — your browser will open the secure Stripe checkout in a new tab.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-6 h-6 rounded-full bg-accent-blue/20 text-accent-blue flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+              <span>Your submission details are automatically copied to your clipboard. Paste them into the <em>Order notes</em> field on the Stripe checkout page (or email them to <a href="mailto:hello@nagoh.us" class="text-accent-blue hover:underline">hello@nagoh.us</a>).</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-6 h-6 rounded-full bg-accent-blue/20 text-accent-blue flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+              <span>We verify your details and publish your listing within <strong class="text-white">1–2 business days</strong>. You'll receive a confirmation at your email address.</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Copy notice -->
+        <div id="copyNotice"
+             class="hidden mb-4 flex items-center gap-2 text-accent-green text-sm bg-accent-green/10 border border-accent-green/25 rounded-xl px-4 py-3">
+          <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Submission details copied to clipboard!
+        </div>
+
+        <!-- CTA button -->
+        <button type="button" id="payBtn" onclick="handleSubmit()"
+                class="btn-primary w-full flex items-center justify-center gap-2 text-white font-semibold py-3.5 px-5 rounded-xl text-sm shadow-glow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          Submit &amp; Pay Listing Fee
+        </button>
+        <p class="text-center text-xs text-gray-600 mt-2">Secure payment via Stripe. One-time fee.</p>
+
+        <div class="flex justify-start mt-5">
+          <button type="button" onclick="goToStep(3)"
+                  class="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2.5">
+            ← Back
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           STEP 5 — Confirmation
+           ═══════════════════════════════════════════════════════ -->
+      <section id="step5" class="hidden animate-fade-in text-center py-8">
+        <div class="text-6xl mb-5">🎉</div>
+        <h2 class="text-2xl font-bold mb-3">You're all set!</h2>
+        <p class="text-gray-400 text-sm max-w-md mx-auto leading-relaxed mb-6">
+          Your app submission has been sent and payment is being processed.
+          We'll review your listing and send a confirmation to
+          <strong id="confirmEmail" class="text-white"></strong> within 1–2 business days.
+        </p>
+        <a href="/"
+           class="btn-primary inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl text-sm">
+          ← Back to the store
+        </a>
+      </section>
+
+    </form>
+  </main>
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
+  <footer class="border-t border-surface-border py-8 px-4 text-center text-xs text-gray-600">
+    <p>© <span id="year"></span> nagoh.us — All rights reserved.</p>
+    <p class="mt-1">
+      Payments processed securely by
+      <a href="https://stripe.com" target="_blank" rel="noopener" class="text-accent-blue hover:underline">Stripe</a>.
+    </p>
+  </footer>
+
+  <script>
+    /* ────────────────────────────────────────────────────────────
+       Constants
+    ──────────────────────────────────────────────────────────── */
+    const STRIPE_LISTING_LINK = 'https://buy.stripe.com/test_dRmeVdeBC9p6adv4841Fe00';
+    const CONTACT_EMAIL       = 'hello@nagoh.us';
+    const TOTAL_STEPS         = 4;
+
+    /* ────────────────────────────────────────────────────────────
+       State
+    ──────────────────────────────────────────────────────────── */
+    let currentStep = 1;
+    const tags = [];
+
+    /* ────────────────────────────────────────────────────────────
+       Step navigation
+    ──────────────────────────────────────────────────────────── */
+    function goToStep(n) {
+      if (n > currentStep && !validateStep(currentStep)) return;
+
+      // Hide current, show next
+      document.getElementById('step' + currentStep).classList.add('hidden');
+      currentStep = n;
+      const next = document.getElementById('step' + currentStep);
+      next.classList.remove('hidden');
+
+      // Re-trigger fade animation
+      next.classList.remove('animate-fade-in');
+      void next.offsetWidth; // reflow
+      next.classList.add('animate-fade-in');
+
+      renderStepBar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (n === 3) updatePreview();
+      if (n === 4) buildSummary();
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Validation
+    ──────────────────────────────────────────────────────────── */
+    function validateStep(n) {
+      if (n === 1) {
+        const appName = val('appName');
+        const tagline = val('tagline');
+        const desc    = val('description');
+        const icon    = val('icon');
+        const price   = val('price');
+
+        if (!appName) { alert('Please enter an app name.'); focus('appName'); return false; }
+        if (!tagline) { alert('Please enter a tagline.'); focus('tagline'); return false; }
+        if (!desc)    { alert('Please enter a description.'); focus('description'); return false; }
+        if (!icon)    { alert('Please enter an icon emoji.'); focus('icon'); return false; }
+        if (!price || Number(price) < 1) { alert('Please enter a valid buyer price (minimum $1).'); focus('price'); return false; }
+      }
+
+      if (n === 2) {
+        if (tags.length === 0) { alert('Please add at least one tech tag.'); focus('tagInput'); return false; }
+        const features = val('features');
+        const repo     = val('repoName');
+        if (!features) { alert('Please list at least one feature.'); focus('features'); return false; }
+        if (!repo)     { alert('Please enter your GitHub repo name.'); focus('repoName'); return false; }
+        if (!/^[a-zA-Z0-9._\-]+$/.test(repo)) {
+          alert('Repo name can only contain letters, numbers, dots, underscores, and hyphens.');
+          focus('repoName'); return false;
+        }
+      }
+
+      if (n === 3) {
+        const gh    = val('githubUsername');
+        const email = val('email');
+        const terms = document.getElementById('terms').checked;
+        if (!gh)    { alert('Please enter your GitHub username.'); focus('githubUsername'); return false; }
+        if (!/^[a-zA-Z0-9\-]+$/.test(gh)) {
+          alert('GitHub username can only contain letters, numbers, and hyphens.');
+          focus('githubUsername'); return false;
+        }
+        if (!email) { alert('Please enter your contact email.'); focus('email'); return false; }
+        if (!terms) { alert('Please agree to the seller terms to continue.'); return false; }
+      }
+
+      return true;
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Step progress bar
+    ──────────────────────────────────────────────────────────── */
+    const STEP_LABELS = ['App Details', 'Tech Stack', 'Your Info', 'Pay'];
+
+    function renderStepBar() {
+      const bar = document.getElementById('stepBar');
+      bar.innerHTML = '';
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        // Dot
+        const dot = document.createElement('div');
+        dot.className = 'step-dot ' + (i < currentStep ? 'complete' : i === currentStep ? 'active' : 'pending');
+        dot.setAttribute('aria-label', 'Step ' + i + ': ' + STEP_LABELS[i - 1]);
+        dot.innerHTML = i < currentStep
+          ? '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>'
+          : String(i);
+
+        // Label (desktop)
+        const wrap = document.createElement('div');
+        wrap.className = 'flex flex-col items-center gap-1';
+        wrap.appendChild(dot);
+        const label = document.createElement('span');
+        label.className = 'hidden sm:block text-xs ' + (i === currentStep ? 'text-white font-medium' : 'text-gray-500');
+        label.textContent = STEP_LABELS[i - 1];
+        wrap.appendChild(label);
+        bar.appendChild(wrap);
+
+        // Connector line
+        if (i < TOTAL_STEPS) {
+          const line = document.createElement('div');
+          line.className = 'step-line mb-4 ' + (i < currentStep ? 'done' : '');
+          bar.appendChild(line);
+        }
+      }
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Tag input
+    ──────────────────────────────────────────────────────────── */
+    const tagInput     = document.getElementById('tagInput');
+    const tagContainer = document.getElementById('tagContainer');
+    const tagsHidden   = document.getElementById('tagsHidden');
+
+    tagInput.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ',') && this.value.trim()) {
+        e.preventDefault();
+        addTag(this.value.trim().replace(/,/g, ''));
+        this.value = '';
+      } else if (e.key === 'Backspace' && !this.value && tags.length) {
+        removeTag(tags.length - 1);
+      }
+    });
+
+    function addTag(text) {
+      if (!text || tags.includes(text)) return;
+      tags.push(text);
+      renderTags();
+    }
+
+    function removeTag(i) {
+      tags.splice(i, 1);
+      renderTags();
+    }
+
+    function renderTags() {
+      // Remove existing pills (keep input)
+      [...tagContainer.querySelectorAll('.tag-pill-item')].forEach(el => el.remove());
+      tags.forEach((t, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill-item flex items-center text-xs text-gray-200 bg-white/10 border border-white/10 px-2 py-0.5 rounded-full';
+        const labelNode = document.createTextNode(t);
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'tag-remove';
+        removeBtn.title = 'Remove';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', (function(idx) { return function() { removeTag(idx); }; }(i)));
+        pill.appendChild(labelNode);
+        pill.appendChild(removeBtn);
+        tagContainer.insertBefore(pill, tagInput);
+      });
+      tagsHidden.value = tags.join(',');
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Description character counter
+    ──────────────────────────────────────────────────────────── */
+    document.getElementById('description').addEventListener('input', function () {
+      document.getElementById('descCount').textContent = this.value.length;
+    });
+
+    /* ────────────────────────────────────────────────────────────
+       Live preview (Step 3)
+    ──────────────────────────────────────────────────────────── */
+    function updatePreview() {
+      const set = (id, text, fallback) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text || fallback;
+        el.classList.toggle('text-gray-400', !text);
+        el.classList.toggle('italic', !text);
+        el.classList.toggle('text-white', !!text);
+      };
+
+      set('prevName',    val('appName'),    'Your app name');
+      set('prevTagline', val('tagline'),    'Your tagline…');
+      set('prevDesc',    val('description'), 'Your description…');
+      set('prevIcon',    val('icon'),       '📦');
+
+      const price = val('price');
+      const priceEl = document.getElementById('prevPrice');
+      if (priceEl) priceEl.textContent = price ? '$' + price : '$—';
+
+      const tagsEl = document.getElementById('prevTags');
+      if (tagsEl) {
+        tagsEl.innerHTML = tags.map(t =>
+          `<span class="text-xs text-gray-300 px-2 py-0.5 rounded-full" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.10)">${t}</span>`
+        ).join('');
+      }
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Summary builder (Step 4)
+    ──────────────────────────────────────────────────────────── */
+    function buildSummary() {
+      const featureLines = val('features').split('\n').filter(l => l.trim());
+      const rows = [
+        ['App name',        val('appName')],
+        ['Tagline',         val('tagline')],
+        ['Buyer price',     '$' + val('price')],
+        ['Icon',            val('icon')],
+        ['Tags',            tags.join(', ')],
+        ['GitHub repo',     val('repoName')],
+        ['Your GitHub',     '@' + val('githubUsername')],
+        ['Contact email',   val('email')],
+        ['Features',        featureLines.map(f => '• ' + f.trim()).join('\n')],
+        ['Notes',           val('notes') || '—'],
+      ];
+
+      const box = document.getElementById('summaryBox');
+      box.innerHTML = rows.map(([label, value]) => `
+        <div class="${value.includes('\n') ? '' : 'flex items-start gap-3'}">
+          <span class="text-gray-500 flex-shrink-0 w-28 inline-block">${escapeHtml(label)}</span>
+          <span class="text-white font-medium ${value.includes('\n') ? 'block pl-28 mt-0.5 whitespace-pre-wrap' : ''}">${escapeHtml(value)}</span>
+        </div>
+      `).join('<div class="h-px bg-surface-border"></div>');
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Final submit
+    ──────────────────────────────────────────────────────────── */
+    function handleSubmit() {
+      const summary = buildTextSummary();
+
+      // Copy to clipboard
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(summary).then(() => {
+          showCopyNotice();
+        }).catch(() => {});
+      }
+
+      // Open Stripe in new tab
+      window.open(STRIPE_LISTING_LINK, '_blank', 'noopener,noreferrer');
+
+      // Also open mailto as a fallback so the submission arrives via email
+      const subject = encodeURIComponent('[nagoh.us] New Listing Submission — ' + val('appName'));
+      const body    = encodeURIComponent(summary);
+      const mailLink = document.createElement('a');
+      mailLink.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+      mailLink.style.display = 'none';
+      document.body.appendChild(mailLink);
+      mailLink.click();
+      document.body.removeChild(mailLink);
+
+      // Show confirmation step
+      setTimeout(() => {
+        document.getElementById('step4').classList.add('hidden');
+        const step5 = document.getElementById('step5');
+        step5.classList.remove('hidden');
+        document.getElementById('confirmEmail').textContent = val('email');
+        renderStepBar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+    }
+
+    function buildTextSummary() {
+      const featureLines = val('features').split('\n').filter(l => l.trim());
+      return [
+        '=== nagoh.us New App Listing Submission ===',
+        '',
+        'App name:      ' + val('appName'),
+        'Tagline:       ' + val('tagline'),
+        'Buyer price:   $' + val('price'),
+        'Icon:          ' + val('icon'),
+        'Tags:          ' + tags.join(', '),
+        'GitHub repo:   ' + val('repoName'),
+        'Your GitHub:   @' + val('githubUsername'),
+        'Contact email: ' + val('email'),
+        '',
+        'Description:',
+        val('description'),
+        '',
+        'Features:',
+        featureLines.map(f => '• ' + f.trim()).join('\n'),
+        '',
+        'Notes:',
+        val('notes') || '(none)',
+        '',
+        '==========================================',
+        'Submitted: ' + new Date().toISOString(),
+      ].join('\n');
+    }
+
+    function showCopyNotice() {
+      const el = document.getElementById('copyNotice');
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Helpers
+    ──────────────────────────────────────────────────────────── */
+    function val(id)   { return (document.getElementById(id)?.value ?? '').trim(); }
+    function focus(id) { document.getElementById(id)?.focus(); }
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       Init
+    ──────────────────────────────────────────────────────────── */
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderStepBar();
+  </script>
+</body>
+</html>
