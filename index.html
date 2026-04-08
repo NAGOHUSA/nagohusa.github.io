@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nagoh.us — iOS Source Code Marketplace</title>
+  <meta name="description" content="Premium iOS Xcode projects for sale. Buy full source code, get instant GitHub repository access. SwiftUI, HealthKit, AI integrations and more." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            surface: {
+              DEFAULT: '#111114',
+              card:    '#1c1c1e',
+              hover:   '#2c2c2e',
+              border:  '#3a3a3c',
+            },
+            accent: {
+              blue:   '#0a84ff',
+              purple: '#bf5af2',
+              green:  '#30d158',
+              orange: '#ff9f0a',
+            },
+          },
+          backgroundImage: {
+            'hero-gradient': 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(10,132,255,0.18) 0%, transparent 70%)',
+            'card-shine':    'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 60%)',
+          },
+          boxShadow: {
+            card: '0 1px 3px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)',
+            glow: '0 0 32px rgba(10,132,255,0.25)',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease both',
+          },
+          keyframes: {
+            fadeIn: { from: { opacity: '0', transform: 'translateY(12px)' }, to: { opacity: '1', transform: 'none' } },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Card glass shine overlay */
+    .card-shine::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 55%);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* Price badge gradient */
+    .price-badge {
+      background: linear-gradient(135deg, #0a84ff 0%, #bf5af2 100%);
+    }
+
+    /* Buy button gradient */
+    .btn-buy {
+      background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+      transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-buy:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(10,132,255,0.45);
+    }
+    .btn-buy:active { transform: translateY(0); filter: brightness(0.95); }
+
+    /* Tag pill */
+    .tag-pill {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    /* Feature checkmark */
+    .feature-check { color: #30d158; }
+
+    /* Nav blur */
+    .nav-blur {
+      background: rgba(17,17,20,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 3px; }
+
+    /* Stagger card animations */
+    .listing-card:nth-child(1) { animation-delay: 0.05s; }
+    .listing-card:nth-child(2) { animation-delay: 0.10s; }
+    .listing-card:nth-child(3) { animation-delay: 0.15s; }
+    .listing-card:nth-child(4) { animation-delay: 0.20s; }
+    .listing-card:nth-child(5) { animation-delay: 0.25s; }
+    .listing-card:nth-child(6) { animation-delay: 0.30s; }
+  </style>
+</head>
+
+<body class="bg-surface text-white min-h-screen antialiased">
+
+  <!-- ─── Navigation ──────────────────────────────────────────── -->
+  <nav class="nav-blur sticky top-0 z-50 border-b border-surface-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 group">
+        <span class="text-2xl select-none">🧑‍💻</span>
+        <span class="font-semibold tracking-tight text-white group-hover:text-accent-blue transition-colors">
+          nagoh.us
+        </span>
+        <span class="hidden sm:inline text-xs text-gray-500 font-normal ml-1 mt-px">iOS Source Market</span>
+      </a>
+
+      <!-- Right nav -->
+      <div class="flex items-center gap-4">
+        <a href="#listings"
+           class="text-sm text-gray-400 hover:text-white transition-colors hidden sm:inline">
+          Browse
+        </a>
+        <a href="#how-it-works"
+           class="text-sm text-gray-400 hover:text-white transition-colors hidden sm:inline">
+          How it works
+        </a>
+        <a href="mailto:hello@nagoh.us"
+           class="text-sm text-accent-blue hover:text-blue-300 transition-colors">
+          Contact
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── Hero ────────────────────────────────────────────────── -->
+  <section class="relative overflow-hidden bg-hero-gradient pt-20 pb-16 text-center px-4">
+    <!-- Background glow -->
+    <div class="absolute inset-0 bg-hero-gradient pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent-blue opacity-5 blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-surface-card border border-surface-border rounded-full px-4 py-1.5 mb-6 text-xs text-gray-400">
+        <span class="w-2 h-2 rounded-full bg-accent-green inline-block animate-pulse"></span>
+        Instant GitHub repository access after purchase
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-5">
+        Premium iOS
+        <span class="bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">
+          Xcode Projects
+        </span>
+      </h1>
+
+      <p class="text-lg text-gray-400 max-w-xl mx-auto mb-8">
+        Buy full source code for production-ready iOS apps.
+        Pay once — get permanent collaborator access to the private GitHub repo.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-3 text-sm text-gray-500">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Secure Stripe checkout
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Instant repo invite
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Full source code
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-accent-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+          No subscription
+        </span>
+      </div>
+
+      <div class="mt-10">
+        <a href="#listings"
+           class="inline-flex items-center gap-2 btn-buy text-white font-semibold px-7 py-3 rounded-xl text-sm shadow-glow">
+          Browse apps
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── How it works ────────────────────────────────────────── -->
+  <section id="how-it-works" class="py-16 px-4 border-t border-surface-border">
+    <div class="max-w-4xl mx-auto text-center mb-10">
+      <h2 class="text-2xl font-bold mb-2">How it works</h2>
+      <p class="text-gray-400 text-sm">Three steps from checkout to cloning the repo.</p>
+    </div>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <!-- Step 1 -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-6 text-center">
+        <div class="text-3xl mb-3">🛒</div>
+        <h3 class="font-semibold mb-1">1. Buy</h3>
+        <p class="text-sm text-gray-400">
+          Click "Get Access", fill in your <strong class="text-white">GitHub username</strong>
+          in the custom field, and complete Stripe checkout.
+        </p>
+      </div>
+      <!-- Step 2 -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-6 text-center">
+        <div class="text-3xl mb-3">⚡️</div>
+        <h3 class="font-semibold mb-1">2. Automation</h3>
+        <p class="text-sm text-gray-400">
+          Stripe fires a webhook. GitHub Actions verifies the payment and
+          automatically invites you as a <strong class="text-white">repo collaborator</strong>.
+        </p>
+      </div>
+      <!-- Step 3 -->
+      <div class="bg-surface-card border border-surface-border rounded-2xl p-6 text-center">
+        <div class="text-3xl mb-3">📦</div>
+        <h3 class="font-semibold mb-1">3. Clone & build</h3>
+        <p class="text-sm text-gray-400">
+          Accept the GitHub invitation, <code class="text-accent-blue">git clone</code>
+          the private repo, open in Xcode, and start building.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Listings ─────────────────────────────────────────────── -->
+  <section id="listings" class="py-16 px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-end justify-between mb-8 gap-4 flex-wrap">
+        <div>
+          <h2 class="text-2xl font-bold">Available projects</h2>
+          <p class="text-gray-400 text-sm mt-1">Production-ready iOS Xcode projects with full source code.</p>
+        </div>
+        <!-- Filter / search (static — JS handles) -->
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+               fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+          </svg>
+          <input id="searchInput" type="search" placeholder="Search apps…"
+                 class="pl-9 pr-4 py-2 bg-surface-card border border-surface-border rounded-xl text-sm text-white placeholder-gray-500
+                        focus:outline-none focus:ring-2 focus:ring-accent-blue w-52 transition" />
+        </div>
+      </div>
+
+      <!-- Card grid -->
+      <div id="listingGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden text-center py-16 text-gray-500">
+        <div class="text-4xl mb-3">🔍</div>
+        <p>No projects match your search.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FAQ ──────────────────────────────────────────────────── -->
+  <section class="py-16 px-4 border-t border-surface-border">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-2xl font-bold mb-8 text-center">FAQ</h2>
+      <div class="space-y-4" id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
+  <footer class="border-t border-surface-border py-8 px-4 text-center text-xs text-gray-600">
+    <p>© <span id="year"></span> nagoh.us — All rights reserved.</p>
+    <p class="mt-1">
+      Payments processed securely by
+      <a href="https://stripe.com" target="_blank" rel="noopener" class="text-accent-blue hover:underline">Stripe</a>.
+      Source code access granted via GitHub.
+    </p>
+  </footer>
+
+  <!-- ─── Listing data ──────────────────────────────────────────── -->
+  <script src="/store/listings.js"></script>
+
+  <!-- ─── App script ───────────────────────────────────────────── -->
+  <script>
+    /* ── FAQ data ── */
+    const FAQ = [
+      {
+        q: "What exactly do I get?",
+        a: "You get permanent 'read' collaborator access to a private GitHub repository containing the complete, commented Xcode project for the app you purchased.",
+      },
+      {
+        q: "How quickly will I get access?",
+        a: "Immediately after payment. Stripe fires a webhook which triggers a GitHub Actions workflow that invites your GitHub account within seconds.",
+      },
+      {
+        q: "Do I need a GitHub account?",
+        a: "Yes. During checkout there is a required custom field for your GitHub username. Make sure you enter it correctly — that is the account that will receive the invitation.",
+      },
+      {
+        q: "Can I use the code in commercial apps?",
+        a: "Yes. A single-seat commercial license is included. You may ship apps built from the source code. Reselling or redistributing the source itself is not permitted.",
+      },
+      {
+        q: "Do you offer refunds?",
+        a: "Because this is a digital product with instant delivery, refunds are not offered once repository access has been granted. Please reach out before purchasing if you have questions.",
+      },
+    ];
+
+    /* ── Render FAQ ── */
+    (function renderFAQ() {
+      const container = document.getElementById('faqList');
+      container.innerHTML = FAQ.map((item, i) => `
+        <details class="group bg-surface-card border border-surface-border rounded-xl overflow-hidden">
+          <summary class="flex items-center justify-between px-5 py-4 cursor-pointer select-none list-none font-medium text-sm">
+            ${item.q}
+            <svg class="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0 ml-3"
+                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </summary>
+          <p class="px-5 pb-5 text-sm text-gray-400 leading-relaxed">${item.a}</p>
+        </details>
+      `).join('');
+    })();
+
+    /* ── Render listing cards ── */
+    function renderCards(items) {
+      const grid = document.getElementById('listingGrid');
+      const empty = document.getElementById('emptyState');
+
+      if (!items.length) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = items.map(app => `
+        <article id="${app.id}"
+                 class="listing-card relative card-shine bg-surface-card border border-surface-border rounded-2xl overflow-hidden
+                        flex flex-col shadow-card hover:border-accent-blue/40 hover:shadow-glow transition-all duration-300 animate-fade-in">
+
+          <!-- Header -->
+          <div class="p-5 flex items-start gap-4">
+            <div class="text-5xl leading-none select-none flex-shrink-0 mt-1">${app.icon}</div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="font-bold text-base truncate">${app.name}</h3>
+                <span class="price-badge text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">
+                  ${app.priceDisplay}
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5 leading-snug">${app.tagline}</p>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-px bg-surface-border mx-5"></div>
+
+          <!-- Description -->
+          <div class="px-5 py-4 flex-1">
+            <p class="text-sm text-gray-400 leading-relaxed">${app.description}</p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 mt-4">
+              ${app.tags.map(t => `<span class="tag-pill text-xs text-gray-300 px-2 py-0.5 rounded-full">${t}</span>`).join('')}
+            </div>
+
+            <!-- Features -->
+            <ul class="mt-4 space-y-1.5">
+              ${app.features.map(f => `
+                <li class="flex items-start gap-2 text-xs text-gray-400">
+                  <svg class="feature-check w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                  ${f}
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+
+          <!-- CTA -->
+          <div class="px-5 pb-5 pt-2">
+            <a href="${app.stripePaymentLink}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn-buy flex items-center justify-center gap-2 w-full text-white font-semibold
+                      py-3 px-5 rounded-xl text-sm"
+               aria-label="Buy ${app.name} for ${app.priceDisplay}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Get Access — ${app.priceDisplay}
+            </a>
+            <p class="text-center text-xs text-gray-600 mt-2">
+              Enter your GitHub username at checkout
+            </p>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    /* ── Search ── */
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const q = this.value.trim().toLowerCase();
+      const filtered = q
+        ? LISTINGS.filter(a =>
+            a.name.toLowerCase().includes(q) ||
+            a.tagline.toLowerCase().includes(q) ||
+            a.description.toLowerCase().includes(q) ||
+            a.tags.some(t => t.toLowerCase().includes(q))
+          )
+        : LISTINGS;
+      renderCards(filtered);
+    });
+
+    /* ── Init ── */
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderCards(LISTINGS);
+  </script>
+</body>
+</html>

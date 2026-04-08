@@ -1,0 +1,97 @@
+name: Grant Repository Access
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Triggered by a `repository_dispatch` event with type `stripe-payment-success`.
+#
+# The Cloudflare Worker (webhook/stripe-handler.js) sends this event after
+# verifying a Stripe webhook for a successful checkout.session.completed event.
+#
+# Required secrets (set in repository Settings → Secrets → Actions):
+#   REPO_ACCESS_PAT  — GitHub Personal Access Token with `repo` scope.
+#                      This must be a classic PAT (not fine-grained) so it can
+#                      invite collaborators across multiple private repositories.
+#
+# client_payload schema:
+#   github_username  (string)  — buyer's GitHub handle
+#   repo_name        (string)  — short name of the private repo (e.g. "my-app-ios")
+#   payment_intent   (string)  — Stripe PaymentIntent ID (for audit trail)
+#   amount_total     (number)  — amount charged in cents
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  repository_dispatch:
+    types: [stripe-payment-success]
+
+jobs:
+  grant-access:
+    name: Invite collaborator
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Validate payload
+        id: validate
+        run: |
+          USERNAME="${{ github.event.client_payload.github_username }}"
+          REPO="${{ github.event.client_payload.repo_name }}"
+
+          if [[ -z "$USERNAME" || -z "$REPO" ]]; then
+            echo "::error::Missing github_username or repo_name in client_payload"
+            exit 1
+          fi
+
+          # Basic safety check — GitHub usernames are alphanumeric + hyphens, max 39 chars
+          if ! echo "$USERNAME" | grep -qE '^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,37}[a-zA-Z0-9])?$'; then
+            echo "::error::github_username '$USERNAME' does not look like a valid GitHub username"
+            exit 1
+          fi
+
+          # Repo name: letters, numbers, hyphens, underscores, dots
+          if ! echo "$REPO" | grep -qE '^[a-zA-Z0-9._-]{1,100}$'; then
+            echo "::error::repo_name '$REPO' does not look like a valid repository name"
+            exit 1
+          fi
+
+          echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
+          echo "repo=$REPO"         >> "$GITHUB_OUTPUT"
+
+      - name: Invite collaborator via GitHub API
+        uses: actions/github-script@v7
+        env:
+          # Use a PAT with `repo` scope so we can manage collaborators on
+          # private repos outside this workflow's repository.
+          GH_TOKEN: ${{ secrets.REPO_ACCESS_PAT }}
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_PAT }}
+          script: |
+            const username = '${{ steps.validate.outputs.username }}';
+            const repo     = '${{ steps.validate.outputs.repo }}';
+            const owner    = context.repo.owner;
+
+            core.info(`Inviting @${username} to ${owner}/${repo} as a "read" collaborator…`);
+
+            try {
+              await github.rest.repos.addCollaborator({
+                owner,
+                repo,
+                username,
+                permission: 'pull',   // read-only — buyers can clone but not push
+              });
+              core.info(`✅ Invitation sent to @${username}`);
+            } catch (err) {
+              // 422 means the user is already a collaborator — treat as success
+              if (err.status === 422) {
+                core.warning(`@${username} is already a collaborator on ${owner}/${repo}`);
+              } else {
+                core.setFailed(`Failed to invite @${username}: ${err.message}`);
+              }
+            }
+
+      - name: Log audit entry
+        run: |
+          echo "✅ Access granted"
+          echo "   GitHub user  : ${{ github.event.client_payload.github_username }}"
+          echo "   Repository   : ${{ github.repo.owner }}/${{ steps.validate.outputs.repo }}"
+          echo "   Payment ID   : ${{ github.event.client_payload.payment_intent }}"
+          echo "   Amount (¢)   : ${{ github.event.client_payload.amount_total }}"
+          echo "   Triggered at : $(date -u)"
