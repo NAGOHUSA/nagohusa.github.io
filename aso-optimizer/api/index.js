@@ -112,10 +112,20 @@ async function handleLookup(request) {
     clearTimeout(timeoutId);
   }
 
-  const [lookupData, html] = await Promise.all([
-    lookupRes.json(),
-    htmlRes.text(),
-  ]);
+  if (!lookupRes.ok) {
+    return errorResponse('Apple\'s lookup API returned an error. Please try again in a moment.');
+  }
+
+  let lookupData, html;
+  try {
+    [lookupData, html] = await Promise.all([
+      lookupRes.json(),
+      htmlRes.text(),
+    ]);
+  } catch (err) {
+    console.error('Failed to parse Apple API response:', err);
+    return errorResponse('Received an unexpected response from Apple. The App Store may be temporarily unavailable — please try again in a moment.');
+  }
 
   if (!lookupData.results || lookupData.results.length === 0) {
     return errorResponse('App not found. Double-check the App Store URL and try again.', 404);
