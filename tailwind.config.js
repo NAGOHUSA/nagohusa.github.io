@@ -5,8 +5,6 @@ module.exports = {
     './list/**/*.html',
     './trending/**/*.html',
     './clients/**/*.html',
-    './store/**/*.html',
-    './webhook/**/*.html',
   ],
   darkMode: 'class',
   theme: {
