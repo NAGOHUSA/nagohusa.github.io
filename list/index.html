@@ -179,11 +179,9 @@
 
         <!-- Icon -->
         <div>
-          <label class="block text-sm font-medium mb-1.5" for="icon">App icon emoji <span class="text-red-500">*</span></label>
-          <div class="flex items-center gap-3">
-            <input id="icon" type="text" class="field w-20 text-center text-2xl" placeholder="🛍️" maxlength="4" required />
-            <span class="text-sm text-gray-400">Pick an emoji that represents your app.</span>
-          </div>
+          <label class="block text-sm font-medium mb-1.5" for="icon">App icon <span class="text-red-500">*</span></label>
+          <input id="icon" type="file" accept="image/png" class="field" required />
+          <p class="text-xs text-gray-500 mt-1">Upload a 1024 × 1024 px PNG file.</p>
         </div>
 
         <!-- Price -->
@@ -428,10 +426,7 @@
     /* ────────────────────────────────────────────────────────────
        Step navigation
     ──────────────────────────────────────────────────────────── */
-    function goToStep(n) {
-      if (n > currentStep && !validateStep(currentStep)) return;
-
-      // Hide current, show next
+    function _doNavigate(n) {
       document.getElementById('step' + currentStep).classList.add('hidden');
       currentStep = n;
       const next = document.getElementById('step' + currentStep);
@@ -449,6 +444,19 @@
       if (n === 4) buildSummary();
     }
 
+    function goToStep(n) {
+      if (n > currentStep) {
+        const result = validateStep(currentStep);
+        // validateStep may return a Promise (async image dimension check)
+        if (result && typeof result.then === 'function') {
+          result.then(valid => { if (valid !== false) _doNavigate(n); });
+          return;
+        }
+        if (!result) return;
+      }
+      _doNavigate(n);
+    }
+
     /* ────────────────────────────────────────────────────────────
        Validation
     ──────────────────────────────────────────────────────────── */
@@ -457,14 +465,29 @@
         const appName = val('appName');
         const tagline = val('tagline');
         const desc    = val('description');
-        const icon    = val('icon');
         const price   = val('price');
+
+        const iconInput = document.getElementById('icon');
+        const iconFile  = iconInput && iconInput.files && iconInput.files[0];
 
         if (!appName) { alert('Please enter an app name.'); focus('appName'); return false; }
         if (!tagline) { alert('Please enter a tagline.'); focus('tagline'); return false; }
         if (!desc)    { alert('Please enter a description.'); focus('description'); return false; }
-        if (!icon)    { alert('Please enter an icon emoji.'); focus('icon'); return false; }
+        if (!iconFile) { alert('Please upload an app icon PNG file.'); iconInput && iconInput.focus(); return false; }
+        if (iconFile.type !== 'image/png') { alert('App icon must be a PNG file.'); iconInput && iconInput.focus(); return false; }
         if (!price || Number(price) < 1) { alert('Please enter a valid buyer price (minimum $1).'); focus('price'); return false; }
+
+        // Async: validate icon dimensions (1024×1024)
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          const url = URL.createObjectURL(iconFile);
+          img.onload  = () => { URL.revokeObjectURL(url); resolve(img.width === 1024 && img.height === 1024 ? true : false); };
+          img.onerror = () => { URL.revokeObjectURL(url); reject(); };
+          img.src = url;
+        }).then(valid => {
+          if (!valid) { alert('App icon must be exactly 1024 × 1024 pixels.'); iconInput && iconInput.focus(); return false; }
+          return true;
+        }).catch(() => { alert('Could not read the icon file. Please try again.'); return false; });
       }
 
       if (n === 2) {
