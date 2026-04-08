@@ -147,9 +147,10 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
 
   const timestamp = timestampPart.slice(2);
 
-  // Reject events older than 5 minutes to prevent replay attacks
+  // Reject events older than 5 minutes to prevent replay attacks.
+  // We only check for stale (too-old) timestamps; future clock skew is allowed.
   const now = Math.floor(Date.now() / 1000);
-  if (Math.abs(now - parseInt(timestamp, 10)) > 300) {
+  if (now - parseInt(timestamp, 10) > 300) {
     console.error('Stripe webhook timestamp is too old — possible replay attack');
     return false;
   }
@@ -172,11 +173,25 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
 
-  // Constant-time comparison using timingSafeEqual equivalent
-  // (all signatures are compared; the loop doesn't short-circuit)
+  // Constant-time string comparison — compares every character regardless of
+  // where a mismatch occurs, preventing timing side-channel attacks.
+  function timingSafeEqual(a, b) {
+    const aLen = a.length;
+    const bLen = b.length;
+    const len  = Math.max(aLen, bLen);
+    // XOR of lengths is non-zero if they differ
+    let diff = aLen ^ bLen;
+    for (let i = 0; i < len; i++) {
+      // charCodeAt returns NaN for out-of-range indices; `|| 0` makes it 0
+      diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+    }
+    return diff === 0;
+  }
+
+  // Compare against each v1 signature without short-circuiting
   let matched = false;
   for (const sig of v1Sigs) {
-    if (sig === expected) {
+    if (timingSafeEqual(sig, expected)) {
       matched = true;
     }
   }

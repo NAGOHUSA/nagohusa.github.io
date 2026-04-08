@@ -27,6 +27,8 @@ jobs:
     name: Invite collaborator
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read   # minimal — actual collaborator writes use REPO_ACCESS_PAT
 
     steps:
       - name: Validate payload
@@ -91,7 +93,7 @@ jobs:
         run: |
           echo "✅ Access granted"
           echo "   GitHub user  : ${{ github.event.client_payload.github_username }}"
-          echo "   Repository   : ${{ github.repo.owner }}/${{ steps.validate.outputs.repo }}"
+          echo "   Repository   : ${{ github.repository_owner }}/${{ steps.validate.outputs.repo }}"
           echo "   Payment ID   : ${{ github.event.client_payload.payment_intent }}"
           echo "   Amount (¢)   : ${{ github.event.client_payload.amount_total }}"
           echo "   Triggered at : $(date -u)"
