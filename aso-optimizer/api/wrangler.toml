@@ -1,0 +1,24 @@
+# aso-optimizer/api/wrangler.toml
+#
+# Deploy with:
+#   cd aso-optimizer/api
+#   npx wrangler deploy
+#
+# Set secrets (never commit these):
+#   npx wrangler secret put DEEPSEEK_API_KEY
+#   npx wrangler secret put STRIPE_SECRET_KEY
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET
+
+name = "aso-optimizer"
+main = "index.js"
+compatibility_date = "2024-12-01"
+
+[observability]
+enabled = true
+
+# Production environment — routes API traffic through the custom domain.
+# Adjust zone_name / pattern to match your actual domain.
+[env.production]
+routes = [
+  { pattern = "nagoh.us/aso-optimizer/api/*", zone_name = "nagoh.us" },
+]
