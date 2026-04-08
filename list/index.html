@@ -565,7 +565,14 @@
       tags.forEach((t, i) => {
         const pill = document.createElement('span');
         pill.className = 'tag-pill-item flex items-center text-xs text-gray-200 bg-white/10 border border-white/10 px-2 py-0.5 rounded-full';
-        pill.innerHTML = `${t}<span class="tag-remove" onclick="removeTag(${i})" title="Remove">×</span>`;
+        const labelNode = document.createTextNode(t);
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'tag-remove';
+        removeBtn.title = 'Remove';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', (function(idx) { return function() { removeTag(idx); }; }(i)));
+        pill.appendChild(labelNode);
+        pill.appendChild(removeBtn);
         tagContainer.insertBefore(pill, tagInput);
       });
       tagsHidden.value = tags.join(',');
@@ -629,8 +636,8 @@
       const box = document.getElementById('summaryBox');
       box.innerHTML = rows.map(([label, value]) => `
         <div class="${value.includes('\n') ? '' : 'flex items-start gap-3'}">
-          <span class="text-gray-500 flex-shrink-0 w-28 inline-block">${label}</span>
-          <span class="text-white font-medium ${value.includes('\n') ? 'block pl-28 mt-0.5 whitespace-pre-wrap' : ''}">${value.includes('\n') ? value : escapeHtml(value)}</span>
+          <span class="text-gray-500 flex-shrink-0 w-28 inline-block">${escapeHtml(label)}</span>
+          <span class="text-white font-medium ${value.includes('\n') ? 'block pl-28 mt-0.5 whitespace-pre-wrap' : ''}">${escapeHtml(value)}</span>
         </div>
       `).join('<div class="h-px bg-surface-border"></div>');
     }
@@ -654,7 +661,12 @@
       // Also open mailto as a fallback so the submission arrives via email
       const subject = encodeURIComponent('[nagoh.us] New Listing Submission — ' + val('appName'));
       const body    = encodeURIComponent(summary);
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+      const mailLink = document.createElement('a');
+      mailLink.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+      mailLink.style.display = 'none';
+      document.body.appendChild(mailLink);
+      mailLink.click();
+      document.body.removeChild(mailLink);
 
       // Show confirmation step
       setTimeout(() => {
