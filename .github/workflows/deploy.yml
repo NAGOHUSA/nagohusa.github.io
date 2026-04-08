@@ -1,0 +1,82 @@
+name: Deploy ASO Optimizer
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Deploys the ASO Optimizer application to Cloudflare on every push to main
+# that touches files inside the aso-optimizer/ directory.
+#
+# Two parallel jobs:
+#   1. deploy-worker  — publishes the Cloudflare Worker API
+#   2. deploy-pages   — publishes the frontend to Cloudflare Pages
+#
+# Required repository secrets (Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN   — API token with Workers + Pages edit permissions
+#   CLOUDFLARE_ACCOUNT_ID  — Your Cloudflare account ID
+#
+# Worker secrets are NOT stored here.  Set them once via the Cloudflare
+# dashboard or Wrangler CLI:
+#   npx wrangler secret put DEEPSEEK_API_KEY
+#   npx wrangler secret put STRIPE_SECRET_KEY
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'aso-optimizer/**'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  # ── 1. Deploy Cloudflare Worker (API) ───────────────────────────────────────
+  deploy-worker:
+    name: Deploy Worker API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    defaults:
+      run:
+        working-directory: aso-optimizer/api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Worker via Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: aso-optimizer/api
+          # Deploys to the production environment defined in wrangler.toml
+          command: deploy --env production
+
+  # ── 2. Deploy Cloudflare Pages (Frontend) ───────────────────────────────────
+  deploy-pages:
+    name: Deploy Frontend to Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    # Deploy the frontend after the Worker is live so API calls succeed immediately
+    needs: deploy-worker
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Must match the Pages project name in the Cloudflare dashboard.
+          # Create it once with: npx wrangler pages project create aso-optimizer
+          projectName: aso-optimizer
+          # Publish only the frontend directory (not the api/ subdirectory)
+          directory: aso-optimizer
+          branch: main
+          # Optional: set WRANGLER_SEND_METRICS=false to opt out of anonymous telemetry
+          wranglerVersion: '3'
