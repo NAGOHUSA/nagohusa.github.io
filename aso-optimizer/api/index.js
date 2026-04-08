@@ -545,7 +545,12 @@ export default {
       return new Response('Method Not Allowed', { status: 405, headers: CORS_HEADERS });
     }
 
-    switch (url.pathname) {
+    // Strip the /aso-optimizer prefix when routed via the custom-domain
+    // Cloudflare route (nagoh.us/aso-optimizer/api/*).  Workers.dev URLs
+    // have no such prefix, so this is a no-op in development.
+    const pathname = url.pathname.replace(/^\/aso-optimizer/, '');
+
+    switch (pathname) {
       case '/api/lookup':          return handleLookup(request);
       case '/api/optimize':        return handleOptimize(request, env);
       case '/api/create-checkout': return handleCreateCheckout(request, env);
