@@ -337,9 +337,16 @@
 
 <script>
 // ── Configuration ─────────────────────────────────────────────────────────────
-// Point this at your deployed Worker URL.
-// In production, set window.ASO_API_BASE before this script, or use a build-time replace.
-const API_BASE = window.ASO_API_BASE || 'https://aso-optimizer.workers.dev';
+// The Worker API URL.  In development, set window.ASO_API_BASE before this
+// script loads.  In production the Worker is reachable at the route defined
+// in wrangler.toml (nagoh.us/aso-optimizer/api/*), so ASO_API_BASE should be
+// set to '' (empty string) to make requests relative to the current origin.
+//
+// For a standalone Workers.dev deployment, set it to the full workers.dev URL,
+// e.g. window.ASO_API_BASE = 'https://aso-optimizer.<account>.workers.dev';
+const API_BASE = window.ASO_API_BASE !== undefined
+  ? window.ASO_API_BASE
+  : '';
 
 // ── State (sessionStorage-backed, no database) ────────────────────────────────
 const State = {
@@ -574,8 +581,8 @@ function populateResults(data, metadata) {
   // Hidden element for copy-all
   $('resultKeywords').dataset.copyText = keywordList.join(', ');
 
-  const charCount = keywordList.join(',').length;
-  setText('keywordCharCount', `${charCount}/100 characters${charCount > 100 ? ' — ⚠️ exceeds limit, remove some keywords' : ''}`);
+  const charCount = keywordList.join(',').replace(/\s/g, '').length;
+  setText('keywordCharCount', `${charCount}/100 characters (commas included, spaces excluded — as counted by App Store Connect)${charCount > 100 ? ' — ⚠️ exceeds limit, remove some keywords' : ''}`);
 
   show('resultsSection');
 }

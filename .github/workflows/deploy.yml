@@ -33,6 +33,8 @@ jobs:
     name: Deploy Worker API
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
 
     defaults:
       run:
@@ -56,6 +58,8 @@ jobs:
     name: Deploy Frontend to Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     # Deploy the frontend after the Worker is live so API calls succeed immediately
     needs: deploy-worker
 

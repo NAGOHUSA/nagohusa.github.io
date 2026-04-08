@@ -467,7 +467,9 @@ async function handleStripeWebhook(request, env) {
   return new Response('OK', { status: 200 });
 }
 
-// ── Stripe Signature Verification (HMAC-SHA256, constant-time) ───────────────
+// Maximum age (in seconds) for a Stripe webhook timestamp before it is
+// rejected as a potential replay attack.
+const STRIPE_WEBHOOK_TOLERANCE_SECONDS = 300;
 
 async function verifyStripeSignature(payload, signatureHeader, secret) {
   const parts = signatureHeader.split(',');
@@ -479,7 +481,7 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
   const timestamp = timestampPart.slice(2);
   const now = Math.floor(Date.now() / 1000);
   // Reject replays older than 5 minutes
-  if (now - parseInt(timestamp, 10) > 300) {
+  if (now - parseInt(timestamp, 10) > STRIPE_WEBHOOK_TOLERANCE_SECONDS) {
     console.error('Stripe webhook timestamp too old — possible replay attack');
     return false;
   }
