@@ -300,6 +300,79 @@
             </ul>
             <button class="w-full border border-purple-600 text-purple-600 rounded-lg py-2 font-medium hover:bg-purple-50 transition">Select</button>
           </div>
+          <!-- Language Add-ons Section -->
+<div id="languageAddons" class="border-t border-gray-100 pt-8 mt-8 hidden">
+  <h3 class="font-bold text-lg mb-4">➕ Add More Markets (Optional)</h3>
+  <p class="text-sm text-gray-600 mb-4">Choose additional markets for only $5 each</p>
+  
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="france" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇫🇷 France (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="spain" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇪🇸 Spain (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="italy" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇮🇹 Italy (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="southkorea" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇰🇷 South Korea (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="china" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇨🇳 China (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="mexico" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇲🇽 Mexico (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="australia" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇦🇺 Australia (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="canada" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇨🇦 Canada (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="uk" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇬🇧 United Kingdom (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="india" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇮🇳 India (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="indonesia" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇮🇩 Indonesia (+$5)</span>
+    </label>
+    <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
+      <input type="checkbox" value="turkey" class="addon-checkbox w-4 h-4 text-purple-600">
+      <span class="text-sm">🇹🇷 Turkey (+$5)</span>
+    </label>
+  </div>
+  
+  <div id="priceBreakdown" class="bg-gray-50 rounded-xl p-4 mb-4">
+    <div class="flex justify-between text-sm mb-2">
+      <span>Base Package (3 markets)</span>
+      <span>$12</span>
+    </div>
+    <div id="addonsBreakdown" class="text-sm text-gray-600"></div>
+    <div class="border-t pt-2 mt-2 flex justify-between font-bold">
+      <span>Total</span>
+      <span id="totalPrice">$12</span>
+    </div>
+  </div>
+  
+  <button id="checkoutWithAddons" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">
+    Continue to Checkout → 
+    <span id="checkoutTotal" class="font-bold">$12</span>
+  </button>
+</div>
           
           <!-- Most Popular - 3 Markets -->
           <div class="border-2 border-purple-600 rounded-2xl p-6 text-center relative card-hover shadow-lg">
@@ -820,6 +893,186 @@
     
     // Initialize
     handlePaymentReturn();
+    // ============================================
+// ADD-ONS FUNCTIONALITY (Stripe API for upgrades)
+// ============================================
+
+// Complete market database
+const ALL_MARKETS = {
+  france: { market: 'France', locale: 'fr', flag: '🇫🇷', price: 5, baseMarket: false, prompt: 'French: Use polite vous, emphasize quality and style' },
+  spain: { market: 'Spain', locale: 'es', flag: '🇪🇸', price: 5, baseMarket: false, prompt: 'Spanish: Use friendly tú, warm and engaging tone' },
+  italy: { market: 'Italy', locale: 'it', flag: '🇮🇹', price: 5, baseMarket: false, prompt: 'Italian: Passionate and expressive, use friendly tone' },
+  southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷', price: 5, baseMarket: false, prompt: 'Korean: Use professional 합쇼체, respect hierarchy' },
+  china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳', price: 5, baseMarket: false, prompt: 'Chinese: Use simplified characters, professional tone' },
+  mexico: { market: 'Mexico', locale: 'es-MX', flag: '🇲🇽', price: 5, baseMarket: false, prompt: 'Mexican Spanish: Warm, friendly, use local slang' },
+  australia: { market: 'Australia', locale: 'en-AU', flag: '🇦🇺', price: 5, baseMarket: false, prompt: 'Australian English: Casual, friendly, use local terms' },
+  canada: { market: 'Canada', locale: 'en-CA', flag: '🇨🇦', price: 5, baseMarket: false, prompt: 'Canadian English: Polite, neutral, inclusive tone' },
+  uk: { market: 'United Kingdom', locale: 'en-GB', flag: '🇬🇧', price: 5, baseMarket: false, prompt: 'British English: Formal but friendly, use British spelling' },
+  india: { market: 'India', locale: 'hi', flag: '🇮🇳', price: 5, baseMarket: false, prompt: 'Hindi: Mix of Hindi and English, tech-savvy tone' },
+  indonesia: { market: 'Indonesia', locale: 'id', flag: '🇮🇩', price: 5, baseMarket: false, prompt: 'Indonesian: Casual, friendly, use local expressions' },
+  turkey: { market: 'Turkey', locale: 'tr', flag: '🇹🇷', price: 5, baseMarket: false, prompt: 'Turkish: Respectful, warm, use local idioms' },
+  vietnam: { market: 'Vietnam', locale: 'vi', flag: '🇻🇳', price: 5, baseMarket: false, prompt: 'Vietnamese: Respectful, family-oriented tone' },
+  thailand: { market: 'Thailand', locale: 'th', flag: '🇹🇭', price: 5, baseMarket: false, prompt: 'Thai: Polite, respectful, use appropriate particles' },
+  poland: { market: 'Poland', locale: 'pl', flag: '🇵🇱', price: 5, baseMarket: false, prompt: 'Polish: Formal but friendly, respect traditions' },
+  netherlands: { market: 'Netherlands', locale: 'nl', flag: '🇳🇱', price: 5, baseMarket: false, prompt: 'Dutch: Direct, practical, efficient communication' },
+  sweden: { market: 'Sweden', locale: 'sv', flag: '🇸🇪', price: 5, baseMarket: false, prompt: 'Swedish: Modern, egalitarian, minimalist tone' },
+};
+
+let selectedAddons = [];
+
+// Function to update price breakdown
+function updatePriceBreakdown() {
+  const basePrice = 12;
+  const addonsCount = selectedAddons.length;
+  const addonsPrice = addonsCount * 5;
+  const total = basePrice + addonsPrice;
+  
+  const totalPriceEl = document.getElementById('totalPrice');
+  const checkoutTotalEl = document.getElementById('checkoutTotal');
+  const addonsBreakdownEl = document.getElementById('addonsBreakdown');
+  
+  if (totalPriceEl) totalPriceEl.textContent = `$${total}`;
+  if (checkoutTotalEl) checkoutTotalEl.textContent = `$${total}`;
+  
+  if (addonsBreakdownEl) {
+    if (addonsCount > 0) {
+      addonsBreakdownEl.innerHTML = `<div class="flex justify-between text-purple-600">
+        <span>+ ${addonsCount} additional market${addonsCount > 1 ? 's' : ''}</span>
+        <span>+$${addonsPrice}</span>
+      </div>`;
+    } else {
+      addonsBreakdownEl.innerHTML = '';
+    }
+  }
+}
+
+// Show/hide add-ons section based on package selection
+function toggleAddonsSection(show) {
+  const addonsSection = document.getElementById('languageAddons');
+  if (addonsSection) {
+    if (show) {
+      addonsSection.classList.remove('hidden');
+    } else {
+      addonsSection.classList.add('hidden');
+    }
+  }
+}
+
+// Add-on checkbox listeners
+function initAddonCheckboxes() {
+  const checkboxes = document.querySelectorAll('.addon-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      const marketKey = e.target.value;
+      if (e.target.checked) {
+        selectedAddons.push(marketKey);
+      } else {
+        selectedAddons = selectedAddons.filter(k => k !== marketKey);
+      }
+      updatePriceBreakdown();
+    });
+  });
+}
+
+// Dynamic checkout with Stripe API (for add-ons)
+async function checkoutWithAddons() {
+  const state = State.load();
+  if (!state?.metadata) {
+    showToast('Please analyze an app first');
+    return;
+  }
+  
+  // Build the complete market list
+  const baseMarkets = [
+    { market: 'Japan', locale: 'ja', flag: '🇯🇵', price: 4 },
+    { market: 'Germany', locale: 'de', flag: '🇩🇪', price: 4 },
+    { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷', price: 4 }
+  ];
+  
+  const addonMarkets = selectedAddons.map(key => ALL_MARKETS[key]);
+  const allMarkets = [...baseMarkets, ...addonMarkets];
+  const totalPrice = 12 + (selectedAddons.length * 5);
+  
+  // Store for after payment
+  State.save({ 
+    ...state, 
+    pendingPayment: true, 
+    selectedPackage: 'premium_with_addons',
+    selectedMarkets: allMarkets,
+    totalPrice: totalPrice
+  });
+  
+  try {
+    // Create dynamic Stripe checkout session
+    const response = await fetch(`${API_BASE}/api/create-checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        appName: state.metadata.name,
+        amount: totalPrice,
+        markets: allMarkets.map(m => m.market),
+        successUrl: `${window.location.origin}${window.location.pathname}?session_id={CHECKOUT_SESSION_ID}&paid=true`,
+        cancelUrl: `${window.location.origin}${window.location.pathname}?cancelled=true`,
+      })
+    });
+    
+    const { url } = await response.json();
+    if (url) {
+      window.location.href = url;
+    }
+  } catch (err) {
+    showToast(`Checkout error: ${err.message}`);
+  }
+}
+
+// Override the existing selectPremiumBtn to show/hide add-ons
+const originalPremiumBtn = document.getElementById('selectPremiumBtn');
+if (originalPremiumBtn) {
+  // Remove existing listeners
+  const newPremiumBtn = originalPremiumBtn.cloneNode(true);
+  originalPremiumBtn.parentNode.replaceChild(newPremiumBtn, originalPremiumBtn);
+  
+  newPremiumBtn.addEventListener('click', () => {
+    // Show add-ons section when Premium is selected
+    toggleAddonsSection(true);
+    // Scroll to add-ons
+    document.getElementById('languageAddons')?.scrollIntoView({ behavior: 'smooth' });
+  });
+}
+
+// Add checkout button for add-ons
+const checkoutWithAddonsBtn = document.getElementById('checkoutWithAddons');
+if (checkoutWithAddonsBtn) {
+  checkoutWithAddonsBtn.addEventListener('click', checkoutWithAddons);
+}
+
+// Initialize add-on checkboxes
+initAddonCheckboxes();
+
+// Update the "Single Market" and other package buttons
+const singleMarketBtn = document.querySelector('.border-2\\?'); // Adjust selector as needed
+const allPackageBtns = document.querySelectorAll('.border.rounded-2xl button, .border-2.border-purple-600 button');
+allPackageBtns.forEach(btn => {
+  if (btn.textContent.includes('Select') && !btn.id) {
+    btn.addEventListener('click', () => {
+      // Hide add-ons section when other packages are selected
+      toggleAddonsSection(false);
+      selectedAddons = [];
+      updatePriceBreakdown();
+      
+      // Uncheck all add-on checkboxes
+      document.querySelectorAll('.addon-checkbox').forEach(cb => cb.checked = false);
+    });
+  }
+});
+
+// Update the getPremiumBtn for base package (keep your existing Payment Link)
+// Make sure it hides add-ons when clicked
+const basePremiumBtn = document.getElementById('selectPremiumBtn');
+if (basePremiumBtn) {
+  // The existing PAYMENT_LINK flow is preserved
+  // Add-ons section will be shown/hidden appropriately
+}
   </script>
 </body>
 </html>
