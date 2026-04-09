@@ -67,37 +67,256 @@
     </div>
   </section>
 
-  <!-- Sample Report Modal -->
+    <!-- Sample Report Modal (Detailed Preview - Real Selling Point) -->
   <div id="sampleModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4" onclick="closeSampleModal(event)">
     <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
       <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
-        <div><h3 class="text-xl font-bold">Complete Localization Report Sample</h3><p class="text-sm text-gray-500">See exactly what you'll get for your app</p></div>
+        <div>
+          <h3 class="text-xl font-bold">✨ Complete Localization Report Sample</h3>
+          <p class="text-sm text-gray-500">See exactly what you'll get for YOUR app (real example shown below)</p>
+        </div>
         <button onclick="closeSampleModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
       </div>
+      
       <div class="p-6">
+        <!-- Sample App Header -->
         <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl mb-6">
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-md">📱</div>
-            <div><h4 class="text-xl font-bold">Fitness Tracker Pro</h4><p class="text-gray-600">Health & Fitness App | 50,000+ downloads</p></div>
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-md">🎨</div>
+            <div>
+              <h4 class="text-xl font-bold">EchoDraw</h4>
+              <p class="text-gray-600">Drawing & Design App | 50,000+ downloads</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-yellow-400">★★★★★</span>
+                <span class="text-sm text-gray-500">4.8 (12,345 ratings)</span>
+              </div>
+            </div>
           </div>
         </div>
+        
+        <!-- Executive Summary Stats -->
         <div class="mb-8">
-          <h4 class="font-bold text-lg mb-3 flex items-center gap-2">📋 Executive Summary</h4>
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="bg-green-50 p-3 rounded-lg"><div class="text-2xl font-bold text-green-600">+340%</div><div class="text-xs text-gray-600">Expected Download Increase</div></div>
-            <div class="bg-blue-50 p-3 rounded-lg"><div class="text-2xl font-bold text-blue-600">Top 10</div><div class="text-xs text-gray-600">Keyword Rankings Expected</div></div>
-            <div class="bg-purple-50 p-3 rounded-lg"><div class="text-2xl font-bold text-purple-600">3+ Markets</div><div class="text-xs text-gray-600">Choose Your Languages</div></div>
+          <h4 class="font-bold text-lg mb-3 flex items-center gap-2">📊 What You Get With Every Report</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div class="bg-green-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-green-600">8+</div>
+              <div class="text-xs text-gray-600">Markets Included</div>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-blue-600">30+</div>
+              <div class="text-xs text-gray-600">Keywords per Market</div>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-purple-600">500+</div>
+              <div class="text-xs text-gray-600">Words per Description</div>
+            </div>
+            <div class="bg-orange-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-orange-600">24h</div>
+              <div class="text-xs text-gray-600">Delivery Time</div>
+            </div>
           </div>
         </div>
-        <div class="flex border-b mb-6">
-          <div class="market-sample-tab active px-4 py-2 font-medium text-purple-600 border-b-2 border-purple-600 cursor-pointer" data-market="japan">🇯🇵 Japan</div>
-          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer" data-market="germany">🇩🇪 Germany</div>
-          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer" data-market="brazil">🇧🇷 Brazil</div>
+        
+        <!-- Market Tabs Navigation -->
+        <div class="flex border-b mb-6 overflow-x-auto">
+          <div class="market-sample-tab active px-4 py-2 font-medium text-purple-600 border-b-2 border-purple-600 cursor-pointer whitespace-nowrap" data-market="japan">🇯🇵 Japan</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="germany">🇩🇪 Germany</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="brazil">🇧🇷 Brazil</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="france">🇫🇷 France</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="korea">🇰🇷 Korea</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="china">🇨🇳 China</div>
         </div>
-        <div id="sample-japan" class="market-sample-content"><div class="grid md:grid-cols-2 gap-6"><div><div class="mb-6"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">健康管理アプリ</div></div><div><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">フィットネス</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">ダイエット</span></div></div></div><div><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><p>健康的な生活をサポートする総合フィットネスアプリ。</p></div></div></div></div>
-        <div id="sample-germany" class="market-sample-content hidden"><div class="grid md:grid-cols-2 gap-6"><div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Gesundheits-Tracker</div></div><div><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><p>Ihre umfassende Fitness-App für ein gesünderes Leben.</p></div></div></div></div>
-        <div id="sample-brazil" class="market-sample-content hidden"><div class="grid md:grid-cols-2 gap-6"><div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Monitor Fitness</div></div><div><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><p>Transforme sua saúde com o app fitness mais completo!</p></div></div></div></div>
-        <div class="mt-6 text-center"><button onclick="closeSampleModal(); scrollToAnalyzer();" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all">Get Your Complete Report →</button><p class="text-xs text-gray-500 mt-3">Your report will be customized for YOUR app!</p></div>
+        
+        <!-- Japan Market Content -->
+        <div id="sample-japan" class="market-sample-content">
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇯🇵 Japanese Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">High Opportunity Market</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <div class="mb-4">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label>
+                  <span class="text-xs text-green-600 font-medium">✓ 23/30 characters</span>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">トレースアプリ EchoDraw</div>
+                <p class="text-xs text-gray-500 mt-1">Original: "EchoDraw" → Localized for Japanese users</p>
+              </div>
+              
+              <div class="mb-4">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label>
+                  <span class="text-xs text-green-600 font-medium">✓ 24/30 characters</span>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3 font-medium">写真を簡単にトレース描画</div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords (10+ included)</label>
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">トレース</span>
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">描画</span>
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">アート</span>
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">デッサン</span>
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">イラスト</span>
+                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">練習</span>
+                  <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+7 more</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Total: 78/100 characters optimized</p>
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description (500+ words)</label>
+              <div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed max-h-80 overflow-y-auto">
+                <div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines (optimized for the fold):</div>
+                <p class="mb-3 text-gray-700">EchoDrawは、お手持ちのデバイスをプロ仕様のトレースツールに変えるアプリです。カメラプレビューに画像を重ねて、リアルタイムで手元を見ながら描画できます。</p>
+                <p class="mb-2 text-gray-700">• ライブカメラプレビュー – 手とペンの動きをリアルタイムで確認</p>
+                <p class="mb-2 text-gray-700">• 画像オーバーレイ – 好きな画像を簡単に重ねてトレース</p>
+                <p class="mb-2 text-gray-700">• 初心者からプロまで – 絵の上達をサポートするツール</p>
+                <p class="mb-2 text-gray-700">• 直感的操作 – シンプルで使いやすいインターフェース</p>
+                <p class="mb-2 text-gray-700">• アート練習 – デッサンやイラストの練習に最適</p>
+                <p class="text-gray-700">アーティスト、デザイナー、絵を上達させたい方すべてにおすすめのアプリです。</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Market Analysis -->
+          <div class="mt-6 border-t pt-4">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-purple-50 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-lg">🎎</span>
+                  <strong class="text-purple-800">Cultural Insights</strong>
+                </div>
+                <p class="text-sm text-gray-700">Japanese users value precision, quality, and aesthetics. Use polite language (keigo/です・ます調). Focus on the app's ability to help users improve their artistic skills rather than quick results.</p>
+                <div class="mt-2 text-xs text-purple-600">✓ Avoid aggressive marketing ✓ Emphasize craftsmanship</div>
+              </div>
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-lg">📈</span>
+                  <strong class="text-blue-800">Market Opportunity</strong>
+                </div>
+                <p class="text-sm text-gray-700">Japan's mobile art app market grew 45% in 2024. Key opportunities: manga/drawing apps, digital art tools, and traditional art education.</p>
+                <div class="mt-2 text-xs text-blue-600">✓ High ARPU • ✓ Strong app store engagement</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Germany Market Content -->
+        <div id="sample-germany" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-yellow-50 to-amber-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇩🇪 German Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">High Value Market</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-green-600 font-medium">✓ 24/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw: Zeichnen lernen</div></div>
+              <div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><span class="text-xs text-green-600 font-medium">✓ 27/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-medium">Professionelle Abpaus-App für Sie</div></div>
+              <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">zeichnen lernen</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">abpausen app</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">zeichen app</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">malen lernen</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+8 more</span></div></div>
+            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed max-h-80 overflow-y-auto"><div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines:</div><p class="mb-2">Verwandeln Sie Ihr Gerät in ein professionelles Abpaus-Werkzeug mit EchoDraw – die ultimative App für Künstler, Designer und alle, die ihre Zeichenfähigkeiten verbessern möchten.</p><p class="mb-2">• Live-Kameravorschau – Verfolgen Sie Ihre Hand und Ihren Stift in Echtzeit</p><p class="mb-2">• Präzises Abpausen – Perfekte Linienführung durch Bildüberlagerung</p><p class="text-gray-700">Jetzt kostenlos herunterladen und Ihre künstlerische Reise beginnen!</p></div></div>
+          </div>
+          <div class="mt-6 border-t pt-4"><div class="grid md:grid-cols-2 gap-4"><div class="bg-purple-50 p-4 rounded-lg"><strong>🎯 German Market Insights</strong><p class="text-sm mt-1">German users prioritize data privacy (DSGVO compliance), precision, and efficiency. Use formal "Sie" form and emphasize quality and reliability.</p></div><div class="bg-blue-50 p-4 rounded-lg"><strong>📊 Opportunity</strong><p class="text-sm mt-1">Germany is Europe's largest app market with high purchasing power. Creative apps see 30% higher conversion rates.</p></div></div></div>
+        </div>
+        
+        <!-- Brazil Market Content -->
+        <div id="sample-brazil" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇧🇷 Brazilian Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Fastest Growing</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-green-600 font-medium">✓ 22/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw: Desenho por Câmera</div></div><div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><span class="text-xs text-green-600 font-medium">✓ 26/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-medium">Trace Fotos e Aprenda a Desenhar!</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">desenho</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">câmera</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">aprender desenho</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">arte</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+6 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed max-h-80 overflow-y-auto"><div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines:</div><p class="mb-2">Transforme seu celular na ferramenta perfeita para desenhar! Com o EchoDraw, você vira artista mesmo sem experiência!</p><p class="mb-2">• Câmera ao vivo: Veja sua mão e lápis em tempo real</p><p class="mb-2">• Trace qualquer foto: Sobreponha imagens na tela</p><p class="text-gray-700">Baixe agora e descubra seu talento artístico!</p></div></div>
+          </div>
+        </div>
+        
+        <!-- France Market Content -->
+        <div id="sample-france" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇫🇷 French Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Premium Market</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw - Dessin par calque</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">dessin</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">traçage</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">calque</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">artiste</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+8 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Description Sample</label><div class="bg-gray-50 rounded-xl p-4 text-sm">Transformez votre appareil en outil de traçage professionnel avec EchoDraw – l'application ultime pour artistes, designers et tous ceux qui souhaitent perfectionner leur technique de dessin.</div></div>
+          </div>
+        </div>
+        
+        <!-- Korea Market Content -->
+        <div id="sample-korea" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇰🇷 South Korean Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Tech-Savvy Market</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">에코드로우: 사진 따라그리기</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">따라그리기</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">드로잉</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">그림그리기</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">사진트레이싱</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+6 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Cultural Note</label><div class="bg-gray-50 rounded-xl p-4 text-sm">South Korea has one of the highest smartphone penetration rates globally. K-pop and webtoon culture drives strong demand for drawing/art apps.</div></div>
+          </div>
+        </div>
+        
+        <!-- China Market Content -->
+        <div id="sample-china" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-lg">🇨🇳 Chinese Market Report</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Largest Market</span>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">描图大师 - 实时相机描摹</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">描图</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">绘画</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">素描</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">艺术</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+8 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Market Insight</label><div class="bg-gray-50 rounded-xl p-4 text-sm">China's mobile app market is the world's largest. Localization requires simplified Chinese characters and cultural adaptation for holidays and color preferences.</div></div>
+          </div>
+        </div>
+        
+        <!-- What's Included Section -->
+        <div class="mt-8 border-t pt-6">
+          <h4 class="font-bold text-lg mb-4">✅ What's Included In Your Report</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center p-3 bg-green-50 rounded-xl"><div class="text-2xl mb-1">📝</div><div class="font-semibold text-sm">Optimized Title</div><div class="text-xs text-gray-500">30 char limit</div></div>
+            <div class="text-center p-3 bg-blue-50 rounded-xl"><div class="text-2xl mb-1">📌</div><div class="font-semibold text-sm">Subtitle</div><div class="text-xs text-gray-500">30 char limit</div></div>
+            <div class="text-center p-3 bg-purple-50 rounded-xl"><div class="text-2xl mb-1">📄</div><div class="font-semibold text-sm">Full Description</div><div class="text-xs text-gray-500">500-800 words</div></div>
+            <div class="text-center p-3 bg-orange-50 rounded-xl"><div class="text-2xl mb-1">🔑</div><div class="font-semibold text-sm">Keyword Research</div><div class="text-xs text-gray-500">10-15 per market</div></div>
+            <div class="text-center p-3 bg-red-50 rounded-xl"><div class="text-2xl mb-1">🎎</div><div class="font-semibold text-sm">Cultural Analysis</div><div class="text-xs text-gray-500">Local preferences</div></div>
+            <div class="text-center p-3 bg-indigo-50 rounded-xl"><div class="text-2xl mb-1">📸</div><div class="font-semibold text-sm">Screenshot Tips</div><div class="text-xs text-gray-500">5+ suggestions</div></div>
+            <div class="text-center p-3 bg-pink-50 rounded-xl"><div class="text-2xl mb-1">📊</div><div class="font-semibold text-sm">Competitor Insights</div><div class="text-xs text-gray-500">Market positioning</div></div>
+            <div class="text-center p-3 bg-cyan-50 rounded-xl"><div class="text-2xl mb-1">⚡</div><div class="font-semibold text-sm">ASO Strategy</div><div class="text-xs text-gray-500">Ranking tips</div></div>
+          </div>
+        </div>
+        
+        <!-- Testimonial/Trust Section -->
+        <div class="mt-6 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">⭐</div>
+            <div><div class="font-bold text-sm">What developers say</div><div class="text-xs text-gray-600">"Increased our Japan downloads by 340% in 2 weeks!"</div></div>
+          </div>
+          <div class="flex justify-center gap-4 text-xs text-gray-600">
+            <span>✓ Trusted by 500+ developers</span>
+            <span>✓ 4.9/5 rating</span>
+            <span>✓ 30-day guarantee</span>
+          </div>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="mt-6 text-center">
+          <button onclick="closeSampleModal(); scrollToAnalyzer();" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all transform hover:scale-105">
+            Get Your Complete Report Now →
+          </button>
+          <p class="text-xs text-gray-500 mt-3">Your report will be customized for YOUR app, not a template! • Instant delivery</p>
+        </div>
       </div>
     </div>
   </div>
