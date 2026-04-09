@@ -92,7 +92,7 @@
 
     <div class="flex flex-wrap justify-center gap-8 text-sm text-gray-500">
       <span>✓ Website · Socials · Commerce</span>
-      <span>✓ AEO + SEO + ASO</span>
+      <span>✓ AEO + SEO + ASO <span title="AEO = Answer Engine Optimization — ensuring AI tools like Gemini and Perplexity describe your brand correctly" style="cursor:help;text-decoration:underline dotted">ℹ</span></span>
       <span>✓ E‑E‑A‑T Check</span>
       <span>✓ Instant Results</span>
     </div>
@@ -483,7 +483,7 @@
       clearError();
 
       const urls = parseUrls($('urlInput').value);
-      if (urls.length < 1) { showError('Please paste at least one URL to audit.'); return; }
+      if (urls.length < 2) { showError('Please paste at least 2 URLs so the auditor can compare platforms.'); return; }
 
       const brandName = $('brandName').value.trim();
 
@@ -573,7 +573,7 @@
       const meta = data.audit_meta || {};
       $('auditMeta').textContent = [
         meta.timestamp ? `Scanned ${new Date(meta.timestamp).toLocaleString()}` : '',
-        meta.total_platforms_scanned ? `${meta.total_platforms_scanned} platform(s) analysed` : '',
+        meta.total_platforms_scanned ? `${meta.total_platforms_scanned} platform(s) analyzed` : '',
       ].filter(Boolean).join(' · ');
 
       // Raw JSON
