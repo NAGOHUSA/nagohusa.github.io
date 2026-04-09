@@ -11,20 +11,21 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:    #0d0d0d;
-      --paper:  #f4f1eb;
-      --dim:    #9a9589;
-      --rule:   #dedad3;
-      --amber:  #c8860a;
-      --serif:  'Instrument Serif', Georgia, serif;
-      --mono:   'Geist Mono', 'Courier New', monospace;
+      --bg:      #e8eaed;
+      --bg-card: #dfe2e6;
+      --ink:     #1a1d21;
+      --dim:     #7a8290;
+      --rule:    #c8cdd4;
+      --accent:  #2f6af0;
+      --serif:   'Instrument Serif', Georgia, serif;
+      --mono:    'Geist Mono', 'Courier New', monospace;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--mono);
-      background: var(--paper);
+      background: var(--bg);
       color: var(--ink);
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
@@ -44,13 +45,11 @@
       font-size: 20px;
       color: var(--ink);
       text-decoration: none;
-      letter-spacing: 0.01em;
     }
 
     .nav-right {
       display: flex;
       gap: 32px;
-      align-items: center;
     }
 
     .nav-right a {
@@ -83,11 +82,7 @@
 
     .hero-left h1 em {
       font-style: italic;
-      color: var(--amber);
-    }
-
-    .hero-right {
-      padding-bottom: 6px;
+      color: var(--accent);
     }
 
     .hero-right p {
@@ -109,17 +104,15 @@
       padding: 72px 56px;
       border-right: 1px solid var(--rule);
       border-bottom: 1px solid var(--rule);
-      position: relative;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       min-height: 480px;
       text-decoration: none;
       color: var(--ink);
-      transition: background 0.3s;
+      transition: background 0.25s;
     }
     .product:last-child { border-right: none; }
-    .product:hover { background: #edeae2; }
+    .product:hover { background: var(--bg-card); }
 
     .product-num {
       font-size: 10px;
@@ -140,7 +133,7 @@
 
     .product-title em {
       font-style: italic;
-      color: var(--amber);
+      color: var(--accent);
     }
 
     .product-desc {
@@ -178,15 +171,14 @@
     }
 
     .product-arrow {
-      font-family: var(--serif);
-      font-size: 28px;
-      color: var(--amber);
+      font-size: 24px;
+      color: var(--accent);
       transition: transform 0.2s;
       line-height: 1;
     }
     .product:hover .product-arrow { transform: translate(4px, -4px); }
 
-    /* ── BOTTOM BAR ── */
+    /* ── BOTTOM ── */
     .bottom {
       padding: 40px 56px;
       display: flex;
@@ -202,10 +194,7 @@
       color: var(--dim);
     }
 
-    .bottom-links {
-      display: flex;
-      gap: 24px;
-    }
+    .bottom-links { display: flex; gap: 24px; }
     .bottom-links a {
       font-size: 11px;
       letter-spacing: 0.06em;
@@ -215,12 +204,11 @@
     }
     .bottom-links a:hover { color: var(--ink); }
 
-    /* ── FADE IN ── */
+    /* ── ANIMATE ── */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: none; }
     }
-
     .hero-left  { animation: fadeIn 0.5s 0.05s ease both; }
     .hero-right { animation: fadeIn 0.5s 0.15s ease both; }
     .product:nth-child(1) { animation: fadeIn 0.5s 0.2s ease both; }
@@ -228,7 +216,7 @@
 
     /* ── MOBILE ── */
     @media (max-width: 680px) {
-      nav { padding: 24px 24px; }
+      nav { padding: 24px; }
       .hero { grid-template-columns: 1fr; padding: 64px 24px 48px; gap: 24px; }
       .hero-right p { margin-left: 0; max-width: 100%; }
       .products { grid-template-columns: 1fr; }
@@ -260,7 +248,7 @@
 
     <a class="product" href="https://nagoh.us/buymyapp/" target="_blank">
       <div class="product-num">01 — Marketplace</div>
-      <div class="product-title">Sell Your<br><em>App</em></div>
+      <div class="product-title">iOS Source<br><em>Code</em></div>
       <p class="product-desc">Production-ready Xcode projects with instant private GitHub access. Pay once, clone forever. Learn from real apps or launch fast — no subscription required.</p>
       <div class="product-footer">
         <div class="product-tags">
