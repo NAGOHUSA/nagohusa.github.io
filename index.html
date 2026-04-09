@@ -6,19 +6,23 @@
   <title>Nagoh</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #e8eaed;
-      --bg-card: #dfe2e6;
-      --ink:     #1a1d21;
-      --dim:     #7a8290;
-      --rule:    #c8cdd4;
-      --accent:  #2f6af0;
-      --serif:   'Instrument Serif', Georgia, serif;
-      --mono:    'Geist Mono', 'Courier New', monospace;
+      --bg:       #0b0f1a;
+      --surface:  #101520;
+      --surface2: #161c2a;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.12);
+      --text:     #e2e6f0;
+      --muted:    #5e6a82;
+      --soft:     #8a96aa;
+      --gold:     #e8b86d;
+      --gold-dim: rgba(232,184,109,0.12);
+      --serif:    'Fraunces', Georgia, serif;
+      --mono:     'Geist Mono', monospace;
     }
 
     html { scroll-behavior: smooth; }
@@ -26,161 +30,261 @@
     body {
       font-family: var(--mono);
       background: var(--bg);
-      color: var(--ink);
+      color: var(--text);
       -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
     }
 
-    /* ── NAV ── */
+    /* NAV */
     nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 32px 56px;
-      border-bottom: 1px solid var(--rule);
+      padding: 28px 52px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(11,15,26,0.9);
+      backdrop-filter: blur(12px);
+      z-index: 10;
     }
 
     .logo {
       font-family: var(--serif);
-      font-size: 20px;
-      color: var(--ink);
+      font-size: 19px;
+      color: var(--text);
       text-decoration: none;
+      letter-spacing: 0.01em;
     }
+    .logo span { color: var(--gold); }
 
-    .nav-right {
-      display: flex;
-      gap: 32px;
-    }
-
-    .nav-right a {
-      font-size: 11px;
-      letter-spacing: 0.1em;
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      font-size: 10px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--dim);
+      color: var(--muted);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .nav-right a:hover { color: var(--ink); }
+    .nav-links a:hover { color: var(--text); }
 
-    /* ── HERO ── */
+    /* HERO */
     .hero {
-      padding: 96px 56px 80px;
-      border-bottom: 1px solid var(--rule);
+      padding: 100px 52px 88px;
+      border-bottom: 1px solid var(--border);
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
+      grid-template-columns: 7fr 5fr;
+      gap: 64px;
       align-items: end;
     }
 
-    .hero-left h1 {
+    .hero h1 {
       font-family: var(--serif);
-      font-size: clamp(48px, 6vw, 80px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      font-weight: 400;
+      font-size: clamp(52px, 6.5vw, 88px);
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -0.025em;
     }
-
-    .hero-left h1 em {
+    .hero h1 em {
       font-style: italic;
-      color: var(--accent);
+      color: var(--gold);
     }
 
     .hero-right p {
       font-size: 13px;
-      line-height: 1.75;
-      color: var(--dim);
+      line-height: 1.8;
+      color: var(--soft);
       font-weight: 300;
-      max-width: 340px;
+      max-width: 300px;
       margin-left: auto;
     }
 
-    /* ── PRODUCTS ── */
-    .products {
+    /* SECTION LABEL */
+    .s-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 52px;
+      margin-bottom: 0;
+      padding-top: 64px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* TOOLS GRID — 2 big cards */
+    .tools {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
     }
 
-    .product {
-      padding: 72px 56px;
-      border-right: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
+    .tool {
+      padding: 56px 52px;
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      min-height: 480px;
       text-decoration: none;
-      color: var(--ink);
+      color: var(--text);
       transition: background 0.25s;
+      min-height: 420px;
     }
-    .product:last-child { border-right: none; }
-    .product:hover { background: var(--bg-card); }
+    .tool:last-child { border-right: none; }
+    .tool:hover { background: var(--surface); }
 
-    .product-num {
+    .tool-num {
       font-size: 10px;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 48px;
+      color: var(--muted);
+      margin-bottom: 40px;
     }
 
-    .product-title {
+    .tool-title {
       font-family: var(--serif);
-      font-size: clamp(36px, 3.5vw, 52px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      font-weight: 400;
-      margin-bottom: 20px;
-    }
-
-    .product-title em {
-      font-style: italic;
-      color: var(--accent);
-    }
-
-    .product-desc {
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--dim);
+      font-size: clamp(34px, 3vw, 48px);
       font-weight: 300;
-      max-width: 320px;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    .tool-title em { font-style: italic; color: var(--gold); }
+
+    .tool-desc {
+      font-size: 12px;
+      line-height: 1.75;
+      color: var(--soft);
+      font-weight: 300;
       flex: 1;
+      max-width: 300px;
     }
 
-    .product-footer {
+    .tool-foot {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 1px solid var(--rule);
+      margin-top: 44px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
 
-    .product-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag {
-      font-size: 10px;
-      letter-spacing: 0.08em;
+      font-size: 9px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--dim);
-      border: 1px solid var(--rule);
-      padding: 4px 10px;
+      color: var(--muted);
+      border: 1px solid var(--border2);
+      padding: 3px 9px;
       border-radius: 3px;
     }
 
-    .product-arrow {
-      font-size: 24px;
-      color: var(--accent);
+    .arrow {
+      font-size: 22px;
+      color: var(--gold);
       transition: transform 0.2s;
+    }
+    .tool:hover .arrow,
+    .app-row:hover .arrow { transform: translate(3px, -3px); }
+
+    /* APPS GRID */
+    .apps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-row {
+      padding: 36px 32px;
+      border-right: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: background 0.2s;
+    }
+    .app-row:last-child { border-right: none; }
+    .app-row:hover { background: var(--surface); }
+
+    .app-icon {
+      font-size: 26px;
       line-height: 1;
     }
-    .product:hover .product-arrow { transform: translate(4px, -4px); }
 
-    /* ── BOTTOM ── */
-    .bottom {
-      padding: 40px 56px;
+    .app-name {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    .app-name em { font-style: italic; color: var(--gold); }
+
+    .app-desc {
+      font-size: 11px;
+      line-height: 1.65;
+      color: var(--soft);
+      font-weight: 300;
+      flex: 1;
+    }
+
+    .app-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .app-tag {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* BLOG */
+    .blog-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 52px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.2s;
+      gap: 24px;
+    }
+    .blog-row:hover { background: var(--surface); }
+
+    .blog-left { display: flex; align-items: center; gap: 24px; }
+
+    .blog-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .blog-title {
+      font-family: var(--serif);
+      font-size: clamp(22px, 2.5vw, 30px);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    .blog-title em { font-style: italic; color: var(--gold); }
+
+    .blog-desc {
+      font-size: 12px;
+      color: var(--soft);
+      font-weight: 300;
+      max-width: 360px;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 36px 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -188,102 +292,177 @@
       gap: 16px;
     }
 
-    .bottom-left {
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--dim);
+    .footer-copy {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
     }
 
-    .bottom-links { display: flex; gap: 24px; }
-    .bottom-links a {
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--dim);
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .bottom-links a:hover { color: var(--ink); }
+    .footer-links a:hover { color: var(--soft); }
 
-    /* ── ANIMATE ── */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
+    /* ANIMATE */
+    @keyframes up {
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: none; }
     }
-    .hero-left  { animation: fadeIn 0.5s 0.05s ease both; }
-    .hero-right { animation: fadeIn 0.5s 0.15s ease both; }
-    .product:nth-child(1) { animation: fadeIn 0.5s 0.2s ease both; }
-    .product:nth-child(2) { animation: fadeIn 0.5s 0.3s ease both; }
+    .hero          { animation: up 0.5s 0.05s ease both; }
+    .tools         { animation: up 0.5s 0.15s ease both; }
+    .apps          { animation: up 0.5s 0.25s ease both; }
+    .blog-row      { animation: up 0.5s 0.3s ease both; }
 
-    /* ── MOBILE ── */
-    @media (max-width: 680px) {
-      nav { padding: 24px; }
-      .hero { grid-template-columns: 1fr; padding: 64px 24px 48px; gap: 24px; }
+    /* MOBILE */
+    @media (max-width: 860px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 64px 24px 48px; gap: 20px; }
       .hero-right p { margin-left: 0; max-width: 100%; }
-      .products { grid-template-columns: 1fr; }
-      .product { padding: 48px 24px; border-right: none; min-height: auto; }
-      .bottom { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+      .s-label { padding: 40px 24px 20px; }
+      .tools { grid-template-columns: 1fr; }
+      .tool { padding: 44px 24px; border-right: none; min-height: auto; }
+      .apps { grid-template-columns: 1fr 1fr; }
+      .app-row { padding: 28px 20px; }
+      .app-row:nth-child(2) { border-right: none; }
+      .app-row:nth-child(3) { border-right: 1px solid var(--border); border-top: 1px solid var(--border); }
+      .app-row:nth-child(4) { border-right: none; border-top: 1px solid var(--border); }
+      .blog-row { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+      footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .apps { grid-template-columns: 1fr; }
+      .app-row { border-right: none !important; border-top: 1px solid var(--border); }
+      .app-row:first-child { border-top: none; }
     }
   </style>
 </head>
 <body>
 
   <nav>
-    <a class="logo" href="/">Nagoh</a>
-    <div class="nav-right">
+    <a class="logo" href="/">Nagoh<span>.</span></a>
+    <div class="nav-links">
+      <a href="#tools">Tools</a>
+      <a href="#apps">Apps</a>
+      <a href="#blog">Blog</a>
       <a href="mailto:hello@nagoh.us">Contact</a>
-      <a href="https://nagohcreative.com" target="_blank">Blog</a>
     </div>
   </nav>
 
   <header class="hero">
-    <div class="hero-left">
-      <h1>Tools for<br><em>indie</em> iOS<br>developers.</h1>
-    </div>
+    <h1>Built for<br><em>indie</em> iOS<br>developers.</h1>
     <div class="hero-right">
-      <p>Two focused products. No subscriptions. No fluff. Built by an independent developer for independent developers who want to ship great apps faster.</p>
+      <p>Tools, apps, and writing for independent developers who want to build and ship great iOS apps — without the overhead.</p>
     </div>
   </header>
 
-  <div class="products">
+  <!-- TOOLS -->
+  <div class="s-label" id="tools">Tools</div>
+  <div class="tools">
 
-    <a class="product" href="https://nagoh.us/buymyapp/" target="_blank">
-      <div class="product-num">01 — Marketplace</div>
-      <div class="product-title">Sell Your<br><em>App</em></div>
-      <p class="product-desc">Production-ready Xcode projects with instant private GitHub access. Pay once, clone forever. Learn from real apps or launch fast — no subscription required.</p>
-      <div class="product-footer">
-        <div class="product-tags">
+    <a class="tool" href="https://nagoh.us/buymyapp/" target="_blank">
+      <div class="tool-num">01 — Marketplace</div>
+      <div class="tool-title">iOS Source<br><em>Code</em></div>
+      <p class="tool-desc">Production-ready Xcode projects with instant private GitHub access. Pay once, clone forever. Learn from real apps or launch fast.</p>
+      <div class="tool-foot">
+        <div class="tags">
           <span class="tag">Xcode</span>
           <span class="tag">One-time</span>
-          <span class="tag">GitHub Access</span>
+          <span class="tag">GitHub</span>
         </div>
-        <span class="product-arrow">↗</span>
+        <span class="arrow">↗</span>
       </div>
     </a>
 
-    <a class="product" href="https://nagoh.us/lingo/" target="_blank">
-      <div class="product-num">02 — Localization</div>
-      <div class="product-title">Nagoh<br><em>Lingo</em></div>
-      <p class="product-desc">App Store localization for 20+ global markets. Optimized titles, subtitles, descriptions, and keywords — delivered in minutes. Trusted by 500+ developers.</p>
-      <div class="product-footer">
-        <div class="product-tags">
+    <a class="tool" href="https://nagoh.us/lingo/" target="_blank">
+      <div class="tool-num">02 — Localization</div>
+      <div class="tool-title">Nagoh<br><em>Lingo</em></div>
+      <p class="tool-desc">App Store localization for 20+ global markets. Optimized titles, subtitles, descriptions, and keywords — delivered in minutes.</p>
+      <div class="tool-foot">
+        <div class="tags">
           <span class="tag">20+ Markets</span>
           <span class="tag">ASO</span>
           <span class="tag">Instant</span>
         </div>
-        <span class="product-arrow">↗</span>
+        <span class="arrow">↗</span>
       </div>
     </a>
 
   </div>
 
-  <div class="bottom">
-    <span class="bottom-left">© 2026 Nagoh &nbsp;·&nbsp; Made for indie iOS developers</span>
-    <div class="bottom-links">
-      <a href="https://nagoh.xyz" target="_blank">NAGOH App</a>
-      <a href="https://nagohcreative.com" target="_blank">Nagoh Creative</a>
-      <a href="https://OurNightSky.US" target="_blank">OurNightSky</a>
-    </div>
+  <!-- APPS -->
+  <div class="s-label" id="apps">Apps</div>
+  <div class="apps">
+
+    <a class="app-row" href="https://apps.apple.com/app/id6752505171" target="_blank">
+      <div class="app-icon">✏️</div>
+      <div class="app-name">Echo<em>Draw</em></div>
+      <p class="app-desc">Live camera tracing and lightbox for artists. Overlay any image on your camera feed and trace in real time.</p>
+      <div class="app-foot">
+        <span class="app-tag">Drawing</span>
+        <span class="arrow" style="font-size:16px">↗</span>
+      </div>
+    </a>
+
+    <a class="app-row" href="https://nagohcreative.com" target="_blank">
+      <div class="app-icon">🏋️</div>
+      <div class="app-name">Coach<em>Deck</em></div>
+      <p class="app-desc">Client management for personal trainers. Offline-first, no subscription — your data stays on your device.</p>
+      <div class="app-foot">
+        <span class="app-tag">Fitness</span>
+        <span class="arrow" style="font-size:16px">↗</span>
+      </div>
+    </a>
+
+    <a class="app-row" href="https://nagoh.xyz" target="_blank">
+      <div class="app-icon">📊</div>
+      <div class="app-name"><em>NAGOH</em></div>
+      <p class="app-desc">Real-time App Store sales alerts via on-device push notifications. Private by design — zero data collection.</p>
+      <div class="app-foot">
+        <span class="app-tag">Dev Tools</span>
+        <span class="arrow" style="font-size:16px">↗</span>
+      </div>
+    </a>
+
+    <a class="app-row" href="https://OurNightSky.US" target="_blank">
+      <div class="app-icon">🔭</div>
+      <div class="app-name">Our<em>NightSky</em></div>
+      <p class="app-desc">Mission tracking and astronomy tools. Live telemetry, Artemis dashboards, and night sky exploration.</p>
+      <div class="app-foot">
+        <span class="app-tag">Space</span>
+        <span class="arrow" style="font-size:16px">↗</span>
+      </div>
+    </a>
+
   </div>
+
+  <!-- BLOG -->
+  <div class="s-label" id="blog">Writing</div>
+  <a class="blog-row" href="https://nagohcreative.com" target="_blank">
+    <div class="blog-left">
+      <span class="blog-label">Nagoh Creative</span>
+      <div class="blog-title">Notes on building<br><em>indie iOS apps.</em></div>
+    </div>
+    <p class="blog-desc">Code, process, and lessons from shipping real apps independently — published on Substack.</p>
+    <span class="arrow" style="font-size:26px; flex-shrink:0;">↗</span>
+  </a>
+
+  <footer>
+    <span class="footer-copy">© 2026 Nagoh · Made for indie iOS developers</span>
+    <div class="footer-links">
+      <a href="https://nagoh.us/buymyapp/" target="_blank">Marketplace</a>
+      <a href="https://nagoh.us/lingo/" target="_blank">Lingo</a>
+      <a href="https://nagoh.xyz" target="_blank">NAGOH App</a>
+      <a href="https://nagohcreative.com" target="_blank">Blog</a>
+      <a href="mailto:hello@nagoh.us">Contact</a>
+    </div>
+  </footer>
 
 </body>
 </html>
