@@ -1,0 +1,16 @@
+name = "nagoh-boost-webhook"
+main = "nagoh-boost-webhook.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[env.development]
+vars = { ENVIRONMENT = "development" }
+
+[[kv_namespaces]]
+binding = "AUDIT_CACHE"
+id = "your-kv-namespace-id"
+
+[triggers]
+crons = ["0 0 * * *"]  # Optional: daily cleanup
