@@ -1,106 +1,864 @@
-async function handleOptimize(request, env) {
-  let body;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASO Optimizer — AI-Powered App Store Localization</title>
+  <meta name="description" content="Instantly localize and optimize your App Store listing for global markets using AI. Powered by DeepSeek-V3." />
+
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="/aso-optimizer/css/tailwind.css">
+
+  <style>
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background-color: #f5f5f7; color: #1d1d1f; }
+    button, a { transition: all .2s ease; }
+    .diff-removed { background-color: #ffe4e4; color: #b91c1c; text-decoration: line-through; border-radius: 2px; padding: 0 2px; }
+    .diff-added { background-color: #dcfce7; color: #166534; border-radius: 2px; padding: 0 2px; }
+    .diff-equal { color: inherit; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn .35s ease both; }
+    .market-tab { cursor: pointer; transition: all 0.2s ease; padding: 12px 16px; }
+    .market-tab.active { border-bottom: 2px solid #0071e3; color: #0071e3; font-weight: 600; }
+    .description-text { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+    .description-text.expanded { display: block; -webkit-line-clamp: unset; }
+    .download-btn {
+      background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+      transition: all 0.2s ease;
+    }
+    .download-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,113,227,0.3);
+    }
+    .detail-section {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .detail-section h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1d1d1f;
+    }
+    .keyword-tag {
+      background: #e8e8ed;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      display: inline-block;
+      margin: 4px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+  <!-- Navigation -->
+  <nav class="bg-white/80 backdrop-blur-xl border-b border-apple-border sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-5 h-12 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 text-sm font-medium text-apple-text">
+        <svg class="w-5 h-5 text-apple-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.364-6.364a2 2 0 012.828 2.828L11.828 13.828a4 4 0 01-1.414.929l-3.536.707.707-3.536A4 4 0 019 11z"/>
+        </svg>
+        nagoh.us
+      </a>
+      <span class="text-xs font-semibold tracking-wider text-apple-gray uppercase">ASO Optimizer</span>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="max-w-5xl mx-auto px-5 pt-14 pb-10 text-center">
+    <p class="text-xs font-semibold tracking-widest text-apple-blue uppercase mb-3">AI-Powered Localization</p>
+    <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight text-apple-text leading-tight mb-4">
+      Go Global.<br class="hidden sm:block" /> Automatically.
+    </h1>
+    <p class="text-lg text-apple-gray max-w-xl mx-auto leading-relaxed">
+      Paste any App Store URL. Our AI analyzes your listing and generates keyword-optimized translations for ALL 3 recommended markets — ready to paste into App Store Connect.
+    </p>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-5 pb-20 space-y-6">
+
+    <!-- Step 1: URL Input -->
+    <section class="bg-white rounded-3xl shadow-card p-6 sm:p-8 fade-in">
+      <h2 class="text-lg font-semibold mb-4">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-apple-blue text-white text-xs font-bold mr-2">1</span>
+        Enter your App Store URL
+      </h2>
+      <form id="lookupForm" class="flex flex-col sm:flex-row gap-3">
+        <input id="appUrlInput" type="url" placeholder="https://apps.apple.com/us/app/your-app-name/id123456789" required class="flex-1 rounded-xl border border-apple-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue/30 focus:border-apple-blue placeholder:text-apple-gray/60" />
+        <button type="submit" id="lookupBtn" class="inline-flex items-center justify-center gap-2 bg-apple-blue hover:bg-apple-blueDark text-white font-medium rounded-xl px-6 py-3 text-sm whitespace-nowrap">
+          <svg id="lookupIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <svg id="lookupSpinner" class="w-4 h-4 spinner hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Analyze App
+        </button>
+      </form>
+      <p id="lookupError" class="hidden mt-3 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2"></p>
+    </section>
+
+    <!-- Step 2: App Preview -->
+    <section id="appPreview" class="hidden bg-white rounded-3xl shadow-card p-6 sm:p-8 fade-in">
+      <div class="flex items-start gap-5">
+        <img id="appIcon" src="" alt="" class="w-20 h-20 rounded-2xl shadow-md flex-shrink-0 object-cover" />
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2 flex-wrap">
+            <div>
+              <h2 id="appName" class="text-2xl font-semibold text-apple-text leading-tight"></h2>
+              <p id="appSubtitle" class="text-apple-gray text-sm mt-0.5"></p>
+            </div>
+            <span id="appGenre" class="inline-block bg-apple-lightGray text-apple-gray text-xs font-semibold rounded-full px-3 py-1 whitespace-nowrap"></span>
+          </div>
+          <div class="flex flex-wrap gap-4 mt-3 text-xs text-apple-gray">
+            <span id="appDev"></span>
+            <span id="appRating"></span>
+            <span id="appVersion"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 pt-5 border-t border-apple-border">
+        <h3 class="text-sm font-semibold text-apple-gray uppercase tracking-wider mb-2">Current Description</h3>
+        <p id="appDescription" class="description-text text-sm text-apple-text leading-relaxed whitespace-pre-line"></p>
+        <button id="expandDesc" class="mt-2 text-xs text-apple-blue font-medium hidden">Show more</button>
+      </div>
+    </section>
+
+    <!-- Step 3: Market Recommendations & Payment -->
+    <section id="marketsSection" class="hidden bg-white rounded-3xl shadow-card p-6 sm:p-8 fade-in">
+      <h2 class="text-lg font-semibold mb-1">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-apple-blue text-white text-xs font-bold mr-2">2</span>
+        Your 3 Recommended Markets
+      </h2>
+      <p class="text-sm text-apple-gray mb-5">Based on your app's genre, our AI will generate a complete report for ALL 3 markets below.</p>
+      
+      <div id="marketCards" class="grid sm:grid-cols-3 gap-4 mb-6"></div>
+      
+      <div class="mt-4 pt-4 border-t border-apple-border">
+        <button id="getPremiumBtn" class="w-full inline-flex items-center justify-center gap-2 bg-apple-text hover:bg-black text-white font-medium rounded-xl px-6 py-3 text-base whitespace-nowrap">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-10V5m0 0V3m0 2h2m-2 0H10m8.485 2.515L18 8l-1.5-1.5M6.5 6.5L5 8l-1.515-1.515M18 16l1.485 1.485M5 16l-1.515 1.485"/>
+          </svg>
+          Get Complete 3-Market Report — $5
+        </button>
+      </div>
+      
+      <p id="premiumNote" class="mt-3 text-xs text-apple-gray text-center">
+        Premium includes: AI-localized title, subtitle &amp; full description for ALL 3 markets · Market analysis · ASO recommendations · Keyword suggestions · Complete downloadable report
+      </p>
+    </section>
+
+    <!-- Unlocking spinner -->
+    <section id="unlockingSection" class="hidden bg-white rounded-3xl shadow-card p-8 text-center fade-in">
+      <svg class="w-8 h-8 spinner text-apple-blue mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <p class="text-sm font-medium text-apple-text">Verifying payment &amp; generating your 3-market report…</p>
+      <p class="text-xs text-apple-gray mt-1">This usually takes 15-20 seconds.</p>
+    </section>
+
+    <!-- Step 4: Premium Results (Multi-Market) -->
+    <section id="resultsSection" class="hidden fade-in">
+      <!-- Market Tabs -->
+      <div class="bg-white rounded-3xl shadow-card overflow-hidden mb-1">
+        <div id="marketTabs" class="flex gap-0 border-b border-apple-border"></div>
+      </div>
+
+      <!-- Optimized Tab -->
+      <div id="tab-optimized" class="bg-white rounded-3xl shadow-card p-6 sm:p-8 space-y-6">
+        <div class="flex justify-between items-center flex-wrap gap-3">
+          <div class="flex items-center gap-2">
+            <span id="resultMarketFlag" class="text-2xl"></span>
+            <span id="resultMarketName" class="text-sm font-semibold text-apple-text"></span>
+            <span id="resultLocale" class="text-xs text-apple-gray bg-apple-lightGray rounded-full px-2 py-0.5"></span>
+          </div>
+          <button id="downloadReportBtn" class="download-btn text-white text-sm font-medium rounded-xl px-4 py-2 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download Complete Report (All 3 Markets)
+          </button>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-apple-gray">App Title</label>
+            <button class="copy-btn text-xs text-apple-blue font-medium" data-target="resultTitle">Copy</button>
+          </div>
+          <div id="resultTitle" class="bg-apple-lightGray rounded-xl px-4 py-3 text-sm font-medium text-apple-text"></div>
+          <div id="resultTitleCount" class="text-right text-xs text-apple-gray mt-1"></div>
+        </div>
+
+        <!-- Subtitle -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-apple-gray">Subtitle</label>
+            <button class="copy-btn text-xs text-apple-blue font-medium" data-target="resultSubtitle">Copy</button>
+          </div>
+          <div id="resultSubtitle" class="bg-apple-lightGray rounded-xl px-4 py-3 text-sm text-apple-text"></div>
+          <div id="resultSubtitleCount" class="text-right text-xs text-apple-gray mt-1"></div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-apple-gray">Description</label>
+            <button class="copy-btn text-xs text-apple-blue font-medium" data-target="resultDescription">Copy</button>
+          </div>
+          <div id="resultDescription" class="bg-apple-lightGray rounded-xl px-4 py-3 text-sm text-apple-text whitespace-pre-line leading-relaxed max-h-64 overflow-y-auto"></div>
+        </div>
+
+        <!-- Market Analysis Section -->
+        <div id="marketAnalysisContainer" class="detail-section hidden">
+          <h4>📊 Market Analysis</h4>
+          <div id="marketAnalysisContent"></div>
+        </div>
+
+        <!-- ASO Recommendations Section -->
+        <div id="asoRecommendationsContainer" class="detail-section hidden">
+          <h4>💡 ASO Recommendations</h4>
+          <div id="asoRecommendationsContent"></div>
+        </div>
+
+        <!-- Performance Section -->
+        <div id="performanceContainer" class="detail-section hidden">
+          <h4>🎯 Performance Predictions</h4>
+          <div id="performanceContent"></div>
+        </div>
+
+        <!-- AI changes summary -->
+        <div id="changesBox" class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800 hidden">
+          <p class="font-semibold mb-1">Localization Notes</p>
+          <p id="changesText" class="leading-relaxed"></p>
+        </div>
+      </div>
+
+      <!-- Diff View Tab -->
+      <div id="tab-diff" class="bg-white rounded-3xl shadow-card p-6 sm:p-8 hidden">
+        <p class="text-xs text-apple-gray mb-5">Side-by-side comparison of original vs. AI-optimized text.</p>
+        <div class="mb-6">
+          <p class="text-xs font-semibold uppercase tracking-wider text-apple-gray mb-2">Title</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div><p class="text-xs text-apple-gray mb-1">Original</p><div id="diffTitleOrig" class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm leading-relaxed"></div></div>
+            <div><p class="text-xs text-apple-gray mb-1">Optimized</p><div id="diffTitleOpt" class="bg-green-50 border border-green-100 rounded-xl px-4 py-3 text-sm leading-relaxed"></div></div>
+          </div>
+        </div>
+        <div class="mb-6">
+          <p class="text-xs font-semibold uppercase tracking-wider text-apple-gray mb-2">Subtitle</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div><p class="text-xs text-apple-gray mb-1">Original</p><div id="diffSubtitleOrig" class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm leading-relaxed"></div></div>
+            <div><p class="text-xs text-apple-gray mb-1">Optimized</p><div id="diffSubtitleOpt" class="bg-green-50 border border-green-100 rounded-xl px-4 py-3 text-sm leading-relaxed"></div></div>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-apple-gray mb-2">Description</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div><p class="text-xs text-apple-gray mb-1">Original</p><div id="diffDescOrig" class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line max-h-80 overflow-y-auto"></div></div>
+            <div><p class="text-xs text-apple-gray mb-1">Optimized</p><div id="diffDescOpt" class="bg-green-50 border border-green-100 rounded-xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line max-h-80 overflow-y-auto"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keywords Tab -->
+      <div id="tab-keywords" class="bg-white rounded-3xl shadow-card p-6 sm:p-8 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div><h3 class="text-base font-semibold">Keyword Suggestions</h3><p class="text-xs text-apple-gray mt-0.5">Paste into App Store Connect's <em>Keywords</em> field (max 100 chars).</p></div>
+          <button class="copy-btn text-xs text-apple-blue font-medium" data-target="resultKeywords">Copy all</button>
+        </div>
+        <div id="resultKeywords" class="hidden"></div>
+        <div id="keywordTags" class="flex flex-wrap gap-2"></div>
+        <div id="keywordCharCount" class="mt-3 text-xs text-apple-gray"></div>
+      </div>
+    </section>
+
+    <!-- Toast notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-apple-text text-white text-sm font-medium rounded-2xl px-5 py-3 shadow-lg opacity-0 pointer-events-none transition-opacity duration-300">
+      Copied to clipboard ✓
+    </div>
+  </main>
+
+  <footer class="border-t border-apple-border py-8 text-center text-xs text-apple-gray">
+    <p>© 2025 nagoh.us · Built with DeepSeek-V3 + Cloudflare Workers</p>
+    <p class="mt-1"><a href="/" class="hover:text-apple-blue">← Back to marketplace</a></p>
+  </footer>
+
+<script>
+// Configuration
+const API_BASE = window.ASO_API_BASE !== undefined ? window.ASO_API_BASE : 'https://seoapplisting.gregoryhogan.workers.dev';
+
+// YOUR STRIPE PAYMENT LINK
+const PAYMENT_LINK = 'https://buy.stripe.com/test_8x2dR9eBC30Ibhz5c81Fe01';
+
+// State management
+const State = {
+  _key: 'aso_optimizer_state',
+  save(data) { try { sessionStorage.setItem(this._key, JSON.stringify(data)); } catch {} },
+  load() { try { return JSON.parse(sessionStorage.getItem(this._key) || 'null'); } catch { return null; } },
+  clear() { try { sessionStorage.removeItem(this._key); } catch {} },
+};
+
+// DOM helpers
+const $ = id => document.getElementById(id);
+const show = id => { const el = $(id); if (el) el.classList.remove('hidden'); };
+const hide = id => { const el = $(id); if (el) el.classList.add('hidden'); };
+function setText(id, text) { const el = $(id); if (el) el.textContent = text || ''; }
+
+function showToast(msg = 'Copied to clipboard ✓') {
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2200);
+}
+
+// Clipboard
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('.copy-btn');
+  if (!btn) return;
+  const targetId = btn.dataset.target;
+  const el = $(targetId);
+  if (!el) return;
+  const text = el.dataset.copyText || el.textContent.trim();
   try {
-    body = await request.json();
+    await navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard ✓');
   } catch {
-    return errorResponse('Request body must be valid JSON');
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Copied ✓');
   }
+});
 
-  const { metadata, sessionId, paymentVerified } = body ?? {};
+// Tab switching (main tabs)
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['optimized', 'diff', 'keywords'].forEach(t => {
+      const el = $(`tab-${t}`);
+      if (el) el.classList.toggle('hidden', t !== btn.dataset.tab);
+    });
+  });
+});
 
-  if (!metadata || typeof metadata !== 'object') {
-    return errorResponse('metadata object is required');
-  }
-
-  const markets = getMarketRecommendations(metadata.primaryGenre);
-
-  // Free tier: return only market recommendations (no AI call)
-  if (!sessionId && !paymentVerified) {
-    return jsonResponse({ markets, premium: false });
-  }
-
-  // Premium tier: verify payment
-  let isPaid = false;
-  
-  if (sessionId) {
-    try {
-      const stripeRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
-        headers: { 'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}` },
-      });
-      
-      if (stripeRes.ok) {
-        const session = await stripeRes.json();
-        isPaid = session.payment_status === 'paid';
-      }
-    } catch (err) {
-      console.error('Stripe verification error:', err);
-      isPaid = false;
+// Description expand
+const expandBtn = $('expandDesc');
+if (expandBtn) {
+  expandBtn.addEventListener('click', () => {
+    const desc = $('appDescription');
+    const btn = $('expandDesc');
+    if (!desc || !btn) return;
+    if (desc.classList.contains('expanded')) {
+      desc.classList.remove('expanded');
+      btn.textContent = 'Show more';
+    } else {
+      desc.classList.add('expanded');
+      btn.textContent = 'Show less';
     }
-  } else if (paymentVerified === true) {
-    isPaid = true;
-  }
-  
-  if (!isPaid) {
-    return errorResponse('Payment not confirmed. Complete checkout before accessing premium results.', 402);
-  }
-
-  // Generate reports for ALL markets in parallel
-  const allReports = [];
-  
-  for (const market of markets) {
-    const locale = market.locale;
-    const marketName = market.market;
-    
-    // Call DeepSeek for each market
-    let aiResponse;
-    try {
-      const deepseekRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${env.DEEPSEEK_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert App Store Optimization specialist. Always return valid JSON only — no markdown, no extra text.',
-            },
-            {
-              role: 'user',
-              content: buildASOPrompt(metadata, locale, marketName),
-            },
-          ],
-          temperature: 0.6,
-          max_tokens: 4000,
-        }),
-      });
-
-      if (!deepseekRes.ok) {
-        console.error(`DeepSeek API error for ${marketName}:`, deepseekRes.status);
-        continue;
-      }
-
-      aiResponse = await deepseekRes.json();
-      const aiContent = aiResponse.choices?.[0]?.message?.content ?? '';
-      const optimized = parseAIResponse(aiContent);
-      
-      allReports.push({
-        market: marketName,
-        locale: locale,
-        flag: market.flag,
-        ...optimized
-      });
-      
-    } catch (err) {
-      console.error(`DeepSeek fetch error for ${marketName}:`, err);
-    }
-  }
-
-  return jsonResponse({
-    markets,
-    reports: allReports,
-    premium: true,
   });
 }
+
+// Word diff function
+function wordDiff(original, optimized) {
+  const origWords = (original || '').split(/(\s+)/);
+  const optWords = (optimized || '').split(/(\s+)/);
+  const m = origWords.length, n = optWords.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = origWords[i - 1] === optWords[j - 1]
+        ? dp[i - 1][j - 1] + 1
+        : Math.max(dp[i - 1][j], dp[i][j - 1]);
+    }
+  }
+  const origHtml = [], optHtml = [];
+  let i = m, j = n;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && origWords[i - 1] === optWords[j - 1]) {
+      origHtml.unshift(`<span class="diff-equal">${escHtml(origWords[i - 1])}</span>`);
+      optHtml.unshift(`<span class="diff-equal">${escHtml(optWords[j - 1])}</span>`);
+      i--; j--;
+    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+      optHtml.unshift(`<span class="diff-added">${escHtml(optWords[j - 1])}</span>`);
+      j--;
+    } else {
+      origHtml.unshift(`<span class="diff-removed">${escHtml(origWords[i - 1])}</span>`);
+      i--;
+    }
+  }
+  return { origHtml: origHtml.join(''), optHtml: optHtml.join('') };
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Render market cards
+function renderMarketCards(markets) {
+  const container = $('marketCards');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!markets) return;
+  
+  markets.forEach((m) => {
+    const card = document.createElement('div');
+    card.className = 'border border-apple-border rounded-2xl p-4 bg-gray-50';
+    card.innerHTML = `
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-2xl">${m.flag || '🌍'}</span>
+        <span class="font-semibold text-sm text-apple-text">${escHtml(m.market)}</span>
+      </div>
+      <p class="text-xs text-apple-gray leading-snug">${escHtml(m.reason || 'Top market for your app')}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Store all market reports
+let allReports = [];
+let currentMarketIndex = 0;
+
+// Display report for a specific market
+function displayMarketReport(index) {
+  if (!allReports[index]) return;
+  
+  const report = allReports[index];
+  
+  setText('resultMarketFlag', report.flag || '🌍');
+  setText('resultMarketName', report.market || '');
+  setText('resultLocale', report.locale || '');
+  
+  const titleText = report.title || '';
+  setText('resultTitle', titleText);
+  const titleEl = $('resultTitle');
+  if (titleEl) titleEl.dataset.copyText = titleText;
+  setText('resultTitleCount', `${titleText.length}/30 characters`);
+  
+  const subtitleText = report.subtitle || '';
+  setText('resultSubtitle', subtitleText);
+  const subtitleEl = $('resultSubtitle');
+  if (subtitleEl) subtitleEl.dataset.copyText = subtitleText;
+  setText('resultSubtitleCount', `${subtitleText.length}/30 characters`);
+  
+  const descText = report.description || '';
+  setText('resultDescription', descText);
+  const descEl = $('resultDescription');
+  if (descEl) descEl.dataset.copyText = descText;
+  
+  // Market Analysis
+  const marketAnalysisContainer = $('marketAnalysisContainer');
+  const marketAnalysisContent = $('marketAnalysisContent');
+  if (report.market_analysis && marketAnalysisContent) {
+    marketAnalysisContent.innerHTML = `
+      <div class="space-y-3">
+        <div><strong class="text-sm">Top Keywords:</strong> ${(report.market_analysis.top_keywords || []).map(k => `<span class="keyword-tag">${escHtml(k)}</span>`).join('')}</div>
+        <div><strong class="text-sm">Cultural Considerations:</strong><br><span class="text-sm">${escHtml(report.market_analysis.cultural_considerations || 'N/A')}</span></div>
+        <div><strong class="text-sm">User Expectations:</strong><br><span class="text-sm">${escHtml(report.market_analysis.user_expectations || 'N/A')}</span></div>
+        <div><strong class="text-sm">Competitor Insights:</strong><br><span class="text-sm">${escHtml(report.market_analysis.competitor_insights || 'N/A')}</span></div>
+      </div>
+    `;
+    marketAnalysisContainer.classList.remove('hidden');
+  } else if (marketAnalysisContainer) {
+    marketAnalysisContainer.classList.add('hidden');
+  }
+  
+  // ASO Recommendations
+  const asoContainer = $('asoRecommendationsContainer');
+  const asoContent = $('asoRecommendationsContent');
+  if (report.aso_recommendations && asoContent) {
+    asoContent.innerHTML = `
+      <div class="space-y-3">
+        <div><strong class="text-sm">Screenshot Text Suggestions:</strong><br>
+          ${(report.aso_recommendations.screenshot_text || []).map(t => `<span class="keyword-tag">${escHtml(t)}</span>`).join('')}
+        </div>
+        <div><strong class="text-sm">Visual Localization:</strong><br><span class="text-sm">${escHtml(report.aso_recommendations.visual_localization || 'N/A')}</span></div>
+        <div><strong class="text-sm">Pricing Strategy:</strong><br><span class="text-sm">${escHtml(report.aso_recommendations.pricing_strategy || 'N/A')}</span></div>
+        <div><strong class="text-sm">Launch Timing:</strong><br><span class="text-sm">${escHtml(report.aso_recommendations.launch_timing || 'N/A')}</span></div>
+      </div>
+    `;
+    asoContainer.classList.remove('hidden');
+  } else if (asoContainer) {
+    asoContainer.classList.add('hidden');
+  }
+  
+  // Performance Predictions
+  const perfContainer = $('performanceContainer');
+  const perfContent = $('performanceContent');
+  if (report.performance_predictions && perfContent) {
+    perfContent.innerHTML = `
+      <div class="space-y-3">
+        <div><strong class="text-sm">Keyword Ranking Potential:</strong><br><span class="text-sm">${escHtml(report.performance_predictions.keyword_ranking_potential || 'N/A')}</span></div>
+        <div><strong class="text-sm">Suggested Categories:</strong><br>${(report.performance_predictions.suggested_categories || []).map(c => `<span class="keyword-tag">${escHtml(c)}</span>`).join('')}</div>
+        <div><strong class="text-sm">Age Rating Notes:</strong><br><span class="text-sm">${escHtml(report.performance_predictions.age_rating_notes || 'N/A')}</span></div>
+      </div>
+    `;
+    perfContainer.classList.remove('hidden');
+  } else if (perfContainer) {
+    perfContainer.classList.add('hidden');
+  }
+  
+  // Diff view
+  const origTitle = window.currentMetadata?.name || '';
+  const origSubtitle = window.currentMetadata?.subtitle || '';
+  const origDesc = window.currentMetadata?.description || '';
+  
+  const tDiff = wordDiff(origTitle, titleText);
+  const diffTitleOrig = $('diffTitleOrig');
+  const diffTitleOpt = $('diffTitleOpt');
+  if (diffTitleOrig) diffTitleOrig.innerHTML = tDiff.origHtml || escHtml(origTitle);
+  if (diffTitleOpt) diffTitleOpt.innerHTML = tDiff.optHtml || escHtml(titleText);
+  
+  const sDiff = wordDiff(origSubtitle, subtitleText);
+  const diffSubtitleOrig = $('diffSubtitleOrig');
+  const diffSubtitleOpt = $('diffSubtitleOpt');
+  if (diffSubtitleOrig) diffSubtitleOrig.innerHTML = sDiff.origHtml || escHtml(origSubtitle) || '<em class="text-apple-gray/60">No subtitle</em>';
+  if (diffSubtitleOpt) diffSubtitleOpt.innerHTML = sDiff.optHtml || escHtml(subtitleText) || '<em class="text-apple-gray/60">No subtitle</em>';
+  
+  const diffDescOrig = $('diffDescOrig');
+  const diffDescOpt = $('diffDescOpt');
+  if (diffDescOrig) diffDescOrig.textContent = origDesc;
+  if (diffDescOpt) diffDescOpt.textContent = descText;
+  
+  // Keywords
+  const keywordsRaw = report.keywords || '';
+  const keywordList = keywordsRaw.split(/[,、，]/).map(k => k.trim()).filter(Boolean);
+  const tagsContainer = $('keywordTags');
+  if (tagsContainer) {
+    tagsContainer.innerHTML = '';
+    keywordList.forEach(kw => {
+      const span = document.createElement('span');
+      span.className = 'bg-apple-lightGray text-apple-text text-xs font-medium rounded-full px-3 py-1.5';
+      span.textContent = kw;
+      tagsContainer.appendChild(span);
+    });
+  }
+  const resultKeywords = $('resultKeywords');
+  if (resultKeywords) resultKeywords.dataset.copyText = keywordList.join(', ');
+  
+  const charCount = keywordList.join(',').replace(/\s/g, '').length;
+  setText('keywordCharCount', `${charCount}/100 characters${charCount > 100 ? ' — ⚠️ exceeds limit' : ''}`);
+  
+  const changesBox = $('changesBox');
+  const changesText = $('changesText');
+  if (report.changes && changesText) {
+    setText('changesText', report.changes);
+    changesBox.classList.remove('hidden');
+  } else if (changesBox) {
+    changesBox.classList.add('hidden');
+  }
+}
+
+// Create market tabs
+function createMarketTabs(reports) {
+  const tabsContainer = $('marketTabs');
+  if (!tabsContainer) return;
+  
+  tabsContainer.innerHTML = '';
+  reports.forEach((report, index) => {
+    const tab = document.createElement('button');
+    tab.className = `flex-1 py-3 text-sm font-medium text-center market-tab ${index === 0 ? 'active' : ''}`;
+    tab.innerHTML = `${report.flag || '🌍'} ${report.market || 'Market'}`;
+    tab.onclick = () => {
+      document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentMarketIndex = index;
+      displayMarketReport(index);
+    };
+    tabsContainer.appendChild(tab);
+  });
+}
+
+// Populate results with multiple markets
+function populateMultiMarketResults(data, metadata) {
+  window.currentMetadata = metadata;
+  allReports = data.reports || [];
+  
+  if (allReports.length === 0) {
+    showToast('No report data received');
+    return;
+  }
+  
+  createMarketTabs(allReports);
+  displayMarketReport(0);
+  show('resultsSection');
+}
+
+// Download complete report
+function downloadCompleteReport() {
+  if (!allReports.length || !window.currentMetadata) return;
+  
+  const metadata = window.currentMetadata;
+  const reports = allReports;
+  
+  let reportHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>ASO Complete Report - ${metadata.name}</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;color:#1d1d1f;max-width:1000px;margin:0 auto;padding:40px 20px}
+  h1{color:#0071e3;border-bottom:2px solid #0071e3;padding-bottom:10px}
+  h2{color:#1d1d1f;margin-top:30px;border-left:4px solid #0071e3;padding-left:15px}
+  .market-section{background:#f5f5f7;padding:25px;border-radius:16px;margin:30px 0}
+  .market-header{font-size:24px;font-weight:600;margin-bottom:20px}
+  .section{background:white;padding:20px;border-radius:12px;margin:20px 0}
+  .label{font-size:12px;font-weight:600;text-transform:uppercase;color:#86868b;letter-spacing:.5px}
+  .content{font-size:14px;margin-top:8px;white-space:pre-line}
+  .keywords{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .keyword{background:#e8e8ed;padding:6px 12px;border-radius:20px;font-size:12px}
+  footer{margin-top:50px;text-align:center;font-size:12px;color:#86868b;border-top:1px solid #d2d2d6;padding-top:20px}
+</style>
+</head>
+<body>
+  <h1>🌍 ASO Complete Localization Report</h1>
+  <p><strong>Original App:</strong> ${escHtml(metadata.name)}<br>
+  <strong>Developer:</strong> ${escHtml(metadata.developer || 'N/A')}<br>
+  <strong>Genre:</strong> ${escHtml(metadata.primaryGenre || 'N/A')}</p>
+  <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>`;
+  
+  reports.forEach(report => {
+    reportHtml += `
+      <div class="market-section">
+        <div class="market-header">${report.flag || '🌍'} ${escHtml(report.market)} (${report.locale || ''})</div>
+        
+        <div class="section">
+          <div class="label">Optimized Title (${(report.title || '').length}/30 chars)</div>
+          <div class="content"><strong>${escHtml(report.title || '')}</strong></div>
+        </div>
+        
+        <div class="section">
+          <div class="label">Optimized Subtitle (${(report.subtitle || '').length}/30 chars)</div>
+          <div class="content">${escHtml(report.subtitle || '')}</div>
+        </div>
+        
+        <div class="section">
+          <div class="label">Optimized Description</div>
+          <div class="content">${escHtml(report.description || '')}</div>
+        </div>
+        
+        <div class="section">
+          <div class="label">Keyword Suggestions</div>
+          <div class="keywords">
+            ${(report.keywords || '').split(/[,、，]/).map(k => `<span class="keyword">${escHtml(k.trim())}</span>`).join('')}
+          </div>
+        </div>
+        
+        ${report.changes ? `<div class="section"><div class="label">AI Notes</div><div class="content">${escHtml(report.changes)}</div></div>` : ''}
+      </div>
+    `;
+  });
+  
+  reportHtml += `<footer>Generated by nagoh.us ASO Optimizer • Powered by DeepSeek-V3<br>Includes AI-optimized localizations for ${reports.length} markets</footer></body></html>`;
+  
+  const blob = new Blob([reportHtml], { type: 'text/html' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = `ASO_Complete_Report_${metadata.name.replace(/[^a-z0-9]/gi, '_')}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast('Complete 3-market report downloaded!');
+}
+
+// API helper
+async function apiPost(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+  return json;
+}
+
+// Lookup form
+const lookupForm = $('lookupForm');
+if (lookupForm) {
+  lookupForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const url = $('appUrlInput').value.trim();
+    if (!url) return;
+    hide('lookupError');
+    hide('appPreview');
+    hide('marketsSection');
+    hide('resultsSection');
+    hide('unlockingSection');
+    const lookupIcon = $('lookupIcon');
+    const lookupSpinner = $('lookupSpinner');
+    const lookupBtn = $('lookupBtn');
+    if (lookupIcon) lookupIcon.classList.add('hidden');
+    if (lookupSpinner) lookupSpinner.classList.remove('hidden');
+    if (lookupBtn) lookupBtn.disabled = true;
+    try {
+      const data = await apiPost('/api/lookup', { appUrl: url });
+      State.save({ metadata: data, appUrl: url });
+      const appIcon = $('appIcon');
+      if (appIcon) appIcon.src = data.iconUrl;
+      setText('appName', data.name);
+      setText('appSubtitle', data.subtitle || '');
+      setText('appGenre', data.primaryGenre || data.category || '');
+      setText('appDev', data.developer ? `by ${data.developer}` : '');
+      setText('appRating', data.rating ? `★ ${data.rating.toFixed(1)} (${data.ratingCount.toLocaleString()})` : '');
+      setText('appVersion', data.version ? `v${data.version}` : '');
+      setText('appDescription', data.description || '');
+      const descEl = $('appDescription');
+      const expandDescBtn = $('expandDesc');
+      if (data.description && data.description.length > 300) {
+        if (expandDescBtn) {
+          expandDescBtn.textContent = 'Show more';
+          show('expandDesc');
+        }
+      } else {
+        hide('expandDesc');
+      }
+      if (descEl) descEl.classList.remove('expanded');
+      show('appPreview');
+      
+      const optData = await apiPost('/api/optimize', { metadata: data });
+      renderMarketCards(optData.markets || []);
+      show('marketsSection');
+    } catch (err) {
+      const errEl = $('lookupError');
+      if (errEl) {
+        errEl.textContent = err.message || 'Something went wrong. Please try again.';
+        show('lookupError');
+      }
+    } finally {
+      if (lookupIcon) lookupIcon.classList.remove('hidden');
+      if (lookupSpinner) lookupSpinner.classList.add('hidden');
+      if (lookupBtn) lookupBtn.disabled = false;
+    }
+  });
+}
+
+// Get premium report button
+const getPremiumBtn = $('getPremiumBtn');
+if (getPremiumBtn) {
+  getPremiumBtn.addEventListener('click', async () => {
+    const state = State.load();
+    if (!state?.metadata) {
+      showToast('Please analyze an app first');
+      return;
+    }
+    
+    State.save({ ...state, pendingPayment: true });
+    window.location.href = PAYMENT_LINK;
+  });
+}
+
+// Handle payment return
+async function handlePaymentReturn() {
+  const params = new URLSearchParams(location.search);
+  const sessionId = params.get('session_id');
+  const cancelled = params.get('cancelled');
+  
+  if (cancelled) {
+    history.replaceState({}, '', window.location.pathname);
+    showToast('Checkout cancelled — no charge made.');
+    restoreSessionState();
+    return;
+  }
+  
+  if (!sessionId) {
+    restoreSessionState();
+    return;
+  }
+  
+  history.replaceState({}, '', window.location.pathname);
+  
+  const state = State.load();
+  if (!state?.metadata || !state.pendingPayment) {
+    showToast('Session expired. Please search again.');
+    return;
+  }
+  
+  show('unlockingSection');
+  restoreAppPreview(state.metadata);
+  
+  try {
+    const data = await apiPost('/api/optimize', {
+      metadata: state.metadata,
+      sessionId: sessionId,
+    });
+    
+    hide('unlockingSection');
+    State.save({ ...state, pendingPayment: false, reportData: data });
+    
+    if (!data.premium) {
+      showToast('Payment verified but premium report unavailable. Contact support.');
+      return;
+    }
+    
+    populateMultiMarketResults(data, state.metadata);
+    const resultsSection = $('resultsSection');
+    if (resultsSection) resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+  } catch (err) {
+    hide('unlockingSection');
+    alert(`Could not load premium report: ${err.message}`);
+    restoreSessionState();
+  }
+}
+
+function restoreAppPreview(metadata) {
+  if (!metadata) return;
+  const appIcon = $('appIcon');
+  if (appIcon) appIcon.src = metadata.iconUrl || '';
+  setText('appName', metadata.name || '');
+  setText('appSubtitle', metadata.subtitle || '');
+  setText('appGenre', metadata.primaryGenre || metadata.category || '');
+  setText('appDev', metadata.developer ? `by ${metadata.developer}` : '');
+  setText('appRating', metadata.rating ? `★ ${metadata.rating.toFixed(1)} (${(metadata.ratingCount || 0).toLocaleString()})` : '');
+  setText('appVersion', metadata.version ? `v${metadata.version}` : '');
+  setText('appDescription', metadata.description || '');
+  const descEl = $('appDescription');
+  const expandDescBtn = $('expandDesc');
+  if (metadata.description && metadata.description.length > 300) {
+    if (expandDescBtn) {
+      expandDescBtn.textContent = 'Show more';
+      show('expandDesc');
+    }
+  } else {
+    hide('expandDesc');
+  }
+  if (descEl) descEl.classList.remove('expanded');
+  show('appPreview');
+}
+
+function restoreSessionState() {
+  const state = State.load();
+  if (!state?.metadata) return;
+  restoreAppPreview(state.metadata);
+  apiPost('/api/optimize', { metadata: state.metadata })
+    .then(data => {
+      renderMarketCards(data.markets || []);
+      show('marketsSection');
+    })
+    .catch(() => {});
+}
+
+// Download button handler
+const downloadBtn = $('downloadReportBtn');
+if (downloadBtn) {
+  downloadBtn.addEventListener('click', downloadCompleteReport);
+}
+
+// Boot
+handlePaymentReturn();
+</script>
+</body>
+</html>
