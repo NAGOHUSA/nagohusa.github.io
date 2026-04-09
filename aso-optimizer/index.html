@@ -37,6 +37,16 @@
     /* Truncated description with expand */
     .description-text { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
     .description-text.expanded { display: block; -webkit-line-clamp: unset; }
+
+    /* Download button */
+    .download-btn {
+      background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+      transition: all 0.2s ease;
+    }
+    .download-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,113,227,0.3);
+    }
   </style>
 </head>
 
@@ -166,7 +176,7 @@
       <svg class="w-8 h-8 spinner text-apple-blue mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
       </svg>
-      <p class="text-sm font-medium text-apple-text">Verifying payment &amp; generating your premium report…</p>
+      <p class="text-sm font-medium text-apple-text">Generating your premium report…</p>
       <p class="text-xs text-apple-gray mt-1">This usually takes 10–15 seconds.</p>
     </section>
 
@@ -183,11 +193,19 @@
       <!-- Tab: Optimized ─────────────────────────────────────────── -->
       <div id="tab-optimized" class="bg-white rounded-3xl shadow-card p-6 sm:p-8 space-y-6">
 
-        <!-- Market badge -->
-        <div class="flex items-center gap-2">
-          <span id="resultMarketFlag" class="text-2xl"></span>
-          <span id="resultMarketName" class="text-sm font-semibold text-apple-text"></span>
-          <span id="resultLocale" class="text-xs text-apple-gray bg-apple-lightGray rounded-full px-2 py-0.5"></span>
+        <!-- Download button row -->
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span id="resultMarketFlag" class="text-2xl"></span>
+            <span id="resultMarketName" class="text-sm font-semibold text-apple-text"></span>
+            <span id="resultLocale" class="text-xs text-apple-gray bg-apple-lightGray rounded-full px-2 py-0.5"></span>
+          </div>
+          <button id="downloadReportBtn" class="download-btn text-white text-sm font-medium rounded-xl px-4 py-2 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download Report (PDF)
+          </button>
         </div>
 
         <!-- Title -->
@@ -498,6 +516,90 @@ function populateResults(data, metadata) {
   const charCount = keywordList.join(',').replace(/\s/g, '').length;
   setText('keywordCharCount', `${charCount}/100 characters (commas included, spaces excluded — as counted by App Store Connect)${charCount > 100 ? ' — ⚠️ exceeds limit, remove some keywords' : ''}`);
   show('resultsSection');
+  
+  // Store report data for PDF download
+  window.currentReportData = { metadata, opt, market: { name: market, flag: marketObj.flag, locale } };
+}
+
+// ── PDF Download Function ─────────────────────────────────────────────────────
+function downloadReport() {
+  if (!window.currentReportData) return;
+  
+  const { metadata, opt, market } = window.currentReportData;
+  
+  // Create HTML for PDF
+  const reportHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>ASO Report - ${metadata.name}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #1d1d1f; max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        h1 { color: #0071e3; border-bottom: 2px solid #0071e3; padding-bottom: 10px; }
+        h2 { color: #1d1d1f; margin-top: 30px; }
+        .market-badge { background: #f5f5f7; padding: 10px; border-radius: 12px; display: inline-block; margin: 10px 0; }
+        .section { background: #f5f5f7; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #86868b; letter-spacing: 0.5px; }
+        .content { font-size: 14px; margin-top: 8px; white-space: pre-line; }
+        .keywords { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .keyword { background: #e8e8ed; padding: 6px 12px; border-radius: 20px; font-size: 12px; }
+        footer { margin-top: 50px; text-align: center; font-size: 12px; color: #86868b; border-top: 1px solid #d2d2d6; padding-top: 20px; }
+      </style>
+    </head>
+    <body>
+      <h1>ASO Optimization Report</h1>
+      <div class="market-badge">
+        <strong>Target Market:</strong> ${market.flag} ${market.name} (${market.locale})
+      </div>
+      
+      <div class="section">
+        <div class="label">Original App Name</div>
+        <div class="content">${escHtml(metadata.name)}</div>
+      </div>
+      
+      <div class="section">
+        <div class="label">Optimized Title (${opt.title?.length || 0}/30 chars)</div>
+        <div class="content"><strong>${escHtml(opt.title || '')}</strong></div>
+      </div>
+      
+      <div class="section">
+        <div class="label">Optimized Subtitle (${opt.subtitle?.length || 0}/30 chars)</div>
+        <div class="content">${escHtml(opt.subtitle || '')}</div>
+      </div>
+      
+      <div class="section">
+        <div class="label">Optimized Description</div>
+        <div class="content">${escHtml(opt.description || '')}</div>
+      </div>
+      
+      <div class="section">
+        <div class="label">Keyword Suggestions</div>
+        <div class="keywords">
+          ${(opt.keywords || '').split(/[,、，]/).map(k => `<span class="keyword">${escHtml(k.trim())}</span>`).join('')}
+        </div>
+      </div>
+      
+      ${opt.changes ? `<div class="section"><div class="label">AI Notes</div><div class="content">${escHtml(opt.changes)}</div></div>` : ''}
+      
+      <footer>
+        Generated by nagoh.us ASO Optimizer • Powered by DeepSeek-V3
+      </footer>
+    </body>
+    </html>
+  `;
+  
+  // Create blob and download
+  const blob = new Blob([reportHtml], { type: 'text/html' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = `ASO_Report_${metadata.name.replace(/[^a-z0-9]/gi, '_')}_${market.name}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast('Report downloaded!');
 }
 
 // ── API helper ────────────────────────────────────────────────────────────────
@@ -584,6 +686,7 @@ $('getPremiumBtn').addEventListener('click', async () => {
 async function handlePaymentReturn() {
   const params = new URLSearchParams(location.search);
   const paymentSuccess = params.get('payment_success');
+  const reportReady = params.get('report_ready');
   const cancelled = params.get('cancelled');
   
   if (cancelled) {
@@ -623,7 +726,7 @@ async function handlePaymentReturn() {
     hide('unlockingSection');
     
     // Clear pending flag
-    State.save({ ...state, pendingPayment: false });
+    State.save({ ...state, pendingPayment: false, reportData: data });
     
     if (!data.premium) {
       showToast('Payment verified but premium report unavailable. Contact support.');
@@ -633,6 +736,9 @@ async function handlePaymentReturn() {
     renderMarketCards(data.markets || []);
     show('marketsSection');
     populateResults(data, state.metadata);
+    
+    // Scroll to results
+    $('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     
   } catch (err) {
     hide('unlockingSection');
@@ -675,6 +781,13 @@ function restoreSessionState() {
     })
     .catch(() => {});
 }
+
+// ── Download button handler ──────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'downloadReportBtn' || e.target.closest('#downloadReportBtn')) {
+    downloadReport();
+  }
+});
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 handlePaymentReturn();
