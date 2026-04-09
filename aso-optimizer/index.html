@@ -283,10 +283,20 @@
         </div>
       </div>
       
-      <!-- Add-ons Section -->
+      <!-- Add-ons Section (shown when user wants to customize 3-market bundle) -->
       <div id="languageAddons" class="border-t border-gray-100 pt-8 mt-8 hidden">
-        <h3 class="font-bold text-lg mb-4">➕ Add More Markets (Optional)</h3>
-        <p class="text-sm text-gray-600 mb-4">Add additional markets for only $5 each</p>
+        <h3 class="font-bold text-lg mb-4">➕ Customize Your 3-Market Bundle</h3>
+        <p class="text-sm text-gray-600 mb-4">Add more markets or change selection (additional markets $5 each)</p>
+        
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-gray-600 block mb-2">Base Markets (included in $12):</label>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇯🇵 Japan</span>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇩🇪 Germany</span>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇧🇷 Brazil</span>
+          </div>
+        </div>
+        
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="france" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇫🇷 France (+$5)</span></label>
           <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="spain" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇪🇸 Spain (+$5)</span></label>
@@ -297,12 +307,17 @@
           <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="australia" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇦🇺 Australia (+$5)</span></label>
           <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="uk" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇬🇧 United Kingdom (+$5)</span></label>
         </div>
+        
         <div id="priceBreakdown" class="bg-gray-50 rounded-xl p-4 mb-4">
           <div class="flex justify-between text-sm mb-2"><span>Base Package (3 markets)</span><span>$12</span></div>
           <div id="addonsBreakdown" class="text-sm text-gray-600"></div>
           <div class="border-t pt-2 mt-2 flex justify-between font-bold"><span>Total</span><span id="totalPrice">$12</span></div>
         </div>
-        <button id="checkoutWithAddons" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">Continue to Checkout → <span id="checkoutTotal" class="font-bold">$12</span></button>
+        
+        <div class="flex gap-3">
+          <button id="cancelAddons" class="flex-1 border border-gray-300 text-gray-700 rounded-xl py-3 font-medium hover:bg-gray-50 transition">Cancel</button>
+          <button id="checkoutWithAddons" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">Checkout → <span id="checkoutTotal" class="font-bold">$12</span></button>
+        </div>
       </div>
       
       <div class="mt-6 text-center"><p class="text-xs text-gray-500">✓ 30-day money-back guarantee • ✓ Secure payment via Stripe • ✓ Instant delivery</p></div>
@@ -350,7 +365,7 @@
     // Configuration
     const API_BASE = 'https://seoapplisting.gregoryhogan.workers.dev';
     
-    // Payment Links - DIRECT STRIPE LINKS (no API calls)
+    // Payment Links - DIRECT STRIPE LINKS
     const PAYMENT_LINKS = {
       single: 'https://buy.stripe.com/test_8x2dR9eBC30Ibhz5c81Fe01',
       three: 'https://buy.stripe.com/test_fZu9AT79aeJq3P7gUQ1Fe02',
@@ -515,7 +530,7 @@
       }
     });
     
-    // Package selection handlers
+    // SINGLE MARKET - Direct to Stripe Payment Link
     document.getElementById('singleMarketBtn')?.addEventListener('click', async () => {
       const state = State.load();
       if (!state?.metadata) { showToast('Please analyze an app first'); return; }
@@ -525,14 +540,17 @@
       window.location.href = PAYMENT_LINKS.single;
     });
     
-    document.getElementById('threeMarketBtn')?.addEventListener('click', async () => {
-      const state = State.load();
-      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
-      const baseMarkets = [{ market: 'Japan', locale: 'ja', flag: '🇯🇵' }, { market: 'Germany', locale: 'de', flag: '🇩🇪' }, { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' }];
-      State.save({ ...state, pendingPayment: true, packageType: 'three', marketsToGenerate: baseMarkets, totalPrice: 12 });
-      window.location.href = PAYMENT_LINKS.three;
-    });
+    // THREE MARKET BUNDLE - Show add-ons customization first
+    const threeMarketBtn = document.getElementById('threeMarketBtn');
+    if (threeMarketBtn) {
+      threeMarketBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAddonsSection(true);
+        document.getElementById('languageAddons')?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
     
+    // ENTERPRISE - Direct to Stripe Payment Link
     document.getElementById('enterpriseBtn')?.addEventListener('click', async () => {
       const state = State.load();
       if (!state?.metadata) { showToast('Please analyze an app first'); return; }
@@ -558,7 +576,9 @@
     
     function toggleAddonsSection(show) {
       const addonsSection = document.getElementById('languageAddons');
-      if (addonsSection) show ? addonsSection.classList.remove('hidden') : addonsSection.classList.add('hidden');
+      if (addonsSection) {
+        show ? addonsSection.classList.remove('hidden') : addonsSection.classList.add('hidden');
+      }
     }
     
     function initAddonCheckboxes() {
@@ -570,6 +590,14 @@
         });
       });
     }
+    
+    // Cancel add-ons
+    document.getElementById('cancelAddons')?.addEventListener('click', () => {
+      toggleAddonsSection(false);
+      selectedAddons = [];
+      document.querySelectorAll('.addon-checkbox').forEach(cb => cb.checked = false);
+      updatePriceBreakdown();
+    });
     
     async function checkoutWithAddons() {
       const state = State.load();
@@ -592,11 +620,6 @@
     
     document.getElementById('checkoutWithAddons')?.addEventListener('click', checkoutWithAddons);
     initAddonCheckboxes();
-    
-    const threeMarketBtn = document.getElementById('threeMarketBtn');
-    if (threeMarketBtn) {
-      threeMarketBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAddonsSection(true); document.getElementById('languageAddons')?.scrollIntoView({ behavior: 'smooth' }); });
-    }
     
     // Handle payment return
     async function handlePaymentReturn() {
