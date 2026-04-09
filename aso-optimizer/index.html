@@ -38,16 +38,6 @@
       box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
     }
     
-    .pulse-animation {
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    
     .spinner {
       animation: spin 0.8s linear infinite;
     }
@@ -74,15 +64,6 @@
       border-bottom: 3px solid #667eea;
       color: #667eea;
       font-weight: 600;
-    }
-    
-    .sample-card {
-      transition: all 0.3s ease;
-    }
-    
-    .sample-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 30px 40px -20px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
@@ -125,7 +106,7 @@
       <span class="gradient-text">Global</span>
     </h1>
     <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-      Professional localization for App Store & Google Play. Get your app featured in Japan, Germany, and Brazil — starting at just $5.
+      Professional localization for App Store & Google Play. Get your app featured in Japan, Germany, Brazil, and 20+ other markets.
     </p>
     
     <div class="flex flex-wrap gap-4 justify-center mb-12">
@@ -142,11 +123,11 @@
       <div class="flex items-center gap-2">✓ Ready in Minutes!</div>
       <div class="flex items-center gap-2">✓ Optimized for Apple & Google</div>
       <div class="flex items-center gap-2">✓ 30-day guarantee</div>
-      <div class="flex items-center gap-2">✓ Top 3 markets included</div>
+      <div class="flex items-center gap-2">✓ 20+ Languages Available</div>
     </div>
   </section>
 
-  <!-- Sample Report Modal (Detailed Preview) -->
+  <!-- Sample Report Modal -->
   <div id="sampleModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4" onclick="closeSampleModal(event)">
     <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
       <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
@@ -158,7 +139,6 @@
       </div>
       
       <div class="p-6">
-        <!-- Sample App Header -->
         <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl mb-6">
           <div class="flex items-center gap-4">
             <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-md">📱</div>
@@ -173,269 +153,50 @@
           </div>
         </div>
         
-        <!-- Executive Summary -->
         <div class="mb-8">
           <h4 class="font-bold text-lg mb-3 flex items-center gap-2">📋 Executive Summary</h4>
           <div class="grid md:grid-cols-3 gap-4">
-            <div class="bg-green-50 p-3 rounded-lg">
-              <div class="text-2xl font-bold text-green-600">+340%</div>
-              <div class="text-xs text-gray-600">Expected Download Increase</div>
-            </div>
-            <div class="bg-blue-50 p-3 rounded-lg">
-              <div class="text-2xl font-bold text-blue-600">Top 10</div>
-              <div class="text-xs text-gray-600">Keyword Rankings Expected</div>
-            </div>
-            <div class="bg-purple-50 p-3 rounded-lg">
-              <div class="text-2xl font-bold text-purple-600">3 Markets</div>
-              <div class="text-xs text-gray-600">Japan, Germany, Brazil</div>
-            </div>
+            <div class="bg-green-50 p-3 rounded-lg"><div class="text-2xl font-bold text-green-600">+340%</div><div class="text-xs text-gray-600">Expected Download Increase</div></div>
+            <div class="bg-blue-50 p-3 rounded-lg"><div class="text-2xl font-bold text-blue-600">Top 10</div><div class="text-xs text-gray-600">Keyword Rankings Expected</div></div>
+            <div class="bg-purple-50 p-3 rounded-lg"><div class="text-2xl font-bold text-purple-600">3+ Markets</div><div class="text-xs text-gray-600">Choose Your Languages</div></div>
           </div>
         </div>
         
-        <!-- Market Tabs Navigation -->
         <div class="flex border-b mb-6">
           <div class="market-sample-tab active px-4 py-2 font-medium text-purple-600 border-b-2 border-purple-600 cursor-pointer" data-market="japan">🇯🇵 Japan</div>
           <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer" data-market="germany">🇩🇪 Germany</div>
           <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer" data-market="brazil">🇧🇷 Brazil</div>
         </div>
         
-        <!-- Japan Market Content -->
         <div id="sample-japan" class="market-sample-content">
           <div class="grid md:grid-cols-2 gap-6">
             <div>
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label>
-                  <span class="text-xs text-gray-400">23/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">健康管理アプリ</div>
-                <p class="text-xs text-gray-500 mt-1">vs original "Fitness Tracker Pro"</p>
-              </div>
-              
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label>
-                  <span class="text-xs text-gray-400">28/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-medium">毎日の歩数とカロリーを記録</div>
-              </div>
-              
-              <div class="mb-6">
-                <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label>
-                <div class="flex flex-wrap gap-2">
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">フィットネス</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">ダイエット</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">健康管理</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">歩数計</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">カロリー</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">運動記録</span>
-                </div>
-                <p class="text-xs text-gray-400 mt-2">Total: 78/100 characters</p>
-              </div>
+              <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-gray-400">23/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">健康管理アプリ</div></div>
+              <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><span class="text-xs text-gray-400">28/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-medium">毎日の歩数とカロリーを記録</div></div>
+              <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">フィットネス</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">ダイエット</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">健康管理</span></div></div>
             </div>
-            
-            <div>
-              <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label>
-              <div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed">
-                <div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines (the fold):</div>
-                <p class="mb-2">健康的な生活をサポートする総合フィットネスアプリ。毎日の歩数、消費カロリー、運動記録を簡単に管理できます。</p>
-                <p class="mb-2">• 自動歩数計測で無理なく継続<br>• 50種類以上のエクササイズを収録<br>• 食事ログでカロリー計算も簡単<br>• 目標設定でモチベーション維持<br>• 週間レポートで進捗を可視化</p>
-                <p class="mt-2">今すぐダウンロードして、健康的な毎日を始めましょう！無料で基本機能を体験できます。</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-6 border-t pt-4">
-            <h5 class="font-semibold mb-3">📊 Japan Market Analysis</h5>
-            <div class="grid md:grid-cols-2 gap-4 text-sm">
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Cultural Considerations:</strong>
-                <p class="text-gray-600 mt-1">Japanese users value privacy, accuracy, and gamification. Use polite keigo (です・ます調) and avoid aggressive marketing. Focus on health tracking and prevention rather than weight loss.</p>
-              </div>
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Competitor Insights:</strong>
-                <p class="text-gray-600 mt-1">Top competitors focus on step counting and calorie tracking. Opportunity exists in sleep tracking and stress management features.</p>
-              </div>
-            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines:</div><p>健康的な生活をサポートする総合フィットネスアプリ。毎日の歩数、消費カロリー、運動記録を簡単に管理できます。</p></div></div>
           </div>
         </div>
         
-        <!-- Germany Market Content -->
         <div id="sample-germany" class="market-sample-content hidden">
           <div class="grid md:grid-cols-2 gap-6">
-            <div>
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label>
-                  <span class="text-xs text-gray-400">24/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Gesundheits-Tracker</div>
-              </div>
-              
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label>
-                  <span class="text-xs text-gray-400">27/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-medium">Schritte & Kalorien zählen leicht gemacht</div>
-              </div>
-              
-              <div class="mb-6">
-                <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label>
-                <div class="flex flex-wrap gap-2">
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Fitness</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Gesundheit</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Schrittzähler</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Abnehmen</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Kalorien</span>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label>
-              <div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed">
-                <div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines:</div>
-                <p class="mb-2">Ihre umfassende Fitness-App für ein gesünderes Leben. Einfach Schritte, Kalorien und Aktivitäten tracken.</p>
-                <p class="mb-2">• Automatische Schritterfassung<br>• 50+ Übungen mit Anleitungen<br>• Ernährungstagebuch mit Kalorienrechner<br>• Personalisierte Ziele und Erfolge<br>• Detaillierte Wochenberichte</p>
-                <p class="mt-2">Jetzt kostenlos herunterladen und Ihre Fitnessreise starten! DSGVO-konform und datensicher.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-6 border-t pt-4">
-            <h5 class="font-semibold mb-3">📊 Germany Market Analysis</h5>
-            <div class="grid md:grid-cols-2 gap-4 text-sm">
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Cultural Considerations:</strong>
-                <p class="text-gray-600 mt-1">German users prioritize data privacy (DSGVO compliance), accuracy, and efficiency. Use formal "Sie" form. Emphasize security and precision in your messaging.</p>
-              </div>
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Competitor Insights:</strong>
-                <p class="text-gray-600 mt-1">German market values detailed analytics and integration with health insurance programs. Opportunity in personalized coaching features.</p>
-              </div>
-            </div>
+            <div><div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-gray-400">24/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Gesundheits-Tracker</div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Fitness</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">Gesundheit</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines:</div><p>Ihre umfassende Fitness-App für ein gesünderes Leben. Einfach Schritte, Kalorien und Aktivitäten tracken.</p></div></div>
           </div>
         </div>
         
-        <!-- Brazil Market Content -->
         <div id="sample-brazil" class="market-sample-content hidden">
           <div class="grid md:grid-cols-2 gap-6">
-            <div>
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label>
-                  <span class="text-xs text-gray-400">22/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Monitor Fitness</div>
-              </div>
-              
-              <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                  <label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label>
-                  <span class="text-xs text-gray-400">26/30 characters</span>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 font-medium">Seus passos e calorias em um só lugar</div>
-              </div>
-              
-              <div class="mb-6">
-                <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label>
-                <div class="flex flex-wrap gap-2">
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">fitness</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">saúde</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">emagrecer</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">caminhada</span>
-                  <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">exercícios</span>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label>
-              <div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed">
-                <div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines:</div>
-                <p class="mb-2">Transforme sua saúde com o app fitness mais completo! Monitore passos, calorias e atividades diárias de forma simples.</p>
-                <p class="mb-2">• Contador automático de passos<br>• Mais de 50 exercícios guiados<br>• Diário alimentar com calculadora<br>• Metas personalizadas<br>• Relatórios semanais detalhados</p>
-                <p class="mt-2">Baixe agora grátis e comece sua jornada fitness! Resultados reais em 30 dias.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-6 border-t pt-4">
-            <h5 class="font-semibold mb-3">📊 Brazil Market Analysis</h5>
-            <div class="grid md:grid-cols-2 gap-4 text-sm">
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Cultural Considerations:</strong>
-                <p class="text-gray-600 mt-1">Brazilian users respond to warm, enthusiastic, and motivational language. Use "você" (informal you). Emphasize community features and visible results quickly.</p>
-              </div>
-              <div class="bg-purple-50 p-3 rounded-lg">
-                <strong>Competitor Insights:</strong>
-                <p class="text-gray-600 mt-1">Social features and workout challenges are highly engaging. Opportunity in localized workout content (Brazilian music, local exercises).</p>
-              </div>
-            </div>
+            <div><div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-gray-400">22/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg">Monitor Fitness</div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Keyword Suggestions</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">fitness</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">saúde</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><div class="border-l-4 border-purple-500 pl-3 mb-3 font-medium text-purple-700">📌 First 3 lines:</div><p>Transforme sua saúde com o app fitness mais completo! Monitore passos, calorias e atividades diárias de forma simples.</p></div></div>
           </div>
         </div>
         
-        <!-- ASO Recommendations Section -->
-        <div class="mt-8 border-t pt-6">
-          <h4 class="font-bold text-lg mb-4 flex items-center gap-2">💡 Professional ASO Recommendations</h4>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-blue-50 p-4 rounded-xl">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-xl">📸</span>
-                <strong>Screenshot Text Suggestions</strong>
-              </div>
-              <ul class="text-sm space-y-2 text-gray-700">
-                <li>• "Track your daily steps automatically"</li>
-                <li>• "50+ guided workouts for any level"</li>
-                <li>• "Log meals & count calories easily"</li>
-                <li>• "View your progress with beautiful charts"</li>
-                <li>• "Join challenges with friends"</li>
-              </ul>
-            </div>
-            <div class="bg-green-50 p-4 rounded-xl">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-xl">🎨</span>
-                <strong>Visual Localization Tips</strong>
-              </div>
-              <ul class="text-sm space-y-2 text-gray-700">
-                <li>• Japan: Use pastel colors, clean layouts</li>
-                <li>• Germany: Blue/white color scheme (trust)</li>
-                <li>• Brazil: Bright, energetic colors (yellow/green)</li>
-                <li>• Use local models in screenshots</li>
-                <li>• Localize measurement units (km vs miles)</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-        <!-- What's Included Footer -->
-        <div class="mt-6 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl">
-          <div class="grid md:grid-cols-4 gap-4 text-center text-sm">
-            <div>
-              <div class="font-bold text-purple-700">✓ Title & Subtitle</div>
-              <div class="text-xs text-gray-600">Optimized for each market</div>
-            </div>
-            <div>
-              <div class="font-bold text-purple-700">✓ Full Description</div>
-              <div class="text-xs text-gray-600">400-800 words, fold-optimized</div>
-            </div>
-            <div>
-              <div class="font-bold text-purple-700">✓ Keyword Research</div>
-              <div class="text-xs text-gray-600">10-15 keywords per market</div>
-            </div>
-            <div>
-              <div class="font-bold text-purple-700">✓ Market Analysis</div>
-              <div class="text-xs text-gray-600">Cultural & competitor insights</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Sample Report CTA -->
         <div class="mt-6 text-center">
-          <button onclick="closeSampleModal(); scrollToAnalyzer();" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all">
-            Get Your Complete Report → 
-          </button>
+          <button onclick="closeSampleModal(); scrollToAnalyzer();" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all">Get Your Complete Report →</button>
           <p class="text-xs text-gray-500 mt-3">Your report will be customized for YOUR app, not a template!</p>
         </div>
       </div>
@@ -446,21 +207,9 @@
   <section id="how-it-works" class="max-w-6xl mx-auto px-6 py-16">
     <h2 class="text-3xl font-bold text-center mb-12">Simple 3-Step Process</h2>
     <div class="grid md:grid-cols-3 gap-8">
-      <div class="text-center card-hover">
-        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">1️⃣</div>
-        <h3 class="font-semibold mb-2">Share Your App Link</h3>
-        <p class="text-sm text-gray-600">Paste your App Store or Google Play URL</p>
-      </div>
-      <div class="text-center card-hover">
-        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">2️⃣</div>
-        <h3 class="font-semibold mb-2">We Analyze & Localize</h3>
-        <p class="text-sm text-gray-600">Expertly prepared language report</p>
-      </div>
-      <div class="text-center card-hover">
-        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">3️⃣</div>
-        <h3 class="font-semibold mb-2">Download & Publish</h3>
-        <p class="text-sm text-gray-600">Get your optimized listing instantly</p>
-      </div>
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">1️⃣</div><h3 class="font-semibold mb-2">Share Your App Link</h3><p class="text-sm text-gray-600">Paste your App Store or Google Play URL</p></div>
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">2️⃣</div><h3 class="font-semibold mb-2">Choose Your Languages</h3><p class="text-sm text-gray-600">Select from 20+ markets</p></div>
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">3️⃣</div><h3 class="font-semibold mb-2">Download & Publish</h3><p class="text-sm text-gray-600">Get your optimized listing instantly</p></div>
     </div>
   </section>
 
@@ -470,29 +219,16 @@
       <h2 class="text-2xl font-bold mb-2">Start Localizing Your App</h2>
       <p class="text-gray-600 mb-6">Choose your platform and paste your app URL</p>
       
-      <!-- Platform Toggle -->
       <div class="flex gap-3 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
         <button id="platformAppStore" class="platform-btn px-6 py-2 rounded-lg font-medium transition-all bg-white shadow-sm">📱 App Store</button>
         <button id="platformGooglePlay" class="platform-btn px-6 py-2 rounded-lg font-medium transition-all">▶️ Google Play</button>
       </div>
       
       <form id="lookupForm" class="flex flex-col sm:flex-row gap-3">
-        <input
-          id="appUrlInput"
-          type="url"
-          placeholder="https://apps.apple.com/us/app/id123456789 or https://play.google.com/store/apps/details?id=com.example"
-          required
-          class="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500"
-        />
-        <button
-          type="submit"
-          id="lookupBtn"
-          class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg text-white font-medium rounded-xl px-6 py-3 text-sm whitespace-nowrap transition-all"
-        >
+        <input id="appUrlInput" type="url" placeholder="https://apps.apple.com/us/app/id123456789 or https://play.google.com/store/apps/details?id=com.example" required class="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500" />
+        <button type="submit" id="lookupBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg text-white font-medium rounded-xl px-6 py-3 text-sm whitespace-nowrap transition-all">
           <span id="lookupBtnText">Analyze App →</span>
-          <svg id="lookupSpinner" class="w-4 h-4 spinner hidden inline-block ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
+          <svg id="lookupSpinner" class="w-4 h-4 spinner hidden inline-block ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
         </button>
       </form>
       
@@ -507,17 +243,10 @@
         <img id="appIcon" src="" alt="" class="w-20 h-20 rounded-2xl shadow-md" />
         <div class="flex-1">
           <div class="flex items-start justify-between flex-wrap gap-2">
-            <div>
-              <h2 id="appName" class="text-2xl font-bold"></h2>
-              <p id="appSubtitle" class="text-gray-500 text-sm mt-0.5"></p>
-            </div>
+            <div><h2 id="appName" class="text-2xl font-bold"></h2><p id="appSubtitle" class="text-gray-500 text-sm mt-0.5"></p></div>
             <span id="appPlatform" class="inline-block bg-gray-100 text-gray-600 text-xs font-medium rounded-full px-3 py-1"></span>
           </div>
-          <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
-            <span id="appDev"></span>
-            <span id="appRating"></span>
-            <span id="appCategory"></span>
-          </div>
+          <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500"><span id="appDev"></span><span id="appRating"></span><span id="appCategory"></span></div>
         </div>
       </div>
     </div>
@@ -526,140 +255,113 @@
   <!-- Pricing & Market Cards -->
   <section id="marketsSection" class="hidden max-w-6xl mx-auto px-6 py-8 fade-in">
     <div class="bg-white rounded-3xl shadow-xl p-8">
-      <h2 class="text-2xl font-bold mb-2">Your 3 Target Markets</h2>
-      <p class="text-gray-600 mb-6">Based on your app category, we've selected the best markets for growth</p>
-      
-      <div id="marketCards" class="grid md:grid-cols-3 gap-6 mb-8"></div>
+      <h2 class="text-2xl font-bold mb-2">Choose Your Package</h2>
+      <p class="text-gray-600 mb-6">Select the markets that matter most for your app's growth</p>
       
       <!-- Pricing Cards -->
-      <div id="pricing" class="border-t border-gray-100 pt-8">
-        <div class="grid md:grid-cols-3 gap-6">
-          <!-- Basic Package -->
-          <div class="border rounded-2xl p-6 text-center card-hover">
-            <div class="text-3xl mb-2">📱</div>
-            <h3 class="font-bold text-lg">Single Market</h3>
-            <div class="text-3xl font-bold my-3">$5</div>
-            <p class="text-sm text-gray-500 mb-4">Perfect for testing</p>
-            <ul class="text-sm text-left space-y-2 mb-6">
-              <li class="flex items-center gap-2">✓ 1 market localization</li>
-              <li class="flex items-center gap-2">✓ Title & subtitle</li>
-              <li class="flex items-center gap-2">✓ Full description</li>
-              <li class="flex items-center gap-2">✓ Keyword suggestions</li>
-            </ul>
-            <button class="w-full border border-purple-600 text-purple-600 rounded-lg py-2 font-medium hover:bg-purple-50 transition">Select</button>
+      <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <!-- Single Market Package -->
+        <div class="border rounded-2xl p-6 text-center card-hover">
+          <div class="text-3xl mb-2">📱</div>
+          <h3 class="font-bold text-lg">Single Market</h3>
+          <div class="text-3xl font-bold my-3">$5</div>
+          <p class="text-sm text-gray-500 mb-4">Perfect for testing a new market</p>
+          
+          <!-- Language Selection Dropdown -->
+          <div class="mb-4">
+            <label class="text-xs font-semibold text-gray-600 block mb-2">Choose Language:</label>
+            <select id="singleMarketLanguage" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <option value="japan">🇯🇵 Japanese</option>
+              <option value="germany">🇩🇪 German</option>
+              <option value="brazil">🇧🇷 Portuguese (Brazil)</option>
+              <option value="france">🇫🇷 French</option>
+              <option value="spain">🇪🇸 Spanish</option>
+              <option value="italy">🇮🇹 Italian</option>
+              <option value="southkorea">🇰🇷 Korean</option>
+              <option value="china">🇨🇳 Chinese (Simplified)</option>
+              <option value="mexico">🇲🇽 Spanish (Mexico)</option>
+              <option value="australia">🇦🇺 English (Australia)</option>
+              <option value="canada">🇨🇦 English (Canada)</option>
+              <option value="uk">🇬🇧 English (UK)</option>
+              <option value="india">🇮🇳 Hindi</option>
+              <option value="indonesia">🇮🇩 Indonesian</option>
+              <option value="turkey">🇹🇷 Turkish</option>
+            </select>
           </div>
           
-          <!-- Most Popular - 3 Markets -->
-          <div class="border-2 border-purple-600 rounded-2xl p-6 text-center relative card-hover shadow-lg">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs px-3 py-1 rounded-full">⭐ Most Popular</div>
-            <div class="text-3xl mb-2">🌍</div>
-            <h3 class="font-bold text-lg">3 Markets Bundle</h3>
-            <div class="text-4xl font-bold my-3 gradient-text">$12</div>
-            <p class="text-sm text-gray-500 mb-4">Best value for global launch</p>
-            <ul class="text-sm text-left space-y-2 mb-6">
-              <li class="flex items-center gap-2">✓ 3 markets (Japan, Germany, Brazil)</li>
-              <li class="flex items-center gap-2">✓ Complete localization package</li>
-              <li class="flex items-center gap-2">✓ Market analysis included</li>
-              <li class="flex items-center gap-2">✓ Screenshot optimization tips</li>
-              <li class="flex items-center gap-2">✓ Priority delivery (24h)</li>
-            </ul>
-            <button id="selectPremiumBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
-          </div>
-          
-          <!-- Enterprise -->
-          <div class="border rounded-2xl p-6 text-center card-hover">
-            <div class="text-3xl mb-2">🏢</div>
-            <h3 class="font-bold text-lg">Enterprise</h3>
-            <div class="text-3xl font-bold my-3">$29</div>
-            <p class="text-sm text-gray-500 mb-4">5+ markets + strategy</p>
-            <ul class="text-sm text-left space-y-2 mb-6">
-              <li class="flex items-center gap-2">✓ Up to 5 markets</li>
-              <li class="flex items-center gap-2">✓ Full ASO audit</li>
-              <li class="flex items-center gap-2">✓ Competitor analysis</li>
-              <li class="flex items-center gap-2">✓ 30-min strategy call</li>
-              <li class="flex items-center gap-2">✓ 7-day support</li>
-            </ul>
-            <button class="w-full border border-gray-300 text-gray-700 rounded-lg py-2 font-medium hover:border-purple-600 hover:text-purple-600 transition">Contact Us</button>
-          </div>
+          <ul class="text-sm text-left space-y-2 mb-6">
+            <li class="flex items-center gap-2">✓ 1 market localization</li>
+            <li class="flex items-center gap-2">✓ Title & subtitle</li>
+            <li class="flex items-center gap-2">✓ Full description</li>
+            <li class="flex items-center gap-2">✓ Keyword suggestions</li>
+          </ul>
+          <button id="singleMarketBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
         </div>
         
-        <!-- Language Add-ons Section (Moved outside the pricing cards grid) -->
-        <div id="languageAddons" class="border-t border-gray-100 pt-8 mt-8 hidden">
-          <h3 class="font-bold text-lg mb-4">➕ Add More Markets (Optional)</h3>
-          <p class="text-sm text-gray-600 mb-4">Choose additional markets for only $5 each</p>
-          
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="france" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇫🇷 France (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="spain" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇪🇸 Spain (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="italy" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇮🇹 Italy (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="southkorea" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇰🇷 South Korea (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="china" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇨🇳 China (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="mexico" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇲🇽 Mexico (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="australia" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇦🇺 Australia (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="canada" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇨🇦 Canada (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="uk" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇬🇧 United Kingdom (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="india" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇮🇳 India (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="indonesia" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇮🇩 Indonesia (+$5)</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition">
-              <input type="checkbox" value="turkey" class="addon-checkbox w-4 h-4 text-purple-600">
-              <span class="text-sm">🇹🇷 Turkey (+$5)</span>
-            </label>
-          </div>
-          
-          <div id="priceBreakdown" class="bg-gray-50 rounded-xl p-4 mb-4">
-            <div class="flex justify-between text-sm mb-2">
-              <span>Base Package (3 markets)</span>
-              <span>$12</span>
-            </div>
-            <div id="addonsBreakdown" class="text-sm text-gray-600"></div>
-            <div class="border-t pt-2 mt-2 flex justify-between font-bold">
-              <span>Total</span>
-              <span id="totalPrice">$12</span>
-            </div>
-          </div>
-          
-          <button id="checkoutWithAddons" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">
-            Continue to Checkout → 
-            <span id="checkoutTotal" class="font-bold">$12</span>
-          </button>
+        <!-- 3 Markets Bundle -->
+        <div class="border-2 border-purple-600 rounded-2xl p-6 text-center relative card-hover shadow-lg">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs px-3 py-1 rounded-full">⭐ Most Popular</div>
+          <div class="text-3xl mb-2">🌍</div>
+          <h3 class="font-bold text-lg">3 Markets Bundle</h3>
+          <div class="text-4xl font-bold my-3 gradient-text">$12</div>
+          <p class="text-sm text-gray-500 mb-4">Best value for global launch</p>
+          <ul class="text-sm text-left space-y-2 mb-6">
+            <li class="flex items-center gap-2">✓ 3 markets (Japan, Germany, Brazil)</li>
+            <li class="flex items-center gap-2">✓ Complete localization package</li>
+            <li class="flex items-center gap-2">✓ Market analysis included</li>
+            <li class="flex items-center gap-2">✓ Screenshot optimization tips</li>
+          </ul>
+          <button id="threeMarketBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
         </div>
         
-        <div class="mt-6 text-center">
-          <p class="text-xs text-gray-500">✓ 30-day money-back guarantee • ✓ Secure payment via Stripe • ✓ Instant delivery</p>
+        <!-- Enterprise Package -->
+        <div class="border rounded-2xl p-6 text-center card-hover">
+          <div class="text-3xl mb-2">🏢</div>
+          <h3 class="font-bold text-lg">Enterprise</h3>
+          <div class="text-3xl font-bold my-3">$29.99</div>
+          <p class="text-sm text-gray-500 mb-4">10 languages + full ASO</p>
+          <ul class="text-sm text-left space-y-2 mb-6">
+            <li class="flex items-center gap-2">✓ 10+ markets</li>
+            <li class="flex items-center gap-2">✓ Complete ASO audit</li>
+            <li class="flex items-center gap-2">✓ Competitor analysis</li>
+            <li class="flex items-center gap-2">✓ 30-min strategy call</li>
+            <li class="flex items-center gap-2">✓ Priority support</li>
+          </ul>
+          <button id="enterpriseBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
         </div>
+      </div>
+      
+      <!-- Add-ons Section (shown when 3-market bundle is selected) -->
+      <div id="languageAddons" class="border-t border-gray-100 pt-8 mt-8 hidden">
+        <h3 class="font-bold text-lg mb-4">➕ Add More Markets (Optional)</h3>
+        <p class="text-sm text-gray-600 mb-4">Add additional markets for only $5 each</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="france" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇫🇷 France (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="spain" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇪🇸 Spain (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="italy" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇮🇹 Italy (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="southkorea" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇰🇷 South Korea (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="china" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇨🇳 China (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="mexico" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇲🇽 Mexico (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="australia" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇦🇺 Australia (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="canada" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇨🇦 Canada (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="uk" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇬🇧 United Kingdom (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="india" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇮🇳 India (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="indonesia" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇮🇩 Indonesia (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="turkey" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇹🇷 Turkey (+$5)</span></label>
+        </div>
+        
+        <div id="priceBreakdown" class="bg-gray-50 rounded-xl p-4 mb-4">
+          <div class="flex justify-between text-sm mb-2"><span>Base Package (3 markets)</span><span>$12</span></div>
+          <div id="addonsBreakdown" class="text-sm text-gray-600"></div>
+          <div class="border-t pt-2 mt-2 flex justify-between font-bold"><span>Total</span><span id="totalPrice">$12</span></div>
+        </div>
+        
+        <button id="checkoutWithAddons" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">Continue to Checkout → <span id="checkoutTotal" class="font-bold">$12</span></button>
+      </div>
+      
+      <div class="mt-6 text-center">
+        <p class="text-xs text-gray-500">✓ 30-day money-back guarantee • ✓ Secure payment via Stripe • ✓ Instant delivery</p>
       </div>
     </div>
   </section>
@@ -667,72 +369,21 @@
   <!-- Results Section -->
   <section id="resultsSection" class="hidden max-w-5xl mx-auto px-6 py-8 fade-in">
     <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-      <!-- Market Tabs -->
       <div id="marketTabs" class="flex border-b bg-gray-50"></div>
-      
       <div class="p-8">
         <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
-          <div class="flex items-center gap-2">
-            <span id="resultMarketFlag" class="text-3xl"></span>
-            <span id="resultMarketName" class="text-xl font-bold"></span>
-          </div>
-          <button id="downloadReportBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:shadow-lg transition">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download Full Report
-          </button>
+          <div class="flex items-center gap-2"><span id="resultMarketFlag" class="text-3xl"></span><span id="resultMarketName" class="text-xl font-bold"></span></div>
+          <button id="downloadReportBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:shadow-lg transition"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Full Report</button>
         </div>
         
-        <!-- Title -->
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label>
-            <button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultTitle">Copy</button>
-          </div>
-          <div id="resultTitle" class="bg-gray-50 rounded-xl px-4 py-3 font-medium"></div>
-          <div id="resultTitleCount" class="text-right text-xs text-gray-400 mt-1"></div>
-        </div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultTitle">Copy</button></div><div id="resultTitle" class="bg-gray-50 rounded-xl px-4 py-3 font-medium"></div><div id="resultTitleCount" class="text-right text-xs text-gray-400 mt-1"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultSubtitle">Copy</button></div><div id="resultSubtitle" class="bg-gray-50 rounded-xl px-4 py-3"></div><div id="resultSubtitleCount" class="text-right text-xs text-gray-400 mt-1"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Description</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultDescription">Copy</button></div><div id="resultDescription" class="bg-gray-50 rounded-xl px-4 py-3 text-sm whitespace-pre-line max-h-64 overflow-y-auto"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Keyword Suggestions</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultKeywords">Copy All</button></div><div id="keywordTags" class="flex flex-wrap gap-2"></div><div id="resultKeywords" class="hidden"></div><div id="keywordCharCount" class="text-xs text-gray-400 mt-2"></div></div>
         
-        <!-- Subtitle -->
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label>
-            <button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultSubtitle">Copy</button>
-          </div>
-          <div id="resultSubtitle" class="bg-gray-50 rounded-xl px-4 py-3"></div>
-          <div id="resultSubtitleCount" class="text-right text-xs text-gray-400 mt-1"></div>
-        </div>
+        <div id="insightsContainer" class="border-t pt-6 mt-6 hidden"><h4 class="font-semibold mb-3">📊 Market Insights</h4><div id="insightsContent" class="grid md:grid-cols-2 gap-4 text-sm"></div></div>
         
-        <!-- Description -->
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <label class="text-xs font-semibold uppercase text-gray-400">Optimized Description</label>
-            <button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultDescription">Copy</button>
-          </div>
-          <div id="resultDescription" class="bg-gray-50 rounded-xl px-4 py-3 text-sm whitespace-pre-line max-h-64 overflow-y-auto"></div>
-        </div>
-        
-        <!-- Keywords -->
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <label class="text-xs font-semibold uppercase text-gray-400">Keyword Suggestions</label>
-            <button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultKeywords">Copy All</button>
-          </div>
-          <div id="keywordTags" class="flex flex-wrap gap-2"></div>
-          <div id="resultKeywords" class="hidden"></div>
-          <div id="keywordCharCount" class="text-xs text-gray-400 mt-2"></div>
-        </div>
-        
-        <!-- Market Insights -->
-        <div id="insightsContainer" class="border-t pt-6 mt-6 hidden">
-          <h4 class="font-semibold mb-3">📊 Market Insights</h4>
-          <div id="insightsContent" class="grid md:grid-cols-2 gap-4 text-sm"></div>
-        </div>
-        
-        <!-- Guarantee Badge -->
-        <div class="mt-8 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl text-center">
-          <p class="text-sm font-medium">✨ Backed by our 30-day satisfaction guarantee ✨</p>
-          <p class="text-xs text-gray-500 mt-1">Not happy? Full refund, no questions asked.</p>
-        </div>
+        <div class="mt-8 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl text-center"><p class="text-sm font-medium">✨ Backed by our 30-day satisfaction guarantee ✨</p><p class="text-xs text-gray-500 mt-1">Not happy? Full refund, no questions asked.</p></div>
       </div>
     </div>
   </section>
@@ -741,18 +392,9 @@
   <section id="faq" class="max-w-4xl mx-auto px-6 py-16">
     <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
     <div class="space-y-4">
-      <div class="bg-white rounded-xl p-6">
-        <h3 class="font-semibold mb-2">Which platforms do you support?</h3>
-        <p class="text-gray-600 text-sm">Both Apple App Store and Google Play Store.</p>
-      </div>
-      <div class="bg-white rounded-xl p-6">
-        <h3 class="font-semibold mb-2">How long does delivery take?</h3>
-        <p class="text-gray-600 text-sm">Your language pack is available right away, processing time is less than a minute.</p>
-      </div>
-      <div class="bg-white rounded-xl p-6">
-        <h3 class="font-semibold mb-2">What's included in the report?</h3>
-        <p class="text-gray-600 text-sm">You'll receive optimized title, subtitle, full description, keyword suggestions, market analysis, and screenshot optimization tips for each market.</p>
-      </div>
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">Which platforms do you support?</h3><p class="text-gray-600 text-sm">Both Apple App Store and Google Play Store.</p></div>
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">How long does delivery take?</h3><p class="text-gray-600 text-sm">Your language pack is available right away, processing time is less than a minute.</p></div>
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">What languages are available?</h3><p class="text-gray-600 text-sm">Japanese, German, Brazilian Portuguese, French, Spanish, Italian, Korean, Chinese, and 15+ more markets.</p></div>
     </div>
   </section>
 
@@ -769,53 +411,44 @@
   <footer class="bg-gray-900 text-gray-400 py-12">
     <div class="max-w-6xl mx-auto px-6 text-center text-sm">
       <p>© 2026 Nagoh ASO Global Listing. Helping apps reach worldwide audiences.</p>
-      <div class="flex justify-center gap-6 mt-4">
-        <a href="#" class="hover:text-white transition">Terms</a>
-        <a href="#" class="hover:text-white transition">Privacy</a>
-        <a href="#" class="hover:text-white transition">Contact</a>
-      </div>
+      <div class="flex justify-center gap-6 mt-4"><a href="#" class="hover:text-white transition">Terms</a><a href="#" class="hover:text-white transition">Privacy</a><a href="#" class="hover:text-white transition">Contact</a></div>
     </div>
   </footer>
 
   <script>
-    // Sample modal tab switching
-    function initSampleModalTabs() {
-      const tabs = document.querySelectorAll('.market-sample-tab');
-      if (!tabs.length) return;
-      
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const market = tab.dataset.market;
-          
-          // Update tab styles
-          tabs.forEach(t => {
-            t.classList.remove('active', 'text-purple-600', 'border-purple-600');
-            t.classList.add('text-gray-500');
-            t.style.borderBottom = 'none';
-          });
-          tab.classList.add('active', 'text-purple-600', 'border-purple-600');
-          tab.style.borderBottom = '2px solid #667eea';
-          tab.classList.remove('text-gray-500');
-          
-          // Hide all content, show selected
-          document.querySelectorAll('.market-sample-content').forEach(content => {
-            content.classList.add('hidden');
-          });
-          document.getElementById(`sample-${market}`)?.classList.remove('hidden');
-        });
-      });
-    }
-
-    // Call this when the page loads
-    document.addEventListener('DOMContentLoaded', initSampleModalTabs);
-    
     // Configuration
     const API_BASE = 'https://seoapplisting.gregoryhogan.workers.dev';
-    const PAYMENT_LINK = 'https://buy.stripe.com/test_8x2dR9eBC30Ibhz5c81Fe01';
+    
+    // Payment Links
+    const PAYMENT_LINKS = {
+      single: 'https://buy.stripe.com/test_8x2dR9eBC30Ibhz5c81Fe01',      // $5 - Single market
+      three: 'https://buy.stripe.com/test_fZu9AT79aeJq3P7gUQ1Fe02',       // $12 - 3 markets
+      enterprise: 'https://buy.stripe.com/test_5kQ28r512dFm5Xf6gc1Fe03'   // $29.99 - Enterprise
+    };
+    
+    // Language mapping for single market
+    const LANGUAGE_MAP = {
+      japan: { market: 'Japan', locale: 'ja', flag: '🇯🇵' },
+      germany: { market: 'Germany', locale: 'de', flag: '🇩🇪' },
+      brazil: { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' },
+      france: { market: 'France', locale: 'fr', flag: '🇫🇷' },
+      spain: { market: 'Spain', locale: 'es', flag: '🇪🇸' },
+      italy: { market: 'Italy', locale: 'it', flag: '🇮🇹' },
+      southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷' },
+      china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳' },
+      mexico: { market: 'Mexico', locale: 'es-MX', flag: '🇲🇽' },
+      australia: { market: 'Australia', locale: 'en-AU', flag: '🇦🇺' },
+      canada: { market: 'Canada', locale: 'en-CA', flag: '🇨🇦' },
+      uk: { market: 'United Kingdom', locale: 'en-GB', flag: '🇬🇧' },
+      india: { market: 'India', locale: 'hi', flag: '🇮🇳' },
+      indonesia: { market: 'Indonesia', locale: 'id', flag: '🇮🇩' },
+      turkey: { market: 'Turkey', locale: 'tr', flag: '🇹🇷' }
+    };
     
     let currentPlatform = 'appstore';
     let allReports = [];
     let currentMetadata = null;
+    let selectedAddons = [];
     
     // State management
     const State = {
@@ -825,15 +458,12 @@
       clear() { try { sessionStorage.removeItem(this._key); } catch {} },
     };
     
-    // DOM helpers
     const $ = id => document.getElementById(id);
     const show = id => { const el = $(id); if (el) el.classList.remove('hidden'); };
     const hide = id => { const el = $(id); if (el) el.classList.add('hidden'); };
     const setText = (id, text) => { const el = $(id); if (el) el.textContent = text || ''; };
     
-    function showToast(msg) {
-      alert(msg);
-    }
+    function showToast(msg) { alert(msg); }
     
     // Platform switching
     document.getElementById('platformAppStore').addEventListener('click', () => {
@@ -863,13 +493,23 @@
       }
     };
     
-    window.scrollToAnalyzer = () => {
-      document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' });
-    };
+    window.scrollToAnalyzer = () => { document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' }); };
+    window.startNow = () => { document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' }); };
     
-    window.startNow = () => {
-      document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' });
-    };
+    // Sample modal tabs
+    function initSampleModalTabs() {
+      const tabs = document.querySelectorAll('.market-sample-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const market = tab.dataset.market;
+          tabs.forEach(t => { t.classList.remove('active', 'text-purple-600', 'border-purple-600'); t.classList.add('text-gray-500'); });
+          tab.classList.add('active', 'text-purple-600', 'border-purple-600');
+          document.querySelectorAll('.market-sample-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(`sample-${market}`)?.classList.remove('hidden');
+        });
+      });
+    }
+    document.addEventListener('DOMContentLoaded', initSampleModalTabs);
     
     // API helper
     async function apiPost(path, body) {
@@ -891,12 +531,7 @@
       const el = $(targetId);
       if (!el) return;
       const text = el.dataset.copyText || el.textContent.trim();
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast('Copied to clipboard!');
-      } catch {
-        alert('Copy manually');
-      }
+      try { await navigator.clipboard.writeText(text); showToast('Copied to clipboard!'); } catch { alert('Copy manually'); }
     });
     
     // Lookup form
@@ -931,9 +566,6 @@
         setText('appCategory', data.primaryGenre || data.category || '');
         
         show('appPreview');
-        
-        const optData = await apiPost('/api/optimize', { metadata: data });
-        renderMarketCards(optData.markets || []);
         show('marketsSection');
         
       } catch (err) {
@@ -947,37 +579,125 @@
       }
     });
     
-    function renderMarketCards(markets) {
-      const container = document.getElementById('marketCards');
-      if (!container) return;
-      container.innerHTML = '';
+    // Package selection handlers
+    document.getElementById('singleMarketBtn')?.addEventListener('click', async () => {
+      const state = State.load();
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
       
-      const flags = { Japan: '🇯🇵', Germany: '🇩🇪', Brazil: '🇧🇷' };
+      const selectedLang = document.getElementById('singleMarketLanguage').value;
+      const langInfo = LANGUAGE_MAP[selectedLang];
       
-      markets.forEach(m => {
-        const card = document.createElement('div');
-        card.className = 'border rounded-2xl p-6 text-center card-hover';
-        card.innerHTML = `
-          <div class="text-5xl mb-3">${flags[m.market] || '🌍'}</div>
-          <h3 class="font-bold text-lg">${m.market}</h3>
-          <p class="text-sm text-gray-500 mt-2">${m.reason}</p>
-          <div class="mt-4 text-xs text-gray-400">Top keywords: ${m.topKeywords || 'gaming, mobile, app'}</div>
-        `;
-        container.appendChild(card);
+      State.save({ 
+        ...state, 
+        pendingPayment: true, 
+        selectedPackage: 'single',
+        selectedMarket: langInfo,
+        totalPrice: 5
+      });
+      
+      window.location.href = PAYMENT_LINKS.single;
+    });
+    
+    document.getElementById('threeMarketBtn')?.addEventListener('click', () => {
+      toggleAddonsSection(true);
+      document.getElementById('languageAddons')?.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    document.getElementById('enterpriseBtn')?.addEventListener('click', async () => {
+      const state = State.load();
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
+      
+      State.save({ 
+        ...state, 
+        pendingPayment: true, 
+        selectedPackage: 'enterprise',
+        totalPrice: 29.99
+      });
+      
+      window.location.href = PAYMENT_LINKS.enterprise;
+    });
+    
+    // Add-ons functionality
+    const ALL_MARKETS = {
+      france: { market: 'France', locale: 'fr', flag: '🇫🇷', price: 5 },
+      spain: { market: 'Spain', locale: 'es', flag: '🇪🇸', price: 5 },
+      italy: { market: 'Italy', locale: 'it', flag: '🇮🇹', price: 5 },
+      southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷', price: 5 },
+      china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳', price: 5 },
+      mexico: { market: 'Mexico', locale: 'es-MX', flag: '🇲🇽', price: 5 },
+      australia: { market: 'Australia', locale: 'en-AU', flag: '🇦🇺', price: 5 },
+      canada: { market: 'Canada', locale: 'en-CA', flag: '🇨🇦', price: 5 },
+      uk: { market: 'United Kingdom', locale: 'en-GB', flag: '🇬🇧', price: 5 },
+      india: { market: 'India', locale: 'hi', flag: '🇮🇳', price: 5 },
+      indonesia: { market: 'Indonesia', locale: 'id', flag: '🇮🇩', price: 5 },
+      turkey: { market: 'Turkey', locale: 'tr', flag: '🇹🇷', price: 5 }
+    };
+    
+    function updatePriceBreakdown() {
+      const basePrice = 12;
+      const addonsPrice = selectedAddons.length * 5;
+      const total = basePrice + addonsPrice;
+      const totalPriceEl = document.getElementById('totalPrice');
+      const checkoutTotalEl = document.getElementById('checkoutTotal');
+      const addonsBreakdownEl = document.getElementById('addonsBreakdown');
+      
+      if (totalPriceEl) totalPriceEl.textContent = `$${total}`;
+      if (checkoutTotalEl) checkoutTotalEl.textContent = `$${total}`;
+      if (addonsBreakdownEl) {
+        addonsBreakdownEl.innerHTML = selectedAddons.length > 0 
+          ? `<div class="flex justify-between text-purple-600"><span>+ ${selectedAddons.length} additional market${selectedAddons.length > 1 ? 's' : ''}</span><span>+$${addonsPrice}</span></div>`
+          : '';
+      }
+    }
+    
+    function toggleAddonsSection(show) {
+      const addonsSection = document.getElementById('languageAddons');
+      if (addonsSection) {
+        if (show) addonsSection.classList.remove('hidden');
+        else addonsSection.classList.add('hidden');
+      }
+    }
+    
+    function initAddonCheckboxes() {
+      document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+          if (e.target.checked) selectedAddons.push(e.target.value);
+          else selectedAddons = selectedAddons.filter(v => v !== e.target.value);
+          updatePriceBreakdown();
+        });
       });
     }
     
-    // Premium selection
-    document.getElementById('selectPremiumBtn')?.addEventListener('click', async () => {
+    async function checkoutWithAddons() {
       const state = State.load();
-      if (!state?.metadata) {
-        showToast('Please analyze an app first');
-        return;
-      }
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
       
-      State.save({ ...state, pendingPayment: true, selectedPackage: 'premium' });
-      window.location.href = PAYMENT_LINK;
-    });
+      const baseMarkets = [
+        { market: 'Japan', locale: 'ja', flag: '🇯🇵' },
+        { market: 'Germany', locale: 'de', flag: '🇩🇪' },
+        { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' }
+      ];
+      const addonMarkets = selectedAddons.map(key => ALL_MARKETS[key]);
+      const allMarkets = [...baseMarkets, ...addonMarkets];
+      const totalPrice = 12 + (selectedAddons.length * 5);
+      
+      State.save({ ...state, pendingPayment: true, selectedPackage: 'three_with_addons', selectedMarkets: allMarkets, totalPrice: totalPrice });
+      
+      try {
+        const response = await apiPost('/api/create-checkout', {
+          appName: state.metadata.name,
+          amount: totalPrice,
+          markets: allMarkets.map(m => m.market),
+          successUrl: `${window.location.origin}${window.location.pathname}?session_id={CHECKOUT_SESSION_ID}&paid=true`,
+          cancelUrl: `${window.location.origin}${window.location.pathname}?cancelled=true`,
+        });
+        const { url } = await response.json();
+        if (url) window.location.href = url;
+      } catch (err) { showToast(`Checkout error: ${err.message}`); }
+    }
+    
+    document.getElementById('checkoutWithAddons')?.addEventListener('click', checkoutWithAddons);
+    initAddonCheckboxes();
     
     // Handle payment return
     async function handlePaymentReturn() {
@@ -985,51 +705,48 @@
       const sessionId = params.get('session_id');
       const cancelled = params.get('cancelled');
       
-      if (cancelled) {
-        history.replaceState({}, '', window.location.pathname);
-        showToast('Checkout cancelled');
-        return;
-      }
-      
+      if (cancelled) { history.replaceState({}, '', window.location.pathname); showToast('Checkout cancelled'); return; }
       if (!sessionId) return;
       
       history.replaceState({}, '', window.location.pathname);
-      
       const state = State.load();
-      if (!state?.metadata) {
-        showToast('Session expired');
-        return;
-      }
+      if (!state?.metadata) { showToast('Session expired'); return; }
       
       const resultsSection = document.getElementById('resultsSection');
       if (resultsSection) resultsSection.classList.add('hidden');
       
       try {
+        let marketsToGenerate;
+        if (state.selectedPackage === 'single' && state.selectedMarket) {
+          marketsToGenerate = [state.selectedMarket];
+        } else if (state.selectedPackage === 'enterprise') {
+          marketsToGenerate = Object.values(LANGUAGE_MAP).slice(0, 10);
+        } else if (state.selectedMarkets) {
+          marketsToGenerate = state.selectedMarkets;
+        } else {
+          marketsToGenerate = [
+            { market: 'Japan', locale: 'ja', flag: '🇯🇵' },
+            { market: 'Germany', locale: 'de', flag: '🇩🇪' },
+            { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' }
+          ];
+        }
+        
         const data = await apiPost('/api/optimize', {
           metadata: state.metadata,
           sessionId: sessionId,
+          selectedMarkets: marketsToGenerate
         });
         
-        if (!data.premium) {
-          showToast('Payment verified but report unavailable');
-          return;
-        }
-        
+        if (!data.premium) { showToast('Payment verified but report unavailable'); return; }
         populateMultiMarketResults(data, state.metadata);
         
-      } catch (err) {
-        alert(`Error: ${err.message}`);
-      }
+      } catch (err) { alert(`Error: ${err.message}`); }
     }
     
     function populateMultiMarketResults(data, metadata) {
       currentMetadata = metadata;
       allReports = data.reports || [];
-      
-      if (allReports.length === 0) {
-        showToast('No report data received');
-        return;
-      }
+      if (allReports.length === 0) { showToast('No report data received'); return; }
       
       createMarketTabs(allReports);
       displayMarketReport(0);
@@ -1041,7 +758,6 @@
       const container = document.getElementById('marketTabs');
       if (!container) return;
       container.innerHTML = '';
-      
       reports.forEach((report, index) => {
         const tab = document.createElement('button');
         tab.className = `market-tab flex-1 py-3 text-sm font-medium ${index === 0 ? 'active' : ''}`;
@@ -1100,21 +816,9 @@
       
       const insightsContainer = document.getElementById('insightsContainer');
       const insightsContent = document.getElementById('insightsContent');
-      
       if (report.market_analysis && insightsContent) {
-        insightsContent.innerHTML = `
-          <div class="bg-purple-50 p-3 rounded-lg">
-            <strong>Top Keywords</strong><br>
-            <div class="flex flex-wrap gap-1 mt-1">${(report.market_analysis.top_keywords || []).map(k => `<span class="text-xs bg-white px-2 py-0.5 rounded">${k}</span>`).join('')}</div>
-          </div>
-          <div class="bg-purple-50 p-3 rounded-lg">
-            <strong>Cultural Tips</strong><br>
-            <p class="text-xs mt-1">${report.market_analysis.cultural_considerations || 'N/A'}</p>
-          </div>
-        `;
+        insightsContent.innerHTML = `<div class="bg-purple-50 p-3 rounded-lg"><strong>Top Keywords</strong><br><div class="flex flex-wrap gap-1 mt-1">${(report.market_analysis.top_keywords || []).map(k => `<span class="text-xs bg-white px-2 py-0.5 rounded">${k}</span>`).join('')}</div></div><div class="bg-purple-50 p-3 rounded-lg"><strong>Cultural Tips</strong><br><p class="text-xs mt-1">${report.market_analysis.cultural_considerations || 'N/A'}</p></div>`;
         insightsContainer.classList.remove('hidden');
-      } else if (insightsContainer) {
-        insightsContainer.classList.add('hidden');
       }
     }
     
@@ -1122,32 +826,10 @@
     document.getElementById('downloadReportBtn')?.addEventListener('click', () => {
       if (!allReports.length || !currentMetadata) return;
       
-      let reportHtml = `<!DOCTYPE html>
-      <html>
-      <head><meta charset="UTF-8"><title>App Localization Report - ${currentMetadata.name}</title>
-      <style>
-        body{font-family:system-ui;max-width:800px;margin:0 auto;padding:40px 20px}
-        h1{color:#667eea;border-bottom:2px solid #667eea;padding-bottom:10px}
-        .market{background:#f5f5f5;padding:20px;border-radius:16px;margin:20px 0}
-        .label{font-size:12px;font-weight:600;text-transform:uppercase;color:#666}
-        .content{margin:8px 0 16px}
-        .keyword{background:#e0e0e0;padding:4px 8px;border-radius:16px;display:inline-block;margin:4px}
-        footer{margin-top:50px;text-align:center;font-size:12px;color:#999}
-      </style>
-      </head>
-      <body>
-        <h1>🌍 App Localization Report</h1>
-        <p><strong>App:</strong> ${currentMetadata.name}<br><strong>Generated:</strong> ${new Date().toLocaleString()}</p>`;
+      let reportHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>App Localization Report - ${currentMetadata.name}</title><style>body{font-family:system-ui;max-width:800px;margin:0 auto;padding:40px 20px}h1{color:#667eea;border-bottom:2px solid #667eea;padding-bottom:10px}.market{background:#f5f5f5;padding:20px;border-radius:16px;margin:20px 0}.label{font-size:12px;font-weight:600;text-transform:uppercase;color:#666}.content{margin:8px 0 16px}.keyword{background:#e0e0e0;padding:4px 8px;border-radius:16px;display:inline-block;margin:4px}footer{margin-top:50px;text-align:center;font-size:12px;color:#999}</style></head><body><h1>🌍 App Localization Report</h1><p><strong>App:</strong> ${currentMetadata.name}<br><strong>Generated:</strong> ${new Date().toLocaleString()}</p>`;
       
       allReports.forEach(report => {
-        reportHtml += `
-          <div class="market">
-            <h2>${report.flag} ${report.market}</h2>
-            <div><div class="label">Title</div><div class="content"><strong>${report.title || ''}</strong></div></div>
-            <div><div class="label">Subtitle</div><div class="content">${report.subtitle || ''}</div></div>
-            <div><div class="label">Description</div><div class="content">${report.description || ''}</div></div>
-            <div><div class="label">Keywords</div><div class="content">${(report.keywords || '').split(/[,、，]/).map(k => `<span class="keyword">${k.trim()}</span>`).join('')}</div></div>
-          </div>`;
+        reportHtml += `<div class="market"><h2>${report.flag} ${report.market}</h2><div><div class="label">Title</div><div class="content"><strong>${report.title || ''}</strong></div></div><div><div class="label">Subtitle</div><div class="content">${report.subtitle || ''}</div></div><div><div class="label">Description</div><div class="content">${report.description || ''}</div></div><div><div class="label">Keywords</div><div class="content">${(report.keywords || '').split(/[,、，]/).map(k => `<span class="keyword">${k.trim()}</span>`).join('')}</div></div></div>`;
       });
       
       reportHtml += `<footer>Generated by Nagoh ASO Global Listing • Ready for App Store & Google Play</footer></body></html>`;
@@ -1162,137 +844,7 @@
       showToast('Report downloaded!');
     });
     
-    // Initialize
     handlePaymentReturn();
-    
-    // ============================================
-    // ADD-ONS FUNCTIONALITY (Stripe API for upgrades)
-    // ============================================
-
-    // Complete market database
-    const ALL_MARKETS = {
-      france: { market: 'France', locale: 'fr', flag: '🇫🇷', price: 5, baseMarket: false, prompt: 'French: Use polite vous, emphasize quality and style' },
-      spain: { market: 'Spain', locale: 'es', flag: '🇪🇸', price: 5, baseMarket: false, prompt: 'Spanish: Use friendly tú, warm and engaging tone' },
-      italy: { market: 'Italy', locale: 'it', flag: '🇮🇹', price: 5, baseMarket: false, prompt: 'Italian: Passionate and expressive, use friendly tone' },
-      southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷', price: 5, baseMarket: false, prompt: 'Korean: Use professional 합쇼체, respect hierarchy' },
-      china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳', price: 5, baseMarket: false, prompt: 'Chinese: Use simplified characters, professional tone' },
-      mexico: { market: 'Mexico', locale: 'es-MX', flag: '🇲🇽', price: 5, baseMarket: false, prompt: 'Mexican Spanish: Warm, friendly, use local slang' },
-      australia: { market: 'Australia', locale: 'en-AU', flag: '🇦🇺', price: 5, baseMarket: false, prompt: 'Australian English: Casual, friendly, use local terms' },
-      canada: { market: 'Canada', locale: 'en-CA', flag: '🇨🇦', price: 5, baseMarket: false, prompt: 'Canadian English: Polite, neutral, inclusive tone' },
-      uk: { market: 'United Kingdom', locale: 'en-GB', flag: '🇬🇧', price: 5, baseMarket: false, prompt: 'British English: Formal but friendly, use British spelling' },
-      india: { market: 'India', locale: 'hi', flag: '🇮🇳', price: 5, baseMarket: false, prompt: 'Hindi: Mix of Hindi and English, tech-savvy tone' },
-      indonesia: { market: 'Indonesia', locale: 'id', flag: '🇮🇩', price: 5, baseMarket: false, prompt: 'Indonesian: Casual, friendly, use local expressions' },
-      turkey: { market: 'Turkey', locale: 'tr', flag: '🇹🇷', price: 5, baseMarket: false, prompt: 'Turkish: Respectful, warm, use local idioms' },
-    };
-
-    let selectedAddons = [];
-
-    function updatePriceBreakdown() {
-      const basePrice = 12;
-      const addonsCount = selectedAddons.length;
-      const addonsPrice = addonsCount * 5;
-      const total = basePrice + addonsPrice;
-      
-      const totalPriceEl = document.getElementById('totalPrice');
-      const checkoutTotalEl = document.getElementById('checkoutTotal');
-      const addonsBreakdownEl = document.getElementById('addonsBreakdown');
-      
-      if (totalPriceEl) totalPriceEl.textContent = `$${total}`;
-      if (checkoutTotalEl) checkoutTotalEl.textContent = `$${total}`;
-      
-      if (addonsBreakdownEl) {
-        if (addonsCount > 0) {
-          addonsBreakdownEl.innerHTML = `<div class="flex justify-between text-purple-600">
-            <span>+ ${addonsCount} additional market${addonsCount > 1 ? 's' : ''}</span>
-            <span>+$${addonsPrice}</span>
-          </div>`;
-        } else {
-          addonsBreakdownEl.innerHTML = '';
-        }
-      }
-    }
-
-    function toggleAddonsSection(show) {
-      const addonsSection = document.getElementById('languageAddons');
-      if (addonsSection) {
-        if (show) {
-          addonsSection.classList.remove('hidden');
-        } else {
-          addonsSection.classList.add('hidden');
-        }
-      }
-    }
-
-    function initAddonCheckboxes() {
-      const checkboxes = document.querySelectorAll('.addon-checkbox');
-      checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', (e) => {
-          const marketKey = e.target.value;
-          if (e.target.checked) {
-            selectedAddons.push(marketKey);
-          } else {
-            selectedAddons = selectedAddons.filter(k => k !== marketKey);
-          }
-          updatePriceBreakdown();
-        });
-      });
-    }
-
-    async function checkoutWithAddons() {
-      const state = State.load();
-      if (!state?.metadata) {
-        showToast('Please analyze an app first');
-        return;
-      }
-      
-      const baseMarkets = [
-        { market: 'Japan', locale: 'ja', flag: '🇯🇵', price: 4 },
-        { market: 'Germany', locale: 'de', flag: '🇩🇪', price: 4 },
-        { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷', price: 4 }
-      ];
-      
-      const addonMarkets = selectedAddons.map(key => ALL_MARKETS[key]);
-      const allMarkets = [...baseMarkets, ...addonMarkets];
-      const totalPrice = 12 + (selectedAddons.length * 5);
-      
-      State.save({ 
-        ...state, 
-        pendingPayment: true, 
-        selectedPackage: 'premium_with_addons',
-        selectedMarkets: allMarkets,
-        totalPrice: totalPrice
-      });
-      
-      try {
-        const response = await fetch(`${API_BASE}/api/create-checkout`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            appName: state.metadata.name,
-            amount: totalPrice,
-            markets: allMarkets.map(m => m.market),
-            successUrl: `${window.location.origin}${window.location.pathname}?session_id={CHECKOUT_SESSION_ID}&paid=true`,
-            cancelUrl: `${window.location.origin}${window.location.pathname}?cancelled=true`,
-          })
-        });
-        
-        const { url } = await response.json();
-        if (url) {
-          window.location.href = url;
-        }
-      } catch (err) {
-        showToast(`Checkout error: ${err.message}`);
-      }
-    }
-
-    // Add checkout button for add-ons
-    const checkoutWithAddonsBtn = document.getElementById('checkoutWithAddons');
-    if (checkoutWithAddonsBtn) {
-      checkoutWithAddonsBtn.addEventListener('click', checkoutWithAddons);
-    }
-
-    // Initialize add-on checkboxes
-    initAddonCheckboxes();
   </script>
 </body>
 </html>
