@@ -1,132 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Nagoh Boost Audit</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-            .card { break-inside: avoid; border: 1px solid #eee !important; }
-        }
-        #pdf-header { display: none; }
-        .pdf-mode #pdf-header { display: block; border-bottom: 4px solid #4f46e5; margin-bottom: 2rem; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nagoh Boost — Omni-Channel Forensic Audit</title>
+  <meta name="description" content="Paste your links. Get an instant AI-powered brand audit across every platform." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { font-family: 'Inter', -apple-system, sans-serif; }
+    body { background: linear-gradient(135deg, #f0f4ff 0%, #e8ecf8 100%); }
+    .gradient-text { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* PDF/Print Specifics */
+    #pdf-report-header { display: none; }
+    .gauge-ring { transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    @media print {
+      body { background: white !important; }
+      .no-print { display: none !important; }
+      #resultsSection { display: block !important; padding: 0 !important; background: white !important; }
+      #pdf-report-header { display: block; border-bottom: 4px solid #4f46e5; margin-bottom: 2rem; padding-bottom: 1rem; }
+      .report-card { break-inside: avoid; border: 1px solid #f1f5f9 !important; margin-bottom: 1rem; }
+      .shadow-xl, .shadow-md { box-shadow: none !important; }
+    }
+
+    .url-chip { display: inline-flex; align-items: center; gap: 6px; background: #ede9fe; color: #4c1d95; border-radius: 9999px; padding: 3px 10px; font-size: 12px; }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans antialiased text-slate-900">
+<body class="antialiased min-h-screen">
 
-    <div class="max-w-4xl mx-auto py-12 px-4 no-print">
-        <h1 class="text-4xl font-bold tracking-tight text-indigo-600 mb-2">Nagoh Boost</h1>
-        <p class="text-slate-500 mb-8">Omni-Channel Forensic Audit</p>
-        
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <textarea id="urlInput" placeholder="Enter one URL per line..." class="w-full h-32 p-4 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none mb-4"></textarea>
-            <input type="text" id="brandInput" placeholder="Brand Name (Optional)" class="w-full p-3 border rounded-xl mb-4">
-            <button id="runAudit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition">Run Audit</button>
+  <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 no-print">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center">
+          <span class="text-white font-bold text-sm">NB</span>
         </div>
+        <span class="font-semibold text-gray-800">Nagoh Boost</span>
+      </div>
+      <button onclick="document.getElementById('inputSection').scrollIntoView({behavior:'smooth'})"
+        class="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg transition-all">
+        New Audit
+      </button>
+    </div>
+  </nav>
+
+  <section class="max-w-6xl mx-auto px-6 py-16 text-center no-print">
+    <h1 class="text-5xl md:text-6xl font-bold mb-6">Find Every Gap.<br /><span class="gradient-text">Fix Your Brand Drift.</span></h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-10">Instant forensic auditing across your website, socials, and marketplace apps.</p>
+  </section>
+
+  <section id="inputSection" class="max-w-4xl mx-auto px-6 pb-16 no-print">
+    <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+      <h2 class="text-2xl font-bold mb-6">Paste Digital Footprint</h2>
+      
+      <textarea id="urlInput" rows="5" placeholder="https://yoursite.com&#10;https://instagram.com/handle"
+        class="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none mb-4 transition"></textarea>
+
+      <div id="chipPreview" class="flex flex-wrap gap-2 mb-6"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Brand Name</label>
+          <input id="brandName" type="text" placeholder="e.g. Nagoh Creative" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm" />
+        </div>
+      </div>
+
+      <button id="auditBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition flex items-center justify-center gap-3">
+        <span id="auditBtnText">Run Forensic Audit →</span>
+        <div id="auditSpinner" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full spinner hidden"></div>
+      </button>
+    </div>
+  </section>
+
+  <section id="resultsSection" class="hidden max-w-5xl mx-auto px-6 pb-20">
+    
+    <div class="flex justify-end gap-3 mb-6 no-print">
+        <button id="downloadPdfBtn" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-black transition flex items-center gap-2">
+            📥 Download PDF Report
+        </button>
     </div>
 
-    <div id="reportContent" class="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-3xl hidden">
-        <div id="pdf-header" class="pb-6">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="text-3xl font-bold text-indigo-700">Nagoh Boost Audit Report</h2>
-                    <p id="pdfDate" class="text-slate-400 font-medium"></p>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm font-bold uppercase tracking-widest text-slate-400">Proprietary Forensic Analysis</p>
-                </div>
-            </div>
+    <div id="reportContent" class="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-slate-100">
+      
+      <div id="pdf-report-header">
+        <div class="flex justify-between items-end">
+          <div>
+            <h2 class="text-3xl font-black text-indigo-700">FORENSIC BRAND AUDIT</h2>
+            <p id="pdfTimestamp" class="text-slate-400 font-medium italic"></p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs font-bold text-slate-300 tracking-widest uppercase">Nagoh Boost Intelligence</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 mb-10">
+        <div class="bg-slate-50 rounded-3xl p-8 flex flex-col items-center justify-center border border-slate-100">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Cohesion Score</p>
+          <div class="relative w-32 h-32">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+              <circle id="scoreRing" cx="80" cy="80" r="70" fill="none" stroke="#4f46e5" stroke-width="12" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" class="gauge-ring"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center font-bold text-4xl text-slate-800" id="scoreValue">0</div>
+          </div>
+          <p id="scoreLabel" class="text-xs font-bold mt-4 text-center text-slate-500 uppercase"></p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            <div class="bg-indigo-600 text-white p-8 rounded-3xl text-center flex flex-col justify-center">
-                <span class="text-sm uppercase tracking-widest opacity-80">Cohesion Score</span>
-                <div id="score" class="text-7xl font-black my-2">0</div>
-                <span id="scoreLabel" class="font-bold">Analyzing...</span>
-            </div>
-            <div class="md:col-span-2">
-                <h3 class="text-xl font-bold mb-3 text-slate-800">AI Perception Summary</h3>
-                <p id="summary" class="text-slate-600 leading-relaxed text-lg italic"></p>
-            </div>
+        <div class="md:col-span-2 space-y-6">
+          <div class="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
+            <h3 class="text-indigo-900 font-bold mb-2 flex items-center gap-2">🤖 AI Perception Summary</h3>
+            <p id="aiPerception" class="text-indigo-800/80 text-sm leading-relaxed italic"></p>
+          </div>
+          <div class="bg-red-50 p-6 rounded-3xl border border-red-100">
+            <h3 class="text-red-900 font-bold mb-2 flex items-center gap-2">⚠️ Critical Mismatch</h3>
+            <p id="criticalMismatch" class="text-red-800/80 text-sm leading-relaxed font-medium"></p>
+          </div>
         </div>
+      </div>
 
-        <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-2xl mb-10">
-            <h4 class="text-red-700 font-bold uppercase text-xs tracking-widest mb-1">Critical Mismatch Detected</h4>
-            <p id="mismatch" class="text-red-900 font-medium"></p>
+      <h3 class="text-xl font-bold mb-6 text-slate-800">Platform Analysis</h3>
+      <div id="platformBreakdown" class="space-y-4 mb-10"></div>
+
+      <div class="bg-slate-900 text-white rounded-3xl p-8 report-card">
+        <h3 class="text-lg font-bold mb-6 flex items-center gap-2">⚡ Traction Boost Actions</h3>
+        <div class="grid sm:grid-cols-3 gap-6">
+          <div class="bg-white/10 p-5 rounded-2xl">
+            <p class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-1">Immediate Fix</p>
+            <p id="immediateAction" class="text-sm font-medium leading-snug"></p>
+          </div>
+          <div class="bg-white/10 p-5 rounded-2xl">
+            <p class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-1">SEO Target</p>
+            <p id="seoTarget" class="text-sm font-medium leading-snug"></p>
+          </div>
+          <div class="bg-white/10 p-5 rounded-2xl">
+            <p class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-1">Social Hook</p>
+            <p id="socialHook" class="text-sm font-medium leading-snug"></p>
+          </div>
         </div>
-
-        <h3 class="text-2xl font-bold mb-6 text-slate-800">Platform Breakdown</h3>
-        <div id="breakdown" class="space-y-4"></div>
-
-        <div class="mt-12 pt-8 border-t border-slate-100 no-print">
-            <button id="downloadPdf" class="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-black">Download PDF Report</button>
-        </div>
+      </div>
     </div>
+  </section>
 
-    <script>
-        const $ = id => document.getElementById(id);
-        let lastData = null;
+  <script>
+    const $ = id => document.getElementById(id);
+    const API_BASE = 'https://nagohboost.gregoryhogan.workers.dev';
+    let lastPayload = null;
 
-        $('runAudit').addEventListener('click', async () => {
-            const urls = $('urlInput').value.split('\n').filter(u => u.trim());
-            const brandName = $('brandInput').value;
-            
-            $('runAudit').innerText = "Auditing Assets...";
-            
-            try {
-                const res = await fetch('YOUR_WORKER_URL/api/audit', {
-                    method: 'POST',
-                    body: JSON.stringify({ urls, brandName })
-                });
-                lastData = await res.json();
-                renderReport(lastData);
-            } catch (e) { alert("Audit failed. Check console."); }
-            
-            $('runAudit').innerText = "Run Audit";
+    // Platform Detection & Icons
+    const getPlatformIcon = (u) => {
+      const h = u.toLowerCase();
+      if (h.includes('instagram')) return '📸';
+      if (h.includes('tiktok')) return '🎵';
+      if (h.includes('etsy')) return '🛍️';
+      if (h.includes('substack')) return '✉️';
+      if (h.includes('apps.apple')) return '📱';
+      return '🌐';
+    };
+
+    // UI Logic
+    $('urlInput').addEventListener('input', () => {
+      const urls = $('urlInput').value.split('\n').filter(u => u.trim());
+      $('chipPreview').innerHTML = urls.map(u => `<span class="url-chip">${getPlatformIcon(u)} ${u.split('/')[2] || u}</span>`).join('');
+    });
+
+    $('auditBtn').addEventListener('click', async () => {
+      const urls = $('urlInput').value.split('\n').filter(u => u.trim());
+      if(urls.length < 2) return alert("Paste at least 2 URLs");
+
+      $('auditBtn').disabled = true;
+      $('auditSpinner').classList.remove('hidden');
+      $('auditBtnText').innerText = "Analyzing Assets...";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/audit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls, brandName: $('brandName').value })
         });
+        lastPayload = await res.json();
+        renderResults(lastPayload);
+      } catch (e) { alert("Audit failed. Check worker logs."); }
 
-        function renderReport(data) {
-            $('reportContent').classList.remove('hidden');
-            $('score').innerText = data.brand_cohesion_score;
-            $('summary').innerText = data.ai_perception_summary;
-            $('mismatch').innerText = data.critical_mismatch;
-            $('pdfDate').innerText = data.audit_meta.timestamp;
+      $('auditBtn').disabled = false;
+      $('auditSpinner').classList.add('hidden');
+      $('auditBtnText').innerText = "Run Forensic Audit →";
+    });
 
-            $('breakdown').innerHTML = data.platform_breakdown.map(p => `
-                <div class="card p-6 border border-slate-100 rounded-2xl bg-white shadow-sm flex gap-6">
-                    <div class="text-4xl">${p.icon}</div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h5 class="font-bold text-lg">${p.channel}</h5>
-                                <p class="text-xs text-slate-400 truncate max-w-xs">${p.url}</p>
-                            </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-bold ${p.health === 'Good' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${p.health}</span>
-                        </div>
-                        <p class="text-slate-600 text-sm mb-3"><strong>Finding:</strong> ${p.finding}</p>
-                        <p class="text-indigo-600 text-sm font-bold">→ Fix: ${p.fix}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
+    function renderResults(data) {
+      $('resultsSection').classList.remove('hidden');
+      $('pdfTimestamp').innerText = `Scanned on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`;
+      
+      const score = data.brand_cohesion_score;
+      $('scoreValue').innerText = score;
+      const offset = 440 - (score / 100) * 440;
+      $('scoreRing').style.strokeDashoffset = offset;
+      $('scoreRing').style.stroke = score > 70 ? '#10b981' : (score > 40 ? '#f59e0b' : '#ef4444');
 
-        $('downloadPdf').addEventListener('click', () => {
-            const element = $('reportContent');
-            document.body.classList.add('pdf-mode');
-            
-            html2pdf().set({
-                margin: 0.5,
-                filename: `Nagoh_Audit_${lastData.audit_meta.brand_name_provided}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            }).from(element).save().then(() => {
-                document.body.classList.remove('pdf-mode');
-            });
-        });
-    </script>
+      $('aiPerception').innerText = data.ai_perception_summary;
+      $('criticalMismatch').innerText = data.critical_mismatch;
+      $('immediateAction').innerText = data.traction_boost?.immediate_action || data.immediate_action;
+      $('seoTarget').innerText = data.traction_boost?.seo_target || data.seo_target;
+      $('socialHook').innerText = data.traction_boost?.social_hook || data.social_hook;
+
+      $('platformBreakdown').innerHTML = data.platform_breakdown.map(p => `
+        <div class="report-card p-6 border border-slate-100 rounded-3xl bg-white shadow-sm flex flex-col md:flex-row gap-6">
+          ${p.preview_img ? `<img src="${p.preview_img}" class="w-full md:w-32 h-24 object-cover rounded-xl bg-slate-100 border border-slate-100">` : ''}
+          <div class="flex-1">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h5 class="font-bold text-slate-800">${getPlatformIcon(p.url || p.channel)} ${p.channel}</h5>
+                <p class="text-[10px] text-slate-400 font-mono truncate max-w-xs">${p.url || ''}</p>
+              </div>
+              <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${p.health === 'Good' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${p.health}</span>
+            </div>
+            <p class="text-slate-600 text-sm mb-3"><strong>Finding:</strong> ${p.finding}</p>
+            <p class="text-indigo-600 text-xs font-bold">→ Fix: ${p.fix}</p>
+          </div>
+        </div>
+      `).join('');
+
+      $('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    $('downloadPdfBtn').addEventListener('click', () => {
+      const element = $('reportContent');
+      html2pdf().set({
+        margin: [0.5, 0.5],
+        filename: `NagohBoost_Audit_${lastPayload.brand_name_provided || 'Report'}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      }).from(element).save();
+    });
+  </script>
 </body>
 </html>
