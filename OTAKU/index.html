@@ -1,1 +1,469 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>OTAKU-PULSE 🎌 Live Anime & Manga Culture Feed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #fff, #ffd89b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 2px;
+        }
+
+        .header .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .timestamp {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            color: white;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd89b;
+        }
+
+        .stat-label {
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ffd89b;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+
+        /* Pulse Grid */
+        .pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* Pulse Card */
+        .pulse-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+        }
+
+        .pulse-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            padding: 20px 20px 10px 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .velocity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .velocity-high { background: #ff4757; color: white; }
+        .velocity-mid { background: #ffa502; color: white; }
+        .velocity-low { background: #1e90ff; color: white; }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.3;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .niche-tag, .platform-tag, .engagement-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .niche-tag {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .platform-tag {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        .engagement-tag {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .card-summary {
+            padding: 0 20px 15px 20px;
+            color: #555;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .source-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .source-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .pulse-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎌 OTAKU-PULSE</h1>
+            <div class="subtitle">Live Anime & Manga Culture Intelligence</div>
+            <div class="timestamp" id="timestamp">Loading...</div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalItems">0</div>
+                <div class="stat-label">Total Pulse Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgVelocity">0</div>
+                <div class="stat-label">Avg Velocity Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniqueNiches">0</div>
+                <div class="stat-label">Categories Covered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topPlatform">-</div>
+                <div class="stat-label">Top Platform</div>
+            </div>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-niche="all">🎌 All</button>
+        </div>
+
+        <div class="pulse-grid" id="pulseGrid">
+            <div class="loading">Loading anime/manga pulse data...</div>
+        </div>
+
+        <div class="footer">
+            <p>🎴 Powered by DeepSeek AI • Real-time anime/manga culture intelligence • Updated hourly</p>
+            <p style="margin-top: 10px;">© 2026 OTAKU-PULSE — The heartbeat of global otaku culture</p>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let currentFilter = 'all';
+
+        // Fetch data from JSON file
+        async function fetchAnimeData() {
+            try {
+                const response = await fetch('../data/anime_trends.json?v=' + Date.now());
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const data = await response.json();
+                currentData = data;
+                updateDashboard();
+            } catch (error) {
+                console.error('Error fetching anime data:', error);
+                document.getElementById('pulseGrid').innerHTML = '<div class="no-results">⚠️ Unable to load anime pulse data. Please check back soon.</div>';
+            }
+        }
+
+        // Update entire dashboard
+        function updateDashboard() {
+            if (!currentData) return;
+            
+            const items = currentData.anime_pulse_items || [];
+            const metadata = currentData.metadata || {};
+            
+            // Update timestamp
+            const lastUpdated = new Date(currentData.last_updated);
+            document.getElementById('timestamp').innerHTML = `🎴 Last updated: ${lastUpdated.toLocaleString()} UTC`;
+            
+            // Update stats
+            document.getElementById('totalItems').textContent = items.length;
+            
+            const avgVelocity = Math.round(items.reduce((sum, item) => sum + item.velocity_score, 0) / items.length);
+            document.getElementById('avgVelocity').textContent = avgVelocity;
+            
+            const uniqueNiches = new Set(items.map(item => item.niche)).size;
+            document.getElementById('uniqueNiches').textContent = uniqueNiches;
+            
+            // Find top platform
+            const platformCount = {};
+            items.forEach(item => {
+                platformCount[item.platform_origin] = (platformCount[item.platform_origin] || 0) + 1;
+            });
+            const topPlatform = Object.keys(platformCount).reduce((a, b) => platformCount[a] > platformCount[b] ? a : b, 'N/A');
+            document.getElementById('topPlatform').textContent = topPlatform;
+            
+            // Build filter buttons
+            const niches = ['all', ...new Set(items.map(item => item.niche))];
+            const filterBar = document.getElementById('filterBar');
+            filterBar.innerHTML = niches.map(niche => `
+                <button class="filter-btn ${niche === currentFilter ? 'active' : ''}" data-niche="${niche}">
+                    ${niche === 'all' ? '🎌 All' : niche}
+                </button>
+            `).join('');
+            
+            // Add event listeners to filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentFilter = btn.dataset.niche;
+                    updateDashboard();
+                });
+            });
+            
+            // Render cards
+            renderCards(items);
+        }
+        
+        // Get velocity class
+        function getVelocityClass(score) {
+            if (score >= 70) return 'velocity-high';
+            if (score >= 40) return 'velocity-mid';
+            return 'velocity-low';
+        }
+        
+        // Get velocity text
+        function getVelocityText(score) {
+            if (score >= 90) return '🚀 EXPLODING';
+            if (score >= 70) return '🔥 TRENDING';
+            if (score >= 50) return '📈 GROWING';
+            if (score >= 30) return '💬 NICHE';
+            return '✨ MICRO';
+        }
+        
+        // Render cards
+        function renderCards(items) {
+            const filteredItems = currentFilter === 'all' 
+                ? items 
+                : items.filter(item => item.niche === currentFilter);
+            
+            const grid = document.getElementById('pulseGrid');
+            
+            if (filteredItems.length === 0) {
+                grid.innerHTML = '<div class="no-results">😢 No anime/manga items found in this category. Check back soon!</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredItems.map(item => `
+                <div class="pulse-card">
+                    <div class="card-header">
+                        <span class="velocity-badge ${getVelocityClass(item.velocity_score)}">
+                            ${getVelocityText(item.velocity_score)} (${item.velocity_score})
+                        </span>
+                        <div class="card-title">${escapeHtml(item.title)}</div>
+                        <div class="card-meta">
+                            <span class="niche-tag">🎴 ${escapeHtml(item.niche)}</span>
+                            <span class="platform-tag">📱 ${escapeHtml(item.platform_origin)}</span>
+                            <span class="engagement-tag">💬 ${escapeHtml(item.engagement_type || 'Discussion')}</span>
+                        </div>
+                    </div>
+                    <div class="card-summary">
+                        ${escapeHtml(item.summary)}
+                    </div>
+                    <div class="card-footer">
+                        <a href="${escapeHtml(item.sourceURL)}" target="_blank" rel="noopener noreferrer" class="source-link">
+                            🔗 Source: ${escapeHtml(item.sourceURL)}
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Helper to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Auto-refresh every 5 minutes
+        setInterval(fetchAnimeData, 5 * 60 * 1000);
+        
+        // Initial load
+        fetchAnimeData();
+    </script>
+</body>
+</html>
