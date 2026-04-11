@@ -1,13 +1,29 @@
 {
-  "last_updated": "2026-04-11T00:00:00",
+  "last_updated": "2026-04-11T16:38:53.498252",
   "trends": [
     {
-      "title": "Loading trends...",
-      "description": "Fetching current trends from DeepSeek API"
+      "title": "Generative AI and Large Language Models",
+      "description": "Advanced AI systems like GPT-4, Claude, and Gemini that can generate human-like text, code, and creative content, transforming industries from customer service to software development."
+    },
+    {
+      "title": "AI-Powered Automation and Copilots",
+      "description": "Integration of AI assistants into workflows (e.g., GitHub Copilot, Microsoft 365 Copilot) to automate tasks, enhance productivity, and provide real-time support across business and creative processes."
+    },
+    {
+      "title": "Edge AI and IoT Convergence",
+      "description": "Deployment of AI algorithms directly on edge devices (sensors, cameras, smartphones) to enable real-time data processing, reduce latency, and improve privacy in smart cities, healthcare, and manufacturing."
+    },
+    {
+      "title": "Quantum Computing Advancements",
+      "description": "Progress in quantum hardware and algorithms, with companies like IBM, Google, and startups achieving milestones in error correction and practical applications for cryptography, drug discovery, and optimization."
+    },
+    {
+      "title": "Sustainable and Green Tech",
+      "description": "Innovations in renewable energy, carbon capture, circular economy tech, and AI-driven sustainability solutions to address climate change and reduce environmental impact across industries."
     }
   ],
   "metadata": {
     "source": "DeepSeek API",
-    "count": 1
+    "count": 5
   }
 }
