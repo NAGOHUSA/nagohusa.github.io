@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +23,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -58,7 +56,6 @@
             color: white;
         }
 
-        /* Stats Bar */
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -93,7 +90,6 @@
             opacity: 0.9;
         }
 
-        /* Filter Bar */
         .filter-bar {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -104,6 +100,8 @@
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .filter-btn {
@@ -115,6 +113,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .filter-btn:hover, .filter-btn.active {
@@ -123,7 +122,6 @@
             transform: scale(1.05);
         }
 
-        /* Pulse Grid */
         .pulse-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -131,7 +129,6 @@
             margin-bottom: 40px;
         }
 
-        /* Pulse Card */
         .pulse-card {
             background: white;
             border-radius: 20px;
@@ -139,7 +136,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             animation: fadeInUp 0.6s ease;
-            position: relative;
         }
 
         .pulse-card:hover {
@@ -228,22 +224,13 @@
             text-decoration: underline;
         }
 
-        /* Loading State */
-        .loading {
+        .loading, .no-results {
             text-align: center;
             padding: 60px;
             color: white;
             font-size: 1.2rem;
         }
 
-        .no-results {
-            text-align: center;
-            padding: 60px;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        /* Footer */
         .footer {
             text-align: center;
             padding: 30px;
@@ -251,7 +238,6 @@
             font-size: 0.85rem;
         }
 
-        /* Animations */
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -274,16 +260,13 @@
             }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
             }
-            
             .pulse-grid {
                 grid-template-columns: 1fr;
             }
-            
             .stats-bar {
                 grid-template-columns: 1fr;
             }
@@ -335,41 +318,37 @@
         let currentData = null;
         let currentFilter = 'all';
 
-        // Fetch data from JSON file
         async function fetchAnimeData() {
             try {
-                const response = await fetch('../data/anime_trends.json?v=' + Date.now());
+                // Fixed path for your domain: data file is in the same OTAKU directory
+                const response = await fetch('data/anime_trends.json?v=' + Date.now());
                 if (!response.ok) throw new Error('Failed to fetch data');
                 const data = await response.json();
                 currentData = data;
                 updateDashboard();
             } catch (error) {
                 console.error('Error fetching anime data:', error);
-                document.getElementById('pulseGrid').innerHTML = '<div class="no-results">⚠️ Unable to load anime pulse data. Please check back soon.</div>';
+                document.getElementById('pulseGrid').innerHTML = '<div class="no-results">⚠️ Unable to load anime pulse data. Please check back soon.<br><br>📁 Expected data at: /OTAKU/data/anime_trends.json<br>🕐 Dashboard updates every hour</div>';
             }
         }
 
-        // Update entire dashboard
         function updateDashboard() {
             if (!currentData) return;
             
             const items = currentData.anime_pulse_items || [];
             const metadata = currentData.metadata || {};
             
-            // Update timestamp
             const lastUpdated = new Date(currentData.last_updated);
             document.getElementById('timestamp').innerHTML = `🎴 Last updated: ${lastUpdated.toLocaleString()} UTC`;
             
-            // Update stats
             document.getElementById('totalItems').textContent = items.length;
             
-            const avgVelocity = Math.round(items.reduce((sum, item) => sum + item.velocity_score, 0) / items.length);
+            const avgVelocity = items.length > 0 ? Math.round(items.reduce((sum, item) => sum + item.velocity_score, 0) / items.length) : 0;
             document.getElementById('avgVelocity').textContent = avgVelocity;
             
             const uniqueNiches = new Set(items.map(item => item.niche)).size;
             document.getElementById('uniqueNiches').textContent = uniqueNiches;
             
-            // Find top platform
             const platformCount = {};
             items.forEach(item => {
                 platformCount[item.platform_origin] = (platformCount[item.platform_origin] || 0) + 1;
@@ -377,7 +356,6 @@
             const topPlatform = Object.keys(platformCount).reduce((a, b) => platformCount[a] > platformCount[b] ? a : b, 'N/A');
             document.getElementById('topPlatform').textContent = topPlatform;
             
-            // Build filter buttons
             const niches = ['all', ...new Set(items.map(item => item.niche))];
             const filterBar = document.getElementById('filterBar');
             filterBar.innerHTML = niches.map(niche => `
@@ -386,7 +364,6 @@
                 </button>
             `).join('');
             
-            // Add event listeners to filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentFilter = btn.dataset.niche;
@@ -394,18 +371,15 @@
                 });
             });
             
-            // Render cards
             renderCards(items);
         }
         
-        // Get velocity class
         function getVelocityClass(score) {
             if (score >= 70) return 'velocity-high';
             if (score >= 40) return 'velocity-mid';
             return 'velocity-low';
         }
         
-        // Get velocity text
         function getVelocityText(score) {
             if (score >= 90) return '🚀 EXPLODING';
             if (score >= 70) return '🔥 TRENDING';
@@ -414,7 +388,6 @@
             return '✨ MICRO';
         }
         
-        // Render cards
         function renderCards(items) {
             const filteredItems = currentFilter === 'all' 
                 ? items 
@@ -452,17 +425,13 @@
             `).join('');
         }
         
-        // Helper to escape HTML
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
         
-        // Auto-refresh every 5 minutes
         setInterval(fetchAnimeData, 5 * 60 * 1000);
-        
-        // Initial load
         fetchAnimeData();
     </script>
 </body>
