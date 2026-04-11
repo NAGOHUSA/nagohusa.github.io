@@ -1,1 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PulseRelay — Real-Time Trend Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --surface2:  #1a1a24;
+      --surface3:  #222230;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.13);
+      --text:      #e8e8f0;
+      --muted:     #6b6b80;
+      --muted2:    #9090a8;
+      --accent:    #00e5a0;
+      --accent2:   #7c6cf0;
+      --warn:      #f0a040;
+      --danger:    #e05555;
+      --hot:       #ff6b35;
+      --mono:      'Space Mono', monospace;
+      --sans:      'DM Sans', sans-serif;
+    }
+
+    html { font-size: 16px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-decoration: none;
+    }
+
+    .logo-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.35; transform: scale(0.65); }
+    }
+
+    .topbar-meta {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .topbar-meta span { color: var(--accent); }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-refresh {
+      padding: 6px 14px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted2);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-refresh.spinning { color: var(--accent); border-color: rgba(0,229,160,0.4); }
+
+    /* ── NICHE TOOLBAR ── */
+    .niche-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .niche-toolbar::-webkit-scrollbar { display: none; }
+
+    .toolbar-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
+
+    .pill {
+      padding: 5px 13px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+    .pill.all-pill.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
+    /* ── LAYOUT ── */
+    .main-layout {
+      display: flex;
+      min-height: calc(100vh - 100px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 230px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: sticky;
+      top: 100px;
+      height: calc(100vh - 100px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--surface3) transparent;
+    }
+
+    .sidebar-section-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.13em;
+      margin: 4px 0 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+    .plat-btn:hover { background: var(--surface2); color: var(--text); }
+    .plat-btn.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+    .plat-btn.active .plat-count { color: var(--accent); }
+
+    .plat-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .sidebar-hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+
+    .sort-select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b80'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .vibe-legend {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 4px;
+    }
+    .vibe-legend-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+    .vibe-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted2);
+      margin-bottom: 7px;
+      line-height: 1.3;
+    }
+    .vibe-row:last-child { margin-bottom: 0; }
+    .vibe-dot-sm {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1;
+      padding: 24px 28px;
+      min-width: 0;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .stat-val.c-accent  { color: var(--accent); }
+    .stat-val.c-accent2 { color: var(--accent2); }
+    .stat-val.c-warn    { color: var(--warn); }
+
+    /* ── CARD GRID ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: card-in 0.22s ease both;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .card:hover::before { opacity: 1; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-niche {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .vibe-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid;
+      font-family: var(--mono);
+      font-size: 9px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .vibe-badge .bd { width: 5px; height: 5px; border-radius: 50%; }
+
+    .vibe-verified { color: var(--accent);  border-color: rgba(0,229,160,0.35); background: rgba(0,229,160,0.06); }
+    .vibe-high     { color: #60c0ff;        border-color: rgba(96,192,255,0.35);background: rgba(96,192,255,0.06); }
+    .vibe-viral    { color: var(--accent2); border-color: rgba(124,108,240,0.35);background:rgba(124,108,240,0.06);}
+    .vibe-bot      { color: var(--warn);    border-color: rgba(240,160,64,0.35); background: rgba(240,160,64,0.06); }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .card-summary {
+      font-size: 12px;
+      color: var(--muted2);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .card-platform {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      flex-shrink: 0;
+      min-width: 52px;
+    }
+
+    .vel-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--surface3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .vel-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: width 0.5s ease;
+    }
+    .vel-fill.hot  { background: var(--hot); }
+    .vel-fill.warm { background: var(--warn); }
+
+    .vel-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      min-width: 22px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── STATES ── */
+    .state-box {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+      font-size: 14px;
+      grid-column: 1 / -1;
+    }
+    .state-icon { font-size: 32px; margin-bottom: 14px; opacity: 0.25; }
+
+    .loading-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      animation: blink 1.1s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    .error-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--danger);
+      line-height: 1.8;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 30px;
+      position: relative;
+      animation: modal-in 0.2s ease;
+      scrollbar-width: thin;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); border-color: var(--muted2); }
+
+    .modal-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .modal-eyebrow span { color: var(--muted2); }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.35;
+      margin-bottom: 18px;
+      padding-right: 40px;
+    }
+
+    .modal-vibe-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      margin-bottom: 20px;
+    }
+    .modal-vibe-icon {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .modal-vibe-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+    .modal-vibe-status {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .modal-vibe-note {
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 3px;
+    }
+
+    .modal-summary {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--muted2);
+      margin-bottom: 22px;
+    }
+
+    .modal-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .modal-meta-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 11px 13px;
+    }
+    .modal-meta-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.09em;
+      margin-bottom: 5px;
+    }
+    .modal-meta-val {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .modal-vel-section { margin-bottom: 22px; }
+    .modal-vel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .modal-vel-score { font-size: 13px; font-weight: 700; }
+    .modal-vel-bar {
+      height: 6px;
+      background: var(--surface3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .modal-vel-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    .modal-source-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 13px;
+      transition: border-color 0.15s;
+    }
+    .modal-source-link:hover { border-color: var(--accent); }
+
+    .source-icon {
+      width: 26px; height: 26px;
+      background: var(--accent);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      color: #000;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .source-url {
+      color: var(--muted2);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .topbar  { padding: 12px 16px; }
+      .content { padding: 16px; }
+      .niche-toolbar { padding: 10px 16px; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+    }
+
+    @media (max-width: 420px) {
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      PULSERELAY
+    </div>
+    <div class="topbar-actions">
+      <div class="topbar-meta">
+        <div>LAST SYNC &nbsp;<span id="last-updated">—</span></div>
+        <div><span id="item-count">—</span> SIGNALS ACTIVE</div>
+      </div>
+      <button class="btn-refresh" id="refresh-btn" onclick="refreshData()">↻ REFRESH</button>
+    </div>
+  </header>
+
+  <!-- NICHE FILTER TOOLBAR -->
+  <div class="niche-toolbar" id="niche-toolbar">
+    <span class="toolbar-label">NICHE</span>
+    <button class="pill all-pill active" data-niche="ALL" onclick="filterNiche('ALL')">All signals</button>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section-title">PLATFORM ORIGIN</div>
+      <button class="plat-btn active" data-platform="ALL" onclick="filterPlatform('ALL')">
+        All platforms
+        <span class="plat-count" id="plat-all-count">—</span>
+      </button>
+      <hr class="sidebar-hr">
+      <div id="platform-list"></div>
+
+      <hr class="sidebar-hr">
+      <div class="sidebar-section-title">SORT ORDER</div>
+      <select class="sort-select" id="sort-select" onchange="resort()">
+        <option value="velocity">Velocity ↓ (highest first)</option>
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="alpha">Alphabetical</option>
+      </select>
+
+      <hr class="sidebar-hr">
+      <div class="sidebar-section-title">HUMAN VIBE KEY</div>
+      <div class="vibe-legend">
+        <div class="vibe-legend-title">SIGNAL AUTHENTICITY</div>
+        <div class="vibe-row">
+          <div class="vibe-dot-sm" style="background:#00e5a0"></div>
+          Verified Human
+        </div>
+        <div class="vibe-row">
+          <div class="vibe-dot-sm" style="background:#60c0ff"></div>
+          High Engagement
+        </div>
+        <div class="vibe-row">
+          <div class="vibe-dot-sm" style="background:#7c6cf0"></div>
+          Viral Authentic
+        </div>
+        <div class="vibe-row">
+          <div class="vibe-dot-sm" style="background:#f0a040"></div>
+          Bot-Signal Low — trending activity shows signs of automated amplification; treat with caution
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-label">TOTAL SIGNALS</div>
+          <div class="stat-val c-accent" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AVG VELOCITY</div>
+          <div class="stat-val" id="stat-vel">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">NICHES LIVE</div>
+          <div class="stat-val c-accent2" id="stat-niches">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">HUMAN VERIFIED</div>
+          <div class="stat-val" id="stat-human">—</div>
+        </div>
+      </div>
+
+      <div class="card-grid" id="card-grid">
+        <div class="state-box">
+          <div class="loading-text">SCANNING SOCIAL GRAPH...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="modal-inner"></div>
+  </div>
+
+  <script>
+    const DATA_URL = 'https://nagoh.us/PULSERELAY/data/trends.json';
+
+    let allItems      = [];
+    let activeNiche   = 'ALL';
+    let activePlatform = 'ALL';
+    let modalSorted   = [];
+
+    /* ── VIBE HELPERS ── */
+
+    function vibeKey(vibe) {
+      if (!vibe) return 'verified';
+      const v = vibe.toLowerCase();
+      if (v.includes('verified')) return 'verified';
+      if (v.includes('high'))     return 'high';
+      if (v.includes('viral'))    return 'viral';
+      if (v.includes('bot'))      return 'bot';
+      return 'verified';
+    }
+
+    const VIBE_CONFIG = {
+      verified: { cls: 'vibe-verified', color: '#00e5a0', icon: '✓', note: 'Organic human engagement confirmed. No significant automated amplification detected.' },
+      high:     { cls: 'vibe-high',     color: '#60c0ff', icon: '↑', note: 'Exceptionally high engagement rate relative to reach — strong human interest signal.' },
+      viral:    { cls: 'vibe-viral',    color: '#7c6cf0', icon: '⚡', note: 'Spreading authentically across platforms. Real shares, real comments, real reactions.' },
+      bot:      { cls: 'vibe-bot',      color: '#f0a040', icon: '⚠', note: 'Automated activity detected in signal chain. Trending may be inflated — verify before amplifying.' },
+    };
+
+    function getVibe(vibe) {
+      return VIBE_CONFIG[vibeKey(vibe)] || VIBE_CONFIG.verified;
+    }
+
+    function vibeLabel(vibe) {
+      return vibe || 'Verified Human';
+    }
+
+    /* ── VELOCITY HELPERS ── */
+
+    function velClass(score) {
+      if (score >= 85) return 'hot';
+      if (score >= 60) return 'warm';
+      return '';
+    }
+
+    function velColor(score) {
+      if (score >= 85) return 'var(--hot)';
+      if (score >= 60) return 'var(--warn)';
+      return 'var(--accent)';
+    }
+
+    /* ── TIME HELPERS ── */
+
+    function timeAgo(ts) {
+      if (!ts) return '';
+      try {
+        const diff = Date.now() - new Date(ts).getTime();
+        const m = Math.floor(diff / 60000);
+        if (m < 1)  return 'just now';
+        if (m < 60) return m + 'm ago';
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + 'h ago';
+        return Math.floor(h / 24) + 'd ago';
+      } catch(e) { return ''; }
+    }
+
+    function fmtTime(ts) {
+      if (!ts) return '—';
+      try { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+      catch(e) { return ts; }
+    }
+
+    function fmtDate(ts) {
+      if (!ts) return '—';
+      try { return new Date(ts).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); }
+      catch(e) { return ts; }
+    }
+
+    /* ── FILTER & SORT ── */
+
+    function getFiltered() {
+      return allItems.filter(item => {
+        const nOk = activeNiche === 'ALL'    || item.niche === activeNiche;
+        const pOk = activePlatform === 'ALL' || item.platform_origin === activePlatform;
+        return nOk && pOk;
+      });
+    }
+
+    function getSorted(items) {
+      const s = document.getElementById('sort-select').value;
+      const arr = [...items];
+      if      (s === 'velocity') arr.sort((a,b) => (b.velocity_score||0)-(a.velocity_score||0));
+      else if (s === 'newest')   arr.sort((a,b) => new Date(b.timestamp||0)-new Date(a.timestamp||0));
+      else if (s === 'oldest')   arr.sort((a,b) => new Date(a.timestamp||0)-new Date(b.timestamp||0));
+      else if (s === 'alpha')    arr.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+      return arr;
+    }
+
+    /* ── RENDER ── */
+
+    function renderStats(items) {
+      document.getElementById('stat-total').textContent = items.length;
+      const avg = items.length
+        ? Math.round(items.reduce((s,i) => s+(i.velocity_score||0), 0) / items.length)
+        : 0;
+      document.getElementById('stat-vel').textContent = avg;
+      document.getElementById('stat-niches').textContent = new Set(items.map(i=>i.niche).filter(Boolean)).size;
+      const human = items.filter(i => {
+        const k = vibeKey(i.human_vibe_check);
+        return k === 'verified' || k === 'high' || k === 'viral';
+      }).length;
+      document.getElementById('stat-human').textContent = human + '/' + items.length;
+    }
+
+    function renderCards(items) {
+      const grid = document.getElementById('card-grid');
+      if (!items.length) {
+        grid.innerHTML = '<div class="state-box"><div class="state-icon">◎</div><div>No signals match your current filters.</div></div>';
+        return;
+      }
+
+      grid.innerHTML = items.map((item, idx) => {
+        const cfg   = getVibe(item.human_vibe_check);
+        const score = item.velocity_score || 0;
+        const vCls  = velClass(score);
+        const summary = (item.summary || '').length > 110
+          ? item.summary.substring(0,110) + '…'
+          : item.summary || '';
+        const delay = Math.min(idx * 0.028, 0.35).toFixed(3);
+
+        return `<div class="card" style="animation-delay:${delay}s" onclick="openModal(${idx})" role="button" tabindex="0" aria-label="${(item.title||'').replace(/"/g,'&quot;')}">
+          <div class="card-top">
+            <div class="card-niche">${item.niche || 'GENERAL'}</div>
+            <div class="vibe-badge ${cfg.cls}">
+              <div class="bd" style="background:${cfg.color}"></div>
+              ${vibeLabel(item.human_vibe_check)}
+            </div>
+          </div>
+          <div class="card-title">${item.title || 'Untitled signal'}</div>
+          <div class="card-summary">${summary}</div>
+          <div class="card-footer">
+            <div class="card-platform">${item.platform_origin || '—'}</div>
+            <div class="vel-bar"><div class="vel-fill ${vCls}" style="width:${score}%"></div></div>
+            <div class="vel-num">${score}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // keyboard support
+      grid.querySelectorAll('.card').forEach((card, idx) => {
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(idx); }
+        });
+      });
+    }
+
+    /* ── MODAL ── */
+
+    function openModal(idx) {
+      modalSorted = getSorted(getFiltered());
+      const item = modalSorted[idx];
+      if (!item) return;
+
+      const cfg   = getVibe(item.human_vibe_check);
+      const score = item.velocity_score || 0;
+
+      document.getElementById('modal-inner').innerHTML = `
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+
+        <div class="modal-eyebrow">
+          <span>${item.niche || 'GENERAL'}</span>
+          &nbsp;·&nbsp;
+          <span>${item.platform_origin || '—'}</span>
+          &nbsp;·&nbsp;
+          <span>${timeAgo(item.timestamp)}</span>
+        </div>
+
+        <div class="modal-title">${item.title || 'Untitled'}</div>
+
+        <div class="modal-vibe-block">
+          <div class="modal-vibe-icon" style="color:${cfg.color}">${cfg.icon}</div>
+          <div>
+            <div class="modal-vibe-label">HUMAN VERIFICATION STATUS</div>
+            <div class="modal-vibe-status" style="color:${cfg.color}">${vibeLabel(item.human_vibe_check)}</div>
+            <div class="modal-vibe-note">${cfg.note}</div>
+          </div>
+        </div>
+
+        <div class="modal-summary">${item.summary || 'No summary available.'}</div>
+
+        <div class="modal-meta-grid">
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">PLATFORM ORIGIN</div>
+            <div class="modal-meta-val">${item.platform_origin || '—'}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">SIGNAL TIME</div>
+            <div class="modal-meta-val">${fmtTime(item.timestamp)}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">DATE</div>
+            <div class="modal-meta-val">${fmtDate(item.timestamp)}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">NICHE</div>
+            <div class="modal-meta-val">${item.niche || '—'}</div>
+          </div>
+        </div>
+
+        <div class="modal-vel-section">
+          <div class="modal-vel-header">
+            <span>VELOCITY SCORE</span>
+            <span class="modal-vel-score" style="color:${velColor(score)}">${score} / 100</span>
+          </div>
+          <div class="modal-vel-bar">
+            <div class="modal-vel-fill" style="width:${score}%;background:${velColor(score)}"></div>
+          </div>
+        </div>
+
+        ${item.sourceURL ? `
+        <a class="modal-source-link" href="${item.sourceURL}" target="_blank" rel="noopener noreferrer">
+          <div class="source-icon">↗</div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:2px;">SOURCE</div>
+            <div class="source-url">${item.sourceURL.replace(/^https?:\/\/(www\.)?/, '').substring(0, 70)}</div>
+          </div>
+        </a>` : ''}
+      `;
+
+      document.getElementById('modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* ── FILTER CONTROLS ── */
+
+    function filterNiche(niche) {
+      activeNiche = niche;
+      document.querySelectorAll('.pill[data-niche]').forEach(p => {
+        p.classList.toggle('active', p.dataset.niche === niche);
+      });
+      update();
+    }
+
+    function filterPlatform(platform) {
+      activePlatform = platform;
+      document.querySelectorAll('.plat-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.platform === platform);
+      });
+      update();
+    }
+
+    function resort() { update(); }
+
+    function update() {
+      const filtered = getFiltered();
+      const sorted   = getSorted(filtered);
+      renderStats(sorted);
+      renderCards(sorted);
+    }
+
+    /* ── BUILD DYNAMIC UI ── */
+
+    function buildNicheToolbar(items) {
+      const niches  = [...new Set(items.map(i => i.niche).filter(Boolean))].sort();
+      const toolbar = document.getElementById('niche-toolbar');
+      // Remove old dynamic pills
+      toolbar.querySelectorAll('.pill:not(.all-pill)').forEach(p => p.remove());
+      niches.forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'pill';
+        btn.dataset.niche = n;
+        btn.textContent = n;
+        btn.onclick = () => filterNiche(n);
+        toolbar.appendChild(btn);
+      });
+    }
+
+    function buildPlatformList(items) {
+      const counts = {};
+      items.forEach(i => {
+        if (i.platform_origin) counts[i.platform_origin] = (counts[i.platform_origin]||0)+1;
+      });
+
+      document.getElementById('plat-all-count').textContent = items.length;
+
+      const list = document.getElementById('platform-list');
+      list.innerHTML = '';
+
+      Object.entries(counts)
+        .sort((a,b) => b[1]-a[1])
+        .forEach(([platform, count]) => {
+          const btn = document.createElement('button');
+          btn.className = 'plat-btn';
+          btn.dataset.platform = platform;
+          btn.innerHTML = `${platform} <span class="plat-count">${count}</span>`;
+          btn.onclick = () => filterPlatform(platform);
+          list.appendChild(btn);
+        });
+    }
+
+    /* ── DATA LOADING ── */
+
+    async function loadData(silent = false) {
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      if (!silent) {
+        document.getElementById('card-grid').innerHTML =
+          '<div class="state-box"><div class="loading-text">SCANNING SOCIAL GRAPH...</div></div>';
+      }
+
+      refreshBtn.classList.add('spinning');
+      refreshBtn.textContent = '↻ SYNCING';
+
+      try {
+        const res = await fetch(DATA_URL + '?t=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+
+        allItems = Array.isArray(json.pulse_items) ? json.pulse_items : [];
+
+        const updated = json.last_updated
+          ? new Date(json.last_updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : '—';
+
+        document.getElementById('last-updated').textContent = updated;
+        document.getElementById('item-count').textContent   = allItems.length;
+
+        buildNicheToolbar(allItems);
+        buildPlatformList(allItems);
+        update();
+
+      } catch (err) {
+        document.getElementById('card-grid').innerHTML = `
+          <div class="state-box">
+            <div class="error-text">
+              SIGNAL LOST — ${err.message}<br><br>
+              Check that <code style="color:var(--accent)">${DATA_URL}</code><br>
+              is reachable and returns a CORS header:<br>
+              <code style="color:var(--muted2)">Access-Control-Allow-Origin: *</code>
+            </div>
+          </div>`;
+      } finally {
+        refreshBtn.classList.remove('spinning');
+        refreshBtn.textContent = '↻ REFRESH';
+      }
+    }
+
+    function refreshData() { loadData(false); }
+
+    // Initial load + auto-refresh every hour
+    loadData();
+    setInterval(() => loadData(true), 3_600_000);
+  </script>
+</body>
+</html>
