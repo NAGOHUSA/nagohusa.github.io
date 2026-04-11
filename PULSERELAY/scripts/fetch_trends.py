@@ -1,150 +1,184 @@
 #!/usr/bin/env python3
 """
-PulseRelay – fetch_trends.py
-Calls the DeepSeek API and writes trending topics to PULSERELAY/data/trends.json.
-
-Required environment variable:
-    DEEPSEEK_API_KEY  – your DeepSeek API key (set as a GitHub Secret)
+Fetch current technology trends from DeepSeek API and save to trends.json
 """
 
-import json
 import os
+import json
 import sys
-from datetime import datetime, timezone
-from pathlib import Path
-
 import requests
+from datetime import datetime
+from typing import List, Dict, Any
 
-# ── Configuration ─────────────────────────────────────────────────────────────
-
-API_URL = "https://api.deepseek.com/v1/chat/completions"
-MODEL = "deepseek-chat"
-
-NICHES = [
-    "Cinema",
-    "Sports",
-    "World Events",
-    "Streaming",
-    "Music",
-    "Space",
-    "Tech",
-    "3D Printing",
-    "Privacy",
-    "Repair Economy",
-    "Outdoors",
-    "Legal Tech",
-]
-
-OUTPUT_PATH = Path(__file__).parent.parent / "data" / "trends.json"
-
-# ── Prompt ────────────────────────────────────────────────────────────────────
-
-SYSTEM_PROMPT = (
-    "You are a JSON Trends Generator. "
-    "When given a list of niches, you respond ONLY with a valid JSON array. "
-    "Each element represents a trending topic and must have exactly these fields:\n"
-    "  title        (string)  – short headline of the trend\n"
-    "  summary      (string)  – 2-3 sentence explanation\n"
-    "  sourceURL    (string)  – a plausible URL to a real or representative source\n"
-    "  timestamp    (string)  – current date-time in ISO 8601 format (UTC, e.g. 2025-06-01T12:00:00Z)\n"
-    "  niche        (string)  – the niche this trend belongs to\n"
-    "  isHuman      (boolean) – true if the story is primarily about human activity, false if it is technology/event-driven\n"
-    "  velocityScore (number) – integer 1-100 indicating how fast this trend is growing\n\n"
-    "Return ONLY the JSON array. No markdown fences, no commentary, no extra text."
-)
-
-USER_PROMPT = (
-    f"Today is {datetime.now(timezone.utc).strftime('%Y-%m-%d')}. "
-    f"Generate 2 trending topics for each of the following niches: {', '.join(NICHES)}. "
-    "Ensure the timestamp field reflects today's date in ISO 8601 UTC format."
-)
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-
-def fetch_trends(api_key: str) -> list[dict]:
-    """Call the DeepSeek API and return the parsed list of trend objects."""
+def fetch_trends(api_key: str) -> List[Dict[str, Any]]:
+    """
+    Fetch trending topics from DeepSeek API
+    
+    Args:
+        api_key: DeepSeek API key
+        
+    Returns:
+        List of trend dictionaries with 'title' and 'description'
+    """
+    if not api_key or api_key == "":
+        raise ValueError("DEEPSEEK_API_KEY is not set or empty")
+    
+    # DeepSeek API endpoint
+    url = "https://api.deepseek.com/v1/chat/completions"
+    
+    # Headers with proper authentication
     headers = {
-        "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
     }
+    
+    # Request payload
     payload = {
-        "model": MODEL,
+        "model": "deepseek-chat",
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": USER_PROMPT},
+            {
+                "role": "system",
+                "content": "You are a technology trends analyst. Provide current, relevant tech trends."
+            },
+            {
+                "role": "user",
+                "content": """List the top 5 current technology trends for today's date. 
+Format your response as a JSON array with objects containing 'title' and 'description' fields.
+Example format: 
+[
+  {"title": "Trend 1", "description": "Description of trend 1"},
+  {"title": "Trend 2", "description": "Description of trend 2"}
+]
+Return ONLY the JSON array, no additional text."""
+            }
         ],
         "temperature": 0.7,
-        "max_tokens": 4096,
+        "max_tokens": 1000,
+        "response_format": {"type": "json_object"}
     }
-
-    response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
-    response.raise_for_status()
-
-    raw_content: str = response.json()["choices"][0]["message"]["content"].strip()
-
-    # Strip optional markdown code fences that the model may still include
-    if raw_content.startswith("```"):
-        raw_content = raw_content.split("```", 2)[1]
-        if raw_content.startswith("json"):
-            raw_content = raw_content[4:]
-        raw_content = raw_content.rsplit("```", 1)[0].strip()
-
-    trends: list[dict] = json.loads(raw_content)
-
-    if not isinstance(trends, list):
-        raise ValueError("DeepSeek response is not a JSON array.")
-
-    return trends
-
-
-def validate_trend(trend: dict, index: int) -> dict:
-    """Ensure required fields are present and have the correct types."""
-    required = {
-        "title": str,
-        "summary": str,
-        "sourceURL": str,
-        "timestamp": str,
-        "niche": str,
-        "isHuman": bool,
-        "velocityScore": (int, float),
-    }
-    for field, expected_type in required.items():
-        if field not in trend:
-            raise ValueError(f"Trend #{index} is missing field '{field}'.")
-        if not isinstance(trend[field], expected_type):
-            # Attempt a light coercion for numeric velocityScore
-            if field == "velocityScore":
-                trend[field] = int(trend[field])
-            else:
-                raise TypeError(
-                    f"Trend #{index} field '{field}' has wrong type "
-                    f"(expected {expected_type}, got {type(trend[field])})."
-                )
-    return trend
-
-
-# ── Entry Point ───────────────────────────────────────────────────────────────
-
-
-def main() -> None:
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
-    if not api_key:
-        print("ERROR: DEEPSEEK_API_KEY environment variable is not set.", file=sys.stderr)
+    
+    try:
+        print(f"Calling DeepSeek API at {url}...")
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
+        # Check for HTTP errors
+        if response.status_code == 401:
+            print("ERROR: Authentication failed (401 Unauthorized)")
+            print("Please verify your DEEPSEEK_API_KEY is correct and active")
+            print(f"API key starts with: {api_key[:8]}...")
+            print(f"API key length: {len(api_key)} characters")
+            sys.exit(1)
+        
+        response.raise_for_status()
+        
+        # Parse response
+        result = response.json()
+        content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+        
+        if not content:
+            raise ValueError("Empty response from DeepSeek API")
+        
+        # Clean and parse JSON response
+        content = content.strip()
+        
+        # Handle if response has markdown code blocks
+        if content.startswith("```json"):
+            content = content[7:]
+        if content.startswith("```"):
+            content = content[3:]
+        if content.endswith("```"):
+            content = content[:-3]
+        
+        content = content.strip()
+        
+        # Parse the JSON
+        trends_data = json.loads(content)
+        
+        # Handle both array and object formats
+        if isinstance(trends_data, dict) and "trends" in trends_data:
+            trends = trends_data["trends"]
+        elif isinstance(trends_data, list):
+            trends = trends_data
+        else:
+            raise ValueError(f"Unexpected response format: {type(trends_data)}")
+        
+        # Validate structure
+        for trend in trends:
+            if "title" not in trend or "description" not in trend:
+                raise ValueError(f"Invalid trend format: {trend}")
+        
+        print(f"Successfully fetched {len(trends)} trends")
+        return trends
+        
+    except requests.exceptions.Timeout:
+        print("ERROR: Request timed out after 30 seconds")
+        sys.exit(1)
+    except requests.exceptions.ConnectionError:
+        print("ERROR: Failed to connect to DeepSeek API")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: Failed to parse API response as JSON: {e}")
+        print(f"Raw response: {content[:200]}...")
+        sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Unexpected error: {e}")
         sys.exit(1)
 
-    print("Fetching trends from DeepSeek…")
+def save_trends(trends: List[Dict[str, Any]], output_file: str) -> None:
+    """
+    Save trends to JSON file with timestamp
+    
+    Args:
+        trends: List of trend dictionaries
+        output_file: Path to output JSON file
+    """
+    output_data = {
+        "last_updated": datetime.now().isoformat(),
+        "trends": trends,
+        "metadata": {
+            "source": "DeepSeek API",
+            "count": len(trends)
+        }
+    }
+    
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
+    # Write to file
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(output_data, f, indent=2, ensure_ascii=False)
+    
+    print(f"Trends saved to {output_file}")
+
+def main():
+    """Main execution function"""
+    # Get API key from environment
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    
+    if not api_key:
+        print("ERROR: DEEPSEEK_API_KEY environment variable not set")
+        print("Please set your DeepSeek API key:")
+        print("  export DEEPSEEK_API_KEY='your-api-key-here'")
+        sys.exit(1)
+    
+    # Validate API key format (basic check)
+    if len(api_key) < 20:
+        print(f"WARNING: API key seems too short ({len(api_key)} chars). Expected 30+ characters.")
+    
+    # Define output path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    output_file = os.path.join(project_root, "data", "trends.json")
+    
+    print(f"Fetching trends from DeepSeek API...")
+    print(f"API Key present: {'Yes' if api_key else 'No'} (length: {len(api_key) if api_key else 0})")
+    
+    # Fetch and save trends
     trends = fetch_trends(api_key)
-    print(f"  Received {len(trends)} trend(s).")
-
-    validated = [validate_trend(t, i) for i, t in enumerate(trends)]
-
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with OUTPUT_PATH.open("w", encoding="utf-8") as fh:
-        json.dump(validated, fh, ensure_ascii=False, indent=2)
-
-    print(f"  Written to {OUTPUT_PATH}")
-
+    save_trends(trends, output_file)
+    
+    print("\n✅ Success! trends.json has been updated.")
+    print(f"Location: {output_file}")
 
 if __name__ == "__main__":
     main()
