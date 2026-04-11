@@ -1,0 +1,57 @@
+name: 🎌 OTAKU-PULSE – Hourly Anime/Manga Trends Update
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour at :00
+  workflow_dispatch:        # allow manual runs
+
+jobs:
+  update-anime-trends:
+    name: Fetch & Commit Anime/Manga Trends
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Debug API Key Status
+        run: |
+          if [ -n "$DEEPSEEK_API_KEY" ]; then
+            echo "✅ API key is set (length: ${#DEEPSEEK_API_KEY})"
+          else
+            echo "❌ ERROR: DEEPSEEK_API_KEY is NOT set"
+            exit 1
+          fi
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: Fetch anime/manga trends from DeepSeek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python OTAKU-PULSE/scripts/fetch_anime_trends.py
+
+      - name: Commit updated anime_trends.json
+        run: |
+          git config user.name "OTAKU-PULSE Bot"
+          git config user.email "otaku-pulse-bot@users.noreply.github.com"
+          git add OTAKU-PULSE/data/anime_trends.json
+          git diff --cached --quiet || \
+            git commit -m "🎌 otaku-pulse: update anime/manga trends [skip ci]"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
