@@ -1,0 +1,73 @@
+name: PulseRelay – Hourly Trends Update
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour at :00
+  workflow_dispatch:        # allow manual runs from the Actions tab
+
+jobs:
+  update-trends:
+    name: Fetch & Commit trends.json
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # needed to push the updated file
+
+    steps:
+      # 1. Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 2. Python setup
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. Install dependencies
+      - name: Install Python dependencies
+        run: pip install requests
+
+      # 4. Debug: Verify API key exists (safe)
+      - name: Debug API Key Status
+        run: |
+          if [ -n "$DEEPSEEK_API_KEY" ]; then
+            echo "✅ API key is set"
+            echo "Key length: ${#DEEPSEEK_API_KEY} characters"
+            echo "Key prefix: ${DEEPSEEK_API_KEY:0:10}..."
+          else
+            echo "❌ ERROR: DEEPSEEK_API_KEY is NOT set in environment"
+            echo "Please add DEEPSEEK_API_KEY to GitHub Secrets"
+            exit 1
+          fi
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      # 5. Test API key with simple request
+      - name: Test DeepSeek API Connection
+        run: python PULSERELAY/scripts/test_api.py
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      # 6. Fetch trends from DeepSeek
+      - name: Fetch trends from DeepSeek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python PULSERELAY/scripts/fetch_trends.py
+
+      # 7. Commit & push if trends.json changed
+      - name: Commit updated trends.json
+        run: |
+          git config user.name "PulseRelay Bot"
+          git config user.email "pulserelay-bot@users.noreply.github.com"
+          git add PULSERELAY/data/trends.json
+          # Only commit when the file has actually changed
+          git diff --cached --quiet || \
+            git commit -m "chore(pulserelay): update trends.json [skip ci]"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
