@@ -40,13 +40,13 @@ jobs:
       - name: Fetch anime/manga trends from DeepSeek
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: python OTAKU-PULSE/scripts/fetch_anime_trends.py
+        run: python otaku/scripts/fetch_anime_trends.py
 
       - name: Commit updated anime_trends.json
         run: |
           git config user.name "OTAKU-PULSE Bot"
           git config user.email "otaku-pulse-bot@users.noreply.github.com"
-          git add OTAKU-PULSE/data/anime_trends.json
+          git add otaku/data/anime_trends.json
           git diff --cached --quiet || \
             git commit -m "🎌 otaku-pulse: update anime/manga trends [skip ci]"
 
