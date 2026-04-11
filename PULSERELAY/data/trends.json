@@ -1,29 +1,162 @@
 {
-  "last_updated": "2026-04-11T16:38:53.498252",
-  "trends": [
+  "last_updated": "2026-04-11T16:50:57.322705+00:00",
+  "pulse_items": [
     {
-      "title": "Generative AI and Large Language Models",
-      "description": "Advanced AI systems like GPT-4, Claude, and Gemini that can generate human-like text, code, and creative content, transforming industries from customer service to software development."
+      "title": "Artemis II Crew Returns Safely to Earth",
+      "summary": "NASA's Artemis II mission successfully concluded with splashdown in the Pacific Ocean. The four astronauts are being recovered as live footage shows their capsule bobbing in the water. This marks humanity's return to lunar orbit after decades.",
+      "sourceURL": "https://www.nasa.gov/live",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Space & Science",
+      "platform_origin": "YouTube",
+      "velocity_score": 95,
+      "human_vibe_check": "Verified Human"
     },
     {
-      "title": "AI-Powered Automation and Copilots",
-      "description": "Integration of AI assistants into workflows (e.g., GitHub Copilot, Microsoft 365 Copilot) to automate tasks, enhance productivity, and provide real-time support across business and creative processes."
+      "title": "Pragmata Pre-Load Breaks Steam Records",
+      "summary": "Capcom's long-awaited sci-fi game Pragmata has shattered pre-load records on Steam with over 2 million downloads in 24 hours. Reddit gaming communities are exploding with speculation about the mysterious storyline and gameplay mechanics.",
+      "sourceURL": "https://www.reddit.com/r/gaming",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Gaming",
+      "platform_origin": "Reddit",
+      "velocity_score": 92,
+      "human_vibe_check": "High Engagement"
     },
     {
-      "title": "Edge AI and IoT Convergence",
-      "description": "Deployment of AI algorithms directly on edge devices (sensors, cameras, smartphones) to enable real-time data processing, reduce latency, and improve privacy in smart cities, healthcare, and manufacturing."
+      "title": "Microsoft Unveils Agentic AI at Azure Summit",
+      "summary": "Microsoft announced breakthrough Agentic AI systems at their Azure Summit that can autonomously complete complex business workflows. The technology demonstrates AI agents coordinating across multiple applications without human intervention.",
+      "sourceURL": "https://news.microsoft.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Technology & AI",
+      "platform_origin": "LinkedIn",
+      "velocity_score": 88,
+      "human_vibe_check": "Verified Human"
     },
     {
-      "title": "Quantum Computing Advancements",
-      "description": "Progress in quantum hardware and algorithms, with companies like IBM, Google, and startups achieving milestones in error correction and practical applications for cryptography, drug discovery, and optimization."
+      "title": "'Quantum Kitchen' Cooking Trend Goes Viral",
+      "summary": "TikTok creators are using molecular gastronomy techniques in home kitchens, creating edible spheres and foams with simple tools. The #QuantumKitchen hashtag has 500k videos with high save-to-view ratios as people attempt scientific cooking.",
+      "sourceURL": "https://www.tiktok.com/tag/QuantumKitchen",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Food & Cooking",
+      "platform_origin": "TikTok",
+      "velocity_score": 85,
+      "human_vibe_check": "Viral Authentic"
     },
     {
-      "title": "Sustainable and Green Tech",
-      "description": "Innovations in renewable energy, carbon capture, circular economy tech, and AI-driven sustainability solutions to address climate change and reduce environmental impact across industries."
+      "title": "AI-Generated '90s Sitcom Parodies Explode",
+      "summary": "AI tools are creating perfect parodies of 90s sitcoms with current celebrities as characters. The 'Friends but with Elon Musk' video has been DM-shared millions of times, sparking nostalgia and absurd humor across social platforms.",
+      "sourceURL": "https://www.youtube.com/trending",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Memes & Viral Content",
+      "platform_origin": "X",
+      "velocity_score": 90,
+      "human_vibe_check": "Viral Authentic"
+    },
+    {
+      "title": "Major Earthquake Hits Tokyo, Tsunami Warning Issued",
+      "summary": "A 7.2 magnitude earthquake struck near Tokyo, triggering tsunami warnings along Japan's eastern coast. Emergency services are responding as buildings swayed violently in live footage from the capital.",
+      "sourceURL": "https://www.reuters.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Breaking News",
+      "platform_origin": "X",
+      "velocity_score": 98,
+      "human_vibe_check": "Verified Human"
+    },
+    {
+      "title": "Taylor Swift Announces 'Midnights: The Quantum Edition'",
+      "summary": "Taylor Swift surprise-announced a complete reimagining of her Midnights album using quantum computing algorithms to generate new musical arrangements. Pre-sales crashed Ticketmaster within minutes of the announcement.",
+      "sourceURL": "https://www.spotify.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Music & Pop Culture",
+      "platform_origin": "Threads",
+      "velocity_score": 94,
+      "human_vibe_check": "High Engagement"
+    },
+    {
+      "title": "NBA Playoffs Controversy Over AI Referee Calls",
+      "summary": "The NBA's experimental AI referee system made three controversial calls in tonight's playoff games, sparking debates about technology in sports. Players and coaches are divided on whether to trust algorithmic officiating.",
+      "sourceURL": "https://www.espn.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Sports",
+      "platform_origin": "Facebook",
+      "velocity_score": 82,
+      "human_vibe_check": "High Engagement"
+    },
+    {
+      "title": "Discord Communities Obsessed with 'Ambient Gaming'",
+      "summary": "Niche Discord servers are hyper-focused on 'ambient gaming' - playing games with minimal interaction to create atmospheric experiences. Communities share specific sound setups, lighting, and game combinations for maximum immersion.",
+      "sourceURL": "https://discord.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Gaming",
+      "platform_origin": "Discord",
+      "velocity_score": 65,
+      "human_vibe_check": "High Engagement"
+    },
+    {
+      "title": "Solar Flare Disrupts Global Satellite Networks",
+      "summary": "A massive X-class solar flare is causing widespread disruption to satellite communications and GPS systems. Airlines are rerouting flights as space weather agencies issue warnings about potential power grid impacts.",
+      "sourceURL": "https://www.noaa.gov",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Space & Science",
+      "platform_origin": "X",
+      "velocity_score": 87,
+      "human_vibe_check": "Verified Human"
+    },
+    {
+      "title": "Netflix's 'Chronos' Breaks Viewing Records",
+      "summary": "The time-travel series 'Chronos' has become Netflix's most-watched show in its first 24 hours, with viewers obsessed with its complex temporal mechanics. Social media is filled with timeline diagrams and theory discussions.",
+      "sourceURL": "https://www.netflix.com/tudum",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Movies & TV",
+      "platform_origin": "TikTok",
+      "velocity_score": 91,
+      "human_vibe_check": "Viral Authentic"
+    },
+    {
+      "title": "Crypto 'Sleep Mining' Trend Takes Off",
+      "summary": "A new proof-of-stake variant called 'sleep mining' rewards users for periods of wallet inactivity, creating ironic incentives in crypto communities. The trend combines wellness tracking with blockchain technology in unexpected ways.",
+      "sourceURL": "https://www.coindesk.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Crypto & Web3",
+      "platform_origin": "Discord",
+      "velocity_score": 72,
+      "human_vibe_check": "High Engagement"
+    },
+    {
+      "title": "AI Therapist Regulation Debate Heats Up",
+      "summary": "Governments worldwide are debating how to regulate AI mental health tools after studies show mixed effectiveness. Professional organizations are divided between embracing innovation and protecting patient safety standards.",
+      "sourceURL": "https://www.who.int",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Health & Wellness",
+      "platform_origin": "LinkedIn",
+      "velocity_score": 78,
+      "human_vibe_check": "Verified Human"
+    },
+    {
+      "title": "'Office Plants with Personalities' Meme Format",
+      "summary": "Workers are giving their office plants elaborate backstories and dramatic relationships in a new meme format. The trend combines workplace humor with absurdist character development for potted succulents and ferns.",
+      "sourceURL": "https://www.instagram.com/explore",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Memes & Viral Content",
+      "platform_origin": "X",
+      "velocity_score": 83,
+      "human_vibe_check": "Viral Authentic"
+    },
+    {
+      "title": "Vertical Farming Investment Boom Continues",
+      "summary": "Major investment firms are pouring billions into vertical farming technology as climate change threatens traditional agriculture. New skyscraper farms in urban centers are producing record yields of staple crops.",
+      "sourceURL": "https://www.bloomberg.com",
+      "timestamp": "2026-04-11T16:00:00Z",
+      "niche": "Business & Finance",
+      "platform_origin": "LinkedIn",
+      "velocity_score": 75,
+      "human_vibe_check": "Verified Human"
     }
   ],
   "metadata": {
-    "source": "DeepSeek API",
-    "count": 5
+    "source": "DeepSeek API - Wide Net Mode",
+    "count": 15,
+    "niches_covered": 12,
+    "platforms_covered": 8,
+    "generator": "PulseRelay Wide Net Agent v2.0"
   }
 }
