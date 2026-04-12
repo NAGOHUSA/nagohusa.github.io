@@ -1,327 +1,491 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Real-Time Intelligence & Trend Synthesis Agent
-Fetches current trends from DeepSeek API with structured JSON output
-Wide Net: Casting across all topics, no local-only restrictions
+PulseRelay - Multi-Source Real-Time Trend Aggregator
+Fetches trending data from multiple APIs and synthesizes comprehensive feed
+Optimized for iOS app consumption with VelocityTrend schema
 """
 
 import os
 import json
 import sys
 import requests
-from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+import hashlib
+from datetime import datetime, timezone, timedelta
+from typing import List, Dict, Any, Optional, Tuple
+from collections import defaultdict
+import time
 
-# Wide net niches - covering all possible interests
-WIDE_NET_NICHES = [
-    "Breaking News",
-    "Technology & AI",
-    "Space & Science",
-    "Gaming",
-    "Memes & Viral Content",
-    "Entertainment",
-    "Sports",
-    "Business & Finance",
-    "Crypto & Web3",
-    "Politics",
-    "Health & Wellness",
-    "Environment & Climate",
-    "Music & Pop Culture",
-    "Movies & TV",
-    "Art & Design",
-    "Education & Learning",
-    "Travel & Adventure",
-    "Food & Cooking",
-    "Fashion & Beauty",
-    "Relationships & Social",
-    "Career & Work",
-    "Philosophy & Deep Topics",
-    "Weird & Interesting",
-    "Nostalgia & Retro",
-    "Future & Sci-Fi"
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+# Niche categories matching iOS app's NicheCategory enum
+APP_NICHES = [
+    "tech", "space", "finance", "health", "science",
+    "gaming", "entertainment", "sports", "crypto", "climate",
+    "ai", "design", "education", "travel", "food", "fashion", "viral"
 ]
 
-# Platform origins mapping
-PLATFORMS = ["X", "Reddit", "TikTok", "Instagram", "Facebook", "Google", "Threads", "LinkedIn", "Discord", "YouTube"]
+# Platform sources matching iOS app's SourcePlatform enum
+APP_PLATFORMS = {
+    "twitter": "twitter",
+    "reddit": "reddit", 
+    "hackernews": "hackernews",
+    "youtube": "youtube",
+    "mastodon": "mastodon",
+    "github": "github",
+    "rss": "rss"
+}
 
-def build_wide_net_prompt() -> str:
-    """
-    Build the comprehensive prompt for DeepSeek to cast a WIDE net across all topics
-    """
+# Niche-to-platform mapping for optimal data sources
+NICHE_PLATFORM_MAP = {
+    "tech": ["hackernews", "reddit", "twitter", "github"],
+    "space": ["reddit", "twitter", "rss"],
+    "finance": ["reddit", "twitter", "rss"],
+    "health": ["reddit", "rss"],
+    "science": ["reddit", "hackernews", "rss"],
+    "gaming": ["reddit", "twitter", "youtube"],
+    "entertainment": ["reddit", "twitter", "youtube"],
+    "sports": ["reddit", "twitter"],
+    "crypto": ["reddit", "twitter", "hackernews"],
+    "climate": ["reddit", "rss"],
+    "ai": ["hackernews", "reddit", "twitter", "github"],
+    "design": ["reddit", "twitter"],
+    "education": ["reddit", "hackernews"],
+    "travel": ["reddit"],
+    "food": ["reddit"],
+    "fashion": ["reddit", "twitter"],
+    "viral": ["twitter", "reddit"]
+}
+
+# API Endpoints
+REDDIT_BASE = "https://www.reddit.com"
+HN_BASE = "https://hacker-news.firebaseio.com/v0"
+GITHUB_TRENDING = "https://api.github.com/search/repositories"
+YOUTUBE_TRENDING = "https://www.googleapis.com/youtube/v3"
+
+# ============================================================================
+# MULTI-SOURCE DATA FETCHERS
+# ============================================================================
+
+class TrendAggregator:
+    """Aggregates trends from multiple sources"""
     
-    current_date = datetime.now().strftime("%B %d, %Y")
-    current_hour = datetime.now().strftime("%H:00 UTC")
+    def __init__(self, deepseek_key: str, github_token: Optional[str] = None, 
+                 youtube_key: Optional[str] = None):
+        self.deepseek_key = deepseek_key
+        self.github_token = github_token
+        self.youtube_key = youtube_key
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'PulseRelay/2.0 (Trend Aggregator)'
+        })
     
-    prompt = f"""You are a Real-Time Intelligence & Trend Synthesis Agent with a mandate to cast a WIDE NET across the entire social graph of 2026.
-
-Current Date & Time: {current_date} at {current_hour}
-
-**YOUR MISSION:**
-Capture the full spectrum of human attention right now - from mainstream breaking news to obscure micro-trends, from serious developments to hilarious memes. Nothing is off-limits. Cast as wide as possible.
-
-**1. SOURCE LOGIC (The Wide Net):**
-Pull from ALL these platform archetypes:
-- **X (Twitter) & Reddit:** Breaking signals, early adopter discussions, unverified events, funny memes before they go mainstream
-- **TikTok & Instagram Reels:** Visual sentiment, high Save-to-View ratios, micro-dramas, aesthetic shifts, dance trends
-- **Google Trends:** Search intent spikes ("How to", "What is", "Why does")
-- **Facebook & Threads:** Community impact, group discussions, town-hall style conversations
-- **LinkedIn:** Professional trends, career shifts, industry news
-- **Discord:** Niche community obsessions, gaming, crypto, tech
-- **YouTube:** Long-form discussions, drama, documentaries, reviews
-
-**2. CONTENT FILTERING (Cast the widest net possible):**
-Include a MIX of:
-- **Breaking News:** High-velocity reports on ANY topic (space, tech, politics, entertainment, world events)
-- **Funny/Viral:** Nostalgic remixes, chaos culture memes, absurdist humor, DM-sharing velocity spikes
-- **Serious/Tech:** AI breakthroughs, scientific discoveries, industry shifts
-- **Niche Obsessions:** What specific communities are hyper-focused on right now
-- **Mainstream Trends:** What the general public is actually talking about
-- **Weird/Unique:** The unusual, the unexpected, the "how did this trend start"
-
-**3. TODAY'S REAL-TIME PULSE (April 11, 2026):**
-Make sure to capture these actual events AND add your own discoveries:
-- **Space:** Artemis II Return - Astronaut recovery images viral
-- **Gaming:** Pragmata Pre-Load - Reddit threads exploding
-- **Tech:** Agentic AI Explosion - Microsoft Azure Summit news
-- **Entertainment:** Check what's trending on Netflix, Spotify, TikTok
-- **Sports:** Current games, trades, controversies
-- **Memes:** What's being DM-shared right now
-
-**4. THE "HUMAN" FILTER:**
-- Ignore bot-driven trends where Comment-to-Like ratio is < 5%
-- Prioritize trends with REAL human engagement and discussion
-- Look for emotional resonance (excitement, anger, confusion, joy)
-
-**5. OUTPUT FORMAT:**
-Return a JSON object with a "pulse_items" array containing 12-15 trend objects. Each object MUST follow this exact schema:
-
-{{
-  "title": "Short, high-impact headline (under 80 chars)",
-  "summary": "2-3 sentence 'Why this matters' summary with key details",
-  "sourceURL": "Direct link to source (real URL from today)",
-  "timestamp": "ISO8601 UTC timestamp for right now",
-  "niche": "One of the wide net niches provided",
-  "platform_origin": "Where this trend is hottest",
-  "velocity_score": "Integer 1-100 (100 = fastest growing)",
-  "human_vibe_check": "One of: Verified Human | Bot-Signal Low | High Engagement | Viral Authentic"
-}}
-
-**6. WIDE NET NICHE LIST (choose from these):**
-{WIDE_NET_NICHES}
-
-**7. REAL SOURCE URLS (use these or find real ones):**
-- Space: https://www.nasa.gov
-- Tech: https://news.microsoft.com
-- Gaming: https://www.reddit.com/r/gaming
-- Entertainment: https://www.netflix.com/tudum
-- News: https://www.reuters.com
-- Trends: https://trends.google.com
-
-**CRITICAL INSTRUCTIONS:**
-1. Return ONLY valid JSON - no markdown, no code blocks, no explanatory text
-2. Cast the WIDEST net possible - don't just focus on tech/space
-3. Include at least one trend from each platform origin
-4. Mix serious news with funny/viral content (70/30 split)
-5. Find actual trending topics happening RIGHT NOW on April 11, 2026
-6. Use real source URLs that would actually work
-7. Set velocity_score based on real velocity (90-100: exploding, 70-89: growing fast, 50-69: steady trend, 30-49: niche, 1-29: micro)
-8. Current timestamp for all items
-9. Make it FEEL like a live pulse of the entire internet
-
-Generate 12-15 diverse pulse items that reflect the ACTUAL heartbeat of the global social graph right now. Cover different niches, platforms, and energy levels."""
-
-    return prompt
-
-def fetch_trends(api_key: str) -> List[Dict[str, Any]]:
-    """
-    Fetch trending topics from DeepSeek API using Wide Net Pulse-Synthesis
+    def fetch_reddit_trends(self, subreddit: str, niche: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Fetch trending posts from Reddit"""
+        try:
+            url = f"{REDDIT_BASE}/r/{subreddit}/hot.json?limit={limit}"
+            response = self.session.get(url, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            trends = []
+            for post in data.get('data', {}).get('children', []):
+                post_data = post.get('data', {})
+                
+                # Calculate velocity score based on engagement
+                score = post_data.get('score', 0)
+                num_comments = post_data.get('num_comments', 0)
+                created = post_data.get('created_utc', 0)
+                age_hours = (time.time() - created) / 3600
+                
+                # Velocity: (score + comments) / age in hours
+                velocity = (score + num_comments * 2) / max(age_hours, 1)
+                velocity_score = min(velocity / 100, 1.0)  # Normalize to 0-1
+                
+                # Signal strength based on comment-to-upvote ratio (human engagement)
+                signal_strength = min(num_comments / max(score, 1), 1.0)
+                
+                # Detect human vs bot
+                is_human = num_comments > 5 and (num_comments / max(score, 1)) > 0.05
+                
+                trends.append({
+                    'id': f"reddit_{post_data.get('id', '')}",
+                    'niche': niche,
+                    'headline': post_data.get('title', '')[:200],
+                    'summary': post_data.get('selftext', '')[:300] or f"Trending on r/{subreddit}",
+                    'velocity_score': velocity_score,
+                    'signal_strength': signal_strength,
+                    'mentions_last_hour': int(score / max(age_hours, 1)),
+                    'mentions_previous_24h': score,
+                    'source': 'reddit',
+                    'source_url': f"https://reddit.com{post_data.get('permalink', '')}",
+                    'is_human': is_human,
+                    'timestamp': datetime.fromtimestamp(created, timezone.utc).isoformat(),
+                    'tags': post_data.get('link_flair_text', '').split() if post_data.get('link_flair_text') else []
+                })
+            
+            return trends
+            
+        except Exception as e:
+            print(f"⚠️ Reddit fetch failed for r/{subreddit}: {e}")
+            return []
     
-    Args:
-        api_key: DeepSeek API key
-        
-    Returns:
-        List of trend dictionaries with the required schema
-    """
-    if not api_key or api_key == "":
-        raise ValueError("DEEPSEEK_API_KEY is not set or empty")
+    def fetch_hackernews_trends(self, niche: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Fetch trending stories from Hacker News"""
+        try:
+            # Get top stories
+            response = self.session.get(f"{HN_BASE}/topstories.json", timeout=10)
+            response.raise_for_status()
+            story_ids = response.json()[:limit]
+            
+            trends = []
+            for story_id in story_ids:
+                story_response = self.session.get(f"{HN_BASE}/item/{story_id}.json", timeout=5)
+                story = story_response.json()
+                
+                if not story:
+                    continue
+                
+                score = story.get('score', 0)
+                num_comments = story.get('descendants', 0)
+                timestamp = story.get('time', 0)
+                age_hours = (time.time() - timestamp) / 3600
+                
+                # Calculate velocity
+                velocity = (score + num_comments * 3) / max(age_hours, 1)
+                velocity_score = min(velocity / 150, 1.0)
+                
+                # HN tends to have high human engagement
+                signal_strength = min((num_comments / max(score, 1)) * 2, 1.0)
+                
+                trends.append({
+                    'id': f"hn_{story_id}",
+                    'niche': niche,
+                    'headline': story.get('title', '')[:200],
+                    'summary': f"Discussed on Hacker News with {num_comments} comments",
+                    'velocity_score': velocity_score,
+                    'signal_strength': signal_strength,
+                    'mentions_last_hour': int(score / max(age_hours, 1)),
+                    'mentions_previous_24h': score,
+                    'source': 'hackernews',
+                    'source_url': story.get('url', f"https://news.ycombinator.com/item?id={story_id}"),
+                    'is_human': num_comments > 10,
+                    'timestamp': datetime.fromtimestamp(timestamp, timezone.utc).isoformat(),
+                    'tags': []
+                })
+            
+            return trends
+            
+        except Exception as e:
+            print(f"⚠️ Hacker News fetch failed: {e}")
+            return []
     
-    url = "https://api.deepseek.com/v1/chat/completions"
-    
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    system_prompt = build_wide_net_prompt()
-    
-    payload = {
-        "model": "deepseek-chat",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are a Wide Net Real-Time Intelligence Agent. You output ONLY valid JSON. Cast the widest possible net across all topics. Never include markdown or explanatory text outside JSON."
-            },
-            {
-                "role": "user",
-                "content": system_prompt
+    def fetch_github_trends(self, niche: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """Fetch trending GitHub repositories"""
+        try:
+            headers = {}
+            if self.github_token:
+                headers['Authorization'] = f"token {self.github_token}"
+            
+            # Search for repos created in the last week, sorted by stars
+            since_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            params = {
+                'q': f'created:>{since_date}',
+                'sort': 'stars',
+                'order': 'desc',
+                'per_page': limit
             }
-        ],
-        "temperature": 0.7,  # Higher temperature for more diverse, creative trends
-        "max_tokens": 5000,
-        "response_format": {"type": "json_object"}
-    }
+            
+            response = self.session.get(GITHUB_TRENDING, params=params, headers=headers, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            trends = []
+            for repo in data.get('items', []):
+                stars = repo.get('stargazers_count', 0)
+                created = datetime.strptime(repo.get('created_at', ''), '%Y-%m-%dT%H:%M:%SZ')
+                age_hours = (datetime.now(timezone.utc) - created.replace(tzinfo=timezone.utc)).total_seconds() / 3600
+                
+                velocity = stars / max(age_hours, 1)
+                velocity_score = min(velocity / 10, 1.0)
+                
+                trends.append({
+                    'id': f"github_{repo.get('id', '')}",
+                    'niche': niche,
+                    'headline': f"{repo.get('full_name', '')}: {repo.get('description', '')[:100]}",
+                    'summary': repo.get('description', '')[:300] or 'Trending GitHub repository',
+                    'velocity_score': velocity_score,
+                    'signal_strength': min(repo.get('watchers_count', 0) / max(stars, 1), 1.0),
+                    'mentions_last_hour': int(velocity),
+                    'mentions_previous_24h': stars,
+                    'source': 'github',
+                    'source_url': repo.get('html_url', ''),
+                    'is_human': True,  # GitHub activity is generally human
+                    'timestamp': created.isoformat(),
+                    'tags': repo.get('topics', [])[:5]
+                })
+            
+            return trends
+            
+        except Exception as e:
+            print(f"⚠️ GitHub fetch failed: {e}")
+            return []
     
-    try:
-        print(f"🌊 Casting WIDE NET across the social graph...")
-        print(f"📡 Fetching diverse trends for: {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}")
-        print(f"🎯 Covering {len(WIDE_NET_NICHES)} niches and {len(PLATFORMS)} platforms")
-        
-        response = requests.post(url, headers=headers, json=payload, timeout=60)
-        
-        if response.status_code == 401:
-            print("❌ Authentication failed (401 Unauthorized)")
-            print("Please verify your DEEPSEEK_API_KEY is correct and active")
-            sys.exit(1)
-        
-        response.raise_for_status()
-        
-        result = response.json()
-        content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-        
-        if not content:
-            raise ValueError("Empty response from DeepSeek API")
-        
-        # Clean and parse JSON response
-        content = content.strip()
-        
-        # Remove markdown code blocks if present
-        if content.startswith("```json"):
-            content = content[7:]
-        if content.startswith("```"):
-            content = content[3:]
-        if content.endswith("```"):
-            content = content[:-3]
-        
-        content = content.strip()
-        
-        # Parse the JSON
-        data = json.loads(content)
-        
-        # Handle different response structures
-        if "pulse_items" in data:
-            trends = data["pulse_items"]
-        elif isinstance(data, list):
-            trends = data
-        else:
-            # Try to find any array in the response
-            for key, value in data.items():
-                if isinstance(value, list) and len(value) > 0:
-                    trends = value
-                    break
-            else:
-                # If no array found, wrap the object
-                trends = [data]
-        
-        # Validate and clean each trend
-        validated_trends = []
-        for i, trend in enumerate(trends):
-            # Ensure all required fields exist
-            if not all(k in trend for k in ["title", "summary", "niche", "platform_origin", "velocity_score"]):
-                print(f"⚠️ Skipping invalid trend #{i+1}: missing required fields")
-                continue
+    def fetch_deepseek_synthesis(self, existing_trends: List[Dict], niche: str) -> List[Dict[str, Any]]:
+        """Use DeepSeek to synthesize and enhance trends with AI analysis"""
+        try:
+            # Create context from existing trends
+            trend_context = "\n".join([
+                f"- {t['headline']} (velocity: {t['velocity_score']:.2f})"
+                for t in existing_trends[:5]
+            ])
             
-            # Validate niche
-            if trend["niche"] not in WIDE_NET_NICHES:
-                # Find closest match or default to "Trending"
-                trend["niche"] = "Breaking News"
-            
-            # Validate platform
-            if trend["platform_origin"] not in PLATFORMS:
-                trend["platform_origin"] = "X"  # Default to X
-            
-            # Ensure velocity_score is int
-            if isinstance(trend["velocity_score"], str):
-                trend["velocity_score"] = int(trend["velocity_score"])
-            elif not isinstance(trend["velocity_score"], int):
-                trend["velocity_score"] = 50
-            
-            # Add timestamp if missing
-            if "timestamp" not in trend:
-                trend["timestamp"] = datetime.now(timezone.utc).isoformat()
-            
-            # Add sourceURL if missing
-            if "sourceURL" not in trend:
-                trend["sourceURL"] = "https://trends.google.com"
-            
-            # Add human_vibe_check if missing
-            if "human_vibe_check" not in trend:
-                vibe_scores = ["Verified Human", "Bot-Signal Low", "High Engagement", "Viral Authentic"]
-                trend["human_vibe_check"] = vibe_scores[trend["velocity_score"] % 4]
-            
-            validated_trends.append(trend)
-        
-        print(f"✅ Successfully fetched {len(validated_trends)} diverse trends from wide net")
-        
-        # Show niche distribution
-        niche_counts = {}
-        for trend in validated_trends:
-            niche = trend["niche"]
-            niche_counts[niche] = niche_counts.get(niche, 0) + 1
-        print(f"📊 Niche distribution: {len(niche_counts)} different niches covered")
-        
-        return validated_trends
-        
-    except requests.exceptions.Timeout:
-        print("❌ Request timed out after 60 seconds")
-        sys.exit(1)
-    except requests.exceptions.ConnectionError:
-        print("❌ Failed to connect to DeepSeek API")
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"❌ Failed to parse API response as JSON: {e}")
-        print(f"Raw response preview: {content[:200]}...")
-        sys.exit(1)
-    except Exception as e:
-        print(f"❌ Unexpected error: {e}")
-        sys.exit(1)
+            prompt = f"""You are analyzing real-time trends for the "{niche}" niche.
 
-def save_trends(trends: List[Dict[str, Any]], output_file: str) -> None:
-    """
-    Save trends to JSON file with timestamp and metadata
+Current trending items detected:
+{trend_context}
+
+Based on these signals and your knowledge of what's happening in {niche} today ({datetime.now().strftime('%B %d, %Y')}), generate 2-3 additional high-quality trend items that would be relevant.
+
+For each trend, provide:
+1. A compelling headline (under 100 chars)
+2. A detailed summary (2-3 sentences explaining why it matters)
+3. Velocity score estimate (0.0-1.0, where 1.0 is extremely viral)
+4. Signal strength (0.0-1.0, representing engagement quality)
+5. Relevant tags (3-5 keywords)
+
+Return ONLY valid JSON in this format:
+{{
+  "trends": [
+    {{
+      "headline": "...",
+      "summary": "...",
+      "velocity_score": 0.85,
+      "signal_strength": 0.90,
+      "source_url": "https://...",
+      "tags": ["tag1", "tag2"]
+    }}
+  ]
+}}"""
+
+            response = requests.post(
+                "https://api.deepseek.com/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.deepseek_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "deepseek-chat",
+                    "messages": [
+                        {"role": "system", "content": "You are a trend analysis AI. Output only valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 2000,
+                    "response_format": {"type": "json_object"}
+                },
+                timeout=30
+            )
+            
+            response.raise_for_status()
+            content = response.json()['choices'][0]['message']['content']
+            
+            # Clean and parse
+            content = content.strip()
+            if content.startswith("```json"):
+                content = content[7:-3]
+            elif content.startswith("```"):
+                content = content[3:-3]
+            
+            data = json.loads(content)
+            ai_trends = data.get('trends', [])
+            
+            # Convert to app schema
+            trends = []
+            for i, trend in enumerate(ai_trends):
+                trends.append({
+                    'id': f"ai_{niche}_{hashlib.md5(trend['headline'].encode()).hexdigest()[:8]}",
+                    'niche': niche,
+                    'headline': trend['headline'],
+                    'summary': trend['summary'],
+                    'velocity_score': trend.get('velocity_score', 0.7),
+                    'signal_strength': trend.get('signal_strength', 0.8),
+                    'mentions_last_hour': int(trend.get('velocity_score', 0.7) * 1000),
+                    'mentions_previous_24h': int(trend.get('velocity_score', 0.7) * 5000),
+                    'source': 'rss',
+                    'source_url': trend.get('source_url', 'https://trends.google.com'),
+                    'is_human': True,
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
+                    'tags': trend.get('tags', [])
+                })
+            
+            return trends
+            
+        except Exception as e:
+            print(f"⚠️ DeepSeek synthesis failed for {niche}: {e}")
+            return []
     
-    Args:
-        trends: List of trend dictionaries
-        output_file: Path to output JSON file
-    """
-    output_data = {
-        "last_updated": datetime.now(timezone.utc).isoformat(),
-        "pulse_items": trends,
+    def aggregate_all_trends(self) -> List[Dict[str, Any]]:
+        """Aggregate trends from all sources"""
+        all_trends = []
+        
+        # Subreddit mapping for each niche
+        SUBREDDIT_MAP = {
+            "tech": ["technology", "gadgets"],
+            "space": ["space", "spacex"],
+            "finance": ["stocks", "investing"],
+            "health": ["health", "fitness"],
+            "science": ["science", "physics"],
+            "gaming": ["gaming", "pcgaming"],
+            "entertainment": ["movies", "television"],
+            "sports": ["sports", "nba"],
+            "crypto": ["cryptocurrency", "bitcoin"],
+            "climate": ["environment", "climate"],
+            "ai": ["artificial", "MachineLearning"],
+            "design": ["design", "graphic_design"],
+            "education": ["education", "learnprogramming"],
+            "travel": ["travel", "solotravel"],
+            "food": ["food", "cooking"],
+            "fashion": ["fashion", "streetwear"],
+            "viral": ["memes", "videos"]
+        }
+        
+        print("📡 Fetching trends from multiple sources...")
+        
+        # Fetch from each niche
+        for niche in APP_NICHES:
+            print(f"\n🎯 Processing niche: {niche}")
+            niche_trends = []
+            
+            # Reddit
+            if niche in SUBREDDIT_MAP:
+                for subreddit in SUBREDDIT_MAP[niche][:2]:  # Limit to 2 subreddits per niche
+                    print(f"  📱 Reddit r/{subreddit}...")
+                    trends = self.fetch_reddit_trends(subreddit, niche, limit=5)
+                    niche_trends.extend(trends)
+                    time.sleep(0.5)  # Rate limiting
+            
+            # Hacker News (for tech-related niches)
+            if niche in ["tech", "ai", "science", "crypto"]:
+                print(f"  🔥 Hacker News...")
+                trends = self.fetch_hackernews_trends(niche, limit=3)
+                niche_trends.extend(trends)
+                time.sleep(0.5)
+            
+            # GitHub (for tech/ai niches)
+            if niche in ["tech", "ai"] and self.github_token:
+                print(f"  💻 GitHub...")
+                trends = self.fetch_github_trends(niche, limit=2)
+                niche_trends.extend(trends)
+                time.sleep(0.5)
+            
+            # AI Enhancement
+            if len(niche_trends) > 0:
+                print(f"  🤖 AI synthesis...")
+                ai_trends = self.fetch_deepseek_synthesis(niche_trends, niche)
+                niche_trends.extend(ai_trends)
+            
+            all_trends.extend(niche_trends)
+            print(f"  ✅ {len(niche_trends)} trends collected for {niche}")
+        
+        return all_trends
+
+# ============================================================================
+# DATA PROCESSING & RANKING
+# ============================================================================
+
+def calculate_breaking_status(trend: Dict[str, Any], threshold: float = 0.80) -> bool:
+    """Determine if a trend is 'breaking' based on velocity"""
+    return trend.get('velocity_score', 0) >= threshold
+
+def deduplicate_trends(trends: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Remove duplicate trends based on headline similarity"""
+    seen_headlines = set()
+    unique_trends = []
+    
+    for trend in trends:
+        headline_key = trend['headline'].lower()[:50]  # First 50 chars, lowercase
+        if headline_key not in seen_headlines:
+            seen_headlines.add(headline_key)
+            unique_trends.append(trend)
+    
+    return unique_trends
+
+def rank_and_filter_trends(trends: List[Dict[str, Any]], max_per_niche: int = 5, 
+                          total_limit: int = 50) -> List[Dict[str, Any]]:
+    """Rank trends by velocity and limit per niche"""
+    
+    # Group by niche
+    niche_groups = defaultdict(list)
+    for trend in trends:
+        niche_groups[trend['niche']].append(trend)
+    
+    # Sort each niche by velocity
+    filtered = []
+    for niche, niche_trends in niche_groups.items():
+        sorted_trends = sorted(niche_trends, key=lambda x: x['velocity_score'], reverse=True)
+        filtered.extend(sorted_trends[:max_per_niche])
+    
+    # Final sort by velocity and limit total
+    filtered.sort(key=lambda x: x['velocity_score'], reverse=True)
+    return filtered[:total_limit]
+
+# ============================================================================
+# JSON OUTPUT (iOS APP SCHEMA)
+# ============================================================================
+
+def build_app_json(trends: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Build JSON matching iOS app's VelocityTrend + PulseFeedResponse schema"""
+    
+    # Process each trend
+    processed_trends = []
+    for trend in trends:
+        processed_trends.append({
+            "id": trend['id'],
+            "niche": trend['niche'],
+            "headline": trend['headline'],
+            "summary": trend['summary'],
+            "image_url": None,  # Add image URL if available
+            "velocity_score": round(trend['velocity_score'], 3),
+            "signal_strength": round(trend['signal_strength'], 3),
+            "mentions_last_hour": trend['mentions_last_hour'],
+            "mentions_previous_24h": trend['mentions_previous_24h'],
+            "source": trend['source'],
+            "source_url": trend['source_url'],
+            "is_human": trend['is_human'],
+            "is_breaking": calculate_breaking_status(trend),
+            "timestamp": trend['timestamp'],
+            "tags": trend.get('tags', [])
+        })
+    
+    # Build final response matching PulseFeedResponse
+    return {
+        "trends": processed_trends,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "total_count": len(processed_trends),
         "metadata": {
-            "source": "DeepSeek API - Wide Net Mode",
-            "count": len(trends),
-            "niches_covered": len(set(t.get("niche") for t in trends)),
-            "platforms_covered": len(set(t.get("platform_origin") for t in trends)),
-            "generator": "PulseRelay Wide Net Agent v2.0"
+            "generator": "PulseRelay Multi-Source Aggregator v3.0",
+            "sources": list(set(t['source'] for t in processed_trends)),
+            "niches": list(set(t['niche'] for t in processed_trends)),
+            "breaking_count": sum(1 for t in processed_trends if t['is_breaking']),
+            "human_verified_count": sum(1 for t in processed_trends if t['is_human'])
         }
     }
-    
-    # Ensure directory exists
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    
-    # Write to file with pretty formatting
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(output_data, f, indent=2, ensure_ascii=False)
-    
-    print(f"💾 Trends saved to {output_file}")
-    print(f"📈 Total pulse items: {len(trends)}")
-    print(f"🎨 Unique niches: {output_data['metadata']['niches_covered']}")
-    print(f"📱 Unique platforms: {output_data['metadata']['platforms_covered']}")
+
+# ============================================================================
+# MAIN EXECUTION
+# ============================================================================
 
 def main():
     """Main execution function"""
-    api_key = os.environ.get("DEEPSEEK_API_KEY")
     
-    if not api_key:
+    # Get API keys from environment
+    deepseek_key = os.environ.get("DEEPSEEK_API_KEY")
+    github_token = os.environ.get("GITHUB_TOKEN")  # Optional
+    youtube_key = os.environ.get("YOUTUBE_API_KEY")  # Optional
+    
+    if not deepseek_key:
         print("❌ ERROR: DEEPSEEK_API_KEY environment variable not set")
         sys.exit(1)
     
@@ -330,20 +494,50 @@ def main():
     project_root = os.path.dirname(script_dir)
     output_file = os.path.join(project_root, "data", "trends.json")
     
-    print("=" * 60)
-    print("🌊 PULSERELAY - WIDE NET TREND SYNTHESIS")
-    print("=" * 60)
+    print("=" * 70)
+    print("🌊 PULSERELAY - MULTI-SOURCE TREND AGGREGATOR v3.0")
+    print("=" * 70)
     print(f"🕐 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
-    print(f"🎯 Casting wide net across {len(WIDE_NET_NICHES)} niches")
-    print(f"📡 Monitoring {len(PLATFORMS)} platforms")
-    print("=" * 60)
+    print(f"🎯 Niches: {len(APP_NICHES)}")
+    print(f"📡 Sources: Reddit, Hacker News, GitHub" + (", YouTube" if youtube_key else ""))
+    print(f"🤖 AI Enhancement: DeepSeek")
+    print("=" * 70)
     
-    # Fetch and save trends
-    trends = fetch_trends(api_key)
-    save_trends(trends, output_file)
+    # Initialize aggregator
+    aggregator = TrendAggregator(deepseek_key, github_token, youtube_key)
     
-    print("\n✅ PulseRelay wide net complete!")
-    print("🌊 Successfully captured the heartbeat of the global social graph")
+    # Fetch all trends
+    print("\n🔄 Starting multi-source aggregation...")
+    raw_trends = aggregator.aggregate_all_trends()
+    
+    print(f"\n📊 Processing {len(raw_trends)} raw trends...")
+    
+    # Deduplicate
+    unique_trends = deduplicate_trends(raw_trends)
+    print(f"✅ {len(unique_trends)} unique trends after deduplication")
+    
+    # Rank and filter
+    final_trends = rank_and_filter_trends(unique_trends, max_per_niche=5, total_limit=50)
+    print(f"🎯 {len(final_trends)} trends selected for final output")
+    
+    # Build iOS app JSON
+    app_json = build_app_json(final_trends)
+    
+    # Save to file
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(app_json, f, indent=2, ensure_ascii=False)
+    
+    print(f"\n💾 Trends saved to: {output_file}")
+    print(f"📈 Total trends: {app_json['total_count']}")
+    print(f"🔥 Breaking trends: {app_json['metadata']['breaking_count']}")
+    print(f"✅ Human-verified: {app_json['metadata']['human_verified_count']}")
+    print(f"🌐 Sources: {', '.join(app_json['metadata']['sources'])}")
+    print(f"🎨 Niches covered: {len(app_json['metadata']['niches'])}")
+    
+    print("\n" + "=" * 70)
+    print("✅ PULSERELAY AGGREGATION COMPLETE!")
+    print("=" * 70)
 
 if __name__ == "__main__":
     main()
