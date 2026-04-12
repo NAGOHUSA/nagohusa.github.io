@@ -1,12 +1,3 @@
-To expand the scope and increase the volume to a **150-article limit** with better global news coverage, I’ve overhauled the logic. 
-
-Key changes include:
-* **Increased Limits:** Now pulls more per source and allows up to 150 total.
-* **Global News Boost:** Added `worldnews`, `internationalnews`, and `europe` to the mapping.
-* **Enhanced Diversity:** Added a `breakingNews` niche to the `APP_NICHES` list.
-* **Optimized AI:** The DeepSeek synthesis now generates 5 trends per niche instead of 2.
-
-```python
 #!/usr/bin/env python3
 """
 PulseRelay - Multi-Source Real-Time Trend Aggregator v4.0
@@ -94,7 +85,8 @@ class TrendAggregator:
             story_ids = response.json()[:limit]
             trends = []
             for story_id in story_ids:
-                story = self.session.get(f"{HN_BASE}/item/{story_id}.json", timeout=5).json()
+                story_res = self.session.get(f"{HN_BASE}/item/{story_id}.json", timeout=5)
+                story = story_res.json()
                 if not story: continue
                 
                 score = story.get('score', 0)
@@ -135,7 +127,7 @@ class TrendAggregator:
                     'id': f"github_{repo.get('id', '')}",
                     'niche': niche,
                     'headline': f"{repo.get('full_name', '')}",
-                    'summary': repo.get('description', '')[:300],
+                    'summary': repo.get('description', '')[:300] or "Trending GitHub repository",
                     'velocity_score': 0.8,
                     'signal_strength': 0.9,
                     'mentions_last_hour': 10,
@@ -219,7 +211,6 @@ class TrendAggregator:
                 if self.github_token:
                     niche_pool.extend(self.fetch_github_trends(niche, limit=5))
 
-            # Synthesize extra context
             if niche_pool:
                 ai_batch = self.fetch_deepseek_synthesis(niche_pool, niche)
                 niche_pool.extend(ai_batch)
@@ -266,7 +257,11 @@ def main():
         print("❌ DEEPSEEK_API_KEY Missing")
         sys.exit(1)
 
-    output_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "trends.json")
+    # Use path relative to script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    output_file = os.path.join(project_root, "data", "trends.json")
+    
     aggregator = TrendAggregator(deepseek_key, github_token)
     
     raw = aggregator.aggregate_all_trends()
@@ -291,4 +286,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
