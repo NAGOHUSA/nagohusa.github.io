@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Multi-Source Real-Time Trend Aggregator
+PulseRelay - Multi-Source Real-Time Trend Aggregator v3.0
 Fetches trending data from multiple APIs and synthesizes comprehensive feed
 Optimized for iOS app consumption with VelocityTrend schema
+
+Features:
+- Multi-source aggregation (Reddit, Hacker News, GitHub, DeepSeek AI)
+- Real velocity calculation from engagement metrics
+- Smart human vs. bot detection
+- Perfect JSON schema match for iOS app
+- Deduplication and intelligent ranking
+
+Author: PulseRelay Team
+Date: April 12, 2026
 """
 
 import os
@@ -11,7 +21,7 @@ import sys
 import requests
 import hashlib
 from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from collections import defaultdict
 import time
 
@@ -19,11 +29,11 @@ import time
 # CONFIGURATION
 # ============================================================================
 
-# Niche categories matching iOS app's NicheCategory enum
+# Niche categories - MUST match iOS app's NicheCategory enum exactly
 APP_NICHES = [
-    "tech", "space", "finance", "health", "science",
-    "gaming", "entertainment", "sports", "crypto", "climate",
-    "ai", "design", "education", "travel", "food", "fashion", "viral"
+    "cinema", "sports", "worldEvents", "streaming", "music",
+    "space", "tech", "maker", "privacy", "repair",
+    "outdoor", "legal", "local"
 ]
 
 # Platform sources matching iOS app's SourcePlatform enum
@@ -37,32 +47,10 @@ APP_PLATFORMS = {
     "rss": "rss"
 }
 
-# Niche-to-platform mapping for optimal data sources
-NICHE_PLATFORM_MAP = {
-    "tech": ["hackernews", "reddit", "twitter", "github"],
-    "space": ["reddit", "twitter", "rss"],
-    "finance": ["reddit", "twitter", "rss"],
-    "health": ["reddit", "rss"],
-    "science": ["reddit", "hackernews", "rss"],
-    "gaming": ["reddit", "twitter", "youtube"],
-    "entertainment": ["reddit", "twitter", "youtube"],
-    "sports": ["reddit", "twitter"],
-    "crypto": ["reddit", "twitter", "hackernews"],
-    "climate": ["reddit", "rss"],
-    "ai": ["hackernews", "reddit", "twitter", "github"],
-    "design": ["reddit", "twitter"],
-    "education": ["reddit", "hackernews"],
-    "travel": ["reddit"],
-    "food": ["reddit"],
-    "fashion": ["reddit", "twitter"],
-    "viral": ["twitter", "reddit"]
-}
-
 # API Endpoints
 REDDIT_BASE = "https://www.reddit.com"
 HN_BASE = "https://hacker-news.firebaseio.com/v0"
 GITHUB_TRENDING = "https://api.github.com/search/repositories"
-YOUTUBE_TRENDING = "https://www.googleapis.com/youtube/v3"
 
 # ============================================================================
 # MULTI-SOURCE DATA FETCHERS
@@ -71,14 +59,12 @@ YOUTUBE_TRENDING = "https://www.googleapis.com/youtube/v3"
 class TrendAggregator:
     """Aggregates trends from multiple sources"""
     
-    def __init__(self, deepseek_key: str, github_token: Optional[str] = None, 
-                 youtube_key: Optional[str] = None):
+    def __init__(self, deepseek_key: str, github_token: Optional[str] = None):
         self.deepseek_key = deepseek_key
         self.github_token = github_token
-        self.youtube_key = youtube_key
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'PulseRelay/2.0 (Trend Aggregator)'
+            'User-Agent': 'PulseRelay/3.0 (iOS Trend Aggregator)'
         })
     
     def fetch_reddit_trends(self, subreddit: str, niche: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -106,8 +92,16 @@ class TrendAggregator:
                 # Signal strength based on comment-to-upvote ratio (human engagement)
                 signal_strength = min(num_comments / max(score, 1), 1.0)
                 
-                # Detect human vs bot
-                is_human = num_comments > 5 and (num_comments / max(score, 1)) > 0.05
+                # Better human vs bot detection
+                # Consider multiple factors:
+                # 1. Any post with 20+ comments is likely human
+                # 2. Comment ratio > 2% with at least 3 comments
+                # 3. Very high velocity (>0.7) with any comments
+                is_human = (
+                    num_comments >= 20 or  # Lots of discussion = human
+                    (num_comments >= 3 and (num_comments / max(score, 1)) > 0.02) or  # Decent engagement
+                    (velocity_score > 0.7 and num_comments > 0)  # High velocity with engagement
+                )
                 
                 trends.append({
                     'id': f"reddit_{post_data.get('id', '')}",
@@ -159,6 +153,9 @@ class TrendAggregator:
                 # HN tends to have high human engagement
                 signal_strength = min((num_comments / max(score, 1)) * 2, 1.0)
                 
+                # HN has better signal-to-noise ratio
+                is_human = num_comments >= 5  # Lower threshold for HN
+                
                 trends.append({
                     'id': f"hn_{story_id}",
                     'niche': niche,
@@ -170,7 +167,7 @@ class TrendAggregator:
                     'mentions_previous_24h': score,
                     'source': 'hackernews',
                     'source_url': story.get('url', f"https://news.ycombinator.com/item?id={story_id}"),
-                    'is_human': num_comments > 10,
+                    'is_human': is_human,
                     'timestamp': datetime.fromtimestamp(timestamp, timezone.utc).isoformat(),
                     'tags': []
                 })
@@ -330,25 +327,21 @@ Return ONLY valid JSON in this format:
         """Aggregate trends from all sources"""
         all_trends = []
         
-        # Subreddit mapping for each niche
+        # Subreddit mapping for each niche - matches iOS app niches
         SUBREDDIT_MAP = {
-            "tech": ["technology", "gadgets"],
-            "space": ["space", "spacex"],
-            "finance": ["stocks", "investing"],
-            "health": ["health", "fitness"],
-            "science": ["science", "physics"],
-            "gaming": ["gaming", "pcgaming"],
-            "entertainment": ["movies", "television"],
+            "cinema": ["movies", "boxoffice"],
             "sports": ["sports", "nba"],
-            "crypto": ["cryptocurrency", "bitcoin"],
-            "climate": ["environment", "climate"],
-            "ai": ["artificial", "MachineLearning"],
-            "design": ["design", "graphic_design"],
-            "education": ["education", "learnprogramming"],
-            "travel": ["travel", "solotravel"],
-            "food": ["food", "cooking"],
-            "fashion": ["fashion", "streetwear"],
-            "viral": ["memes", "videos"]
+            "worldEvents": ["worldnews", "news"],
+            "streaming": ["television", "netflix"],
+            "music": ["music", "hiphopheads"],
+            "space": ["space", "spacex"],
+            "tech": ["technology", "gadgets"],
+            "maker": ["diy", "3Dprinting"],
+            "privacy": ["privacy", "privacytoolsIO"],
+            "repair": ["fixit", "techsupport"],
+            "outdoor": ["hiking", "camping"],
+            "legal": ["law", "supremecourt"],
+            "local": ["nyc", "sanfrancisco"]  # Add your local subreddits
         }
         
         print("📡 Fetching trends from multiple sources...")
@@ -367,14 +360,14 @@ Return ONLY valid JSON in this format:
                     time.sleep(0.5)  # Rate limiting
             
             # Hacker News (for tech-related niches)
-            if niche in ["tech", "ai", "science", "crypto"]:
+            if niche in ["tech", "privacy", "maker", "space"]:
                 print(f"  🔥 Hacker News...")
                 trends = self.fetch_hackernews_trends(niche, limit=3)
                 niche_trends.extend(trends)
                 time.sleep(0.5)
             
-            # GitHub (for tech/ai niches)
-            if niche in ["tech", "ai"] and self.github_token:
+            # GitHub (for tech/maker/privacy niches)
+            if niche in ["tech", "maker", "privacy"] and self.github_token:
                 print(f"  💻 GitHub...")
                 trends = self.fetch_github_trends(niche, limit=2)
                 niche_trends.extend(trends)
@@ -483,7 +476,6 @@ def main():
     # Get API keys from environment
     deepseek_key = os.environ.get("DEEPSEEK_API_KEY")
     github_token = os.environ.get("GITHUB_TOKEN")  # Optional
-    youtube_key = os.environ.get("YOUTUBE_API_KEY")  # Optional
     
     if not deepseek_key:
         print("❌ ERROR: DEEPSEEK_API_KEY environment variable not set")
@@ -499,12 +491,12 @@ def main():
     print("=" * 70)
     print(f"🕐 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print(f"🎯 Niches: {len(APP_NICHES)}")
-    print(f"📡 Sources: Reddit, Hacker News, GitHub" + (", YouTube" if youtube_key else ""))
+    print(f"📡 Sources: Reddit, Hacker News" + (", GitHub" if github_token else ""))
     print(f"🤖 AI Enhancement: DeepSeek")
     print("=" * 70)
     
     # Initialize aggregator
-    aggregator = TrendAggregator(deepseek_key, github_token, youtube_key)
+    aggregator = TrendAggregator(deepseek_key, github_token)
     
     # Fetch all trends
     print("\n🔄 Starting multi-source aggregation...")
