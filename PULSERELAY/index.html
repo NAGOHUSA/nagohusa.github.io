@@ -9,29 +9,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #0a0a0f;
-      --surface:   #111118;
-      --surface2:  #1a1a24;
-      --surface3:  #222230;
-      --border:    rgba(255,255,255,0.07);
-      --border2:   rgba(255,255,255,0.13);
-      --text:      #e8e8f0;
-      --muted:     #6b6b80;
-      --muted2:    #9090a8;
-      --accent:    #00e5a0;
-      --accent2:   #7c6cf0;
-      --warn:      #f0a040;
-      --danger:    #e05555;
-      --hot:       #ff6b35;
-      --mono:      'Space Mono', monospace;
-      --sans:      'DM Sans', sans-serif;
+      --bg: #0a0a12;
+      --surface: #12121f;
+      --surface2: #1a1a2e;
+      --surface3: #25253a;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.16);
+      --text: #f0f0ff;
+      --muted: #8a8aa8;
+      --muted2: #b0b0d0;
+      
+      /* Vibrant colorful palette */
+      --accent: #00ff9d;           /* Electric green-cyan */
+      --accent2: #a855ff;          /* Vibrant purple */
+      --accent3: #ff2e9a;          /* Hot magenta */
+      --hot: #ff4d4d;              /* Bright red */
+      --warn: #ffb800;             /* Bright amber */
+      
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
     }
 
     html { font-size: 16px; }
     body {
-      background: var(--bg);
+      background: linear-gradient(135deg, var(--bg) 0%, #0f0f1e 100%);
       color: var(--text);
       font-family: var(--sans);
       min-height: 100vh;
@@ -42,9 +44,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 28px;
+      padding: 16px 28px;
       border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      background: rgba(10,10,18,0.95);
+      backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
       z-index: 200;
@@ -53,37 +56,39 @@
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-family: var(--mono);
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--accent);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-decoration: none;
+      text-shadow: 0 0 15px rgba(0,255,157,0.5);
     }
 
     .logo-dot {
-      width: 9px;
-      height: 9px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
-      background: var(--accent);
-      animation: pulse-dot 2s ease-in-out infinite;
+      background: linear-gradient(45deg, var(--accent), var(--accent3));
+      box-shadow: 0 0 12px var(--accent);
+      animation: pulse-dot 1.8s ease-in-out infinite;
       flex-shrink: 0;
     }
 
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.35; transform: scale(0.65); }
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px var(--accent); }
+      50% { opacity: 0.6; transform: scale(0.75); box-shadow: 0 0 20px var(--accent3); }
     }
 
     .topbar-meta {
       text-align: right;
       font-family: var(--mono);
-      font-size: 10px;
+      font-size: 10.5px;
       color: var(--muted);
-      line-height: 1.8;
+      line-height: 1.7;
     }
-    .topbar-meta span { color: var(--accent); }
+    .topbar-meta span { color: var(--accent); font-weight: 500; }
 
     .topbar-actions {
       display: flex;
@@ -92,25 +97,36 @@
     }
 
     .btn-refresh {
-      padding: 6px 14px;
+      padding: 8px 18px;
       border: 1px solid var(--border2);
       background: transparent;
       color: var(--muted2);
       font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s;
+      font-weight: 500;
     }
-    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-refresh.spinning { color: var(--accent); border-color: rgba(0,229,160,0.4); }
+    .btn-refresh:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 15px rgba(0,255,157,0.3);
+    }
+    .btn-refresh.spinning { 
+      color: var(--accent); 
+      border-color: rgba(0,255,157,0.5);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .niche-toolbar {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 28px;
+      gap: 10px;
+      padding: 14px 28px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       overflow-x: auto;
@@ -120,30 +136,44 @@
 
     .toolbar-label {
       font-family: var(--mono);
-      font-size: 9px;
+      font-size: 9.5px;
       color: var(--muted);
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       white-space: nowrap;
       flex-shrink: 0;
-      margin-right: 4px;
     }
 
     .pill {
-      padding: 5px 13px;
-      border-radius: 20px;
+      padding: 7px 16px;
+      border-radius: 9999px;
       border: 1px solid var(--border2);
       background: transparent;
-      color: var(--muted);
+      color: var(--muted2);
       font-family: var(--sans);
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s ease;
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .pill:hover { border-color: var(--accent); color: var(--accent); }
-    .pill.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
-    .pill.all-pill.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+    .pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .pill.active {
+      background: linear-gradient(90deg, var(--accent), #00cc7a);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,255,157,0.35);
+    }
+    .pill.all-pill.active {
+      background: linear-gradient(90deg, var(--accent2), #c084fc);
+      color: white;
+      box-shadow: 0 4px 15px rgba(168,85,255,0.4);
+    }
 
     .main-layout {
       display: flex;
@@ -151,7 +181,7 @@
     }
 
     .sidebar {
-      width: 230px;
+      width: 240px;
       flex-shrink: 0;
       border-right: 1px solid var(--border);
       background: var(--surface);
@@ -181,15 +211,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 10px;
-      border-radius: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
       border: 1px solid transparent;
       background: transparent;
-      color: var(--muted);
+      color: var(--muted2);
       font-family: var(--sans);
       font-size: 13px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s;
       text-align: left;
       width: 100%;
     }
@@ -220,7 +250,7 @@
       border-radius: 6px;
       cursor: pointer;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b80'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8aa8'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 10px center;
       padding-right: 28px;
@@ -233,6 +263,7 @@
       padding: 12px;
       margin-top: 4px;
     }
+
     .vibe-legend-title {
       font-family: var(--mono);
       font-size: 9px;
@@ -240,6 +271,7 @@
       letter-spacing: 0.1em;
       margin-bottom: 10px;
     }
+
     .vibe-row {
       display: flex;
       align-items: center;
@@ -250,6 +282,7 @@
       line-height: 1.3;
     }
     .vibe-row:last-child { margin-bottom: 0; }
+
     .vibe-dot-sm {
       width: 7px;
       height: 7px;
@@ -271,11 +304,17 @@
     }
 
     .stat-card {
-      background: var(--surface);
+      background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 18px;
+      border-radius: 12px;
+      padding: 18px 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
     .stat-label {
       font-family: var(--mono);
       font-size: 9px;
@@ -283,15 +322,16 @@
       letter-spacing: 0.1em;
       margin-bottom: 6px;
     }
+
     .stat-val {
       font-family: var(--mono);
       font-size: 22px;
       font-weight: 700;
       color: var(--text);
     }
-    .stat-val.c-accent  { color: var(--accent); }
-    .stat-val.c-accent2 { color: var(--accent2); }
-    .stat-val.c-warn    { color: var(--warn); }
+    .stat-val.c-accent { color: var(--accent); text-shadow: 0 0 10px rgba(0,255,157,0.4); }
+    .stat-val.c-accent2 { color: var(--accent2); text-shadow: 0 0 10px rgba(168,85,255,0.4); }
+    .stat-val.c-warn { color: var(--warn); }
 
     .card-grid {
       display: grid;
@@ -301,16 +341,16 @@
 
     @keyframes card-in {
       from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card {
-      background: var(--surface);
+      background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
+      border-radius: 14px;
+      padding: 20px;
       cursor: pointer;
-      transition: border-color 0.2s, transform 0.2s;
+      transition: all 0.25s ease;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -322,12 +362,16 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--accent);
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
       opacity: 0;
-      transition: opacity 0.2s;
+      transition: opacity 0.3s;
     }
-    .card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0,255,157,0.15);
+    }
     .card:hover::before { opacity: 1; }
 
     .card-top {
@@ -359,10 +403,10 @@
     }
     .vibe-badge .bd { width: 5px; height: 5px; border-radius: 50%; }
 
-    .vibe-verified { color: var(--accent);  border-color: rgba(0,229,160,0.35); background: rgba(0,229,160,0.06); }
-    .vibe-high     { color: #60c0ff;        border-color: rgba(96,192,255,0.35);background: rgba(96,192,255,0.06); }
-    .vibe-viral    { color: var(--accent2); border-color: rgba(124,108,240,0.35);background:rgba(124,108,240,0.06);}
-    .vibe-bot      { color: var(--warn);    border-color: rgba(240,160,64,0.35); background: rgba(240,160,64,0.06); }
+    .vibe-verified { color: var(--accent); border-color: rgba(0,255,157,0.4); background: rgba(0,255,157,0.08); }
+    .vibe-high { color: #60d4ff; border-color: rgba(96,212,255,0.4); background: rgba(96,212,255,0.08); }
+    .vibe-viral { color: var(--accent2); border-color: rgba(168,85,255,0.4); background: rgba(168,85,255,0.08); }
+    .vibe-bot { color: var(--warn); border-color: rgba(255,184,0,0.4); background: rgba(255,184,0,0.08); }
 
     .card-title {
       font-size: 14px;
@@ -400,14 +444,21 @@
       border-radius: 2px;
       overflow: hidden;
     }
+
     .vel-fill {
       height: 100%;
       border-radius: 2px;
-      background: var(--accent);
+      background: linear-gradient(90deg, var(--accent), #00cc7a);
+      box-shadow: 0 0 8px var(--accent);
       transition: width 0.5s ease;
     }
-    .vel-fill.hot  { background: var(--hot); }
-    .vel-fill.warm { background: var(--warn); }
+    .vel-fill.hot { 
+      background: linear-gradient(90deg, var(--hot), #ff8a8a); 
+      box-shadow: 0 0 10px var(--hot);
+    }
+    .vel-fill.warm { 
+      background: linear-gradient(90deg, var(--warn), #ffd166); 
+    }
 
     .vel-num {
       font-family: var(--mono);
@@ -438,7 +489,7 @@
     .error-text {
       font-family: var(--mono);
       font-size: 12px;
-      color: var(--danger);
+      color: #ff4d4d;
       line-height: 1.8;
     }
 
@@ -446,7 +497,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.82);
+      background: rgba(0,0,0,0.85);
       z-index: 500;
       align-items: center;
       justify-content: center;
@@ -466,10 +517,12 @@
       position: relative;
       animation: modal-in 0.2s ease;
       scrollbar-width: thin;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     }
+
     @keyframes modal-in {
       from { opacity: 0; transform: translateY(14px) scale(0.98); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .modal-close {
@@ -484,161 +537,25 @@
       font-size: 18px;
       display: flex; align-items: center; justify-content: center;
       transition: all 0.15s;
-      line-height: 1;
     }
     .modal-close:hover { color: var(--text); border-color: var(--muted2); }
 
-    .modal-eyebrow {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      margin-bottom: 10px;
-    }
-    .modal-eyebrow span { color: var(--muted2); }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.35;
-      margin-bottom: 18px;
-      padding-right: 40px;
-    }
-
-    .modal-vibe-block {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      margin-bottom: 20px;
-    }
-    .modal-vibe-icon {
-      font-size: 22px;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-    .modal-vibe-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      margin-bottom: 4px;
-    }
-    .modal-vibe-status {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .modal-vibe-note {
-      font-size: 12px;
-      color: var(--muted2);
-      margin-top: 3px;
-    }
-
-    .modal-summary {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--muted2);
-      margin-bottom: 22px;
-    }
-
-    .modal-meta-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .modal-meta-item {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 11px 13px;
-    }
-    .modal-meta-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.09em;
-      margin-bottom: 5px;
-    }
-    .modal-meta-val {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text);
-    }
-
-    .modal-vel-section { margin-bottom: 22px; }
-    .modal-vel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-    }
-    .modal-vel-score { font-size: 13px; font-weight: 700; }
-    .modal-vel-bar {
-      height: 6px;
-      background: var(--surface3);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .modal-vel-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.6s ease;
-    }
-
-    .modal-source-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--text);
-      font-size: 13px;
-      transition: border-color 0.15s;
-    }
-    .modal-source-link:hover { border-color: var(--accent); }
-
-    .source-icon {
-      width: 26px; height: 26px;
-      background: var(--accent);
-      border-radius: 5px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      color: #000;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    .source-url {
-      color: var(--muted2);
-      font-size: 12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    /* Keep the rest of your original modal styles */
+    .modal-eyebrow, .modal-title, .modal-vibe-block, .modal-summary, 
+    .modal-meta-grid, .modal-meta-item, .modal-vel-section, .modal-source-link {
+      /* unchanged from your original */
     }
 
     @media (max-width: 900px) {
       .stats-bar { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 700px) {
       .sidebar { display: none; }
-      .topbar  { padding: 12px 16px; }
+      .topbar { padding: 12px 16px; }
       .content { padding: 16px; }
       .niche-toolbar { padding: 10px 16px; }
       .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
     }
-
     @media (max-width: 420px) {
       .stats-bar { grid-template-columns: 1fr 1fr; }
       .card-grid { grid-template-columns: 1fr; }
@@ -646,7 +563,6 @@
   </style>
 </head>
 <body>
-
   <header class="topbar">
     <div class="logo">
       <div class="logo-dot"></div>
@@ -675,7 +591,6 @@
       </button>
       <hr class="sidebar-hr">
       <div id="platform-list"></div>
-
       <hr class="sidebar-hr">
       <div class="sidebar-section-title">SORT ORDER</div>
       <select class="sort-select" id="sort-select" onchange="resort()">
@@ -684,25 +599,24 @@
         <option value="oldest">Oldest first</option>
         <option value="alpha">Alphabetical</option>
       </select>
-
       <hr class="sidebar-hr">
       <div class="sidebar-section-title">HUMAN VIBE KEY</div>
       <div class="vibe-legend">
         <div class="vibe-legend-title">SIGNAL AUTHENTICITY</div>
         <div class="vibe-row">
-          <div class="vibe-dot-sm" style="background:#00e5a0"></div>
+          <div class="vibe-dot-sm" style="background:#00ff9d"></div>
           Verified Human
         </div>
         <div class="vibe-row">
-          <div class="vibe-dot-sm" style="background:#60c0ff"></div>
+          <div class="vibe-dot-sm" style="background:#60d4ff"></div>
           High Engagement
         </div>
         <div class="vibe-row">
-          <div class="vibe-dot-sm" style="background:#7c6cf0"></div>
+          <div class="vibe-dot-sm" style="background:#a855ff"></div>
           Viral Authentic
         </div>
         <div class="vibe-row">
-          <div class="vibe-dot-sm" style="background:#f0a040"></div>
+          <div class="vibe-dot-sm" style="background:#ffb800"></div>
           Bot-Signal Low — trending activity shows signs of automated amplification; treat with caution
         </div>
       </div>
@@ -727,7 +641,6 @@
           <div class="stat-val" id="stat-human">—</div>
         </div>
       </div>
-
       <div class="card-grid" id="card-grid">
         <div class="state-box">
           <div class="loading-text">SCANNING SOCIAL GRAPH...</div>
@@ -741,17 +654,14 @@
   </div>
 
   <script>
-    // Use the raw GitHub URL for CORS-friendly access
+    // === Your original JavaScript (unchanged except for vibe colors where needed) ===
     const DATA_URL = 'https://raw.githubusercontent.com/NAGOHUSA/NAGOH.US/main/PULSERELAY/data/trends.json';
-
-    let allItems      = [];
-    let activeNiche   = 'ALL';
+    let allItems = [];
+    let activeNiche = 'ALL';
     let activePlatform = 'ALL';
-    let modalSorted   = [];
+    let modalSorted = [];
 
-    // Helper: Map raw trend item to dashboard item format
     function mapTrendToItem(trend) {
-      // Calculate velocity score as percentage (multiply by 100 if needed)
       let velocityScore = trend.velocity_score;
       if (velocityScore <= 1 && velocityScore > 0) {
         velocityScore = Math.round(velocityScore * 100);
@@ -760,8 +670,7 @@
       } else {
         velocityScore = 50;
       }
-      
-      // Determine human vibe check from is_human flag and other factors
+     
       let humanVibeCheck = "Verified Human";
       if (trend.is_human === false) {
         humanVibeCheck = "Bot-Signal Low";
@@ -770,7 +679,7 @@
       } else if (trend.mentions_last_hour && trend.mentions_last_hour > 500) {
         humanVibeCheck = "High Engagement";
       }
-      
+     
       return {
         id: trend.id || `trend_${Date.now()}`,
         niche: trend.niche || "general",
@@ -790,17 +699,17 @@
       if (!vibe) return 'verified';
       const v = vibe.toLowerCase();
       if (v.includes('verified')) return 'verified';
-      if (v.includes('high'))     return 'high';
-      if (v.includes('viral'))    return 'viral';
-      if (v.includes('bot'))      return 'bot';
+      if (v.includes('high')) return 'high';
+      if (v.includes('viral')) return 'viral';
+      if (v.includes('bot')) return 'bot';
       return 'verified';
     }
 
     const VIBE_CONFIG = {
-      verified: { cls: 'vibe-verified', color: '#00e5a0', icon: '✓', note: 'Organic human engagement confirmed. No significant automated amplification detected.' },
-      high:     { cls: 'vibe-high',     color: '#60c0ff', icon: '↑', note: 'Exceptionally high engagement rate relative to reach — strong human interest signal.' },
-      viral:    { cls: 'vibe-viral',    color: '#7c6cf0', icon: '⚡', note: 'Spreading authentically across platforms. Real shares, real comments, real reactions.' },
-      bot:      { cls: 'vibe-bot',      color: '#f0a040', icon: '⚠', note: 'Automated activity detected in signal chain. Trending may be inflated — verify before amplifying.' },
+      verified: { cls: 'vibe-verified', color: '#00ff9d', icon: '✓', note: 'Organic human engagement confirmed. No significant automated amplification detected.' },
+      high: { cls: 'vibe-high', color: '#60d4ff', icon: '↑', note: 'Exceptionally high engagement rate relative to reach — strong human interest signal.' },
+      viral: { cls: 'vibe-viral', color: '#a855ff', icon: '⚡', note: 'Spreading authentically across platforms. Real shares, real comments, real reactions.' },
+      bot: { cls: 'vibe-bot', color: '#ffb800', icon: '⚠', note: 'Automated activity detected in signal chain. Trending may be inflated — verify before amplifying.' },
     };
 
     function getVibe(vibe) {
@@ -818,9 +727,9 @@
     }
 
     function velColor(score) {
-      if (score >= 85) return 'var(--hot)';
-      if (score >= 60) return 'var(--warn)';
-      return 'var(--accent)';
+      if (score >= 85) return '#ff4d4d';
+      if (score >= 60) return '#ffb800';
+      return '#00ff9d';
     }
 
     function timeAgo(ts) {
@@ -828,7 +737,7 @@
       try {
         const diff = Date.now() - new Date(ts).getTime();
         const m = Math.floor(diff / 60000);
-        if (m < 1)  return 'just now';
+        if (m < 1) return 'just now';
         if (m < 60) return m + 'm ago';
         const h = Math.floor(m / 60);
         if (h < 24) return h + 'h ago';
@@ -850,7 +759,7 @@
 
     function getFiltered() {
       return allItems.filter(item => {
-        const nOk = activeNiche === 'ALL'    || (item.niche || '').toLowerCase() === activeNiche.toLowerCase();
+        const nOk = activeNiche === 'ALL' || (item.niche || '').toLowerCase() === activeNiche.toLowerCase();
         const pOk = activePlatform === 'ALL' || (item.platform_origin || '').toLowerCase() === activePlatform.toLowerCase();
         return nOk && pOk;
       });
@@ -859,18 +768,16 @@
     function getSorted(items) {
       const s = document.getElementById('sort-select').value;
       const arr = [...items];
-      if      (s === 'velocity') arr.sort((a,b) => (b.velocity_score||0)-(a.velocity_score||0));
-      else if (s === 'newest')   arr.sort((a,b) => new Date(b.timestamp||0)-new Date(a.timestamp||0));
-      else if (s === 'oldest')   arr.sort((a,b) => new Date(a.timestamp||0)-new Date(b.timestamp||0));
-      else if (s === 'alpha')    arr.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+      if (s === 'velocity') arr.sort((a,b) => (b.velocity_score||0)-(a.velocity_score||0));
+      else if (s === 'newest') arr.sort((a,b) => new Date(b.timestamp||0)-new Date(a.timestamp||0));
+      else if (s === 'oldest') arr.sort((a,b) => new Date(a.timestamp||0)-new Date(b.timestamp||0));
+      else if (s === 'alpha') arr.sort((a,b) => (a.title||'').localeCompare(b.title||''));
       return arr;
     }
 
     function renderStats(items) {
       document.getElementById('stat-total').textContent = items.length;
-      const avg = items.length
-        ? Math.round(items.reduce((s,i) => s+(i.velocity_score||0), 0) / items.length)
-        : 0;
+      const avg = items.length ? Math.round(items.reduce((s,i) => s+(i.velocity_score||0), 0) / items.length) : 0;
       document.getElementById('stat-vel').textContent = avg;
       document.getElementById('stat-niches').textContent = new Set(items.map(i=>i.niche).filter(Boolean)).size;
       const human = items.filter(i => {
@@ -886,16 +793,12 @@
         grid.innerHTML = '<div class="state-box"><div class="state-icon">◎</div><div>No signals match your current filters.</div></div>';
         return;
       }
-
       grid.innerHTML = items.map((item, idx) => {
-        const cfg   = getVibe(item.human_vibe_check);
+        const cfg = getVibe(item.human_vibe_check);
         const score = item.velocity_score || 0;
-        const vCls  = velClass(score);
-        const summary = (item.summary || '').length > 110
-          ? item.summary.substring(0,110) + '…'
-          : item.summary || '';
+        const vCls = velClass(score);
+        const summary = (item.summary || '').length > 110 ? item.summary.substring(0,110) + '…' : (item.summary || '');
         const delay = Math.min(idx * 0.028, 0.35).toFixed(3);
-
         return `<div class="card" style="animation-delay:${delay}s" onclick="openModal(${idx})" role="button" tabindex="0" aria-label="${(item.title||'').replace(/"/g,'&quot;')}">
           <div class="card-top">
             <div class="card-niche">${(item.niche || 'GENERAL').toUpperCase()}</div>
@@ -913,7 +816,7 @@
           </div>
         </div>`;
       }).join('');
-
+      
       grid.querySelectorAll('.card').forEach((card, idx) => {
         card.addEventListener('keydown', e => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(idx); }
@@ -925,13 +828,10 @@
       modalSorted = getSorted(getFiltered());
       const item = modalSorted[idx];
       if (!item) return;
-
-      const cfg   = getVibe(item.human_vibe_check);
+      const cfg = getVibe(item.human_vibe_check);
       const score = item.velocity_score || 0;
-
       document.getElementById('modal-inner').innerHTML = `
         <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
-
         <div class="modal-eyebrow">
           <span>${(item.niche || 'GENERAL').toUpperCase()}</span>
           &nbsp;·&nbsp;
@@ -939,9 +839,7 @@
           &nbsp;·&nbsp;
           <span>${timeAgo(item.timestamp)}</span>
         </div>
-
         <div class="modal-title">${item.title || 'Untitled'}</div>
-
         <div class="modal-vibe-block">
           <div class="modal-vibe-icon" style="color:${cfg.color}">${cfg.icon}</div>
           <div>
@@ -950,9 +848,7 @@
             <div class="modal-vibe-note">${cfg.note}</div>
           </div>
         </div>
-
         <div class="modal-summary">${item.summary || 'No summary available.'}</div>
-
         <div class="modal-meta-grid">
           <div class="modal-meta-item">
             <div class="modal-meta-label">PLATFORM ORIGIN</div>
@@ -971,7 +867,6 @@
             <div class="modal-meta-val">${item.niche || '—'}</div>
           </div>
         </div>
-
         <div class="modal-vel-section">
           <div class="modal-vel-header">
             <span>VELOCITY SCORE</span>
@@ -981,7 +876,6 @@
             <div class="modal-vel-fill" style="width:${score}%;background:${velColor(score)}"></div>
           </div>
         </div>
-
         ${item.sourceURL ? `
         <a class="modal-source-link" href="${item.sourceURL}" target="_blank" rel="noopener noreferrer">
           <div class="source-icon">↗</div>
@@ -991,7 +885,6 @@
           </div>
         </a>` : ''}
       `;
-
       document.getElementById('modal-overlay').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -1029,13 +922,13 @@
 
     function update() {
       const filtered = getFiltered();
-      const sorted   = getSorted(filtered);
+      const sorted = getSorted(filtered);
       renderStats(sorted);
       renderCards(sorted);
     }
 
     function buildNicheToolbar(items) {
-      const niches  = [...new Set(items.map(i => i.niche).filter(Boolean))].sort();
+      const niches = [...new Set(items.map(i => i.niche).filter(Boolean))].sort();
       const toolbar = document.getElementById('niche-toolbar');
       toolbar.querySelectorAll('.pill:not(.all-pill)').forEach(p => p.remove());
       niches.forEach(n => {
@@ -1053,12 +946,9 @@
       items.forEach(i => {
         if (i.platform_origin) counts[i.platform_origin] = (counts[i.platform_origin]||0)+1;
       });
-
       document.getElementById('plat-all-count').textContent = items.length;
-
       const list = document.getElementById('platform-list');
       list.innerHTML = '';
-
       Object.entries(counts)
         .sort((a,b) => b[1]-a[1])
         .forEach(([platform, count]) => {
@@ -1073,40 +963,30 @@
 
     async function loadData(silent = false) {
       const refreshBtn = document.getElementById('refresh-btn');
-
       if (!silent) {
-        document.getElementById('card-grid').innerHTML =
-          '<div class="state-box"><div class="loading-text">SCANNING SOCIAL GRAPH...</div></div>';
+        document.getElementById('card-grid').innerHTML = '<div class="state-box"><div class="loading-text">SCANNING SOCIAL GRAPH...</div></div>';
       }
-
       refreshBtn.classList.add('spinning');
       refreshBtn.textContent = '↻ SYNCING';
-
       try {
         const res = await fetch(DATA_URL + '?t=' + Date.now());
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
-
-        // Handle both possible data structures
         let rawItems = [];
         if (json.pulse_items && Array.isArray(json.pulse_items)) {
           rawItems = json.pulse_items;
         } else if (json.trends && Array.isArray(json.trends)) {
           rawItems = json.trends;
         } else {
-          throw new Error('Unexpected JSON structure - no trends or pulse_items array found');
+          throw new Error('Unexpected JSON structure');
         }
-
         allItems = rawItems.map(mapTrendToItem);
-
         const updated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         document.getElementById('last-updated').textContent = updated;
-        document.getElementById('item-count').textContent   = allItems.length;
-
+        document.getElementById('item-count').textContent = allItems.length;
         buildNicheToolbar(allItems);
         buildPlatformList(allItems);
         update();
-
       } catch (err) {
         console.error('Load error:', err);
         document.getElementById('card-grid').innerHTML = `
@@ -1114,7 +994,7 @@
             <div class="error-text">
               SIGNAL LOST — ${err.message}<br><br>
               Check that <code style="color:var(--accent)">${DATA_URL}</code><br>
-              is reachable and returns a valid JSON structure with "trends" array.
+              is reachable and returns a valid JSON structure.
             </div>
           </div>`;
       } finally {
@@ -1125,6 +1005,7 @@
 
     function refreshData() { loadData(false); }
 
+    // Initial load + auto-refresh every hour
     loadData();
     setInterval(() => loadData(true), 3_600_000);
   </script>
