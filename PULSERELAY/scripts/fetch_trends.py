@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Multi-Source Real-Time Trend Aggregator v5.0
+PulseRelay - Multi-Source Real-Time Trend Aggregator v5.1
 Global-first, no mandatory API keys (DeepSeek + GitHub optional).
 Primary sources: Google Trends RSS, News RSS, Wikipedia, HN, Lobste.rs, Dev.to
-Fallback sources: Reddit (rate-limit safe), GitHub trending
+Niche extras:   Hackaday, Makezine, Outside, Backpacker, AJC, GPB
+Reddit removed: blocks all unauthenticated server requests (403)
 """
 
 import os
@@ -100,14 +101,29 @@ NEWS_FEEDS: Dict[str, List[str]] = {
 # Google Trends regions — pulled in parallel for global spread
 GTRENDS_REGIONS = ["US", "GB", "IN", "AU", "DE", "BR", "JP"]
 
-# Reddit — fallback only for niches with no RSS coverage
-REDDIT_FALLBACK: Dict[str, List[str]] = {
-    "maker":  ["diy", "3Dprinting", "raspberry_pi"],
-    "local":  ["atlanta", "georgia"],
-    "outdoor": ["hiking", "ultralight"],
+# Extra RSS feeds for niches not fully covered by NEWS_FEEDS
+# Reddit removed — blocks all unauthenticated server-side requests with 403
+NICHE_EXTRAS: Dict[str, List[str]] = {
+    "maker": [
+        "https://hackaday.com/feed/",
+        "https://blog.adafruit.com/feed/",
+        "https://makezine.com/feed/",
+    ],
+    "outdoor": [
+        "https://www.outsideonline.com/feed/",
+        "https://www.backpacker.com/feed/",
+        "https://www.rei.com/blog/feed",
+    ],
+    "local": [
+        "https://www.ajc.com/news/local/rss.xml",
+        "https://www.gpb.org/rss/news",
+    ],
+    "repair": [
+        "https://www.ifixit.com/News/rss",
+        "https://hackaday.com/feed/",
+    ],
 }
 
-REDDIT_BASE  = "https://www.reddit.com"
 HN_BASE      = "https://hacker-news.firebaseio.com/v0"
 GITHUB_API   = "https://api.github.com/search/repositories"
 LOBSTERS_API = "https://lobste.rs/hottest.json"
@@ -424,44 +440,6 @@ class TrendAggregator:
             print(f"  ⚠️  GitHub: {e}")
             return []
 
-    # ── Reddit (fallback) ─────────────────────────────────────────────────
-
-    def fetch_reddit_trends(self, subreddit: str, niche: str, limit: int = 10) -> List[Dict[str, Any]]:
-        try:
-            url = f"{REDDIT_BASE}/r/{subreddit}/hot.json?limit={limit}"
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-            trends = []
-            for post in data.get("data", {}).get("children", []):
-                p = post.get("data", {})
-                score = p.get("score", 0)
-                comments = p.get("num_comments", 0)
-                age_h = self._age_hours(p.get("created_utc", time.time()))
-                velocity = min(((score + comments * 2) / max(age_h, 1)) / 100, 1.0)
-
-                trends.append({
-                    "id": self._make_id("reddit", p.get("id", p.get("title", ""))),
-                    "niche": niche,
-                    "headline": p.get("title", "")[:200],
-                    "summary": p.get("selftext", "")[:300] or f"Trending on r/{subreddit}",
-                    "velocity_score": velocity,
-                    "signal_strength": min(comments / max(score, 1), 1.0),
-                    "mentions_last_hour": max(int(score / max(age_h, 1)), 1),
-                    "mentions_previous_24h": score,
-                    "source": "reddit",
-                    "source_url": f"https://reddit.com{p.get('permalink', '')}",
-                    "is_human": comments >= 5,
-                    "timestamp": datetime.fromtimestamp(
-                        p.get("created_utc", time.time()), tz=timezone.utc
-                    ).isoformat(),
-                    "tags": p.get("link_flair_text", "").split() if p.get("link_flair_text") else [],
-                })
-            return trends
-        except Exception as e:
-            print(f"  ⚠️  Reddit r/{subreddit}: {e}")
-            return []
-
     # ── DeepSeek Synthesis (optional) ────────────────────────────────────
 
     def fetch_deepseek_synthesis(self, context_trends: List[Dict], niche: str) -> List[Dict[str, Any]]:
@@ -476,23 +454,32 @@ class TrendAggregator:
                 f"Output ONLY a JSON object with a 'trends' array. Each trend must have: "
                 f"headline (string), summary (string), velocity_score (0.0-1.0), tags (array of strings), source_url (string)."
             )
-            response = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.deepseek_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": "deepseek-chat",
-                    "messages": [
-                        {"role": "system", "content": "You are a JSON-only trend analyst. Output raw JSON, no markdown."},
-                        {"role": "user", "content": prompt},
-                    ],
-                    "response_format": {"type": "json_object"},
-                    "max_tokens": 1000,
-                },
-                timeout=30,
-            )
+            for attempt in range(2):
+                try:
+                    response = requests.post(
+                        "https://api.deepseek.com/v1/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {self.deepseek_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json={
+                            "model": "deepseek-chat",
+                            "messages": [
+                                {"role": "system", "content": "You are a JSON-only trend analyst. Output raw JSON, no markdown."},
+                                {"role": "user", "content": prompt},
+                            ],
+                            "response_format": {"type": "json_object"},
+                            "max_tokens": 1000,
+                        },
+                        timeout=20,
+                    )
+                    break
+                except requests.exceptions.Timeout:
+                    if attempt == 1:
+                        print(f"  ⚠️  DeepSeek timed out twice for '{niche}', skipping")
+                        return []
+                    print(f"  ⚠️  DeepSeek timeout for '{niche}', retrying...")
+                    time.sleep(2)
             ai_trends = response.json()["choices"][0]["message"]["content"]
             items = json.loads(ai_trends).get("trends", [])
             results = []
@@ -563,14 +550,15 @@ class TrendAggregator:
         all_trends.extend(gh)
         time.sleep(0.5)
 
-        # 6. Reddit — fallback for niches with thin RSS coverage
-        print("\n🔸 Reddit fallback (maker / outdoor / local)...")
-        for niche, subs in REDDIT_FALLBACK.items():
-            for sub in subs:
-                results = self.fetch_reddit_trends(sub, niche, limit=10)
-                print(f"   → r/{sub}: {len(results)} items")
+        # 6. Niche extras — RSS for maker / outdoor / local / repair
+        print("\n🔧 Niche extra RSS (maker / outdoor / local / repair)...")
+        for niche, feeds in NICHE_EXTRAS.items():
+            for url in feeds:
+                results = self.fetch_rss_feed(url, niche)
+                domain = url.split("/")[2]
+                print(f"   → {domain}: {len(results)} items")
                 all_trends.extend(results)
-                time.sleep(0.8)
+                time.sleep(0.25)
 
         # 7. DeepSeek synthesis — fills niches still thin after real data
         if self.deepseek_key:
@@ -643,7 +631,7 @@ def main() -> None:
     output_file = os.path.join(script_dir, "..", "data", "trends.json")
     output_file = os.path.normpath(output_file)
 
-    print(f"\n🚀 PulseRelay v5.0 — output → {output_file}\n")
+    print(f"\n🚀 PulseRelay v5.1 — output → {output_file}\n")
 
     aggregator = TrendAggregator(deepseek_key=deepseek_key, github_token=github_token)
 
@@ -661,7 +649,7 @@ def main() -> None:
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "total_count": len(final),
         "metadata": {
-            "version": "5.0",
+            "version": "5.1",
             "niches_covered": sorted(set(t["niche"] for t in final)),
             "sources_used": sorted(set(t["source"] for t in final)),
         },
