@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PulseReelay — Real-Time Trend Intelligence</title>
+  <title>PulseReel — Real-Time Trend Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
@@ -921,4 +921,212 @@
       });
     }
 
-    function
+    function openModal(idx) {
+      modalSorted = getSorted(getFiltered());
+      const item = modalSorted[idx];
+      if (!item) return;
+
+      const cfg   = getVibe(item.human_vibe_check);
+      const score = item.velocity_score || 0;
+
+      document.getElementById('modal-inner').innerHTML = `
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+
+        <div class="modal-eyebrow">
+          <span>${(item.niche || 'GENERAL').toUpperCase()}</span>
+          &nbsp;·&nbsp;
+          <span>${item.platform_origin || '—'}</span>
+          &nbsp;·&nbsp;
+          <span>${timeAgo(item.timestamp)}</span>
+        </div>
+
+        <div class="modal-title">${item.title || 'Untitled'}</div>
+
+        <div class="modal-vibe-block">
+          <div class="modal-vibe-icon" style="color:${cfg.color}">${cfg.icon}</div>
+          <div>
+            <div class="modal-vibe-label">HUMAN VERIFICATION STATUS</div>
+            <div class="modal-vibe-status" style="color:${cfg.color}">${vibeLabel(item.human_vibe_check)}</div>
+            <div class="modal-vibe-note">${cfg.note}</div>
+          </div>
+        </div>
+
+        <div class="modal-summary">${item.summary || 'No summary available.'}</div>
+
+        <div class="modal-meta-grid">
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">PLATFORM ORIGIN</div>
+            <div class="modal-meta-val">${item.platform_origin || '—'}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">SIGNAL TIME</div>
+            <div class="modal-meta-val">${fmtTime(item.timestamp)}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">DATE</div>
+            <div class="modal-meta-val">${fmtDate(item.timestamp)}</div>
+          </div>
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">NICHE</div>
+            <div class="modal-meta-val">${item.niche || '—'}</div>
+          </div>
+        </div>
+
+        <div class="modal-vel-section">
+          <div class="modal-vel-header">
+            <span>VELOCITY SCORE</span>
+            <span class="modal-vel-score" style="color:${velColor(score)}">${score} / 100</span>
+          </div>
+          <div class="modal-vel-bar">
+            <div class="modal-vel-fill" style="width:${score}%;background:${velColor(score)}"></div>
+          </div>
+        </div>
+
+        ${item.sourceURL ? `
+        <a class="modal-source-link" href="${item.sourceURL}" target="_blank" rel="noopener noreferrer">
+          <div class="source-icon">↗</div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:2px;">SOURCE</div>
+            <div class="source-url">${item.sourceURL.replace(/^https?:\/\/(www\.)?/, '').substring(0, 70)}</div>
+          </div>
+        </a>` : ''}
+      `;
+
+      document.getElementById('modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    function filterNiche(niche) {
+      activeNiche = niche;
+      document.querySelectorAll('.pill[data-niche]').forEach(p => {
+        p.classList.toggle('active', p.dataset.niche === niche);
+      });
+      update();
+    }
+
+    function filterPlatform(platform) {
+      activePlatform = platform;
+      document.querySelectorAll('.plat-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.platform === platform);
+      });
+      update();
+    }
+
+    function resort() { update(); }
+
+    function update() {
+      const filtered = getFiltered();
+      const sorted   = getSorted(filtered);
+      renderStats(sorted);
+      renderCards(sorted);
+    }
+
+    function buildNicheToolbar(items) {
+      const niches  = [...new Set(items.map(i => i.niche).filter(Boolean))].sort();
+      const toolbar = document.getElementById('niche-toolbar');
+      toolbar.querySelectorAll('.pill:not(.all-pill)').forEach(p => p.remove());
+      niches.forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'pill';
+        btn.dataset.niche = n;
+        btn.textContent = n.charAt(0).toUpperCase() + n.slice(1);
+        btn.onclick = () => filterNiche(n);
+        toolbar.appendChild(btn);
+      });
+    }
+
+    function buildPlatformList(items) {
+      const counts = {};
+      items.forEach(i => {
+        if (i.platform_origin) counts[i.platform_origin] = (counts[i.platform_origin]||0)+1;
+      });
+
+      document.getElementById('plat-all-count').textContent = items.length;
+
+      const list = document.getElementById('platform-list');
+      list.innerHTML = '';
+
+      Object.entries(counts)
+        .sort((a,b) => b[1]-a[1])
+        .forEach(([platform, count]) => {
+          const btn = document.createElement('button');
+          btn.className = 'plat-btn';
+          btn.dataset.platform = platform;
+          btn.innerHTML = `${platform.charAt(0).toUpperCase() + platform.slice(1)} <span class="plat-count">${count}</span>`;
+          btn.onclick = () => filterPlatform(platform);
+          list.appendChild(btn);
+        });
+    }
+
+    async function loadData(silent = false) {
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      if (!silent) {
+        document.getElementById('card-grid').innerHTML =
+          '<div class="state-box"><div class="loading-text">SCANNING SOCIAL GRAPH...</div></div>';
+      }
+
+      refreshBtn.classList.add('spinning');
+      refreshBtn.textContent = '↻ SYNCING';
+
+      try {
+        const res = await fetch(DATA_URL + '?t=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+
+        // Handle both possible data structures
+        let rawItems = [];
+        if (json.pulse_items && Array.isArray(json.pulse_items)) {
+          rawItems = json.pulse_items;
+        } else if (json.trends && Array.isArray(json.trends)) {
+          rawItems = json.trends;
+        } else {
+          throw new Error('Unexpected JSON structure - no trends or pulse_items array found');
+        }
+
+        allItems = rawItems.map(mapTrendToItem);
+
+        const updated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('last-updated').textContent = updated;
+        document.getElementById('item-count').textContent   = allItems.length;
+
+        buildNicheToolbar(allItems);
+        buildPlatformList(allItems);
+        update();
+
+      } catch (err) {
+        console.error('Load error:', err);
+        document.getElementById('card-grid').innerHTML = `
+          <div class="state-box">
+            <div class="error-text">
+              SIGNAL LOST — ${err.message}<br><br>
+              Check that <code style="color:var(--accent)">${DATA_URL}</code><br>
+              is reachable and returns a valid JSON structure with "trends" array.
+            </div>
+          </div>`;
+      } finally {
+        refreshBtn.classList.remove('spinning');
+        refreshBtn.textContent = '↻ REFRESH';
+      }
+    }
+
+    function refreshData() { loadData(false); }
+
+    loadData();
+    setInterval(() => loadData(true), 3_600_000);
+  </script>
+</body>
+</html>
