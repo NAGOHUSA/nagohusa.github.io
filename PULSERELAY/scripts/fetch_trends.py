@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Multi-Source Real-Time Trend Aggregator v5.4
+PulseRelay - Multi-Source Real-Time Trend Aggregator v5.5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Changes from v5.3:
-  • Bluesky posts now include a 'is_still_public' flag for frontend verification
-  • Added verify_bluesky_post_publicity() function for link validation
-  • Improved error handling for private/expired Bluesky posts
-  • Added fallback display text for inaccessible Bluesky content
-  • Post-fetch validation to detect privacy changes
+Changes from v5.4:
+  • Improved Bluesky post categorization (no more default "breakingNews")
+  • Emoji detection for better niche classification
+  • Priority-based keyword matching (sports, music, cinema prioritized)
+  • Multiple keyword matching requires 2+ matches for confidence
+  • Better fallback logic for posts without clear signals
 Sources (all free, no mandatory keys):
   • Google Trends   — multi-region, dual URL format fallback
   • News RSS        — BBC, Guardian, Al Jazeera, DW, NYT, NPR, Ars, Verge…
@@ -16,7 +16,7 @@ Sources (all free, no mandatory keys):
   • Lobste.rs       — JSON API (short timeout, graceful skip)
   • Dev.to          — public articles API
   • GitHub          — search API (optional token for higher rate limit)
-  • Bluesky         — AT Protocol What's Hot feed, no auth (with post-validation)
+  • Bluesky         — AT Protocol What's Hot feed (improvised categorization)
   • Mastodon        — mastodon.social + fosstodon + infosec.exchange, no auth
 Optional:
   • DeepSeek        — AI synthesis for thin niches (set DEEPSEEK_API_KEY)
@@ -168,29 +168,199 @@ BROWSER_UA = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-# ── Keyword classifier for social posts ──────────────────────────────────────
+# ============================================================================
+# IMPROVED SOCIAL MEDIA CLASSIFICATION (v5.5)
+# ============================================================================
+
 SOCIAL_NICHE_KEYWORDS: Dict[str, List[str]] = {
-    "tech":         ["ai", "llm", "software", "coding", "programming", "apple", "google", "openai", "tech", "dev"],
-    "privacy":      ["privacy", "hack", "breach", "security", "surveillance", "vpn", "encryption", "infosec"],
-    "space":        ["nasa", "spacex", "rocket", "mars", "moon", "asteroid", "launch", "orbit", "astronomy"],
-    "sports":       ["nfl", "nba", "mlb", "soccer", "football", "basketball", "game", "match", "score", "fifa"],
-    "cinema":       ["movie", "film", "oscar", "box office", "trailer", "actor", "director", "cinema"],
-    "music":        ["album", "song", "music", "concert", "tour", "grammy", "artist", "band", "playlist"],
-    "streaming":    ["netflix", "hbo", "disney+", "streaming", "series", "episode", "season", "prime video"],
-    "maker":        ["3d print", "arduino", "raspberry pi", "diy", "build", "circuit", "maker", "electronics"],
-    "repair":       ["repair", "fix", "ifixit", "right to repair", "broken", "replace", "teardown"],
-    "outdoor":      ["hiking", "climbing", "camping", "trail", "nature", "park", "wilderness", "backpacking"],
-    "legal":        ["court", "lawsuit", "judge", "trial", "verdict", "law", "supreme court", "attorney"],
-    "worldEvents":  ["war", "election", "ukraine", "gaza", "protest", "government", "president", "climate"],
-    "breakingNews": ["breaking", "just in", "alert", "update", "developing"],
+    # Primary categories (high priority)
+    "sports": ["nfl", "nba", "mlb", "nhl", "soccer", "football", "basketball", "baseball", "hockey", 
+               "world cup", "super bowl", "world series", "stanley cup", "olympics", "tottenham", 
+               "liverpool", "manchester", "chelsea", "arsenal", "real madrid", "barcelona", 
+               "game", "match", "score", "fifa", "athlete", "player", "coach", "team", "league",
+               "wins", "playoffs", "championship", "tournament", "tourney"],
+    
+    "tech": ["ai", "llm", "software", "coding", "programming", "apple", "google", "microsoft", 
+             "openai", "tech", "dev", "developer", "github", "api", "database", "cloud", 
+             "server", "linux", "windows", "macos", "android", "ios", "app", "startup", 
+             "silicon valley", "algorithm", "python", "javascript", "rust", "react", "docker",
+             "kubernetes", "aws", "azure", "api", "backend", "frontend", "fullstack"],
+    
+    "music": ["album", "song", "music", "concert", "tour", "grammy", "artist", "band", 
+              "playlist", "single", "record", "label", "festival", "coachella", "glastonbury",
+              "rock", "pop", "hip hop", "rap", "jazz", "classical", "singer", "musician",
+              "taylor swift", "beyonce", "weeknd", "drake", "billie eilish"],
+    
+    "cinema": ["movie", "film", "oscar", "box office", "trailer", "actor", "director", 
+               "cinema", "hollywood", "marvel", "dc", "star wars", "cinematic", "screening",
+               "premiere", "theater", "theatre", "blockbuster", "indie film", "documentary"],
+    
+    "streaming": ["netflix", "hbo", "disney+", "streaming", "series", "episode", "season", 
+                  "prime video", "hulu", "apple tv", "peacock", "crunchyroll", "paramount",
+                  "binge", "watch", "tv series", "limited series", "tv show", "stream"],
+    
+    "space": ["nasa", "spacex", "rocket", "mars", "moon", "asteroid", "launch", "orbit", 
+              "astronomy", "astronaut", "cosmos", "galaxy", "star", "planet", "telescope",
+              "james webb", "artemis", "iss", "space station", "blue origin", "virgin galactic",
+              "starship", "falcon", "orion", "apollo"],
+    
+    "privacy": ["privacy", "hack", "breach", "security", "surveillance", "vpn", "encryption", 
+                "infosec", "cybersecurity", "data leak", "ransomware", "malware", "virus",
+                "phishing", "2fa", "password", "anonymity", "tor", "tracking", "cookies",
+                "gdpr", "ccpa", "data privacy", "personal data"],
+    
+    "maker": ["3d print", "arduino", "raspberry pi", "diy", "build", "circuit", "maker", 
+              "electronics", "soldering", "robotics", "drone", "hackathon", "prototype",
+              "woodworking", "craft", "homemade", "schematic", "pcb", "breadboard"],
+    
+    "outdoor": ["hiking", "climbing", "camping", "trail", "nature", "park", "wilderness", 
+                "backpacking", "mountains", "forest", "lake", "river", "biking", "cycling",
+                "kayaking", "surfing", "skiing", "snowboarding", "fishing", "hunting",
+                "national park", "state park", "campground"],
+    
+    "legal": ["court", "lawsuit", "judge", "trial", "verdict", "law", "supreme court", 
+              "attorney", "lawyer", "legal", "justice", "appeal", "convicted", "plea",
+              "settlement", "testimony", "witness", "defendant", "plaintiff", "litigation"],
+    
+    "worldEvents": ["war", "election", "ukraine", "gaza", "protest", "government", "president", 
+                    "climate", "politics", "congress", "senate", "parliament", "prime minister",
+                    "diplomacy", "treaty", "conflict", "peace", "ceasefire", "refugee",
+                    "immigration", "policy", "vote", "ballot", "campaign", "russia", "china",
+                    "israel", "palestine", "iran", "nuclear", "sanctions"],
+    
+    "repair": ["repair", "fix", "right to repair", "broken", "replace", "teardown", 
+               "schematic", "replacement", "restore", "restoration", "ifixit"],
+    
+    # Fallback category
+    "breakingNews": ["breaking", "just in", "alert", "urgent", "developing", "live", 
+                     "exclusive", "scoop", "first look"],
 }
 
-def classify_social(text: str) -> str:
-    lower = text.lower()
-    for niche, keywords in SOCIAL_NICHE_KEYWORDS.items():
-        if any(kw in lower for kw in keywords):
+# Emoji to niche mapping for quick detection
+EMOJI_NICHE_MAP = {
+    # Cinema
+    "🎬": "cinema", "🎥": "cinema", "🍿": "cinema", "🎞️": "cinema", "📽️": "cinema",
+    # Music
+    "🎵": "music", "🎸": "music", "🎤": "music", "🎹": "music", "🎧": "music", 
+    "🎶": "music", "🥁": "music", "🎺": "music", "🎷": "music", "🎙️": "music",
+    # Sports
+    "🏈": "sports", "🏀": "sports", "⚽": "sports", "🏆": "sports", "🏅": "sports",
+    "⚾": "sports", "🎾": "sports", "🏐": "sports", "🏉": "sports", "🥊": "sports",
+    # Space
+    "🚀": "space", "🛸": "space", "🌕": "space", "🪐": "space", "🌍": "space",
+    "🌎": "space", "🌏": "space", "🛰️": "space", "👨‍🚀": "space", "👩‍🚀": "space",
+    # Tech
+    "🤖": "tech", "💻": "tech", "🖥️": "tech", "📱": "tech", "⌨️": "tech",
+    "🖱️": "tech", "💾": "tech", "📀": "tech", "💿": "tech",
+    # Privacy/Security
+    "🔒": "privacy", "🔐": "privacy", "🛡️": "privacy", "🔑": "privacy",
+    # Legal
+    "👮": "legal", "⚖️": "legal", "📜": "legal", "🏛️": "legal",
+    # Outdoor
+    "🏕️": "outdoor", "⛰️": "outdoor", "🏔️": "outdoor", "🌲": "outdoor", 
+    "⛺": "outdoor", "🏞️": "outdoor", "🌄": "outdoor", "🌅": "outdoor",
+    # Maker/DIY
+    "🔧": "maker", "🛠️": "maker", "🔨": "maker", "⚙️": "maker", "🔩": "maker",
+    "🪚": "maker", "🛞": "maker", "🔌": "maker", "💡": "maker",
+    # Streaming
+    "📺": "streaming", "📡": "streaming", "🎮": "streaming",
+    # World Events
+    "🌍": "worldEvents", "🌎": "worldEvents", "🌏": "worldEvents", "🏳️": "worldEvents",
+}
+
+def detect_post_type_by_emoji(text: str) -> Optional[str]:
+    """Detect niche based on emoji patterns in the text"""
+    for emoji, niche in EMOJI_NICHE_MAP.items():
+        if emoji in text:
             return niche
-    return "breakingNews"
+    return None
+
+def classify_social(text: str) -> str:
+    """
+    Improved classification for social media posts with priority ordering.
+    No longer defaults to "breakingNews" - uses intelligent fallbacks.
+    """
+    if not text or len(text) < 3:
+        return "tech"  # Very short posts often tech/casual conversation
+    
+    lower = text.lower()
+    
+    # FIRST PRIORITY: Emoji detection (strong signal)
+    emoji_niche = detect_post_type_by_emoji(text)
+    if emoji_niche:
+        return emoji_niche
+    
+    # SECOND PRIORITY: Explicit category indicators
+    if any(word in lower for word in ["album review", "concert review", "new music", "music video", "song of the", "best album"]):
+        return "music"
+    if any(word in lower for word in ["movie review", "film review", "spoiler", "ending explained", "cinematic"]):
+        return "cinema"
+    if any(word in lower for word in ["game thread", "post-game", "highlights", "recap", "box score"]):
+        return "sports"
+    if any(word in lower for word in ["netflix and", "hbo max", "disney plus", "streaming now", "binge watch"]):
+        return "streaming"
+    if any(word in lower for word in ["spacex", "nasa just", "launch today", "astronaut", "mission to"]):
+        return "space"
+    
+    # THIRD PRIORITY: Match against keyword dictionaries (require confidence)
+    # Start with most specific niches first
+    niche_priority = ["sports", "music", "cinema", "streaming", "space", "tech", 
+                      "privacy", "maker", "outdoor", "legal", "worldEvents", "repair"]
+    
+    for niche in niche_priority:
+        keywords = SOCIAL_NICHE_KEYWORDS.get(niche, [])
+        # Require at least 2 keyword matches for high confidence
+        # For sports/music/tech, 1 match is enough if it's a strong keyword
+        matches = sum(1 for kw in keywords if kw in lower)
+        
+        # Strong single keywords for specific niches
+        strong_keywords = {
+            "sports": ["nfl", "nba", "mlb", "nhl", "super bowl", "world cup"],
+            "music": ["album", "concert", "tour", "grammy", "taylor swift"],
+            "tech": ["ai", "llm", "github", "api", "docker", "kubernetes"],
+        }
+        
+        if niche in strong_keywords:
+            if any(kw in lower for kw in strong_keywords[niche]):
+                return niche
+        
+        if matches >= 2:
+            return niche
+        elif matches >= 1 and niche in ["sports", "music", "tech", "streaming"]:
+            return niche
+    
+    # FOURTH PRIORITY: News indicators
+    if any(word in lower for word in SOCIAL_NICHE_KEYWORDS["breakingNews"]):
+        return "breakingNews"
+    
+    # FIFTH PRIORITY: Question-based posts (often tech/advice)
+    if text.startswith(("Why", "How", "What", "When", "Where", "Is it", "Can we", "Does anyone", "Anyone else")):
+        return "tech"
+    
+    # SIXTH PRIORITY: Length-based heuristics
+    if len(text) > 200:
+        # Longer posts often about current events or detailed topics
+        if any(word in lower for word in ["president", "government", "war", "election", "climate"]):
+            return "worldEvents"
+        return "tech"  # Long technical discussions
+    
+    # SEVENTH PRIORITY: Check for URLs (often tech/news sharing)
+    if "http" in lower or "https" in lower or "://" in lower:
+        return "tech"
+    
+    # EIGHTH PRIORITY: Default fallbacks based on content patterns
+    if "?" in text:
+        return "tech"  # Questions often tech-related
+    
+    if text.count("!") > 2:
+        return "breakingNews"  # Excited posts often about news
+    
+    # FINAL FALLBACK: Don't default to breakingNews - use tech or worldEvents
+    # This prevents over-classification as breaking news
+    if any(word in lower for word in ["today", "now", "just", "new"]):
+        return "breakingNews"
+    
+    return "tech"  # Default to tech for general conversation
 
 
 # ============================================================================
@@ -257,7 +427,7 @@ class TrendAggregator:
 
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": "PulseRelay/5.4 (Global Trend Aggregator)"
+            "User-Agent": "PulseRelay/5.5 (Global Trend Aggregator)"
         })
 
         # Separate session with browser UA for sources that block bots
@@ -577,12 +747,12 @@ class TrendAggregator:
             print(f"  ⚠️  GitHub: {e}")
             return []
 
-    # ── Bluesky (UPDATED with verification metadata) ─────────────────────────
+    # ── Bluesky (UPDATED with improved classification) ───────────────────────
 
     def fetch_bluesky_trending(self) -> List[Dict[str, Any]]:
         """
         Pulls the public What's Hot feed via Bluesky's open AppView API.
-        Zero authentication required. Adds verification metadata for frontend.
+        Zero authentication required. Uses improved classify_social() for better niches.
         """
         trends = []
         try:
@@ -630,12 +800,12 @@ class TrendAggregator:
                     handle = author.get("handle", "bsky.app")
                     url = f"https://bsky.app/profile/{handle}/post/{rkey}" if rkey else "https://bsky.app"
                     
-                    # Extract AT URI components for verification
-                    at_uri = uri
+                    # Use improved classification (no more default breakingNews!)
+                    classified_niche = classify_social(text)
                     
                     trends.append({
                         "id": self._make_id("bsky", uri or text),
-                        "niche": classify_social(text),
+                        "niche": classified_niche,  # ← Now properly categorized
                         "headline": text[:200],
                         "summary": f"Trending on Bluesky — {likes:,} likes, {reposts:,} reposts",
                         "velocity_score": velocity,
@@ -647,12 +817,12 @@ class TrendAggregator:
                         "is_human": True,
                         "timestamp": indexed,
                         "tags": [],
-                        # NEW: Verification metadata for frontend (Solution #2)
+                        # Verification metadata for frontend
                         "bluesky_metadata": {
-                            "at_uri": at_uri,
+                            "at_uri": uri,
                             "handle": handle,
                             "post_id": rkey,
-                            "verified_public": None,  # To be filled by frontend on-demand
+                            "verified_public": None,
                         }
                     })
                 except Exception as post_error:
@@ -662,7 +832,11 @@ class TrendAggregator:
         except Exception as e:
             print(f"  ⚠️  Bluesky feed failed: {e}")
         
-        print(f"   → {len(trends)} Bluesky posts fetched (with verification metadata)")
+        # Count categories for debugging
+        cat_counts = defaultdict(int)
+        for t in trends:
+            cat_counts[t["niche"]] += 1
+        print(f"   → {len(trends)} Bluesky posts (categories: {dict(cat_counts)})")
         return trends
 
     # ── Mastodon ──────────────────────────────────────────────────────────────
@@ -841,7 +1015,7 @@ class TrendAggregator:
         all_trends.extend(gh)
         time.sleep(0.5)
 
-        # 6. Bluesky (with verification metadata)
+        # 6. Bluesky (with improved categorization)
         print("\n🦋 Bluesky trending (What's Hot)...")
         bsky = self.fetch_bluesky_trending()
         print(f"   → {len(bsky)} items")
@@ -920,7 +1094,7 @@ def main() -> None:
     script_dir  = os.path.dirname(os.path.abspath(__file__))
     output_file = os.path.normpath(os.path.join(script_dir, "..", "data", "trends.json"))
 
-    print(f"\n🚀 PulseRelay v5.4 — output → {output_file}\n")
+    print(f"\n🚀 PulseRelay v5.5 — output → {output_file}\n")
 
     aggregator = TrendAggregator(deepseek_key=deepseek_key, github_token=github_token)
 
@@ -938,7 +1112,7 @@ def main() -> None:
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "total_count": len(final),
         "metadata": {
-            "version": "5.4",
+            "version": "5.5",
             "niches_covered": sorted(set(t["niche"] for t in final)),
             "sources_used":   sorted(set(t["source"] for t in final)),
         },
@@ -952,11 +1126,16 @@ def main() -> None:
     print(f"   Niches:  {', '.join(payload['metadata']['niches_covered'])}")
     print(f"   Sources: {', '.join(payload['metadata']['sources_used'])}")
     
-    # Print Bluesky posts count with verification note
-    bluesky_count = len([t for t in final if t['source'] == 'bluesky'])
-    if bluesky_count > 0:
-        print(f"\n📌 NOTE: {bluesky_count} Bluesky posts include verification metadata.")
-        print("   Use verify_bluesky_post_publicity() to check if still accessible before display.")
+    # Print Bluesky category breakdown
+    bluesky_cats = defaultdict(int)
+    for t in final:
+        if t['source'] == 'bluesky':
+            bluesky_cats[t['niche']] += 1
+    
+    if bluesky_cats:
+        print(f"\n📊 Bluesky category breakdown:")
+        for cat, count in sorted(bluesky_cats.items(), key=lambda x: x[1], reverse=True):
+            print(f"   • {cat}: {count} posts")
 
 
 if __name__ == "__main__":
