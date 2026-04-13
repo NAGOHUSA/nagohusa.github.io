@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Multi-Source Real-Time Trend Aggregator v5.2
+PulseRelay - Multi-Source Real-Time Trend Aggregator v5.3
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Changes from v5.2:
+  • Google Trends — tries new URL format first, falls back to legacy (fixes 404)
+  • Reuters feeds.reuters.com — DNS-blocked on Actions, replaced with Guardian/ABC/NPR
+  • AP feeds.apnews.com — DNS-blocked on Actions, replaced with apnews.com/hub RSS
+  • DeepSeek — catches ConnectionError wrapping ReadTimeoutError (fixes crash)
 Sources (all free, no mandatory keys):
-  • Google Trends   — browser UA fix, multi-region daily RSS
-  • News RSS        — BBC, Reuters, AP, Al Jazeera, DW, NYT, Ars, Verge…
+  • Google Trends   — multi-region, dual URL format fallback
+  • News RSS        — BBC, Guardian, Al Jazeera, DW, NYT, NPR, Ars, Verge…
   • Wikipedia       — pageviews REST API
   • Hacker News     — Firebase JSON API
   • Lobste.rs       — JSON API (short timeout, graceful skip)
@@ -12,12 +17,9 @@ Sources (all free, no mandatory keys):
   • GitHub          — search API (optional token for higher rate limit)
   • Bluesky         — AT Protocol What's Hot feed, no auth
   • Mastodon        — mastodon.social + fosstodon + infosec.exchange, no auth
-  • Niche extras    — Hackaday, Adafruit, Makezine, Outside, Backpacker,
-                      iFixit, Courthouse News, AP local/state wire
 Optional:
-  • DeepSeek        — AI synthesis for niches still thin after real data
-                      (set DEEPSEEK_API_KEY env var)
-  • GitHub token    — higher rate limit (set GITHUB_TOKEN env var)
+  • DeepSeek        — AI synthesis for thin niches (set DEEPSEEK_API_KEY)
+  • GitHub token    — higher rate limit (set GITHUB_TOKEN)
 """
 
 import json
@@ -49,20 +51,23 @@ APP_NICHES = [
 ]
 
 # ── News RSS feeds per niche — all free, no auth ─────────────────────────────
+# Reuters feeds.reuters.com is DNS-blocked on GitHub Actions — replaced with
+# reuters.com/arc/outboundfeeds which resolves correctly.
+# AP feeds.apnews.com is also blocked — replaced with apnews.com/hub RSS.
 NEWS_FEEDS: Dict[str, List[str]] = {
     "breakingNews": [
         "http://feeds.bbci.co.uk/news/rss.xml",
-        "https://feeds.reuters.com/reuters/topNews",
         "https://www.aljazeera.com/xml/rss/all.xml",
         "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
         "https://feeds.npr.org/1001/rss.xml",
+        "https://abcnews.go.com/abcnews/topstories",
     ],
     "worldEvents": [
         "http://feeds.bbci.co.uk/news/world/rss.xml",
-        "https://feeds.reuters.com/reuters/worldNews",
         "https://www.aljazeera.com/xml/rss/all.xml",
         "https://rss.dw.com/rdf/rss-en-all",
         "https://feeds.npr.org/1004/rss.xml",
+        "https://www.theguardian.com/world/rss",
     ],
     "tech": [
         "https://feeds.arstechnica.com/arstechnica/index",
@@ -80,7 +85,8 @@ NEWS_FEEDS: Dict[str, List[str]] = {
     "sports": [
         "http://feeds.bbci.co.uk/sport/rss.xml",
         "https://www.espn.com/espn/rss/news",
-        "https://api.foxsports.com/v1/rss",
+        "https://www.theguardian.com/sport/rss",
+        "https://sports.yahoo.com/rss/",
     ],
     "cinema": [
         "https://www.hollywoodreporter.com/feed/",
@@ -107,10 +113,10 @@ NEWS_FEEDS: Dict[str, List[str]] = {
         "https://www.schneier.com/feed/atom/",
     ],
     "legal": [
-        "https://feeds.reuters.com/reuters/legalNews",
         "https://abovethelaw.com/feed/",
         "https://lawandcrime.com/feed/",
         "https://www.courthousenews.com/feed/",
+        "https://www.law360.com/rss/articles",
     ],
     "repair": [
         "https://www.ifixit.com/News/rss",
@@ -129,10 +135,11 @@ NEWS_FEEDS: Dict[str, List[str]] = {
         "https://www.instructables.com/feed/",
     ],
     "local": [
-        "https://feeds.apnews.com/rss/apf-localnews",
-        "https://feeds.apnews.com/rss/apf-southeaststate",
-        "https://feeds.apnews.com/rss/apf-usstate",
+        # AP hub pages resolve fine; feeds.apnews.com subdomain is blocked
+        "https://apnews.com/hub/us-news?format=rss",
+        "https://apnews.com/hub/politics?format=rss",
         "https://statescoop.com/feed/",
+        "https://www.governing.com/rss.xml",
     ],
 }
 
@@ -255,48 +262,57 @@ class TrendAggregator:
     def fetch_google_trends(self, niche: str = "breakingNews") -> List[Dict[str, Any]]:
         """
         Uses browser UA session to bypass the CI runner block.
-        Fetches raw XML then passes to feedparser for parsing.
+        Tries both the current and legacy URL formats per region.
         """
+        # Google rotated the endpoint — try both formats
+        URL_TEMPLATES = [
+            "https://trends.google.com/trending/rss?geo={region}",          # new (2024+)
+            "https://trends.google.com/trends/trendingsearches/daily/rss?geo={region}",  # legacy
+        ]
         trends = []
         for region in GTRENDS_REGIONS:
-            try:
-                url = f"https://trends.google.com/trends/trendingsearches/daily/rss?geo={region}"
-                r = self.browser_session.get(url, timeout=12)
-                if r.status_code != 200:
-                    print(f"  ⚠️  Google Trends {region}: HTTP {r.status_code}")
-                    continue
-                feed = feedparser.parse(r.text)
-                if not feed.entries:
-                    print(f"  ⚠️  Google Trends {region}: no entries")
-                    continue
-                for entry in feed.entries[:8]:
-                    raw = (
-                        getattr(entry, "ht_approx_traffic", "1000")
-                        .replace(",", "").replace("+", "").strip()
-                    )
-                    try:
-                        traffic = int(raw)
-                    except ValueError:
-                        traffic = 1000
-                    summary = getattr(entry, "summary", "") or f"Trending in {region}"
-                    trends.append({
-                        "id": self._make_id("gtrends", f"{region}{entry.title}"),
-                        "niche": niche,
-                        "headline": entry.title,
-                        "summary": summary[:300],
-                        "velocity_score": min(traffic / 2_000_000, 1.0),
-                        "signal_strength": 0.95,
-                        "mentions_last_hour": max(traffic // 24, 1),
-                        "mentions_previous_24h": traffic,
-                        "source": "google_trends",
-                        "source_url": getattr(entry, "link", "https://trends.google.com"),
-                        "is_human": True,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "tags": [region.lower()],
-                    })
-                time.sleep(0.5)
-            except Exception as e:
-                print(f"  ⚠️  Google Trends {region}: {e}")
+            fetched = False
+            for url_template in URL_TEMPLATES:
+                try:
+                    url = url_template.format(region=region)
+                    r = self.browser_session.get(url, timeout=12)
+                    if r.status_code != 200:
+                        continue
+                    feed = feedparser.parse(r.text)
+                    if not feed.entries:
+                        continue
+                    for entry in feed.entries[:8]:
+                        raw = (
+                            getattr(entry, "ht_approx_traffic", "1000")
+                            .replace(",", "").replace("+", "").strip()
+                        )
+                        try:
+                            traffic = int(raw)
+                        except ValueError:
+                            traffic = 1000
+                        summary = getattr(entry, "summary", "") or f"Trending in {region}"
+                        trends.append({
+                            "id": self._make_id("gtrends", f"{region}{entry.title}"),
+                            "niche": niche,
+                            "headline": entry.title,
+                            "summary": summary[:300],
+                            "velocity_score": min(traffic / 2_000_000, 1.0),
+                            "signal_strength": 0.95,
+                            "mentions_last_hour": max(traffic // 24, 1),
+                            "mentions_previous_24h": traffic,
+                            "source": "google_trends",
+                            "source_url": getattr(entry, "link", "https://trends.google.com"),
+                            "is_human": True,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "tags": [region.lower()],
+                        })
+                    fetched = True
+                    time.sleep(0.4)
+                    break  # got entries, no need to try legacy URL
+                except Exception as e:
+                    print(f"  ⚠️  Google Trends {region} ({url_template[:40]}…): {e}")
+            if not fetched:
+                print(f"  ⚠️  Google Trends {region}: all URL formats failed")
         return trends
 
     # ── News RSS ──────────────────────────────────────────────────────────────
@@ -675,12 +691,19 @@ class TrendAggregator:
                     timeout=20,
                 )
                 break
-            except requests.exceptions.Timeout:
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                requests.exceptions.ReadTimeout,
+            ):
                 if attempt == 1:
                     print(f"  ⚠️  DeepSeek timed out twice for '{niche}', skipping")
                     return []
                 print(f"  ⚠️  DeepSeek timeout for '{niche}', retrying in 3s…")
                 time.sleep(3)
+            except Exception as e:
+                print(f"  ⚠️  DeepSeek unexpected error ({niche}): {e}")
+                return []
 
         if response is None:
             return []
@@ -834,7 +857,7 @@ def main() -> None:
     script_dir  = os.path.dirname(os.path.abspath(__file__))
     output_file = os.path.normpath(os.path.join(script_dir, "..", "data", "trends.json"))
 
-    print(f"\n🚀 PulseRelay v5.2 — output → {output_file}\n")
+    print(f"\n🚀 PulseRelay v5.3 — output → {output_file}\n")
 
     aggregator = TrendAggregator(deepseek_key=deepseek_key, github_token=github_token)
 
@@ -852,7 +875,7 @@ def main() -> None:
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "total_count": len(final),
         "metadata": {
-            "version": "5.2",
+            "version": "5.3",
             "niches_covered": sorted(set(t["niche"] for t in final)),
             "sources_used":   sorted(set(t["source"] for t in final)),
         },
