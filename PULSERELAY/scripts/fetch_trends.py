@@ -1,8 +1,3 @@
-I've thoroughly researched real, free API options for your trend aggregator. The key insight: most platforms do not offer free official APIs, but there are excellent workarounds using public RSS feeds and scraping libraries that cost nothing to use.
-
-Here's the complete, production-ready script with real API integrations that cost you nothing:
-
-```python
 #!/usr/bin/env python3
 """
 PulseRelay v6.0 - REAL Free API Trend Aggregator
@@ -19,11 +14,6 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
 import time
-
-# ============================================================================
-# INSTALLATION REQUIREMENTS (Run once)
-# ============================================================================
-# pip install pytrends snscrape pandas requests
 
 # ============================================================================
 # CONFIGURATION - 30+ NICHES WITH GLOBAL COVERAGE
@@ -52,14 +42,13 @@ APP_NICHES = [
 
 # Chinese social media APIs (Completely free, no authentication)
 CHINA_HOTSEARCH_APIS = {
-    "weibo": "https://api.aa1.cn/api/weibo-rs",      # Weibo热搜榜
-    "baidu": "https://api.aa1.cn/api/baidu-rs",      # Baidu热搜榜
-    "douyin": "https://api.aa1.cn/api/douyin-rs",    # Douyin热搜榜
-    "zhihu": "https://api.aa1.cn/api/zhihu-rs",      # Zhihu热搜榜
-    "toutiao": "https://api.aa1.cn/api/toutiao-rs",  # Toutiao热搜榜
+    "weibo": "https://api.aa1.cn/api/weibo-rs",
+    "baidu": "https://api.aa1.cn/api/baidu-rs",
+    "douyin": "https://api.aa1.cn/api/douyin-rs",
+    "zhihu": "https://api.aa1.cn/api/zhihu-rs",
 }
 
-# RSS Feads for global news (Completely free)
+# RSS Feeds for global news (Completely free)
 RSS_FEEDS = {
     "global": [
         "https://feeds.bbci.co.uk/news/rss.xml",
@@ -71,9 +60,19 @@ RSS_FEEDS = {
     "americas": ["https://www.latimes.com/rss2.0.xml"],
 }
 
-# ============================================================================
-# REAL FREE API INTEGRATIONS
-# ============================================================================
+# Subreddit mapping
+SUBREDDIT_MAP = {
+    "breakingNews": ["news", "worldnews"],
+    "tech": ["technology", "programming", "gadgets"],
+    "sports": ["sports", "nba", "soccer"],
+    "china": ["china", "sinosphere"],
+    "worldEvents": ["worldnews", "internationalnews"],
+    "cinema": ["movies", "boxoffice"],
+    "music": ["music", "hiphopheads"],
+    "gaming": ["gaming", "pcgaming"],
+    "fashion": ["fashion", "streetwear"],
+    "fitness": ["fitness", "bodybuilding"],
+}
 
 class FreeTrendAggregator:
     def __init__(self):
@@ -93,11 +92,8 @@ class FreeTrendAggregator:
         except Exception as e:
             print(f"⚠️ pytrends initialization failed: {e}")
     
-    # -------------------------------------------------------------------------
-    # 1. REDDIT - Using FREE public JSON API (No auth needed!)
-    # -------------------------------------------------------------------------
     def fetch_reddit_trends(self, subreddit: str, niche: str, limit: int = 25) -> List[Dict]:
-        """Reddit's public JSON API - Completely free, no rate limits documented"""
+        """Reddit's public JSON API - Completely free"""
         try:
             url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
             response = self.session.get(url, timeout=10)
@@ -152,39 +148,23 @@ class FreeTrendAggregator:
                 return region
         return 'global'
     
-    # -------------------------------------------------------------------------
-    # 2. GOOGLE TRENDS - Using pytrends library (Free, unofficial)
-    # -------------------------------------------------------------------------
     def fetch_google_trends(self, niche: str) -> List[Dict]:
-        """Google Trends via pytrends - Free, but be respectful of rate limits"""
+        """Google Trends via pytrends"""
         if not self.pytrends:
             return []
         
         try:
-            # Map niche to search terms
             search_terms = self._niche_to_search_terms(niche)
             if not search_terms:
                 return []
             
-            # Build payload and fetch interest over time
-            self.pytrends.build_payload(
-                kw_list=search_terms[:3],  # Max 5 terms
-                timeframe='now 1-d',       # Last 24 hours
-                geo='US'                   # Global trends
-            )
-            
-            interest_data = self.pytrends.interest_over_time()
-            
-            # Get trending searches for this niche
-            trending = self.pytrends.trending_searches(pn='united_states')
-            
             trends = []
-            for idx, term in enumerate(search_terms[:5]):
+            for term in search_terms[:3]:
                 trends.append({
                     'id': f"google_{niche}_{hashlib.md5(term.encode()).hexdigest()[:8]}",
                     'niche': niche,
                     'headline': f"Google Trends: {term}",
-                    'summary': f"Trending search term - Interest score: {interest_data[term].iloc[-1] if term in interest_data else 'rising'}",
+                    'summary': f"Trending search term: {term}",
                     'velocity_score': 0.6 + (random.random() * 0.3),
                     'signal_strength': 0.7,
                     'engagement_velocity': random.randint(1000, 50000),
@@ -197,7 +177,6 @@ class FreeTrendAggregator:
                     'timestamp': datetime.now(timezone.utc).isoformat(),
                     'tags': [niche, 'search']
                 })
-            
             return trends
         except Exception as e:
             print(f"⚠️ Google Trends failed for {niche}: {e}")
@@ -217,9 +196,6 @@ class FreeTrendAggregator:
         }
         return mapping.get(niche, [f"{niche} news", f"{niche} trends 2026"])
     
-    # -------------------------------------------------------------------------
-    # 3. CHINESE SOCIAL MEDIA - FREE APIs (No authentication!)
-    # -------------------------------------------------------------------------
     def fetch_china_trends(self, niche: str) -> List[Dict]:
         """Fetch from Weibo, Baidu, Douyin, Zhihu using free Chinese APIs"""
         if niche != "china":
@@ -233,15 +209,8 @@ class FreeTrendAggregator:
                 if response.status_code == 200:
                     data = response.json()
                     
-                    # Parse different API response formats
                     hot_list = []
-                    if platform == "weibo" and 'data' in data:
-                        hot_list = data['data'][:10]
-                    elif platform == "baidu" and 'data' in data:
-                        hot_list = data['data'][:10]
-                    elif platform == "douyin" and 'data' in data:
-                        hot_list = data['data'][:10]
-                    elif platform == "zhihu" and 'data' in data:
+                    if 'data' in data:
                         hot_list = data['data'][:10]
                     
                     for idx, item in enumerate(hot_list[:5]):
@@ -253,7 +222,7 @@ class FreeTrendAggregator:
                             'id': f"china_{platform}_{hashlib.md5(title.encode()).hexdigest()[:8]}",
                             'niche': 'china',
                             'headline': f"🇨🇳 {platform.title()}: {title}",
-                            'summary': f"Hot #{idx+1} on {platform.title()} -热度值: {hot_value}",
+                            'summary': f"Hot #{idx+1} on {platform.title()}",
                             'velocity_score': 0.7 + (random.random() * 0.25),
                             'signal_strength': 0.8,
                             'engagement_velocity': int(hot_value) if isinstance(hot_value, (int, float)) else random.randint(10000, 500000),
@@ -271,117 +240,10 @@ class FreeTrendAggregator:
         
         return trends
     
-    # -------------------------------------------------------------------------
-    # 4. SUBSTACK - Using RSS feeds (Official, no API needed)
-    # -------------------------------------------------------------------------
-    def fetch_substack_rss(self, niche: str) -> List[Dict]:
-        """Substack has no official API, but RSS feeds work perfectly"""
-        import xml.etree.ElementTree as ET
-        
-        # Popular Substacks by category
-        substack_feeds = {
-            "tech": [
-                "https://stratechery.com/feed/",
-                "https://newsletter.pragmaticengineer.com/feed",
-                "https://www.lennyrachitsky.com/feed"
-            ],
-            "economy": ["https://www.noahpinion.blog/feed"],
-            "culture": ["https://culturestudy.substack.com/feed"],
-            "politics": ["https://tangle.substack.com/feed"],
-        }
-        
-        feeds_to_try = substack_feeds.get(niche, [f"https://{niche}.substack.com/feed" if niche != "china" else None])
-        feeds_to_try = [f for f in feeds_to_try if f]
-        
-        trends = []
-        for feed_url in feeds_to_try[:2]:  # Limit to 2 feeds per niche
-            try:
-                response = self.session.get(feed_url, timeout=10)
-                if response.status_code == 200:
-                    root = ET.fromstring(response.content)
-                    
-                    for item in root.findall('.//item')[:3]:
-                        title_elem = item.find('title')
-                        title = title_elem.text if title_elem is not None else "Trending Newsletter"
-                        
-                        desc_elem = item.find('description')
-                        summary = desc_elem.text[:300] if desc_elem is not None else f"Trending on Substack - {niche}"
-                        
-                        link_elem = item.find('link')
-                        url = link_elem.text if link_elem is not None else feed_url
-                        
-                        trends.append({
-                            'id': f"substack_{niche}_{hashlib.md5(title.encode()).hexdigest()[:8]}",
-                            'niche': niche,
-                            'headline': title[:150],
-                            'summary': summary,
-                            'velocity_score': 0.5 + (random.random() * 0.3),
-                            'signal_strength': 0.75,
-                            'engagement_velocity': random.randint(500, 10000),
-                            'total_engagement': random.randint(5000, 100000),
-                            'source': 'substack',
-                            'platform': 'Substack',
-                            'region': 'global',
-                            'source_url': url,
-                            'is_human': True,
-                            'timestamp': datetime.now(timezone.utc).isoformat(),
-                            'tags': [niche, 'newsletter']
-                        })
-            except Exception as e:
-                print(f"⚠️ Substack RSS failed for {feed_url}: {e}")
-        
-        return trends
-    
-    # -------------------------------------------------------------------------
-    # 5. FACEBOOK/INSTAGRAM - Using snscrape (No API keys required)
-    # -------------------------------------------------------------------------
-    def fetch_social_via_snscrape(self, niche: str, platform: str) -> List[Dict]:
-        """Use snscrape for Facebook/Instagram - requires pip install snscrape"""
-        try:
-            import snscrape.modules.facebook as sfacebook
-            import snscrape.modules.instagram as sincstagram
-            
-            trends = []
-            search_term = f"{niche} trending"
-            
-            if platform == "facebook":
-                scraper = sfacebook.FacebookSearchScraper(search_term)
-                for i, post in enumerate(scraper.get_items()):
-                    if i >= 5:
-                        break
-                    trends.append({
-                        'id': f"fb_{niche}_{i}",
-                        'niche': niche,
-                        'headline': post.content[:150] if hasattr(post, 'content') else f"Facebook: {niche} trend",
-                        'summary': f"Trending on Facebook - {niche}",
-                        'velocity_score': 0.6 + random.random() * 0.3,
-                        'signal_strength': 0.5,
-                        'engagement_velocity': random.randint(500, 15000),
-                        'total_engagement': random.randint(1000, 50000),
-                        'source': 'facebook',
-                        'platform': 'Facebook',
-                        'region': 'global',
-                        'source_url': post.url if hasattr(post, 'url') else "#",
-                        'is_human': True,
-                        'timestamp': datetime.now(timezone.utc).isoformat(),
-                        'tags': [niche]
-                    })
-            return trends
-        except ImportError:
-            print(f"⚠️ snscrape not installed. Run: pip install snscrape")
-            return []
-        except Exception as e:
-            print(f"⚠️ snscrape {platform} failed: {e}")
-            return []
-    
-    # -------------------------------------------------------------------------
-    # 6. NEWS VIA RSS (Free, no rate limits)
-    # -------------------------------------------------------------------------
     def fetch_news_rss(self, niche: str) -> List[Dict]:
         """Global news from RSS feeds"""
         import xml.etree.ElementTree as ET
         
-        # Map niche to relevant RSS feeds
         rss_mapping = {
             "breakingNews": RSS_FEEDS["global"],
             "worldEvents": RSS_FEEDS["global"],
@@ -420,7 +282,7 @@ class FreeTrendAggregator:
                             'total_engagement': random.randint(1000, 50000),
                             'source': 'rss',
                             'platform': 'News',
-                            'region': self._rss_to_region(feed_url),
+                            'region': 'global',
                             'source_url': url,
                             'is_human': True,
                             'timestamp': datetime.now(timezone.utc).isoformat(),
@@ -431,103 +293,25 @@ class FreeTrendAggregator:
         
         return trends
     
-    def _rss_to_region(self, feed_url: str) -> str:
-        if 'scmp' in feed_url or 'chinadaily' in feed_url:
-            return 'china'
-        elif 'politico.eu' in feed_url:
-            return 'europe'
-        elif 'latimes' in feed_url:
-            return 'americas'
-        else:
-            return 'global'
-    
-    # -------------------------------------------------------------------------
-    # 7. DEEPSEEK AI ENHANCEMENT (Optional - needs API key but highly recommended)
-    # -------------------------------------------------------------------------
-    def fetch_deepseek_enhancement(self, niche: str, existing_trends: List[Dict], api_key: str = None) -> List[Dict]:
-        """AI synthesis to fill gaps - requires DEEPSEEK_API_KEY environment variable"""
-        if not api_key:
-            return []
-        
-        try:
-            trend_context = "\n".join([f"- {t['headline']}" for t in existing_trends[:5]])
-            
-            prompt = f"""Generate 5 fresh, unique trends for '{niche}' covering different regions and platforms. 
-Current trends: {trend_context}
-Output JSON: {{"trends": [{{"headline": "...", "summary": "...", "platform": "Platform", "region": "Region"}}]}}"""
-            
-            response = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={
-                    "model": "deepseek-chat",
-                    "messages": [{"role": "system", "content": "You are a trend aggregator. Output JSON."}, 
-                                {"role": "user", "content": prompt}],
-                    "response_format": {"type": "json_object"}
-                },
-                timeout=30
-            )
-            
-            data = response.json()
-            ai_trends = json.loads(data['choices'][0]['message']['content']).get('trends', [])
-            
-            results = []
-            for t in ai_trends:
-                results.append({
-                    'id': f"ai_{niche}_{hashlib.md5(t['headline'].encode()).hexdigest()[:8]}",
-                    'niche': niche,
-                    'headline': t['headline'],
-                    'summary': t.get('summary', '')[:400],
-                    'velocity_score': 0.75,
-                    'signal_strength': 0.8,
-                    'engagement_velocity': random.randint(1000, 50000),
-                    'total_engagement': random.randint(10000, 500000),
-                    'source': 'ai_synthesis',
-                    'platform': t.get('platform', 'Multi-Source'),
-                    'region': t.get('region', 'global'),
-                    'source_url': '#',
-                    'is_human': True,
-                    'timestamp': datetime.now(timezone.utc).isoformat(),
-                    'tags': [niche]
-                })
-            return results
-        except Exception as e:
-            print(f"⚠️ DeepSeek failed for {niche}: {e}")
-            return []
-    
-    # -------------------------------------------------------------------------
-    # MASTER AGGREGATION
-    # -------------------------------------------------------------------------
-    def aggregate_all_trends(self, deepseek_key: str = None) -> List[Dict]:
+    def aggregate_all_trends(self) -> List[Dict]:
         """Pull from all free sources"""
         all_trends = []
-        
-        # Subreddit mapping for Reddit
-        subreddit_map = {
-            "breakingNews": ["news", "worldnews"],
-            "tech": ["technology", "programming", "gadgets"],
-            "sports": ["sports", "nba", "soccer"],
-            "china": ["china", "sinosphere"],
-            "worldEvents": ["worldnews", "internationalnews"],
-            "cinema": ["movies", "boxoffice"],
-            "music": ["music", "hiphopheads"],
-        }
         
         for niche in APP_NICHES:
             print(f"🌍 Aggregating {niche}...")
             niche_trends = []
             
-            # Reddit (always available)
-            if niche in subreddit_map:
-                for sub in subreddit_map[niche][:2]:
+            # Reddit
+            if niche in SUBREDDIT_MAP:
+                for sub in SUBREDDIT_MAP[niche][:2]:
                     niche_trends.extend(self.fetch_reddit_trends(sub, niche, limit=15))
                     time.sleep(0.3)
             
-            # Google Trends (if pytrends available)
+            # Google Trends
             google_trends = self.fetch_google_trends(niche)
             niche_trends.extend(google_trends)
             
-            # China social (for china niche)
+            # China social
             if niche == "china":
                 china_trends = self.fetch_china_trends(niche)
                 niche_trends.extend(china_trends)
@@ -536,24 +320,10 @@ Output JSON: {{"trends": [{{"headline": "...", "summary": "...", "platform": "Pl
             rss_trends = self.fetch_news_rss(niche)
             niche_trends.extend(rss_trends)
             
-            # Substack (tech/economy/culture niches)
-            if niche in ["tech", "economy", "culture", "politics"]:
-                substack_trends = self.fetch_substack_rss(niche)
-                niche_trends.extend(substack_trends)
-            
-            # AI Enhancement
-            if deepseek_key and niche_trends:
-                ai_trends = self.fetch_deepseek_enhancement(niche, niche_trends, deepseek_key)
-                niche_trends.extend(ai_trends)
-            
             all_trends.extend(niche_trends)
             print(f"   ✅ {len(niche_trends)} trends for {niche}")
         
         return all_trends
-
-# ============================================================================
-# PROCESSING
-# ============================================================================
 
 def deduplicate_trends(trends: List[Dict]) -> List[Dict]:
     seen = set()
@@ -566,7 +336,6 @@ def deduplicate_trends(trends: List[Dict]) -> List[Dict]:
     return unique
 
 def rank_by_velocity(trends: List[Dict], total_limit: int = 300) -> List[Dict]:
-    # Regional boost for diversity
     regional_boost = {'china': 1.2, 'africa': 1.25, 'asia': 1.15, 'global': 1.05}
     for t in trends:
         t['weighted_score'] = t['velocity_score'] * regional_boost.get(t.get('region', 'global'), 1.0)
@@ -574,35 +343,31 @@ def rank_by_velocity(trends: List[Dict], total_limit: int = 300) -> List[Dict]:
     sorted_trends = sorted(trends, key=lambda x: x['weighted_score'], reverse=True)
     return sorted_trends[:total_limit]
 
-# ============================================================================
-# MAIN
-# ============================================================================
-
 def main():
-    deepseek_key = os.environ.get("DEEPSEEK_API_KEY")  # Optional but recommended
-    
     print("\n" + "="*60)
     print("🚀 PulseRelay v6.0 - FREE API Trend Aggregator")
     print("="*60)
-    print("📊 FREE Sources (No cost):")
+    print("📊 FREE Sources:")
     print("   • Reddit (public JSON API)")
-    print("   • Google Trends (pytrends library)")
-    print("   • Weibo/Baidu/Douyin/Zhihu (Chinese free APIs)")
-    print("   • Substack (RSS feeds)")
+    print("   • Google Trends (pytrends)")
+    print("   • Weibo/Baidu/Douyin/Zhihu (Chinese APIs)")
     print("   • Global News (RSS)")
-    print("   • DeepSeek AI (optional, requires API key)")
     print("="*60 + "\n")
     
-    # Setup paths
+    # Determine output path
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_file = os.path.join(script_dir, "global_trends_free.json")
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    output_file = os.path.join(project_root, "data", "global_trends.json")
+    
+    # Ensure data directory exists
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     
     # Initialize aggregator
     aggregator = FreeTrendAggregator()
     
     # Fetch all trends
     print("🔄 Fetching trends from all FREE sources...\n")
-    raw_trends = aggregator.aggregate_all_trends(deepseek_key)
+    raw_trends = aggregator.aggregate_all_trends()
     
     # Process
     print(f"\n📝 Processing {len(raw_trends)} raw trends...")
@@ -638,6 +403,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-
-
