@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-PulseRelay - Multi-Source Real-Time Trend Aggregator v5.6
+PulseRelay - Multi-Source Real-Time Trend Aggregator v5.7
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Changes from v5.5:
-  • RESTRICTED breakingNews to legitimate news sources ONLY (RSS, Google Trends, Wikipedia)
-  • Bluesky and Mastodon posts will NEVER be classified as breakingNews
-  • Social media posts default to tech/worldEvents instead of breakingNews
-  • Post-processing filter ensures no social media breakingNews slips through
+Changes from v5.6:
+  • NEW "social" niche for all Bluesky and Mastodon posts
+  • Bluesky and Mastodon content now grouped separately from other categories
+  • Breaking news strictly from RSS, Google Trends, Wikipedia only
+  • Social media posts no longer mixed with tech/sports/music categories
 Sources (all free, no mandatory keys):
   • Google Trends   — multi-region, dual URL format fallback
   • News RSS        — BBC, Guardian, Al Jazeera, DW, NYT, NPR, Ars, Verge…
@@ -15,8 +15,8 @@ Sources (all free, no mandatory keys):
   • Lobste.rs       — JSON API (short timeout, graceful skip)
   • Dev.to          — public articles API
   • GitHub          — search API (optional token for higher rate limit)
-  • Bluesky         — AT Protocol What's Hot feed (NEVER breakingNews)
-  • Mastodon        — mastodon.social + fosstodon + infosec.exchange (NEVER breakingNews)
+  • Bluesky         — AT Protocol What's Hot feed (NOW "social" niche)
+  • Mastodon        — mastodon.social + fosstodon + infosec.exchange (NOW "social" niche)
 Optional:
   • DeepSeek        — AI synthesis for thin niches (set DEEPSEEK_API_KEY)
   • GitHub token    — higher rate limit (set GITHUB_TOKEN)
@@ -48,10 +48,14 @@ except ImportError:
 APP_NICHES = [
     "breakingNews", "worldEvents", "cinema", "sports", "streaming", "music",
     "space", "tech", "maker", "privacy", "repair", "outdoor", "legal", "local",
+    "social",  # NEW: dedicated niche for social media content
 ]
 
 # Legitimate breaking news sources (NO social media)
 LEGITIMATE_BREAKING_SOURCES = {"rss", "google_trends", "wikipedia", "ai_synthesis"}
+
+# Social media platforms that should be grouped under "social"
+SOCIAL_MEDIA_SOURCES = {"bluesky", "mastodon"}
 
 # ── News RSS feeds per niche — all free, no auth ─────────────────────────────
 NEWS_FEEDS: Dict[str, List[str]] = {
@@ -171,212 +175,48 @@ BROWSER_UA = (
 )
 
 # ============================================================================
-# IMPROVED SOCIAL MEDIA CLASSIFICATION (v5.6 - NO BREAKING NEWS)
+# SOCIAL MEDIA CLASSIFICATION (All goes to "social" niche)
 # ============================================================================
-
-SOCIAL_NICHE_KEYWORDS: Dict[str, List[str]] = {
-    # Primary categories (high priority)
-    "sports": ["nfl", "nba", "mlb", "nhl", "soccer", "football", "basketball", "baseball", "hockey", 
-               "world cup", "super bowl", "world series", "stanley cup", "olympics", "tottenham", 
-               "liverpool", "manchester", "chelsea", "arsenal", "real madrid", "barcelona", 
-               "game", "match", "score", "fifa", "athlete", "player", "coach", "team", "league",
-               "wins", "playoffs", "championship", "tournament", "tourney"],
-    
-    "tech": ["ai", "llm", "software", "coding", "programming", "apple", "google", "microsoft", 
-             "openai", "tech", "dev", "developer", "github", "api", "database", "cloud", 
-             "server", "linux", "windows", "macos", "android", "ios", "app", "startup", 
-             "silicon valley", "algorithm", "python", "javascript", "rust", "react", "docker",
-             "kubernetes", "aws", "azure", "api", "backend", "frontend", "fullstack"],
-    
-    "music": ["album", "song", "music", "concert", "tour", "grammy", "artist", "band", 
-              "playlist", "single", "record", "label", "festival", "coachella", "glastonbury",
-              "rock", "pop", "hip hop", "rap", "jazz", "classical", "singer", "musician",
-              "taylor swift", "beyonce", "weeknd", "drake", "billie eilish"],
-    
-    "cinema": ["movie", "film", "oscar", "box office", "trailer", "actor", "director", 
-               "cinema", "hollywood", "marvel", "dc", "star wars", "cinematic", "screening",
-               "premiere", "theater", "theatre", "blockbuster", "indie film", "documentary"],
-    
-    "streaming": ["netflix", "hbo", "disney+", "streaming", "series", "episode", "season", 
-                  "prime video", "hulu", "apple tv", "peacock", "crunchyroll", "paramount",
-                  "binge", "watch", "tv series", "limited series", "tv show", "stream"],
-    
-    "space": ["nasa", "spacex", "rocket", "mars", "moon", "asteroid", "launch", "orbit", 
-              "astronomy", "astronaut", "cosmos", "galaxy", "star", "planet", "telescope",
-              "james webb", "artemis", "iss", "space station", "blue origin", "virgin galactic",
-              "starship", "falcon", "orion", "apollo"],
-    
-    "privacy": ["privacy", "hack", "breach", "security", "surveillance", "vpn", "encryption", 
-                "infosec", "cybersecurity", "data leak", "ransomware", "malware", "virus",
-                "phishing", "2fa", "password", "anonymity", "tor", "tracking", "cookies",
-                "gdpr", "ccpa", "data privacy", "personal data"],
-    
-    "maker": ["3d print", "arduino", "raspberry pi", "diy", "build", "circuit", "maker", 
-              "electronics", "soldering", "robotics", "drone", "hackathon", "prototype",
-              "woodworking", "craft", "homemade", "schematic", "pcb", "breadboard"],
-    
-    "outdoor": ["hiking", "climbing", "camping", "trail", "nature", "park", "wilderness", 
-                "backpacking", "mountains", "forest", "lake", "river", "biking", "cycling",
-                "kayaking", "surfing", "skiing", "snowboarding", "fishing", "hunting",
-                "national park", "state park", "campground"],
-    
-    "legal": ["court", "lawsuit", "judge", "trial", "verdict", "law", "supreme court", 
-              "attorney", "lawyer", "legal", "justice", "appeal", "convicted", "plea",
-              "settlement", "testimony", "witness", "defendant", "plaintiff", "litigation"],
-    
-    "worldEvents": ["war", "election", "ukraine", "gaza", "protest", "government", "president", 
-                    "climate", "politics", "congress", "senate", "parliament", "prime minister",
-                    "diplomacy", "treaty", "conflict", "peace", "ceasefire", "refugee",
-                    "immigration", "policy", "vote", "ballot", "campaign", "russia", "china",
-                    "israel", "palestine", "iran", "nuclear", "sanctions"],
-    
-    "repair": ["repair", "fix", "right to repair", "broken", "replace", "teardown", 
-               "schematic", "replacement", "restore", "restoration", "ifixit"],
-}
-
-# Emoji to niche mapping for quick detection
-EMOJI_NICHE_MAP = {
-    # Cinema
-    "🎬": "cinema", "🎥": "cinema", "🍿": "cinema", "🎞️": "cinema", "📽️": "cinema",
-    # Music
-    "🎵": "music", "🎸": "music", "🎤": "music", "🎹": "music", "🎧": "music", 
-    "🎶": "music", "🥁": "music", "🎺": "music", "🎷": "music", "🎙️": "music",
-    # Sports
-    "🏈": "sports", "🏀": "sports", "⚽": "sports", "🏆": "sports", "🏅": "sports",
-    "⚾": "sports", "🎾": "sports", "🏐": "sports", "🏉": "sports", "🥊": "sports",
-    # Space
-    "🚀": "space", "🛸": "space", "🌕": "space", "🪐": "space", "🌍": "space",
-    "🌎": "space", "🌏": "space", "🛰️": "space", "👨‍🚀": "space", "👩‍🚀": "space",
-    # Tech
-    "🤖": "tech", "💻": "tech", "🖥️": "tech", "📱": "tech", "⌨️": "tech",
-    "🖱️": "tech", "💾": "tech", "📀": "tech", "💿": "tech",
-    # Privacy/Security
-    "🔒": "privacy", "🔐": "privacy", "🛡️": "privacy", "🔑": "privacy",
-    # Legal
-    "👮": "legal", "⚖️": "legal", "📜": "legal", "🏛️": "legal",
-    # Outdoor
-    "🏕️": "outdoor", "⛰️": "outdoor", "🏔️": "outdoor", "🌲": "outdoor", 
-    "⛺": "outdoor", "🏞️": "outdoor", "🌄": "outdoor", "🌅": "outdoor",
-    # Maker/DIY
-    "🔧": "maker", "🛠️": "maker", "🔨": "maker", "⚙️": "maker", "🔩": "maker",
-    "🪚": "maker", "🛞": "maker", "🔌": "maker", "💡": "maker",
-    # Streaming
-    "📺": "streaming", "📡": "streaming", "🎮": "streaming",
-    # World Events
-    "🌍": "worldEvents", "🌎": "worldEvents", "🌏": "worldEvents", "🏳️": "worldEvents",
-}
-
-def detect_post_type_by_emoji(text: str) -> Optional[str]:
-    """Detect niche based on emoji patterns in the text"""
-    for emoji, niche in EMOJI_NICHE_MAP.items():
-        if emoji in text:
-            return niche
-    return None
 
 def classify_social(text: str) -> str:
     """
-    Classification for social media posts - NEVER returns "breakingNews"
-    Social media content should never be treated as breaking news.
+    ALL social media posts (Bluesky, Mastodon) go to the "social" niche.
+    No exceptions - this keeps social content separate from news/tech/entertainment.
     """
-    if not text or len(text) < 3:
-        return "tech"  # Very short posts often tech/casual conversation
-    
-    lower = text.lower()
-    
-    # FIRST PRIORITY: Emoji detection (strong signal)
-    emoji_niche = detect_post_type_by_emoji(text)
-    if emoji_niche:
-        return emoji_niche
-    
-    # SECOND PRIORITY: Explicit category indicators
-    if any(word in lower for word in ["album review", "concert review", "new music", "music video", "song of the", "best album"]):
-        return "music"
-    if any(word in lower for word in ["movie review", "film review", "spoiler", "ending explained", "cinematic"]):
-        return "cinema"
-    if any(word in lower for word in ["game thread", "post-game", "highlights", "recap", "box score"]):
-        return "sports"
-    if any(word in lower for word in ["netflix and", "hbo max", "disney plus", "streaming now", "binge watch"]):
-        return "streaming"
-    if any(word in lower for word in ["spacex", "nasa just", "launch today", "astronaut", "mission to"]):
-        return "space"
-    
-    # THIRD PRIORITY: Match against keyword dictionaries (require confidence)
-    # NOTE: "breakingNews" is deliberately NOT in this list
-    niche_priority = ["sports", "music", "cinema", "streaming", "space", "tech", 
-                      "privacy", "maker", "outdoor", "legal", "worldEvents", "repair"]
-    
-    for niche in niche_priority:
-        keywords = SOCIAL_NICHE_KEYWORDS.get(niche, [])
-        matches = sum(1 for kw in keywords if kw in lower)
-        
-        # Strong single keywords for specific niches
-        strong_keywords = {
-            "sports": ["nfl", "nba", "mlb", "nhl", "super bowl", "world cup"],
-            "music": ["album", "concert", "tour", "grammy", "taylor swift"],
-            "tech": ["ai", "llm", "github", "api", "docker", "kubernetes"],
-        }
-        
-        if niche in strong_keywords:
-            if any(kw in lower for kw in strong_keywords[niche]):
-                return niche
-        
-        if matches >= 2:
-            return niche
-        elif matches >= 1 and niche in ["sports", "music", "tech", "streaming"]:
-            return niche
-    
-    # FOURTH PRIORITY: Question-based posts (often tech/advice)
-    if text.startswith(("Why", "How", "What", "When", "Where", "Is it", "Can we", "Does anyone", "Anyone else")):
-        return "tech"
-    
-    # FIFTH PRIORITY: Length-based heuristics
-    if len(text) > 200:
-        # Longer posts often about current events or detailed topics
-        if any(word in lower for word in ["president", "government", "war", "election", "climate"]):
-            return "worldEvents"
-        return "tech"  # Long technical discussions
-    
-    # SIXTH PRIORITY: Check for URLs (often tech/news sharing)
-    if "http" in lower or "https" in lower or "://" in lower:
-        return "tech"
-    
-    # SEVENTH PRIORITY: Default fallbacks
-    if "?" in text:
-        return "tech"  # Questions often tech-related
-    
-    # EIGHTH PRIORITY: For announcements or news-like content on social media
-    # Use worldEvents for serious topics, tech for everything else
-    serious_indicators = ["today", "now", "just", "new", "announce", "release", "update"]
-    if any(word in lower for word in serious_indicators):
-        # Check if it sounds like serious world events
-        if any(word in lower for word in ["government", "official", "president", "minister", "court", "law", "policy", "election"]):
-            return "worldEvents"
-        else:
-            return "tech"  # Default for announcements
-    
-    # FINAL FALLBACK: tech is the safe default for social media
-    return "tech"
+    # All social media content is now grouped under "social"
+    # This ensures Bluesky and Mastodon don't pollute other categories
+    return "social"
 
 
 # ============================================================================
-# POST-PROCESSING: Enforce breaking news rules
+# POST-PROCESSING: Enforce breaking news and social media rules
 # ============================================================================
 
-def enforce_breaking_news_rules(trends: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def enforce_niche_rules(trends: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Ensure breakingNews only comes from legitimate news sources.
-    Reclassify any breakingNews from social media platforms.
+    Ensure:
+    1. breakingNews only comes from legitimate news sources
+    2. All social media sources go to "social" niche
     """
     filtered = []
     reclassified_count = 0
+    social_fixed_count = 0
     
     for t in trends:
-        # If it's breakingNews but from a non-legitimate source, reclassify it
-        if t["niche"] == "breakingNews" and t["source"] not in LEGITIMATE_BREAKING_SOURCES:
+        source = t.get("source", "")
+        
+        # Rule 1: Social media MUST be "social" niche
+        if source in SOCIAL_MEDIA_SOURCES:
+            if t["niche"] != "social":
+                t["niche"] = "social"
+                social_fixed_count += 1
+        
+        # Rule 2: breakingNews only from legitimate sources
+        if t["niche"] == "breakingNews" and source not in LEGITIMATE_BREAKING_SOURCES:
+            # Reclassify to appropriate niche based on content or default to tech
             text = t.get("headline", "") + " " + t.get("summary", "")
             lower = text.lower()
             
-            # Try to find a better niche based on content
             if any(word in lower for word in ["nfl", "nba", "mlb", "nhl", "soccer", "football", "game", "match", "player", "team", "sports"]):
                 t["niche"] = "sports"
             elif any(word in lower for word in ["movie", "film", "actor", "actress", "director", "cinema", "hollywood", "oscar"]):
@@ -392,14 +232,16 @@ def enforce_breaking_news_rules(trends: List[Dict[str, Any]]) -> List[Dict[str, 
             elif any(word in lower for word in ["war", "election", "president", "government", "politics", "ukraine", "gaza", "climate"]):
                 t["niche"] = "worldEvents"
             else:
-                t["niche"] = "tech"  # Default for social media content
+                t["niche"] = "tech"
             
             reclassified_count += 1
         
         filtered.append(t)
     
     if reclassified_count > 0:
-        print(f"   🔄 Reclassified {reclassified_count} social media posts from breakingNews to appropriate niches")
+        print(f"   🔄 Reclassified {reclassified_count} items from breakingNews to appropriate niches")
+    if social_fixed_count > 0:
+        print(f"   📱 Moved {social_fixed_count} social media posts to 'social' niche")
     
     return filtered
 
@@ -420,7 +262,7 @@ class TrendAggregator:
 
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": "PulseRelay/5.6 (Global Trend Aggregator)"
+            "User-Agent": "PulseRelay/5.7 (Global Trend Aggregator)"
         })
 
         # Separate session with browser UA for sources that block bots
@@ -740,12 +582,12 @@ class TrendAggregator:
             print(f"  ⚠️  GitHub: {e}")
             return []
 
-    # ── Bluesky (NEVER classifies as breakingNews) ───────────────────────────
+    # ── Bluesky (ALL posts go to "social" niche) ─────────────────────────────
 
     def fetch_bluesky_trending(self) -> List[Dict[str, Any]]:
         """
         Pulls the public What's Hot feed via Bluesky's open AppView API.
-        Zero authentication required. Uses classify_social() which NEVER returns breakingNews.
+        ALL posts are classified as "social" niche.
         """
         trends = []
         try:
@@ -793,12 +635,10 @@ class TrendAggregator:
                     handle = author.get("handle", "bsky.app")
                     url = f"https://bsky.app/profile/{handle}/post/{rkey}" if rkey else "https://bsky.app"
                     
-                    # classify_social NEVER returns "breakingNews"
-                    classified_niche = classify_social(text)
-                    
+                    # ALL Bluesky posts go to "social" niche
                     trends.append({
                         "id": self._make_id("bsky", uri or text),
-                        "niche": classified_niche,
+                        "niche": "social",  # ← All Bluesky content is "social"
                         "headline": text[:200],
                         "summary": f"Trending on Bluesky — {likes:,} likes, {reposts:,} reposts",
                         "velocity_score": velocity,
@@ -818,14 +658,10 @@ class TrendAggregator:
         except Exception as e:
             print(f"  ⚠️  Bluesky feed failed: {e}")
         
-        # Count categories for debugging
-        cat_counts = defaultdict(int)
-        for t in trends:
-            cat_counts[t["niche"]] += 1
-        print(f"   → {len(trends)} Bluesky posts (categories: {dict(cat_counts)})")
+        print(f"   → {len(trends)} Bluesky posts (all in 'social' niche)")
         return trends
 
-    # ── Mastodon (NEVER classifies as breakingNews) ──────────────────────────
+    # ── Mastodon (ALL posts go to "social" niche) ────────────────────────────
 
     def fetch_mastodon_trending(self) -> List[Dict[str, Any]]:
         trends = []
@@ -860,10 +696,10 @@ class TrendAggregator:
                     velocity   = min((engagement / max(age_h, 0.5)) / 200, 1.0)
                     server_name = server.split("//")[-1]
 
-                    # classify_social NEVER returns "breakingNews"
+                    # ALL Mastodon posts go to "social" niche
                     trends.append({
                         "id": self._make_id("mastodon", status.get("id", text)),
-                        "niche": classify_social(text),
+                        "niche": "social",  # ← All Mastodon content is "social"
                         "headline": text[:200],
                         "summary": f"Trending on Mastodon ({server_name}) — {favourites} favourites, {reblogs} boosts",
                         "velocity_score": velocity,
@@ -1002,17 +838,17 @@ class TrendAggregator:
         all_trends.extend(gh)
         time.sleep(0.5)
 
-        # 6. Bluesky (with improved categorization - NO breakingNews)
+        # 6. Bluesky (ALL posts are "social" niche)
         print("\n🦋 Bluesky trending (What's Hot)...")
         bsky = self.fetch_bluesky_trending()
-        print(f"   → {len(bsky)} items")
+        print(f"   → {len(bsky)} items (all in 'social' niche)")
         all_trends.extend(bsky)
         time.sleep(0.5)
 
-        # 7. Mastodon (NO breakingNews)
+        # 7. Mastodon (ALL posts are "social" niche)
         print("\n🐘 Mastodon trending (multi-server)...")
         masto = self.fetch_mastodon_trending()
-        print(f"   → {len(masto)} items")
+        print(f"   → {len(masto)} items (all in 'social' niche)")
         all_trends.extend(masto)
         time.sleep(0.5)
 
@@ -1081,7 +917,7 @@ def main() -> None:
     script_dir  = os.path.dirname(os.path.abspath(__file__))
     output_file = os.path.normpath(os.path.join(script_dir, "..", "data", "trends.json"))
 
-    print(f"\n🚀 PulseRelay v5.6 — output → {output_file}\n")
+    print(f"\n🚀 PulseRelay v5.7 — output → {output_file}\n")
 
     aggregator = TrendAggregator(deepseek_key=deepseek_key, github_token=github_token)
 
@@ -1093,8 +929,8 @@ def main() -> None:
 
     final  = rank_and_filter(unique, max_per_niche=20, total_limit=150)
     
-    # ENFORCE: No social media posts as breakingNews
-    final = enforce_breaking_news_rules(final)
+    # ENFORCE: No social media posts as breakingNews, all social media = "social"
+    final = enforce_niche_rules(final)
     
     print(f"✅ After ranking:  {len(final)}")
 
@@ -1103,7 +939,7 @@ def main() -> None:
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "total_count": len(final),
         "metadata": {
-            "version": "5.6",
+            "version": "5.7",
             "niches_covered": sorted(set(t["niche"] for t in final)),
             "sources_used":   sorted(set(t["source"] for t in final)),
         },
@@ -1130,17 +966,28 @@ def main() -> None:
     else:
         print(f"\n📰 No breaking news items in this run")
     
-    # Print Bluesky category breakdown (should have 0 breakingNews)
-    bluesky_cats = defaultdict(int)
+    # Print social media breakdown (should all be in "social" niche)
+    social_counts = defaultdict(int)
     for t in final:
-        if t['source'] == 'bluesky':
-            bluesky_cats[t['niche']] += 1
+        if t['source'] in SOCIAL_MEDIA_SOURCES:
+            social_counts[t['source']] += 1
+            if t['niche'] != 'social':
+                print(f"   ⚠️  WARNING: {t['source']} post not in 'social' niche (is: {t['niche']})")
     
-    if bluesky_cats:
-        print(f"\n🦋 Bluesky category breakdown (should have 0 breakingNews):")
-        for cat, count in sorted(bluesky_cats.items(), key=lambda x: x[1], reverse=True):
-            indicator = "❌" if cat == "breakingNews" else "✓"
-            print(f"   {indicator} {cat}: {count} posts")
+    if social_counts:
+        print(f"\n📱 Social Media content (all in 'social' niche):")
+        for source, count in sorted(social_counts.items()):
+            print(f"   • {source}: {count} posts")
+    
+    # Print niche breakdown
+    niche_counts = defaultdict(int)
+    for t in final:
+        niche_counts[t['niche']] += 1
+    
+    print(f"\n📊 Full niche breakdown:")
+    for niche in APP_NICHES:
+        if niche_counts[niche] > 0:
+            print(f"   • {niche}: {niche_counts[niche]} items")
 
 
 if __name__ == "__main__":
