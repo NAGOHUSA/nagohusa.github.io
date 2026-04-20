@@ -384,6 +384,84 @@
   .btn-ghost:hover { background: rgba(181,112,58,0.12); border-color: var(--copper); }
   .btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* ARCHIVE SECTION */
+  .archive-section {
+    background: var(--stone-mid);
+    border-bottom: 1px solid rgba(181,112,58,0.2);
+  }
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .archive-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(181,112,58,0.2);
+    border-radius: 4px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .archive-card:hover {
+    background: rgba(181,112,58,0.08);
+    transform: translateY(-2px);
+    border-color: var(--copper);
+  }
+
+  .archive-card .date {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .archive-card .title {
+    font-family: var(--ff-display);
+    font-size: 1.2rem;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .archive-card .verse {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .archive-loading, .archive-error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+  }
+
+  .load-more-btn {
+    display: block;
+    margin: 2rem auto 0;
+    background: transparent;
+    border: 1px solid var(--copper);
+    color: var(--copper-light);
+    padding: 0.75rem 2rem;
+    border-radius: 2px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .load-more-btn:hover {
+    background: rgba(181,112,58,0.12);
+  }
+
   /* CALENDAR */
   .calendar-section { background: var(--stone-mid); }
 
@@ -871,6 +949,7 @@
   <a class="nav-logo" href="#"><span>Rock</span> Solid Man</a>
   <ul class="nav-links">
     <li><a href="#devotional">Daily Word</a></li>
+    <li><a href="#archive">Archive</a></li>
     <li><a href="#events">Events</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#groups">Groups</a></li>
@@ -908,9 +987,21 @@
       </div>
     </div>
     <div class="devotional-actions">
-      <button class="btn-ghost" id="refresh-dev" onclick="loadDevotion(true)">↻ New Reflection</button>
+      <button class="btn-ghost" id="refresh-dev" onclick="loadDevotion(true)">↻ Refresh</button>
       <button class="btn-ghost" onclick="shareDevotional()">Share Today's Word</button>
     </div>
+  </div>
+</section>
+
+<!-- ARCHIVE SECTION (NEW) -->
+<section class="archive-section" id="archive">
+  <div class="container">
+    <span class="section-label">Past Devotionals</span>
+    <h2>ARCHIVE</h2>
+    <div id="archive-container">
+      <div class="archive-loading">Loading past devotionals...</div>
+    </div>
+    <button id="load-more-btn" class="load-more-btn" style="display: none;">Load More</button>
   </div>
 </section>
 
@@ -1065,6 +1156,7 @@
       <h4>Navigate</h4>
       <ul>
         <li><a href="#devotional">Daily Devotional</a></li>
+        <li><a href="#archive">Archive</a></li>
         <li><a href="#events">Events</a></li>
         <li><a href="#about">About Us</a></li>
         <li><a href="#groups">Groups</a></li>
@@ -1104,7 +1196,315 @@
 </div>
 
 <script>
-// ── EVENTS DATA ──────────────────────────────────────────────
+// ========== DEVOTIONAL FUNCTIONS ==========
+// Base URL for raw JSON files on GitHub
+const DEVOTIONAL_BASE_URL = 'https://raw.githubusercontent.com/NAGOHUSA/RSM_DAILY_DEVOTIONALS/main/devotionals/';
+
+// Parse content_markdown from JSON into HTML
+function parseMarkdownContent(markdown) {
+  if (!markdown) return '';
+  
+  // Split into lines
+  const lines = markdown.split('\n');
+  let html = '';
+  let inReflection = false;
+  let inPrayer = false;
+  let verseRef = '';
+  let verseText = '';
+  let title = '';
+  
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) continue;
+    
+    // Extract title (## Title)
+    if (line.startsWith('## ')) {
+      title = line.substring(3).trim();
+      continue;
+    }
+    
+    // Extract verse reference (### Reference)
+    if (line.startsWith('### ')) {
+      verseRef = line.substring(4).trim();
+      continue;
+    }
+    
+    // Extract verse text (in quotes or regular text after verse ref)
+    if (line.startsWith('"') || (verseRef && !verseText && line.length > 5)) {
+      verseText = line.replace(/^"|"$/g, '');
+      continue;
+    }
+    
+    // Extract reflection content
+    if (line.startsWith('## Reflection') || line === '## Reflection') {
+      inReflection = true;
+      continue;
+    }
+    
+    // Extract prayer
+    if (line.startsWith('## Prayer') || line === '## Prayer') {
+      inReflection = false;
+      inPrayer = true;
+      continue;
+    }
+    
+    // Handle application/action line
+    if (line.startsWith('## One-Line Application') || line === '## One-Line Application') {
+      inPrayer = false;
+      continue;
+    }
+    
+    // Regular content
+    if (inReflection && !line.startsWith('##')) {
+      html += `<p>${line}</p>`;
+    } else if (inPrayer && !line.startsWith('##')) {
+      // Prayer will be handled separately
+    } else if (!inReflection && !inPrayer && !line.startsWith('##') && !line.startsWith('###') && !line.startsWith('"')) {
+      if (line.length > 0 && !line.startsWith('*')) {
+        html += `<p>${line}</p>`;
+      }
+    }
+  }
+  
+  return { html, verseRef, verseText, title };
+}
+
+// Load today's devotional from JSON
+async function loadDevotion(force = false) {
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const cacheKey = `devotional_${todayStr}`;
+  const btn = document.getElementById('refresh-dev');
+  
+  if (btn) btn.disabled = true;
+  
+  // Check cache
+  if (!force) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      renderDevotion(JSON.parse(cached));
+      if (btn) btn.disabled = false;
+      return;
+    }
+  }
+  
+  const devotionalDiv = document.getElementById('devotional-content');
+  devotionalDiv.innerHTML = '<div class="devotional-loading"><span class="loading-dots">Loading today\'s word</span></div>';
+  
+  try {
+    const response = await fetch(`${DEVOTIONAL_BASE_URL}${todayStr}.json`);
+    if (!response.ok) throw new Error('Devotional not found');
+    
+    const data = await response.json();
+    
+    // Parse the markdown content
+    const parsed = parseMarkdownContent(data.content_markdown);
+    
+    const devotional = {
+      date: todayStr,
+      verseRef: parsed.verseRef || 'Psalm 61:2',
+      verseText: parsed.verseText || 'From the end of the earth I call to you when my heart is faint. Lead me to the rock that is higher than I.',
+      title: parsed.title || 'A Refuge in the Storm',
+      body: parsed.html || '<p>In the midst of life\'s turmoil, we often feel overwhelmed...</p>',
+      reflection: 'Where do you need to trust God as your refuge today?',
+      prayer: 'Father, lead me to the rock that is higher than my circumstances. Amen.'
+    };
+    
+    localStorage.setItem(cacheKey, JSON.stringify(devotional));
+    renderDevotion(devotional);
+  } catch (error) {
+    console.error('Error loading devotional:', error);
+    devotionalDiv.innerHTML = `
+      <div class="devotional-date">Today — ${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+      <div class="devotional-verse-ref">Psalm 61:2</div>
+      <div class="devotional-verse-text">"From the end of the earth I call to you when my heart is faint. Lead me to the rock that is higher than I."</div>
+      <div class="devotional-content">
+        <p>When life feels overwhelming, remember that God is your refuge. He is higher than any storm you face. Call out to Him today.</p>
+      </div>
+      <div class="devotional-reflection">
+        <h4>For Reflection</h4>
+        <p>What storm are you facing that you need to surrender to God?</p>
+      </div>
+      <div class="devotional-prayer">Lord, be my rock and my refuge today. Amen.</div>
+    `;
+  }
+  
+  if (btn) btn.disabled = false;
+}
+
+function renderDevotion(dev) {
+  const formattedDate = new Date(dev.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('devotional-content').innerHTML = `
+    <div class="devotional-date">${formattedDate}</div>
+    <div class="devotional-verse-ref">${dev.verseRef}</div>
+    <div class="devotional-verse-text">${dev.verseText}</div>
+    <div class="devotional-content">${dev.body}</div>
+    <div class="devotional-reflection">
+      <h4>For Reflection</h4>
+      <p>${dev.reflection}</p>
+    </div>
+    <div class="devotional-prayer">${dev.prayer}</div>
+  `;
+}
+
+function shareDevotional() {
+  const verseText = document.querySelector('.devotional-verse-text')?.textContent || '';
+  const text = `Today's Rock Solid Man devotional — ${verseText}\n\nRead more at rocksolidman.org`;
+  if (navigator.share) {
+    navigator.share({ title: 'Rock Solid Man Daily Devotional', text, url: 'https://rocksolidman.org' });
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert('Devotional copied to clipboard!'));
+  }
+}
+
+// ========== ARCHIVE FUNCTIONS ==========
+let archiveDevotionals = [];
+let archiveLoadedCount = 0;
+const ARCHIVE_BATCH_SIZE = 12;
+let isLoadingArchive = false;
+let hasMoreArchive = true;
+
+async function loadArchive() {
+  if (isLoadingArchive) return;
+  isLoadingArchive = true;
+  
+  const archiveContainer = document.getElementById('archive-container');
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  
+  if (archiveLoadedCount === 0) {
+    archiveContainer.innerHTML = '<div class="archive-loading">Loading past devotionals...</div>';
+  }
+  
+  try {
+    // Generate list of dates to try (going back 90 days)
+    const today = new Date();
+    const datesToTry = [];
+    
+    for (let i = archiveLoadedCount + 1; i <= archiveLoadedCount + ARCHIVE_BATCH_SIZE; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      datesToTry.push(dateStr);
+    }
+    
+    // Fetch each date
+    const fetchPromises = datesToTry.map(async (dateStr) => {
+      try {
+        const response = await fetch(`${DEVOTIONAL_BASE_URL}${dateStr}.json`);
+        if (response.ok) {
+          const data = await response.json();
+          const parsed = parseMarkdownContent(data.content_markdown);
+          return {
+            date: dateStr,
+            verseRef: parsed.verseRef || 'Scripture',
+            title: parsed.title || 'Daily Devotional',
+            verseText: parsed.verseText || ''
+          };
+        }
+      } catch (e) {
+        // Skip missing files
+      }
+      return null;
+    });
+    
+    const results = await Promise.all(fetchPromises);
+    const newDevotionals = results.filter(r => r !== null);
+    
+    archiveDevotionals.push(...newDevotionals);
+    archiveLoadedCount += datesToTry.length;
+    
+    if (newDevotionals.length === 0 && archiveLoadedCount > 30) {
+      hasMoreArchive = false;
+    }
+    
+    renderArchive();
+    
+    if (hasMoreArchive) {
+      loadMoreBtn.style.display = 'block';
+    } else {
+      loadMoreBtn.style.display = 'none';
+    }
+    
+  } catch (error) {
+    console.error('Error loading archive:', error);
+    if (archiveLoadedCount === 0) {
+      archiveContainer.innerHTML = '<div class="archive-error">Unable to load archive. Please try again later.</div>';
+    }
+  }
+  
+  isLoadingArchive = false;
+}
+
+function renderArchive() {
+  const archiveContainer = document.getElementById('archive-container');
+  
+  if (archiveDevotionals.length === 0 && archiveLoadedCount > 0) {
+    archiveContainer.innerHTML = '<div class="archive-loading">No past devotionals found.</div>';
+    return;
+  }
+  
+  const html = `
+    <div class="archive-grid">
+      ${archiveDevotionals.map(dev => `
+        <div class="archive-card" onclick="loadArchiveDevotional('${dev.date}')">
+          <div class="date">${formatArchiveDate(dev.date)}</div>
+          <div class="title">${escapeHtml(dev.title)}</div>
+          <div class="verse">${escapeHtml(dev.verseRef)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  archiveContainer.innerHTML = html;
+}
+
+function formatArchiveDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+async function loadArchiveDevotional(dateStr) {
+  const devotionalDiv = document.getElementById('devotional-content');
+  devotionalDiv.innerHTML = '<div class="devotional-loading"><span class="loading-dots">Loading devotional</span></div>';
+  
+  try {
+    const response = await fetch(`${DEVOTIONAL_BASE_URL}${dateStr}.json`);
+    if (!response.ok) throw new Error('Devotional not found');
+    
+    const data = await response.json();
+    const parsed = parseMarkdownContent(data.content_markdown);
+    
+    const devotional = {
+      date: dateStr,
+      verseRef: parsed.verseRef || 'Psalm 61:2',
+      verseText: parsed.verseText || 'Lead me to the rock that is higher than I.',
+      title: parsed.title || 'Daily Devotional',
+      body: parsed.html || '<p>Trust in God as your refuge.</p>',
+      reflection: 'How can you trust God more deeply today?',
+      prayer: 'Lord, be my rock and my refuge. Amen.'
+    };
+    
+    renderDevotion(devotional);
+    
+    // Scroll to devotional section
+    document.getElementById('devotional').scrollIntoView({ behavior: 'smooth' });
+  } catch (error) {
+    console.error('Error loading archived devotional:', error);
+    devotionalDiv.innerHTML = '<div class="devotional-loading">Unable to load this devotional. Please try again.</div>';
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+// ========== EVENTS DATA ==========
 const EVENTS = [
   { id:1, title:"Monthly Fellowship & Worship", date:"2026-04-25", time:"7:00 PM", location:"Main Sanctuary", desc:"Monthly gathering of men for worship, a message, and fellowship. All men are welcome — bring a friend.", badge:"Monthly", featured:true },
   { id:2, title:"Friday Morning Coffee — Group A", date:"2026-04-24", time:"6:30 AM", location:"Fellowship Hall", desc:"Weekly discipleship and accountability over coffee. Open to new members.", badge:"Weekly" },
@@ -1116,8 +1516,8 @@ const EVENTS = [
   { id:8, title:"Addiction Discipleship Meeting", date:"2026-04-29", time:"6:00 PM", location:"Confidential", desc:"Weekly meeting for men in recovery.", badge:"Weekly" },
 ];
 
-// ── CALENDAR ──────────────────────────────────────────────────
-let calDate = new Date(2026, 3, 1); // April 2026
+// ========== CALENDAR FUNCTIONS ==========
+let calDate = new Date(2026, 3, 1);
 
 function renderCalendar() {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -1136,7 +1536,6 @@ function renderCalendar() {
       .map(e => new Date(e.date + 'T00:00:00').getDate())
   );
 
-  // prev month filler
   const prevDays = new Date(year, month, 0).getDate();
   for (let i = firstDay - 1; i >= 0; i--) {
     const cell = document.createElement('div');
@@ -1158,7 +1557,6 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
 
-  // next month filler
   const totalCells = firstDay + daysInMonth;
   const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
   for (let i = 1; i <= remaining; i++) {
@@ -1241,111 +1639,14 @@ function closeModal(e) {
   if (e.target.id === 'event-modal') document.getElementById('event-modal').classList.remove('open');
 }
 
-// ── DEVOTIONAL ────────────────────────────────────────────────
-const DEV_CACHE_KEY = 'rsm_devotional';
-const DEV_DATE_KEY  = 'rsm_devotional_date';
-
-function todayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
-
-async function loadDevotion(force=false) {
-  const btn = document.getElementById('refresh-dev');
-  if (btn) btn.disabled = true;
-
-  const stored = localStorage.getItem(DEV_CACHE_KEY);
-  const storedDate = localStorage.getItem(DEV_DATE_KEY);
-
-  if (!force && stored && storedDate === todayStr()) {
-    renderDevotion(JSON.parse(stored));
-    if (btn) btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('devotional-content').innerHTML =
-    '<div class="devotional-loading"><span class="loading-dots">Preparing today\'s word</span></div>';
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:`You are a devotional writer for Rock Solid Man, a Christian men's ministry. 
-Write in a bold, clear, masculine tone — no fluff. Grounded in Scripture. Practical and honest.
-Always respond with ONLY valid JSON. No markdown, no backticks, no preamble. Just the JSON object.`,
-        messages:[{
-          role:'user',
-          content:`Write today's daily devotional. Today's date: ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}.
-Respond with ONLY this JSON structure:
-{
-  "verseRef": "Book Chapter:Verse",
-  "verseText": "The full verse text",
-  "title": "A 3-6 word bold devotional title (ALL CAPS)",
-  "body": "2-3 paragraphs of devotional content (plain text, no markdown). Speak directly to men about faith, character, discipline, brotherhood, or perseverance.",
-  "reflection": "One honest, challenging reflection question for the man reading this.",
-  "prayer": "A short 2-3 sentence closing prayer in first person."
-}`
-        }]
-      })
-    });
-
-    const data = await res.json();
-    let text = data.content.find(b => b.type === 'text')?.text || '';
-    text = text.replace(/```json|```/g,'').trim();
-    const dev = JSON.parse(text);
-    localStorage.setItem(DEV_CACHE_KEY, JSON.stringify(dev));
-    localStorage.setItem(DEV_DATE_KEY, todayStr());
-    renderDevotion(dev);
-  } catch(err) {
-    document.getElementById('devotional-content').innerHTML = `
-      <div class="devotional-date">Today — ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
-      <div class="devotional-verse-ref">Proverbs 27:17</div>
-      <div class="devotional-verse-text">"As iron sharpens iron, so one person sharpens another."</div>
-      <div class="devotional-content">
-        <p>Every man needs a band of brothers — men who will call you higher, tell you the truth, and walk beside you when the road gets hard. Iron doesn't sharpen itself. It takes friction, pressure, and another strong piece of iron.</p>
-        <p>Too many men try to go it alone. Pride tells us we don't need help. But God's design is different. He placed us in a body, in a community, in a family. Rock Solid Man exists because isolation is the enemy's playground, and brotherhood is God's answer.</p>
-        <p>Who is sharpening you? And who are you sharpening? Don't wait for the perfect moment. Show up. Be present. Let God use you — and let the men around you be used in you.</p>
-      </div>
-      <div class="devotional-reflection">
-        <h4>For Reflection</h4>
-        <p>Is there a man in your life you've been meaning to reach out to? Take 60 seconds right now and send that message.</p>
-      </div>
-      <div class="devotional-prayer">Father, give me the humility to receive from others and the courage to pour into the men around me. Make me iron. Amen.</div>
-    `;
-  }
-  if (btn) btn.disabled = false;
-}
-
-function renderDevotion(dev) {
-  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('devotional-content').innerHTML = `
-    <div class="devotional-date">${today}</div>
-    <div class="devotional-verse-ref">${dev.verseRef}</div>
-    <div class="devotional-verse-text">${dev.verseText}</div>
-    <div class="devotional-content">${dev.body.split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
-    <div class="devotional-reflection">
-      <h4>For Reflection</h4>
-      <p>${dev.reflection}</p>
-    </div>
-    <div class="devotional-prayer">${dev.prayer}</div>
-  `;
-}
-
-function shareDevotional() {
-  const text = `Today's Rock Solid Man devotional — rocksolidman.org\n\n"${document.querySelector('.devotional-verse-text')?.textContent || ''}"`;
-  if (navigator.share) {
-    navigator.share({ title: "Rock Solid Man Daily Devotional", text, url:"https://rocksolidman.org" });
-  } else {
-    navigator.clipboard?.writeText(text).then(() => alert("Devotional copied to clipboard!"));
-  }
-}
-
-// ── INIT ──────────────────────────────────────────────────────
-renderCalendar();
-loadDevotion();
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded', () => {
+  renderCalendar();
+  loadDevotion();
+  loadArchive();
+  
+  document.getElementById('load-more-btn').addEventListener('click', loadArchive);
+});
 </script>
 </body>
 </html>
