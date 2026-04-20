@@ -1,0 +1,51 @@
+name: PulseRelay – UAP/UFO/NHI Trends Update
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # Every 3 hours
+  workflow_dispatch:
+
+jobs:
+  update-uap-trends:
+    name: Fetch & Commit uap_trends.json
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests feedparser
+
+      - name: Create data directory if not exists
+        run: mkdir -p PULSERELAY/data
+
+      - name: Fetch UAP trends
+        run: python PULSERELAY/scripts/uap_fetch_trends.py
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+
+      - name: Commit updated uap_trends.json
+        run: |
+          git config user.name "PulseRelay Bot"
+          git config user.email "pulserelay-bot@users.noreply.github.com"
+          git add PULSERELAY/data/uap_trends.json
+          git diff --cached --quiet || \
+            git commit -m "chore(pulserelay): update uap_trends.json [skip ci]"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
