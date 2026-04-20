@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rock Solid Man — Are You on the Rock?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --stone: #1a1714;
+    --stone-mid: #2e2a25;
+    --stone-light: #4a4540;
+    --copper: #b5703a;
+    --copper-bright: #d4873f;
+    --copper-light: #e8a96a;
+    --cream: #f4efe6;
+    --cream-dark: #e8dfd0;
+    --white: #faf8f5;
+    --text-muted: #8a7f74;
+    --ff-display: 'Bebas Neue', sans-serif;
+    --ff-serif: 'Playfair Display', serif;
+    --ff-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--stone);
+    color: var(--cream);
+    font-family: var(--ff-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 1rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(26,23,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(181,112,58,0.2);
+  }
+
+  .nav-logo {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: var(--copper-light);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--cream); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--cream-dark);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--copper-light); }
+
+  .nav-cta {
+    background: var(--copper);
+    color: var(--white) !important;
+    padding: 0.45rem 1.2rem;
+    border-radius: 2px;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.12em !important;
+  }
+  .nav-cta:hover { background: var(--copper-bright); color: var(--white) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 2rem 4rem;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(181,112,58,0.12) 0%, transparent 70%),
+      linear-gradient(180deg, #0d0c0a 0%, #1a1714 50%, #1f1c18 100%);
+  }
+
+  .hero-texture {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b5703a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--ff-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: var(--ff-display);
+    font-size: clamp(5rem, 14vw, 11rem);
+    line-height: 0.92;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--copper-light);
+  }
+
+  .hero-verse {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero-verse strong {
+    color: var(--copper);
+    font-style: normal;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--ff-body);
+    font-weight: 500;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 1s 0.35s ease both;
+  }
+
+  .btn-primary {
+    background: var(--copper);
+    color: var(--white);
+    padding: 0.85rem 2.2rem;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--copper-bright); transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    padding: 0.85rem 2.2rem;
+    border-radius: 2px;
+    border: 1px solid rgba(244,239,230,0.25);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--copper); color: var(--copper-light); transform: translateY(-1px); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--copper), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+  .container-narrow { max-width: 720px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  h2 {
+    font-family: var(--ff-display);
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  /* DEVOTIONAL */
+  .devotional-section {
+    background: linear-gradient(135deg, #1f1c17 0%, #221e18 50%, #1a1714 100%);
+    border-top: 1px solid rgba(181,112,58,0.2);
+    border-bottom: 1px solid rgba(181,112,58,0.2);
+  }
+
+  .devotional-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(181,112,58,0.25);
+    border-radius: 4px;
+    padding: 2.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .devotional-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+    font-family: var(--ff-serif);
+    font-size: 10rem;
+    color: rgba(181,112,58,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .devotional-date {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .devotional-verse-ref {
+    font-family: var(--ff-display);
+    font-size: 2rem;
+    letter-spacing: 0.06em;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .devotional-verse-text {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--cream-dark);
+    margin-bottom: 2rem;
+    border-left: 2px solid var(--copper);
+    padding-left: 1.25rem;
+    line-height: 1.8;
+  }
+
+  .devotional-content {
+    font-size: 0.97rem;
+    color: var(--cream-dark);
+    line-height: 1.85;
+    margin-bottom: 2rem;
+  }
+
+  .devotional-reflection {
+    background: rgba(181,112,58,0.08);
+    border-radius: 3px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .devotional-reflection h4 {
+    font-family: var(--ff-body);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  .devotional-reflection p {
+    font-size: 0.92rem;
+    color: var(--cream-dark);
+    line-height: 1.7;
+  }
+
+  .devotional-prayer {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .devotional-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-family: var(--ff-serif);
+    font-style: italic;
+  }
+
+  .loading-dots::after {
+    content: '...';
+    animation: loadDots 1.2s steps(4, end) infinite;
+  }
+
+  @keyframes loadDots {
+    0%, 100% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+
+  .devotional-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(181,112,58,0.35);
+    color: var(--copper-light);
+    padding: 0.55rem 1.4rem;
+    border-radius: 2px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--ff-body);
+  }
+  .btn-ghost:hover { background: rgba(181,112,58,0.12); border-color: var(--copper); }
+  .btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* CALENDAR */
+  .calendar-section { background: var(--stone-mid); }
+
+  .calendar-grid { display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; align-items: start; }
+
+  .calendar-widget {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(181,112,58,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .cal-header {
+    background: rgba(181,112,58,0.12);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(181,112,58,0.2);
+  }
+
+  .cal-header h3 {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+  }
+
+  .cal-nav button {
+    background: none;
+    border: 1px solid rgba(181,112,58,0.3);
+    color: var(--copper-light);
+    width: 32px; height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.15s;
+  }
+  .cal-nav button:hover { background: rgba(181,112,58,0.15); }
+  .cal-nav { display: flex; gap: 0.5rem; }
+
+  .cal-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .cal-day-label {
+    text-align: center;
+    padding: 0.6rem 0;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .cal-cell {
+    min-height: 60px;
+    padding: 0.4rem 0.5rem;
+    border-right: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .cal-cell:hover { background: rgba(181,112,58,0.08); }
+  .cal-cell.other-month { opacity: 0.3; }
+  .cal-cell.today { background: rgba(181,112,58,0.1); }
+  .cal-cell.today .cal-num { color: var(--copper); font-weight: 500; }
+  .cal-cell.has-event::after {
+    content: '';
+    display: block;
+    width: 5px; height: 5px;
+    background: var(--copper);
+    border-radius: 50%;
+    margin: 2px auto 0;
+  }
+  .cal-cell.selected { background: rgba(181,112,58,0.18); }
+
+  .cal-num {
+    font-size: 0.82rem;
+    color: var(--cream-dark);
+    font-weight: 400;
+  }
+
+  /* EVENTS SIDEBAR */
+  .events-sidebar h3 {
+    font-family: var(--ff-display);
+    font-size: 1.8rem;
+    letter-spacing: 0.06em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .event-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(181,112,58,0.15);
+    border-left: 3px solid var(--copper);
+    border-radius: 0 3px 3px 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .event-card:hover { background: rgba(181,112,58,0.08); border-left-color: var(--copper-bright); transform: translateX(2px); }
+  .event-card.featured { border-left-color: var(--copper-bright); background: rgba(181,112,58,0.07); }
+
+  .event-date-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+
+  .event-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.2rem;
+    line-height: 1.4;
+  }
+
+  .event-detail {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .event-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(181,112,58,0.2);
+    color: var(--copper-light);
+    padding: 0.15rem 0.5rem;
+    border-radius: 1px;
+    margin-top: 0.4rem;
+  }
+
+  /* ABOUT */
+  .about-section { background: var(--stone); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-text p {
+    color: var(--cream-dark);
+    font-size: 1.02rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.85;
+  }
+
+  .about-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .pillar {
+    border-left: 2px solid var(--copper);
+    padding-left: 1rem;
+  }
+  .pillar h4 {
+    font-family: var(--ff-display);
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    color: var(--copper-light);
+    margin-bottom: 0.2rem;
+  }
+  .pillar p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .about-quote-block {
+    background: rgba(181,112,58,0.08);
+    border: 1px solid rgba(181,112,58,0.25);
+    padding: 2.5rem;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .about-quote-block blockquote {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: var(--cream);
+    margin-bottom: 1rem;
+  }
+
+  .about-quote-block cite {
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* GROUPS */
+  .groups-section {
+    background: linear-gradient(180deg, #1a1714 0%, #1c1a16 100%);
+    border-top: 1px solid rgba(181,112,58,0.15);
+  }
+
+  .groups-intro {
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+  .groups-intro p {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+  }
+
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .group-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(181,112,58,0.15);
+    border-radius: 4px;
+    padding: 1.75rem;
+    transition: all 0.25s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+  .group-card:hover {
+    background: rgba(181,112,58,0.07);
+    border-color: rgba(181,112,58,0.4);
+    transform: translateY(-3px);
+  }
+
+  .group-icon {
+    width: 44px; height: 44px;
+    background: rgba(181,112,58,0.15);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    font-size: 1.3rem;
+  }
+
+  .group-card h3 {
+    font-family: var(--ff-display);
+    font-size: 1.35rem;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
+  }
+
+  .group-card p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+  }
+
+  .group-meta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(181,112,58,0.12);
+    color: var(--copper-light);
+    padding: 0.2rem 0.6rem;
+    border-radius: 1px;
+    font-weight: 500;
+  }
+
+  /* CTA STRIP */
+  .cta-section {
+    background: var(--copper);
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    color: var(--white);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin-bottom: 1rem;
+  }
+
+  .cta-section p {
+    color: rgba(255,255,255,0.75);
+    font-size: 1.05rem;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+  }
+
+  .btn-white {
+    background: var(--white);
+    color: var(--copper);
+    padding: 0.9rem 2.5rem;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-white:hover { background: var(--cream); transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: #0e0c0a;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(181,112,58,0.15);
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .footer-brand .logo {
+    font-family: var(--ff-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.08em;
+    color: var(--copper-light);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .footer-brand p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .footer-donate-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .footer-donate-btns a {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(181,112,58,0.15);
+    color: var(--copper-light);
+    padding: 0.4rem 0.9rem;
+    border-radius: 2px;
+    border: 1px solid rgba(181,112,58,0.3);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .footer-donate-btns a:hover { background: rgba(181,112,58,0.28); }
+
+  .footer-col h4 {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.55rem; }
+  .footer-col a {
+    font-size: 0.87rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--cream); }
+
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 2.5rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: #221e18;
+    border: 1px solid rgba(181,112,58,0.3);
+    border-radius: 4px;
+    padding: 2rem 2.5rem;
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-event-date { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--copper); font-weight: 500; margin-bottom: 0.5rem; }
+  .modal-event-title { font-family: var(--ff-display); font-size: 2rem; letter-spacing: 0.05em; color: var(--cream); margin-bottom: 0.5rem; }
+  .modal-event-desc { font-size: 0.95rem; color: var(--cream-dark); line-height: 1.75; }
+  .modal-event-details { margin-top: 1.5rem; display: grid; gap: 0.6rem; }
+  .modal-detail-row { display: flex; gap: 0.75rem; font-size: 0.87rem; }
+  .modal-detail-label { color: var(--text-muted); min-width: 70px; }
+  .modal-detail-val { color: var(--cream-dark); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .calendar-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .about-pillars { grid-template-columns: 1fr; }
+    .devotional-card { padding: 1.75rem; }
+    .hero-title { font-size: clamp(4rem, 18vw, 7rem); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#"><span>Rock</span> Solid Man</a>
+  <ul class="nav-links">
+    <li><a href="#devotional">Daily Word</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#groups">Groups</a></li>
+    <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfZrcWD32suGBvaXFfeDqzBRkIzo-BHyivnxmI0cOZpd-Q5zg/viewform?usp=header" class="nav-cta">Volunteer</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-texture"></div>
+  <p class="hero-eyebrow">Matthew 7:24</p>
+  <h1 class="hero-title">ARE YOU<br>ON THE <em>ROCK?</em></h1>
+  <p class="hero-verse">
+    "Everyone who hears these words of mine and puts them into practice<br>is like a wise man who built his house on the rock."
+    <br><br><strong>Matthew 7:24</strong>
+  </p>
+  <div class="hero-actions">
+    <a href="#about" class="btn-primary">Our Mission</a>
+    <a href="#groups" class="btn-outline">Join a Group</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- DEVOTIONAL -->
+<section class="devotional-section" id="devotional">
+  <div class="container">
+    <span class="section-label">Daily Devotional</span>
+    <h2>TODAY'S<br>WORD</h2>
+    <div class="devotional-card">
+      <div id="devotional-content" class="devotional-loading">
+        <span class="loading-dots">Loading today's devotional</span>
+      </div>
+    </div>
+    <div class="devotional-actions">
+      <button class="btn-ghost" id="refresh-dev" onclick="loadDevotion(true)">↻ New Reflection</button>
+      <button class="btn-ghost" onclick="shareDevotional()">Share Today's Word</button>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS CALENDAR -->
+<section class="calendar-section" id="events">
+  <div class="container">
+    <span class="section-label">Community Calendar</span>
+    <h2>UPCOMING<br>EVENTS</h2>
+    <div class="calendar-grid">
+      <div>
+        <div class="calendar-widget">
+          <div class="cal-header">
+            <h3 id="cal-month-label">April 2026</h3>
+            <div class="cal-nav">
+              <button onclick="changeMonth(-1)">&#8592;</button>
+              <button onclick="changeMonth(1)">&#8594;</button>
+            </div>
+          </div>
+          <div class="cal-days-header">
+            <div class="cal-day-label">Sun</div>
+            <div class="cal-day-label">Mon</div>
+            <div class="cal-day-label">Tue</div>
+            <div class="cal-day-label">Wed</div>
+            <div class="cal-day-label">Thu</div>
+            <div class="cal-day-label">Fri</div>
+            <div class="cal-day-label">Sat</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+      </div>
+      <div class="events-sidebar">
+        <h3>WHAT'S<br>AHEAD</h3>
+        <div id="events-list"></div>
+        <a href="https://rocksolidman.org/events" class="btn-outline" style="font-size:0.78rem; padding: 0.6rem 1.4rem; margin-top:1rem; display:inline-block;">View All Events</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text">
+        <span class="section-label">About Rock Solid Man</span>
+        <h2>BUILT TO BE<br>UNBREAKABLE</h2>
+        <p>At Rock Solid Man, we help men build unshakable strength — physically, mentally, and spiritually. Through proven strategies, expert guidance, and a community of iron-sharpening-iron brotherhood, we empower men to stand firm.</p>
+        <p>Whether it's battling addiction, growing in faith, or stepping into leadership, we believe every man has the potential to be Rock Solid — anchored in Christ and unmovable.</p>
+        <div class="about-pillars">
+          <div class="pillar">
+            <h4>FAITH</h4>
+            <p>Grounded in the Word. Built on the Rock.</p>
+          </div>
+          <div class="pillar">
+            <h4>BROTHERHOOD</h4>
+            <p>Iron sharpens iron. No man stands alone.</p>
+          </div>
+          <div class="pillar">
+            <h4>DISCIPLINE</h4>
+            <p>Daily habits that forge unbreakable character.</p>
+          </div>
+          <div class="pillar">
+            <h4>SERVICE</h4>
+            <p>Pouring out what God has poured in.</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="about-quote-block">
+          <blockquote>"As iron sharpens iron, so one person sharpens another."</blockquote>
+          <cite>Proverbs 27:17</cite>
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(181,112,58,0.2);">
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">Join the community of men standing firm on the Rock.</p>
+            <a href="https://rocksolidman.org/contact-us/" class="btn-primary">Get in Touch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUPS -->
+<section class="groups-section" id="groups">
+  <div class="container">
+    <span class="section-label">Get Involved</span>
+    <div class="groups-intro">
+      <h2>JOIN A<br>ROCK SOLID GROUP</h2>
+      <p>Every man needs a band of brothers. Find the group where God is calling you to grow.</p>
+    </div>
+    <div class="groups-grid">
+      <a href="https://rocksolidman.org/services/addiction-discipleship/" class="group-card">
+        <div class="group-icon">&#9876;</div>
+        <h3>Addiction Discipleship</h3>
+        <p>Freedom is possible. Walk with brothers who understand the battle and point you to the only One who can truly set you free.</p>
+        <div class="group-meta">
+          <span class="meta-tag">Weekly</span>
+          <span class="meta-tag">Confidential</span>
+        </div>
+      </a>
+      <a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-a/" class="group-card">
+        <div class="group-icon">&#9749;</div>
+        <h3>Friday Morning Coffee — Group A</h3>
+        <p>Start your Friday with Scripture, coffee, and brothers who will sharpen you for the week ahead.</p>
+        <div class="group-meta">
+          <span class="meta-tag">Fridays</span>
+          <span class="meta-tag">Morning</span>
+        </div>
+      </a>
+      <a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-b/" class="group-card">
+        <div class="group-icon">&#9749;</div>
+        <h3>Friday Morning Coffee — Group B</h3>
+        <p>A second gathering of men committed to accountability, growth, and going deeper in the Word together.</p>
+        <div class="group-meta">
+          <span class="meta-tag">Fridays</span>
+          <span class="meta-tag">Morning</span>
+        </div>
+      </a>
+      <a href="https://rocksolidman.org/events/" class="group-card">
+        <div class="group-icon">&#127758;</div>
+        <h3>Monthly Fellowship & Worship</h3>
+        <p>Corporate worship, a powerful message, and the kind of fellowship that makes you feel less alone. All men welcome.</p>
+        <div class="group-meta">
+          <span class="meta-tag">Monthly</span>
+          <span class="meta-tag">Open to All</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container-narrow">
+    <h2>BE PART OF<br>THE FAMILY</h2>
+    <p>Don't walk this road alone. Connect with Rock Solid Man and find your place in the brotherhood.</p>
+    <a href="https://rocksolidman.org/contact-us/" class="btn-white">Reach Out Today</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="logo">Rock Solid Man</span>
+      <p>Helping men build unshakable strength — physically, mentally, and spiritually. Anchored in Christ. Rooted in community.</p>
+      <div class="footer-donate-btns">
+        <a href="https://www.paypal.com/donate/?hosted_button_id=T8NLD6Y9Z7AYG">Donate via PayPal</a>
+        <a href="https://www.paypal.com/qrcodes/venmocs/35583249-8548-40b0-a609-de92029468d0?created=1729007121">Venmo</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="#devotional">Daily Devotional</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#groups">Groups</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Get Involved</h4>
+      <ul>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfZrcWD32suGBvaXFfeDqzBRkIzo-BHyivnxmI0cOZpd-Q5zg/viewform?usp=header">Volunteer Sign-Up</a></li>
+        <li><a href="https://docs.google.com/forms/d/1Xj2qhDiRMDFb9_3LOnrx7h3eZDS59K3XV_IoXVTcA14/edit">TXT Alerts</a></li>
+        <li><a href="https://rock-solid-man.printify.me/category/all/1">Gear / Swag</a></li>
+        <li><a href="https://rocksolidman.org/contact-us/">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Groups</h4>
+      <ul>
+        <li><a href="https://rocksolidman.org/services/addiction-discipleship/">Addiction Discipleship</a></li>
+        <li><a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-a/">Coffee Group A</a></li>
+        <li><a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-b/">Coffee Group B</a></li>
+        <li><a href="https://rocksolidman.org/events/">Monthly Fellowship</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Rock Solid Man &copy; 2026. All rights reserved.</span>
+    <span>Matthew 7:24</span>
+  </div>
+</footer>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="event-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('event-modal').classList.remove('open')">&#215;</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ── EVENTS DATA ──────────────────────────────────────────────
+const EVENTS = [
+  { id:1, title:"Monthly Fellowship & Worship", date:"2026-04-25", time:"7:00 PM", location:"Main Sanctuary", desc:"Monthly gathering of men for worship, a message, and fellowship. All men are welcome — bring a friend.", badge:"Monthly", featured:true },
+  { id:2, title:"Friday Morning Coffee — Group A", date:"2026-04-24", time:"6:30 AM", location:"Fellowship Hall", desc:"Weekly discipleship and accountability over coffee. Open to new members.", badge:"Weekly" },
+  { id:3, title:"Friday Morning Coffee — Group B", date:"2026-04-24", time:"7:30 AM", location:"Room 204", desc:"A second Friday morning group for men in discipleship. Focused on deep study.", badge:"Weekly" },
+  { id:4, title:"Addiction Discipleship Meeting", date:"2026-04-22", time:"6:00 PM", location:"Confidential", desc:"A safe, confidential space for men walking through recovery. Led by trained discipleship leaders.", badge:"Weekly" },
+  { id:5, title:"Monthly Fellowship & Worship", date:"2026-05-30", time:"7:00 PM", location:"Main Sanctuary", desc:"May's monthly gathering. Worship, message, and brotherhood.", badge:"Monthly", featured:true },
+  { id:6, title:"Rock Solid Men's Retreat", date:"2026-06-12", time:"Fri–Sun", location:"Camp Retreat Center", desc:"Annual weekend retreat for men to go deep, rest, and be sharpened. Registration opens soon.", badge:"Annual" },
+  { id:7, title:"Friday Morning Coffee — Group A", date:"2026-05-01", time:"6:30 AM", location:"Fellowship Hall", desc:"Weekly discipleship and accountability.", badge:"Weekly" },
+  { id:8, title:"Addiction Discipleship Meeting", date:"2026-04-29", time:"6:00 PM", location:"Confidential", desc:"Weekly meeting for men in recovery.", badge:"Weekly" },
+];
+
+// ── CALENDAR ──────────────────────────────────────────────────
+let calDate = new Date(2026, 3, 1); // April 2026
+
+function renderCalendar() {
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  document.getElementById('cal-month-label').textContent = months[calDate.getMonth()] + ' ' + calDate.getFullYear();
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = new Date();
+
+  const eventDays = new Set(
+    EVENTS
+      .filter(e => { const d = new Date(e.date + 'T00:00:00'); return d.getFullYear()===year && d.getMonth()===month; })
+      .map(e => new Date(e.date + 'T00:00:00').getDate())
+  );
+
+  // prev month filler
+  const prevDays = new Date(year, month, 0).getDate();
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = `<span class="cal-num">${prevDays - i}</span>`;
+    grid.appendChild(cell);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    let cls = 'cal-cell';
+    if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) cls += ' today';
+    if (eventDays.has(d)) cls += ' has-event';
+    cell.className = cls;
+    cell.innerHTML = `<span class="cal-num">${d}</span>`;
+    if (eventDays.has(d)) {
+      cell.onclick = () => showDayEvents(year, month, d);
+    }
+    grid.appendChild(cell);
+  }
+
+  // next month filler
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = `<span class="cal-num">${i}</span>`;
+    grid.appendChild(cell);
+  }
+
+  renderEventsList();
+}
+
+function changeMonth(dir) {
+  calDate.setMonth(calDate.getMonth() + dir);
+  renderCalendar();
+}
+
+function renderEventsList() {
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  const upcoming = EVENTS
+    .filter(e => {
+      const d = new Date(e.date + 'T00:00:00');
+      return d.getFullYear() === year && d.getMonth() === month;
+    })
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  const list = document.getElementById('events-list');
+  if (upcoming.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;">No events this month.</p>';
+    return;
+  }
+
+  list.innerHTML = upcoming.map(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    const label = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+    return `
+      <div class="event-card ${e.featured ? 'featured' : ''}" onclick="openEventModal(${e.id})">
+        <div class="event-date-tag">${label} &bull; ${e.time}</div>
+        <div class="event-name">${e.title}</div>
+        <div class="event-detail">${e.location}</div>
+        <span class="event-badge">${e.badge}</span>
+      </div>`;
+  }).join('');
+}
+
+function showDayEvents(year, month, day) {
+  calDate = new Date(year, month, 1);
+  renderCalendar();
+  document.getElementById('events').scrollIntoView({ behavior:'smooth' });
+}
+
+function openEventModal(id) {
+  const e = EVENTS.find(ev => ev.id === id);
+  if (!e) return;
+  const d = new Date(e.date + 'T00:00:00');
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-event-date">${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div>
+    <div class="modal-event-title">${e.title}</div>
+    <p class="modal-event-desc">${e.desc}</p>
+    <div class="modal-event-details">
+      <div class="modal-detail-row"><span class="modal-detail-label">Time</span><span class="modal-detail-val">${e.time}</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-label">Location</span><span class="modal-detail-val">${e.location}</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-label">Type</span><span class="modal-detail-val">${e.badge}</span></div>
+    </div>
+    <div style="margin-top:1.75rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+      <a href="https://rocksolidman.org/events/" class="btn-primary" style="font-size:0.78rem; padding:0.55rem 1.4rem;">Details & RSVP</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfZrcWD32suGBvaXFfeDqzBRkIzo-BHyivnxmI0cOZpd-Q5zg/viewform?usp=header" class="btn-ghost">Volunteer</a>
+    </div>
+  `;
+  document.getElementById('event-modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'event-modal') document.getElementById('event-modal').classList.remove('open');
+}
+
+// ── DEVOTIONAL ────────────────────────────────────────────────
+const DEV_CACHE_KEY = 'rsm_devotional';
+const DEV_DATE_KEY  = 'rsm_devotional_date';
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+async function loadDevotion(force=false) {
+  const btn = document.getElementById('refresh-dev');
+  if (btn) btn.disabled = true;
+
+  const stored = localStorage.getItem(DEV_CACHE_KEY);
+  const storedDate = localStorage.getItem(DEV_DATE_KEY);
+
+  if (!force && stored && storedDate === todayStr()) {
+    renderDevotion(JSON.parse(stored));
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('devotional-content').innerHTML =
+    '<div class="devotional-loading"><span class="loading-dots">Preparing today\'s word</span></div>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`You are a devotional writer for Rock Solid Man, a Christian men's ministry. 
+Write in a bold, clear, masculine tone — no fluff. Grounded in Scripture. Practical and honest.
+Always respond with ONLY valid JSON. No markdown, no backticks, no preamble. Just the JSON object.`,
+        messages:[{
+          role:'user',
+          content:`Write today's daily devotional. Today's date: ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}.
+Respond with ONLY this JSON structure:
+{
+  "verseRef": "Book Chapter:Verse",
+  "verseText": "The full verse text",
+  "title": "A 3-6 word bold devotional title (ALL CAPS)",
+  "body": "2-3 paragraphs of devotional content (plain text, no markdown). Speak directly to men about faith, character, discipline, brotherhood, or perseverance.",
+  "reflection": "One honest, challenging reflection question for the man reading this.",
+  "prayer": "A short 2-3 sentence closing prayer in first person."
+}`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    let text = data.content.find(b => b.type === 'text')?.text || '';
+    text = text.replace(/```json|```/g,'').trim();
+    const dev = JSON.parse(text);
+    localStorage.setItem(DEV_CACHE_KEY, JSON.stringify(dev));
+    localStorage.setItem(DEV_DATE_KEY, todayStr());
+    renderDevotion(dev);
+  } catch(err) {
+    document.getElementById('devotional-content').innerHTML = `
+      <div class="devotional-date">Today — ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+      <div class="devotional-verse-ref">Proverbs 27:17</div>
+      <div class="devotional-verse-text">"As iron sharpens iron, so one person sharpens another."</div>
+      <div class="devotional-content">
+        <p>Every man needs a band of brothers — men who will call you higher, tell you the truth, and walk beside you when the road gets hard. Iron doesn't sharpen itself. It takes friction, pressure, and another strong piece of iron.</p>
+        <p>Too many men try to go it alone. Pride tells us we don't need help. But God's design is different. He placed us in a body, in a community, in a family. Rock Solid Man exists because isolation is the enemy's playground, and brotherhood is God's answer.</p>
+        <p>Who is sharpening you? And who are you sharpening? Don't wait for the perfect moment. Show up. Be present. Let God use you — and let the men around you be used in you.</p>
+      </div>
+      <div class="devotional-reflection">
+        <h4>For Reflection</h4>
+        <p>Is there a man in your life you've been meaning to reach out to? Take 60 seconds right now and send that message.</p>
+      </div>
+      <div class="devotional-prayer">Father, give me the humility to receive from others and the courage to pour into the men around me. Make me iron. Amen.</div>
+    `;
+  }
+  if (btn) btn.disabled = false;
+}
+
+function renderDevotion(dev) {
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('devotional-content').innerHTML = `
+    <div class="devotional-date">${today}</div>
+    <div class="devotional-verse-ref">${dev.verseRef}</div>
+    <div class="devotional-verse-text">${dev.verseText}</div>
+    <div class="devotional-content">${dev.body.split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+    <div class="devotional-reflection">
+      <h4>For Reflection</h4>
+      <p>${dev.reflection}</p>
+    </div>
+    <div class="devotional-prayer">${dev.prayer}</div>
+  `;
+}
+
+function shareDevotional() {
+  const text = `Today's Rock Solid Man devotional — rocksolidman.org\n\n"${document.querySelector('.devotional-verse-text')?.textContent || ''}"`;
+  if (navigator.share) {
+    navigator.share({ title: "Rock Solid Man Daily Devotional", text, url:"https://rocksolidman.org" });
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert("Devotional copied to clipboard!"));
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderCalendar();
+loadDevotion();
+</script>
+</body>
+</html>
