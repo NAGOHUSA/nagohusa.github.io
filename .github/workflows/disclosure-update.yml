@@ -1,4 +1,4 @@
-name: disclosure – UAP/UFO/NHI Trends Update
+name: Disclosure – UAP/UFO/NHI Trends Update
 
 on:
   schedule:
@@ -38,11 +38,11 @@ jobs:
 
       - name: Commit updated uap_trends.json
         run: |
-          git config user.name "PulseRelay Bot"
-          git config user.email "pulserelay-bot@users.noreply.github.com"
+          git config user.name "Disclosure Bot"
+          git config user.email "disclosure-bot@users.noreply.github.com"
           git add disclosure/data/uap_trends.json
           git diff --cached --quiet || \
-            git commit -m "chore(pulserelay): update uap_trends.json [skip ci]"
+            git commit -m "chore(disclosure): update uap_trends.json [skip ci]"
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
