@@ -1,4 +1,4 @@
-name: PulseRelay – UAP/UFO/NHI Trends Update
+name: disclousre – UAP/UFO/NHI Trends Update
 
 on:
   schedule:
