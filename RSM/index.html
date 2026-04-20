@@ -680,87 +680,6 @@
     font-weight: 500;
   }
 
-  /* GROUPS */
-  .groups-section {
-    background: linear-gradient(180deg, #1a1714 0%, #1c1a16 100%);
-    border-top: 1px solid rgba(181,112,58,0.15);
-  }
-
-  .groups-intro {
-    max-width: 600px;
-    margin-bottom: 3rem;
-  }
-  .groups-intro p {
-    color: var(--text-muted);
-    font-size: 1.02rem;
-  }
-
-  .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .group-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(181,112,58,0.15);
-    border-radius: 4px;
-    padding: 1.75rem;
-    transition: all 0.25s;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-  }
-  .group-card:hover {
-    background: rgba(181,112,58,0.07);
-    border-color: rgba(181,112,58,0.4);
-    transform: translateY(-3px);
-  }
-
-  .group-icon {
-    width: 44px; height: 44px;
-    background: rgba(181,112,58,0.15);
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.25rem;
-    font-size: 1.3rem;
-  }
-
-  .group-card h3 {
-    font-family: var(--ff-display);
-    font-size: 1.35rem;
-    letter-spacing: 0.05em;
-    color: var(--cream);
-    margin-bottom: 0.6rem;
-    line-height: 1.2;
-  }
-
-  .group-card p {
-    font-size: 0.88rem;
-    color: var(--text-muted);
-    line-height: 1.65;
-    margin-bottom: 1rem;
-  }
-
-  .group-meta {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .meta-tag {
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: rgba(181,112,58,0.12);
-    color: var(--copper-light);
-    padding: 0.2rem 0.6rem;
-    border-radius: 1px;
-    font-weight: 500;
-  }
-
   /* CTA STRIP */
   .cta-section {
     background: var(--copper);
@@ -807,7 +726,7 @@
     max-width: 1100px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     gap: 3rem;
   }
 
@@ -952,7 +871,6 @@
     <li><a href="#archive">Archive</a></li>
     <li><a href="#events">Events</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#groups">Groups</a></li>
     <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfZrcWD32suGBvaXFfeDqzBRkIzo-BHyivnxmI0cOZpd-Q5zg/viewform?usp=header" class="nav-cta">Volunteer</a></li>
   </ul>
 </nav>
@@ -968,7 +886,7 @@
   </p>
   <div class="hero-actions">
     <a href="#about" class="btn-primary">Our Mission</a>
-    <a href="#groups" class="btn-outline">Join a Group</a>
+    <a href="#events" class="btn-outline">View Events</a>
   </div>
   <div class="hero-scroll">
     <div class="scroll-line"></div>
@@ -993,7 +911,7 @@
   </div>
 </section>
 
-<!-- ARCHIVE SECTION (NEW) -->
+<!-- ARCHIVE SECTION -->
 <section class="archive-section" id="archive">
   <div class="container">
     <span class="section-label">Past Devotionals</span>
@@ -1083,56 +1001,7 @@
   </div>
 </section>
 
-<!-- GROUPS -->
-<section class="groups-section" id="groups">
-  <div class="container">
-    <span class="section-label">Get Involved</span>
-    <div class="groups-intro">
-      <h2>JOIN A<br>ROCK SOLID GROUP</h2>
-      <p>Every man needs a band of brothers. Find the group where God is calling you to grow.</p>
-    </div>
-    <div class="groups-grid">
-      <a href="https://rocksolidman.org/services/addiction-discipleship/" class="group-card">
-        <div class="group-icon">&#9876;</div>
-        <h3>Addiction Discipleship</h3>
-        <p>Freedom is possible. Walk with brothers who understand the battle and point you to the only One who can truly set you free.</p>
-        <div class="group-meta">
-          <span class="meta-tag">Weekly</span>
-          <span class="meta-tag">Confidential</span>
-        </div>
-      </a>
-      <a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-a/" class="group-card">
-        <div class="group-icon">&#9749;</div>
-        <h3>Friday Morning Coffee — Group A</h3>
-        <p>Start your Friday with Scripture, coffee, and brothers who will sharpen you for the week ahead.</p>
-        <div class="group-meta">
-          <span class="meta-tag">Fridays</span>
-          <span class="meta-tag">Morning</span>
-        </div>
-      </a>
-      <a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-b/" class="group-card">
-        <div class="group-icon">&#9749;</div>
-        <h3>Friday Morning Coffee — Group B</h3>
-        <p>A second gathering of men committed to accountability, growth, and going deeper in the Word together.</p>
-        <div class="group-meta">
-          <span class="meta-tag">Fridays</span>
-          <span class="meta-tag">Morning</span>
-        </div>
-      </a>
-      <a href="https://rocksolidman.org/events/" class="group-card">
-        <div class="group-icon">&#127758;</div>
-        <h3>Monthly Fellowship & Worship</h3>
-        <p>Corporate worship, a powerful message, and the kind of fellowship that makes you feel less alone. All men welcome.</p>
-        <div class="group-meta">
-          <span class="meta-tag">Monthly</span>
-          <span class="meta-tag">Open to All</span>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
+<!-- CTA STRIP -->
 <section class="cta-section">
   <div class="container-narrow">
     <h2>BE PART OF<br>THE FAMILY</h2>
@@ -1159,7 +1028,6 @@
         <li><a href="#archive">Archive</a></li>
         <li><a href="#events">Events</a></li>
         <li><a href="#about">About Us</a></li>
-        <li><a href="#groups">Groups</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1169,15 +1037,6 @@
         <li><a href="https://docs.google.com/forms/d/1Xj2qhDiRMDFb9_3LOnrx7h3eZDS59K3XV_IoXVTcA14/edit">TXT Alerts</a></li>
         <li><a href="https://rock-solid-man.printify.me/category/all/1">Gear / Swag</a></li>
         <li><a href="https://rocksolidman.org/contact-us/">Contact</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Groups</h4>
-      <ul>
-        <li><a href="https://rocksolidman.org/services/addiction-discipleship/">Addiction Discipleship</a></li>
-        <li><a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-a/">Coffee Group A</a></li>
-        <li><a href="https://rocksolidman.org/services/friday-morning-coffee-discipleship-b/">Coffee Group B</a></li>
-        <li><a href="https://rocksolidman.org/events/">Monthly Fellowship</a></li>
       </ul>
     </div>
   </div>
@@ -1197,28 +1056,39 @@
 
 <script>
 // ========== DEVOTIONAL FUNCTIONS ==========
-// Base URL for raw JSON files on GitHub
 const DEVOTIONAL_BASE_URL = 'https://raw.githubusercontent.com/NAGOHUSA/RSM_DAILY_DEVOTIONALS/main/devotionals/';
 
-// Parse content_markdown from JSON into HTML
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function parseMarkdownContent(markdown) {
-  if (!markdown) return '';
+  if (!markdown) return { html: '', verseRef: '', verseText: '', title: '' };
   
-  // Split into lines
   const lines = markdown.split('\n');
   let html = '';
-  let inReflection = false;
-  let inPrayer = false;
   let verseRef = '';
   let verseText = '';
   let title = '';
+  let inReflection = false;
+  let inPrayer = false;
   
-  for (let line of lines) {
-    line = line.trim();
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i].trim();
     if (!line) continue;
     
-    // Extract title (## Title)
-    if (line.startsWith('## ')) {
+    // Extract title (# Title or ## Title)
+    if (line.startsWith('# ')) {
+      title = line.substring(2).trim();
+      continue;
+    }
+    if (line.startsWith('## ') && !title) {
       title = line.substring(3).trim();
       continue;
     }
@@ -1229,47 +1099,49 @@ function parseMarkdownContent(markdown) {
       continue;
     }
     
-    // Extract verse text (in quotes or regular text after verse ref)
-    if (line.startsWith('"') || (verseRef && !verseText && line.length > 5)) {
+    // Extract verse text (text in quotes after verse ref)
+    if (verseRef && !verseText && line.startsWith('"')) {
       verseText = line.replace(/^"|"$/g, '');
       continue;
     }
     
     // Extract reflection content
-    if (line.startsWith('## Reflection') || line === '## Reflection') {
+    if (line === '## Reflection' || line.startsWith('## Reflection')) {
       inReflection = true;
+      inPrayer = false;
       continue;
     }
     
     // Extract prayer
-    if (line.startsWith('## Prayer') || line === '## Prayer') {
+    if (line === '## Prayer' || line.startsWith('## Prayer')) {
       inReflection = false;
       inPrayer = true;
       continue;
     }
     
-    // Handle application/action line
-    if (line.startsWith('## One-Line Application') || line === '## One-Line Application') {
+    // Skip One-Line Application
+    if (line === '## One-Line Application' || line.startsWith('## One-Line Application')) {
+      inReflection = false;
       inPrayer = false;
       continue;
     }
     
-    // Regular content
-    if (inReflection && !line.startsWith('##')) {
-      html += `<p>${line}</p>`;
-    } else if (inPrayer && !line.startsWith('##')) {
-      // Prayer will be handled separately
-    } else if (!inReflection && !inPrayer && !line.startsWith('##') && !line.startsWith('###') && !line.startsWith('"')) {
-      if (line.length > 0 && !line.startsWith('*')) {
-        html += `<p>${line}</p>`;
+    // Regular content - body text
+    if (!inReflection && !inPrayer && !line.startsWith('##') && !line.startsWith('###') && !line.startsWith('#')) {
+      if (line.length > 0 && !line.startsWith('*') && !line.startsWith('-')) {
+        if (!line.includes('provider') && !line.includes('model') && !line.includes('max_tokens')) {
+          html += `<p>${escapeHtml(line)}</p>`;
+        }
       }
     }
   }
   
+  if (!title) title = 'Daily Devotional';
+  if (!verseText && verseRef) verseText = 'Lead me to the rock that is higher than I.';
+  
   return { html, verseRef, verseText, title };
 }
 
-// Load today's devotional from JSON
 async function loadDevotion(force = false) {
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -1278,7 +1150,6 @@ async function loadDevotion(force = false) {
   
   if (btn) btn.disabled = true;
   
-  // Check cache
   if (!force) {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -1296,18 +1167,54 @@ async function loadDevotion(force = false) {
     if (!response.ok) throw new Error('Devotional not found');
     
     const data = await response.json();
-    
-    // Parse the markdown content
     const parsed = parseMarkdownContent(data.content_markdown);
+    
+    // Extract reflection and prayer from markdown
+    let reflection = 'How can you trust God more deeply today?';
+    let prayer = 'Lord, be my rock and my refuge. Amen.';
+    
+    const lines = data.content_markdown.split('\n');
+    let inReflection = false;
+    let inPrayer = false;
+    let reflectionText = '';
+    let prayerText = '';
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed === '## Reflection' || trimmed.startsWith('## Reflection')) {
+        inReflection = true;
+        inPrayer = false;
+        continue;
+      }
+      if (trimmed === '## Prayer' || trimmed.startsWith('## Prayer')) {
+        inReflection = false;
+        inPrayer = true;
+        continue;
+      }
+      if (trimmed === '## One-Line Application' || trimmed.startsWith('## One-Line Application')) {
+        inReflection = false;
+        inPrayer = false;
+        continue;
+      }
+      if (inReflection && trimmed && !trimmed.startsWith('##')) {
+        reflectionText += `<p>${escapeHtml(trimmed)}</p>`;
+      }
+      if (inPrayer && trimmed && !trimmed.startsWith('##')) {
+        prayerText += trimmed + ' ';
+      }
+    }
+    
+    if (reflectionText) reflection = reflectionText;
+    if (prayerText) prayer = prayerText.trim();
     
     const devotional = {
       date: todayStr,
       verseRef: parsed.verseRef || 'Psalm 61:2',
-      verseText: parsed.verseText || 'From the end of the earth I call to you when my heart is faint. Lead me to the rock that is higher than I.',
-      title: parsed.title || 'A Refuge in the Storm',
-      body: parsed.html || '<p>In the midst of life\'s turmoil, we often feel overwhelmed...</p>',
-      reflection: 'Where do you need to trust God as your refuge today?',
-      prayer: 'Father, lead me to the rock that is higher than my circumstances. Amen.'
+      verseText: parsed.verseText || 'Lead me to the rock that is higher than I.',
+      title: parsed.title,
+      body: parsed.html,
+      reflection: reflection,
+      prayer: prayer
     };
     
     localStorage.setItem(cacheKey, JSON.stringify(devotional));
@@ -1336,14 +1243,14 @@ function renderDevotion(dev) {
   const formattedDate = new Date(dev.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   document.getElementById('devotional-content').innerHTML = `
     <div class="devotional-date">${formattedDate}</div>
-    <div class="devotional-verse-ref">${dev.verseRef}</div>
-    <div class="devotional-verse-text">${dev.verseText}</div>
-    <div class="devotional-content">${dev.body}</div>
+    <div class="devotional-verse-ref">${escapeHtml(dev.verseRef)}</div>
+    <div class="devotional-verse-text">"${escapeHtml(dev.verseText)}"</div>
+    <div class="devotional-content">${dev.body || '<p>Trust in God as your refuge.</p>'}</div>
     <div class="devotional-reflection">
       <h4>For Reflection</h4>
-      <p>${dev.reflection}</p>
+      ${dev.reflection}
     </div>
-    <div class="devotional-prayer">${dev.prayer}</div>
+    <div class="devotional-prayer">${escapeHtml(dev.prayer)}</div>
   `;
 }
 
@@ -1376,7 +1283,6 @@ async function loadArchive() {
   }
   
   try {
-    // Generate list of dates to try (going back 90 days)
     const today = new Date();
     const datesToTry = [];
     
@@ -1387,7 +1293,6 @@ async function loadArchive() {
       datesToTry.push(dateStr);
     }
     
-    // Fetch each date
     const fetchPromises = datesToTry.map(async (dateStr) => {
       try {
         const response = await fetch(`${DEVOTIONAL_BASE_URL}${dateStr}.json`);
@@ -1474,34 +1379,59 @@ async function loadArchiveDevotional(dateStr) {
     const data = await response.json();
     const parsed = parseMarkdownContent(data.content_markdown);
     
+    let reflection = 'How can you trust God more deeply today?';
+    let prayer = 'Lord, be my rock and my refuge. Amen.';
+    
+    const lines = data.content_markdown.split('\n');
+    let inReflection = false;
+    let inPrayer = false;
+    let reflectionText = '';
+    let prayerText = '';
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed === '## Reflection' || trimmed.startsWith('## Reflection')) {
+        inReflection = true;
+        inPrayer = false;
+        continue;
+      }
+      if (trimmed === '## Prayer' || trimmed.startsWith('## Prayer')) {
+        inReflection = false;
+        inPrayer = true;
+        continue;
+      }
+      if (trimmed === '## One-Line Application' || trimmed.startsWith('## One-Line Application')) {
+        inReflection = false;
+        inPrayer = false;
+        continue;
+      }
+      if (inReflection && trimmed && !trimmed.startsWith('##')) {
+        reflectionText += `<p>${escapeHtml(trimmed)}</p>`;
+      }
+      if (inPrayer && trimmed && !trimmed.startsWith('##')) {
+        prayerText += trimmed + ' ';
+      }
+    }
+    
+    if (reflectionText) reflection = reflectionText;
+    if (prayerText) prayer = prayerText.trim();
+    
     const devotional = {
       date: dateStr,
       verseRef: parsed.verseRef || 'Psalm 61:2',
       verseText: parsed.verseText || 'Lead me to the rock that is higher than I.',
-      title: parsed.title || 'Daily Devotional',
-      body: parsed.html || '<p>Trust in God as your refuge.</p>',
-      reflection: 'How can you trust God more deeply today?',
-      prayer: 'Lord, be my rock and my refuge. Amen.'
+      title: parsed.title,
+      body: parsed.html,
+      reflection: reflection,
+      prayer: prayer
     };
     
     renderDevotion(devotional);
-    
-    // Scroll to devotional section
     document.getElementById('devotional').scrollIntoView({ behavior: 'smooth' });
   } catch (error) {
     console.error('Error loading archived devotional:', error);
     devotionalDiv.innerHTML = '<div class="devotional-loading">Unable to load this devotional. Please try again.</div>';
   }
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
 }
 
 // ========== EVENTS DATA ==========
