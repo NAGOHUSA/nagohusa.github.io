@@ -30,7 +30,7 @@ jobs:
         run: mkdir -p disclosure/data
 
       - name: Fetch UAP trends
-        run: python PULSERELAY/scripts/uap_fetch_trends.py
+        run: python disclosure/scripts/uap_fetch_trends.py
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
