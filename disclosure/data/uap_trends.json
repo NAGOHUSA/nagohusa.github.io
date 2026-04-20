@@ -1,792 +1,699 @@
 {
   "trends": [
     {
-      "id": "rss_07888393b76d",
-      "niche": "legislation",
-      "headline": "35.14 - MU Podcast - The Zodiac and the Salts of Salvation",
-      "summary": "Welcome to Mysterious Universe Season 35 episode 14! Did you know that you can trace every sickness, disease, and ailment to a mineral deficiency? There are 12 primary cell salts developed in the 1870s by German physician Dr. Wilhelm Heinrich Schüssler. Today we have chosen to take an entertainment only (not medical advice) look at what these salts are and what can they do for those who choose to ",
-      "velocity_score": 6.799951584424032e-10,
-      "signal_strength": 0.35,
+      "id": "rss_b32ddbe11a9d",
+      "niche": "congressional",
+      "headline": "Congress Requires Pentagon to Address UFO Disinformation",
+      "summary": "In 1988, a recently retired U.S. Air Force Office of Special Investigations (OSI) Agent claimed on live television that the government was working with aliens at a secret base in the Nevada desert called Area 51 and that the &#8220;extraterrestrials have complete control of this base.&#8221; In the program, the producers blacked out the OSI &#8230;",
+      "velocity_score": 0.0,
+      "signal_strength": 0.6000000000000001,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/04/35.14-MU-Podcast-The-Zodiac-and-the-Salts-of-Salvation/",
-      "is_human": true,
-      "timestamp": "2026-04-10T11:34:00+00:00",
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/congress-requires-pentagon-to-address-ufo-disinformation/",
+      "timestamp": "2025-05-22T18:45:59+00:00",
       "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "related",
+        "congress",
+        "hearing"
+      ],
+      "composite_score": 0.30000000000000004
+    },
+    {
+      "id": "rss_abc06b1349e7",
+      "niche": "scientific_papers",
+      "headline": "Ep. 2298 Capt. Ron Janix: UFOs, Disclosure and CITD 2026!",
+      "summary": "<p>Tonight, Wednesday on FADE to BLACK: Ron Janix, known as Capt. Ron, discusses his journey through the world of UFOs, non-human intelligence, and high-strangeness phenomena. From his role hosting his own show to producing Contact in the Desert! Ron shares insights from decades of interviews, personal experiences, and the evolving landscape of contact and consciousness. </p> <p>Ron Janix, also known as Capt. Ron, is a paranormal investigator, radio host, and experiencer with decades of explorat",
+      "velocity_score": 1.7070460881589468e-05,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Fade to Black",
+      "source_url": "https://fadetoblack.libsyn.com/ep-2298-capt-ron-janix-ufos-disclosure-and-citd-2026",
+      "timestamp": "2026-04-16T16:58:00+00:00",
+      "tags": [
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.2500085352304408
+    },
+    {
+      "id": "rss_57b3dead0ca2",
+      "niche": "whistleblower_docs",
+      "headline": "Ep. 2297 Tobe Johnson & Alicia Phifer: Paranormal Bigfoot",
+      "summary": "<p>Tonight, Tuesday on FADE to BLACK: Tobe Johnson and Alicia Phifer will share how their individual experiences led to a powerful partnership exploring the crossover between Sasquatch and the paranormal. From fieldwork in places like Bluff Creek to analyzing audio, thermal, and biological evidence, they discuss the realities of living with the phenomena, the highs and lows of research, and what may lie ahead as NHI encounters continue to evolve.</p> <p>Tobe Johnson is a paranormal researcher, a",
+      "velocity_score": 1.2074968910223197e-06,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Fade to Black",
+      "source_url": "https://fadetoblack.libsyn.com/ep-2297-tobe-johnson-alicia-phifer-paranormal-bigfoot",
+      "timestamp": "2026-04-15T18:02:00+00:00",
+      "tags": [
+        "high_relevance",
+        "documents"
+      ],
+      "composite_score": 0.2500006037484455
+    },
+    {
+      "id": "rss_af6dc40b7ecf",
+      "niche": "whistleblower_docs",
+      "headline": "“We’ve Got Our People Working on It Right Now”: Defense Secretary Provides Update on Pentagon Disclosure of UFO Files",
+      "summary": "U.S. Defense Secretary Pete Hegseth says Pentagon officials are currently working to initiate the release of government files on UFOs.",
+      "velocity_score": 8.284621656118215e-67,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "The Debrief",
+      "source_url": "https://thedebrief.org/weve-got-our-people-working-on-it-right-now-defense-secretary-provides-update-on-pentagon-disclosure-of-ufo-files/",
+      "timestamp": "2026-02-24T18:37:14+00:00",
+      "tags": [
+        "high_relevance",
+        "related",
+        "documents"
+      ],
+      "composite_score": 0.25
+    },
+    {
+      "id": "rss_af03dd85267c",
+      "niche": "legislation",
+      "headline": "A MUFON PHOTO ANALYSIS: Is This Green Orb Communicating? A Forensic Image Analysis of a Viral UAP Claim By Seth H. Feinstein MUFON Photo Analyst",
+      "summary": "<p>January 8, 2026 Abstract A green orb image extracted from a viral social media video attributed to Chris Bledsoe generated widespread speculation that the object displayed internal lettering or symbols and represented a communicating non-human intelligence. This article presents a forensic image analysis of the green orb still frame using established digital forensic techniques, including [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/02/13/a-mufon-photo-analysis-is-this-green-orb-",
+      "velocity_score": 1.0142642601440362e-80,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/02/13/a-mufon-photo-analysis-is-this-green-orb-communicating-a-forensic-image-analysis-of-a-viral-uap-claim-by-seth-h-feinstein-mufon-photo-analyst/",
+      "timestamp": "2026-02-13T05:16:19+00:00",
+      "tags": [
+        "high_relevance",
+        "related",
+        "legislation"
+      ],
+      "composite_score": 0.25
+    },
+    {
+      "id": "rss_eff5184f9314",
+      "niche": "whistleblower",
+      "headline": "MUFON Case of the Week # 127883 for January 1, 2026  By Bob Spearing, MUFON Director of International Development",
+      "summary": "<p>MUFON Case # # 127883 Derry, New Hampshire, June 16, 2017, Midnight, Date &#38; Time Approx., Duration: unknown Report your sighting: https://mufoncms.com/public_report/ #mufon #ufo #uap #portal #disclosure #dark city #elizondo #MIB The female submitter states, “I was driving along on a back road heading home at night after work and my car started making sounds [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/01/11/mufon-case-of-the-week-127883-for-january-1-2026-by-bob-spearing-mufo",
+      "velocity_score": 1.3201458085107755e-120,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/01/11/mufon-case-of-the-week-127883-for-january-1-2026-by-bob-spearing-mufon-director-of-international-development/",
+      "timestamp": "2026-01-11T02:07:19+00:00",
+      "tags": [
+        "high_relevance",
+        "whistleblower"
+      ],
+      "composite_score": 0.25
+    },
+    {
+      "id": "rss_bd3a4ffc0adf",
+      "niche": "disclosure",
+      "headline": "MUFON Case of the Week # 143659 for December 18, 2025 -Historical Report from Australia",
+      "summary": "<p>An electrical portal in the sky opens and two dark disc shaped UFOs are photographed! #mufon #ufo #uap #portal #disclosure Kulnura, NSW Australia, January 15, 1989, 8 pm, Date &#38; Time Approx., Duration: 10 minutes Investigated by Elaine Wartha Motta &#8211; Disposition: Unknown The witness states, “I photographed UFOs coming out of an electrical cloud [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2025/12/27/mufon-case-of-the-week-143659-for-december-18-2025-historical-report/\">MUFON",
+      "velocity_score": 1.3719602130185624e-138,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2025/12/27/mufon-case-of-the-week-143659-for-december-18-2025-historical-report/",
+      "timestamp": "2025-12-27T03:36:39+00:00",
+      "tags": [
+        "high_relevance",
+        "disclosure"
+      ],
+      "composite_score": 0.25
+    },
+    {
+      "id": "rss_2018314dcc40",
+      "niche": "scientific_papers",
+      "headline": "Ep. 2293 Ben Hansen: The Social Side of Disclosure",
+      "summary": "<p>Tonight, Tuesday on FADE to BLACK: Investigator and former FBI agent Ben Hansen shares insights from his latest research with universities exploring the social and psychological impacts of UFO disclosure, including how fear responses can be better understood and managed. He also provides updates on the Connecticut UAP case involving a police officer witness, along with field investigations, and dives into ongoing anomalies around Catalina Island and Southern California featured in his recent ",
+      "velocity_score": 1.7797467958492155e-23,
+      "signal_strength": 0.5,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Fade to Black",
+      "source_url": "https://fadetoblack.libsyn.com/ep-2293-ben-hansen-the-social-side-of-disclosure",
+      "timestamp": "2026-04-01T18:29:00+00:00",
+      "tags": [
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.25
+    },
+    {
+      "id": "rss_e3dbeca5ecba",
+      "niche": "legislation",
+      "headline": "Ep. 2296 Lily Nova: NHI Contact",
+      "summary": "<p>Tonight, Monday on FADE to BLACK: Lily Nova will talk about her experiences with non-human intelligence and expanded states of awareness. She shares insights on human potential, intuitive development, and the evolving nature of contact—offering a perspective that challenges reality and sparks curiosity about what lies beyond.</p> <p>Lily Nova is an ET contactee, psychic intuitive, best-selling author of *Contact*, renowned astrophotographer capturing UFO phenomena, and cosmic content creator ",
+      "velocity_score": 6.81887645064437e-08,
+      "signal_strength": 0.45,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Fade to Black",
+      "source_url": "https://fadetoblack.libsyn.com/ep-2296-lily-nova-nhi-contact",
+      "timestamp": "2026-04-14T17:09:00+00:00",
+      "tags": [
+        "high_relevance",
+        "legislation"
+      ],
+      "composite_score": 0.22500003409438227
     },
     {
       "id": "rss_2bb040f65981",
       "niche": "disclosure",
       "headline": "Review: In an Age of Disinformation, “Saucers, Spooks and Kooks” is the Real Disclosure Film",
       "summary": "If you’re tired of never-ending promises of UFO disclosure, have I got a movie for you.",
-      "velocity_score": 3.1114690734983984e-15,
-      "signal_strength": 0.4,
+      "velocity_score": 4.157881892438267e-20,
+      "signal_strength": 0.45,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/review-in-an-age-of-disinformation-saucers-spooks-and-kooks-is-the-real-disclosure-film/",
-      "is_human": true,
       "timestamp": "2026-04-04T13:38:04+00:00",
       "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_203ab5951bfb",
-      "niche": "sightings",
-      "headline": "35.13 - MU Podcast - The Hidden Timeline",
-      "summary": "Welcome back to MU! In this episode, we explore the idea that the timeline of history may not be as settled as we’ve been led to believe. From the mysterious concept of Tartaria to strange patterns in 19th century architecture, rapid technological leaps, world fairs, orphan trains, and the work of Nikola Tesla, we examine a collection of theories from Guy Anderson's Tesla & the Cabbage Patch Kids ",
-      "velocity_score": 3.725267059883205e-16,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/04/35.13-MU-Podcast-The-Hidden-Timeline/",
-      "is_human": true,
-      "timestamp": "2026-04-03T13:08:00+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_4ced5fa77691",
-      "niche": "legislation",
-      "headline": "35.12 - MU Podcast - Mysterious Creatures",
-      "summary": "Welcome to Mysterious Universe Season 35 episode number 12! Mysterious creatures and rumors of mysterious creatures have been passed down from times long lost, but where do they come from? What may be considered to be fantastically incredible creatures to us could simply be “the way” for other inhabitants of the realm that have experienced a variety of critters. Perhaps like seeing and disobliging",
-      "velocity_score": 1.6363495016384018e-22,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/03/35.12-MU-Podcast-Mysterious-Creatures/",
-      "is_human": true,
-      "timestamp": "2026-03-27T12:09:00+00:00",
-      "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "related",
+        "disclosure"
+      ],
+      "composite_score": 0.225
     },
     {
       "id": "rss_d968c6236fa5",
-      "niche": "sightings",
+      "niche": "whistleblower_docs",
       "headline": "35.11 - MU Podcast - Human Static",
-      "summary": "This week we dive into another work by Marcus Lowth, The Electric People. He documents the stories of \"SLIders\", or Street Light Interference experiencers. From simple accounts of lights flickering when passed by, to more profound electrical abnormalities, he ties them all in to possible UFO/UAP connections, and the broader paranormal field as a whole. Are these just psychosomatic hallucinations, ",
-      "velocity_score": 7.692443567824145e-29,
+      "summary": "This week we dive into another work by Marcus Lowth, The Electric People. He documents the stories of \"SLIders\", or Street Light Interference experiencers. From simple accounts of lights flickering when passed by, to more profound electrical abnormalities, he ties them all in to possible UFO/UAP connections, and the broader paranormal field as a whole. Are these just psychosomatic hallucinations, real EMF interference by humans, or perhaps the other way around? \n\nThank you for joining us for you",
+      "velocity_score": 2.9949230187777433e-38,
       "signal_strength": 0.45,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
       "source": "Mysterious Universe",
       "source_url": "https://mysteriousuniverse.org/2026/03/35.11-MU-Podcast-Human-Static/",
-      "is_human": true,
       "timestamp": "2026-03-20T11:57:00+00:00",
       "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "documents"
+      ],
+      "composite_score": 0.225
     },
     {
-      "id": "rss_6de183ca5bf4",
-      "niche": "sightings",
-      "headline": "35.10 - MU Podcast - Jarring Death Rituals",
-      "summary": "Welcome to Mysterious Universe Season 35 Episode number 10! We are here to talk about some of the most jarring funeral ritual customs from around this freaky world. Featuring but not limited to mummy tupperware, the tribe that dresses up their dead to join them for dinner, hella devoted wives who light themselves ablaze to mourn the loss of their dead hubby-hubs, some super fun curses of course, a",
-      "velocity_score": 3.674089300269968e-35,
-      "signal_strength": 0.35,
+      "id": "rss_a5cf3a3f250a",
+      "niche": "whistleblower_docs",
+      "headline": "Breaking !!!!!!! Trump to Release UFO Files!",
+      "summary": "<p>On Thursday, February 19, 2026, President Donald Trump authorized the Pentagon and other agencies to begin gathering all files related to UFO and UAP. Trump posted on Truth Social, &#8220;Based on the tremendous interest shown, I will be directing the Secretary of War, and other relevant Departments and Agencies, to begin the process of identifying [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/02/20/breaking-trump-to-release-ufo-files/\">Breaking !!!!!!! Trump to Release UFO Files!",
+      "velocity_score": 9.397608504947212e-72,
+      "signal_strength": 0.45,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/03/35.10-MU-Podcast-Jarring-Death-Rituals/",
-      "is_human": true,
-      "timestamp": "2026-03-13T11:56:00+00:00",
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/02/20/breaking-trump-to-release-ufo-files/",
+      "timestamp": "2026-02-20T16:02:01+00:00",
       "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "related",
+        "documents"
+      ],
+      "composite_score": 0.225
     },
     {
-      "id": "rss_e178571dd04c",
-      "niche": "legislation",
-      "headline": "35.09 - MU Podcast - When Time Leaks",
-      "summary": "Thanks for joining us this week on MU! Today we offer another installment from Dirk Gillabel entitled Accidentally Viewing of Past Scenes. This continues on our investigations into odd moments when time doesn't behave like it's supposed to; from the legendary Oregon Vortex to being suddenly teleported from a bus into the Victorian era, Dirk has compiled many of these stories in an attempt to find ",
-      "velocity_score": 1.590736468269841e-41,
-      "signal_strength": 0.35,
+      "id": "rss_91cbfcc54de8",
+      "niche": "disclosure",
+      "headline": "MUFON Case of the Week # 144761, November 2, 2020, mid-afternoon, Holheide Pelt, Belgium, duration: 7 minutes, date approx. By Bob Spearing",
+      "summary": "<p>MUFON Case of the week for November 28, 2025 by Bob Spearing #mufon #mutualufonetwork #ufo #uap #uso #disclosure #wowsignal #triangle #stealth MUFON Case # 144761, November 2, 2020, mid-afternoon, Holheide Pelt, Belgium, duration: 7 minutes, date approx. Disposition: Unknown If you see something, report it to https://mufon.com//cms-ifo-info/ Submitter’s AI generated illustration Submitter states, “While walking [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2025/11/28/mufon-case-of-the-",
+      "velocity_score": 9.597950777072733e-173,
+      "signal_strength": 0.45,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/03/35.09-MU-Podcast-When-Time-Leaks/",
-      "is_human": true,
-      "timestamp": "2026-03-06T10:47:00+00:00",
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2025/11/28/mufon-case-of-the-week-144761-november-2-2020-mid-afternoon-holheide-pelt-belgium-duration-7-minutes-date-approx-by-bob-spearing/",
+      "timestamp": "2025-11-28T18:42:01+00:00",
       "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "disclosure"
+      ],
+      "composite_score": 0.225
     },
     {
       "id": "rss_01dd8bbae74d",
-      "niche": "disclosure",
+      "niche": "scientific_papers",
       "headline": "All-domain Anomaly Resolution Office Hosts Private Workshop with Civilian Researchers, Universities, and Government Agencies",
       "summary": "A recent AARO report outlines new standards for data collection, AI use, privacy, and civilian collaboration in advancing UAP research.",
-      "velocity_score": 1.4898296754732228e-48,
-      "signal_strength": 0.45,
+      "velocity_score": 1.5575200938010947e-64,
+      "signal_strength": 0.4,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/all-domain-anomaly-resolution-office-hosts-private-workshop-with-civilian-researchers-universities-and-government-agencies/",
-      "is_human": true,
       "timestamp": "2026-02-26T15:57:28+00:00",
       "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_af6dc40b7ecf",
-      "niche": "disclosure",
-      "headline": "“We’ve Got Our People Working on It Right Now”: Defense Secretary Provides Update on Pentagon Disclosure of UFO Files",
-      "summary": "U.S. Defense Secretary Pete Hegseth says Pentagon officials are currently working to initiate the release of government files on UFOs.",
-      "velocity_score": 2.934376840399061e-50,
-      "signal_strength": 0.45,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/weve-got-our-people-working-on-it-right-now-defense-secretary-provides-update-on-pentagon-disclosure-of-ufo-files/",
-      "is_human": true,
-      "timestamp": "2026-02-24T18:37:14+00:00",
-      "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "related",
+        "scientific"
+      ],
+      "composite_score": 0.2
     },
     {
       "id": "rss_a2520f9d3d3e",
-      "niche": "scientific",
+      "niche": "whistleblower_docs",
       "headline": "Trump Orders Release of Alien and UFO Files, But There’s a Catch: Nothing Is Declassified, Yet",
       "summary": "Trump orders UFO files released—but without declassification, the most sensitive evidence could remain hidden from public view.",
-      "velocity_score": 4.691024982441787e-54,
+      "velocity_score": 7.188007032477926e-72,
       "signal_strength": 0.4,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/trump-orders-release-of-alien-and-ufo-files-but-theres-a-catch-nothing-is-declassified-yet/",
-      "is_human": true,
       "timestamp": "2026-02-20T13:42:44+00:00",
       "tags": [
-        "scientific",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "documents"
+      ],
+      "composite_score": 0.2
     },
     {
       "id": "rss_0c3234e7e594",
-      "niche": "sightings",
+      "niche": "podcasts",
       "headline": "“They’re Real, But I Haven’t Seen Them”: Former President Obama Issues Statement After “Alien” Remarks Go Viral",
       "summary": "Comments by former President Barack Obama sparked debate online this Valentine’s Day weekend, after a podcast appearance where he said extraterrestrials were real.",
-      "velocity_score": 1.3809004078447045e-57,
+      "velocity_score": 1.407563437134134e-76,
       "signal_strength": 0.4,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/theyre-real-but-i-havent-seen-them-former-president-obama-issues-statement-after-alien-remarks-go-viral/",
-      "is_human": true,
       "timestamp": "2026-02-16T15:51:06+00:00",
       "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_4ec6840e6e25",
-      "niche": "ancient_aliens",
-      "headline": "35.06 - MU Podcast - The Mysteries of Kurupira",
-      "summary": "Welcome to Mysterious Universe, mental ninjas! Come with us as we explore an unexplored land. A forbidden “lost world” to outsiders reported to be inhabited by strange beasts out of time. Legends speak of not one, but several bizarre and terrifying creatures that haunt the Ancient Plateau’s of the South American Wilderness. Today we are grateful to cover The Mysteries Of Kurupira - The hidden land",
-      "velocity_score": 2.0551423252309275e-60,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/02/35.06-MU-Podcast-The-Mysteries-of-Kurupira/",
-      "is_human": true,
-      "timestamp": "2026-02-13T12:42:00+00:00",
-      "tags": [
-        "ancient_aliens",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_15e3db69ae43",
-      "niche": "military",
-      "headline": "35.05 - MU Podcast - The Time Slip Experience",
-      "summary": "This week, we take a look at Anthony Meyer's amazing work on time slips! From two biddies walking through a path with several different time periods involved, a disappearing hotel, & a particular street in Liverpool that seems to be a portal to the 1950's, these stories beg the question: Are these examples of time travel, collective hallucinations, or some kind of weaponized experiments? Join us &",
-      "velocity_score": 1.053539721624815e-66,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/02/35.05-MU-Podcast-The-Time-Slip-Experience/",
-      "is_human": true,
-      "timestamp": "2026-02-06T13:30:00+00:00",
-      "tags": [
-        "military",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_3db98e7b813c",
-      "niche": "sightings",
-      "headline": "Caso Histórico de OVNI no Brasil Chega ao Capitólio Nos 30 Anos do Incidente de Varginha",
-      "summary": "Leslie Kean e Ralph Blumenthal relatam as discussões entre legisladores americanos e testemunhas brasileiras, marcando o terceiro aniversário do \"Incidente OVNI de Varginha\".",
-      "velocity_score": 4.371500048113755e-72,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/caso-historico-de-ovni-no-brasil-chega-ao-capitolio-enquanto-o-incidente-de-varginha-completa-30-anos/",
-      "is_human": true,
-      "timestamp": "2026-01-31T14:26:19+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_328ddeccefd6",
-      "niche": "disclosure",
-      "headline": "35.03 - MU Podcast - The Short Season",
-      "summary": "Check out the link below for the new Inescapable Podcast where Plus+ Members can go ahead and lock the feed into their favorite podcast player in preparation for their upcoming launch!\n\nWelcome back! On this week’s episode, we put on our theological hats and explore the rapidly increasing interest in the idea that not only has Jesus already returned, but that we are currently in the “little season",
-      "velocity_score": 5.2395339496958735e-73,
-      "signal_strength": 0.45,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/01/35.03-MU-Podcast-The-Short-Season/",
-      "is_human": true,
-      "timestamp": "2026-01-30T13:57:00+00:00",
-      "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "podcast"
+      ],
+      "composite_score": 0.2
     },
     {
       "id": "rss_d28169d6535c",
       "niche": "legislation",
       "headline": "Landmark Brazilian UFO Case Reaches Capitol Hill as Varginha Incident Turns 30",
       "summary": "Leslie Kean and Ralph Blumenthal report on discussions between U.S. lawmakers and Brazilian witnesses marking the thirtieth anniversary of the \"Varginha UFO Incident.\"",
-      "velocity_score": 5.749992148840685e-73,
+      "velocity_score": 4.3766434682243727e-97,
       "signal_strength": 0.4,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/landmark-brazilian-ufo-case-reaches-capitol-hill-as-varginha-incident-turns-30/",
-      "is_human": true,
       "timestamp": "2026-01-30T15:01:18+00:00",
       "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "related",
+        "legislation"
+      ],
+      "composite_score": 0.2
     },
     {
-      "id": "rss_ce6379a7afa5",
-      "niche": "legislation",
-      "headline": "35.01 - MU Podcast - BRB...Dying - The Science of NDE's",
-      "summary": "This week on MU we cover the great book by Dr. Jeffery Long, Evidence of the Afterlife: The Science of Near-Death Experiences. From a man collapsing in the ER and meeting God/Buddha/Jesus, to another that is electrocuted right out of his body, these stories are powerful examples of consciousness surviving the physical experience.\n\nWelcome to your Plus+ Extension! Smashing out of the holiday break ",
-      "velocity_score": 3.804016595242633e-86,
+      "id": "rss_032c80aed958",
+      "niche": "congressional",
+      "headline": "THE TRUMP WHITE HOUSE, UFO TRANSPARENCY, AND ERIC BURLISON’S EXPANDING ROLE: WHAT WE KNOW SO FAR! By JESSE BLASENGAME, COLORADO MUFON",
+      "summary": "<p>Recent reporting indicates that the Trump White House has taken an unusually direct role in pushing for expanded congressional access to long‑restricted UFO and UAP–related facilities. According to Missouri Congressman Eric Burlison, the administration has explicitly instructed the Department of Defense to cooperate with lawmakers seeking entry to sites historically associated with UFO programs. Burlison [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/02/13/the-trump-white-house-ufo",
+      "velocity_score": 9.297435132426464e-81,
       "signal_strength": 0.4,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/02/13/the-trump-white-house-ufo-transparency-and-eric-burlisons-expanding-role-what-we-know-so-far-by-jesse-blasengame-colorado-mufon/",
+      "timestamp": "2026-02-13T04:31:07+00:00",
+      "tags": [
+        "high_relevance",
+        "congress",
+        "hearing"
+      ],
+      "composite_score": 0.2
+    },
+    {
+      "id": "rss_737fa53a3c4c",
+      "niche": "disclosure",
+      "headline": "What’s Up with the New Spielberg Movie?  Disclosure Day? By Bob Spearing MUFON Director of International Development",
+      "summary": "<p>Anybody who knows anybody that is aware of anything going down on the UFO Street right now, knows that Steven Spielberg is wading back into the UFO movie field after several decades following his monumental successes with ET and Close Encounters of the 3rd Kind. But why now? Personally, I think Close Encounters is a [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/01/11/whats-up-with-the-new-spielberg-movie-disclosure-day-by-bob-spearing-mufon-director-of-international-development/\">",
+      "velocity_score": 1.3275361343256144e-120,
+      "signal_strength": 0.4,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/01/11/whats-up-with-the-new-spielberg-movie-disclosure-day-by-bob-spearing-mufon-director-of-international-development/",
+      "timestamp": "2026-01-11T02:10:13+00:00",
+      "tags": [
+        "high_relevance",
+        "disclosure"
+      ],
+      "composite_score": 0.2
+    },
+    {
+      "id": "rss_c09a4accb6cb",
+      "niche": "military_encounters",
+      "headline": "World UFO Day 2025 – Enigma Research Lab Provides UAP Data",
+      "summary": "Enigma has curated a selection of user-submitted sightings from our 300,000+ report archive and brought them to life in an interactive new website: https://enigmaarchives.io/. The site invites users to examine real UAP cases using the same tools researchers rely on—from radar overlays and weather patterns to flight paths and eyewitness testimony. It’s part educational, part &#8230;",
+      "velocity_score": 0.0,
+      "signal_strength": 0.4,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/world-ufo-day-2025-enigma-research-lab-provides-uap-data/",
+      "timestamp": "2025-07-02T19:22:16+00:00",
+      "tags": [
+        "high_relevance",
+        "military"
+      ],
+      "composite_score": 0.2
+    },
+    {
+      "id": "rss_49fdc9391668",
+      "niche": "scientific_papers",
+      "headline": "Pentagon’s UFO Program confusion and how the New York Times got it wrong",
+      "summary": "There has been much confusion about the alleged secret Pentagon UFO program the New York Times exposed in 2017, and the problems stem from factual errors and omissions in the article. According to the contract solicitation, the Pentagon created the Advanced Aerospace Weapon Systems Applications Program (AAWSAP) under the Defense Intelligence Agency (DIA) to research &#8230;",
+      "velocity_score": 0.0,
+      "signal_strength": 0.4,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/pentagons-ufo-program-confusion-and-how-the-new-york-times-got-it-wrong/",
+      "timestamp": "2025-04-30T17:20:23+00:00",
+      "tags": [
+        "high_relevance",
+        "related",
+        "scientific"
+      ],
+      "composite_score": 0.2
+    },
+    {
+      "id": "rss_6b59fc8fe3fd",
+      "niche": "scientific_papers",
+      "headline": "Open Minds UAP News: Skinwalker Ranch update with owner Brandon Fugal",
+      "summary": "In this episode, we interview Brandon Fugal, owner of Skinwalker Ranch in Utah. The ranch is the focus of years of paranormal research and the History Channel show The Secret of Skinwalker Ranch. The Secret of Skinwalker Ranch Season 5 finale Tuesday, July 23rd, 2024 on The History Channel! The Official Skinwalker Ranch website: https://skinwalker-ranch.com &#8230;",
+      "velocity_score": 0.0,
+      "signal_strength": 0.4,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/open-minds-uap-news-skinwalker-ranch-update-with-owner-brandon-fugal/",
+      "timestamp": "2024-07-20T02:43:16+00:00",
+      "tags": [
+        "high_relevance",
+        "related",
+        "scientific"
+      ],
+      "composite_score": 0.2
+    },
+    {
+      "id": "rss_07888393b76d",
+      "niche": "scientific_papers",
+      "headline": "35.14 - MU Podcast - The Zodiac and the Salts of Salvation",
+      "summary": "Welcome to Mysterious Universe Season 35 episode 14! Did you know that you can trace every sickness, disease, and ailment to a mineral deficiency? There are 12 primary cell salts developed in the 1870s by German physician Dr. Wilhelm Heinrich Schüssler. Today we have chosen to take an entertainment only (not medical advice) look at what these salts are and what can they do for those who choose to heed the wisdom of the ancients.\n\nIn Part 2 of our electricity deep dive, we get into the strange an",
+      "velocity_score": 5.474036170948187e-13,
+      "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
       "source": "Mysterious Universe",
-      "source_url": "https://mysteriousuniverse.org/2026/01/35.01-MU-Podcast-BRB...Dying-The-Science-of-NDE-s/",
-      "is_human": true,
-      "timestamp": "2026-01-16T00:42:00+00:00",
+      "source_url": "https://mysteriousuniverse.org/2026/04/35.14-MU-Podcast-The-Zodiac-and-the-Salts-of-Salvation/",
+      "timestamp": "2026-04-10T11:34:00+00:00",
       "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.1750000000002737
     },
     {
-      "id": "rss_81f9c47adfe5",
-      "niche": "scientific",
-      "headline": "7 Truly Bizarre UFO Sightings the Government Can’t (or Won’t) Explain",
-      "summary": "<p>The problem with UFO sightings isn’t a lack of explanations. It’s that some explanations feel designed to end the conversation rather than answer it. A small number of cases stick around because they were witnessed by people who know what they’re looking at, supported by data that exists on paper, and followed by official responses [&#8230;]</p>\n<p>The post <a href=\"https://www.vice.com/en/arti",
-      "velocity_score": 3.233413992224758e-87,
+      "id": "rss_3db98e7b813c",
+      "niche": "sightings",
+      "headline": "Caso Histórico de OVNI no Brasil Chega ao Capitólio Nos 30 Anos do Incidente de Varginha",
+      "summary": "Leslie Kean e Ralph Blumenthal relatam as discussões entre legisladores americanos e testemunhas brasileiras, marcando o terceiro aniversário do \"Incidente OVNI de Varginha\".",
+      "velocity_score": 6.542727262345213e-96,
       "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/7-truly-bizarre-ufo-sightings-the-government-cant-or-wont-explain/",
-      "is_human": true,
-      "timestamp": "2026-01-14T20:14:33+00:00",
+      "source": "The Debrief",
+      "source_url": "https://thedebrief.org/caso-historico-de-ovni-no-brasil-chega-ao-capitolio-enquanto-o-incidente-de-varginha-completa-30-anos/",
+      "timestamp": "2026-01-31T14:26:19+00:00",
       "tags": [
-        "scientific",
-        "uap",
-        "news"
-      ]
+        "related",
+        "sighting"
+      ],
+      "composite_score": 0.175
     },
     {
       "id": "rss_f5b679be1a02",
-      "niche": "scientific",
+      "niche": "scientific_papers",
       "headline": "“UAlbany Project X”: How a Team of New York Physicists is Launching a Cutting-Edge Investigation into Aerial Mysteries",
       "summary": "Physicists at the University at Albany have launched 'UAlbany Project X,' a long-term scientific study of unidentified anomalous phenomena.",
-      "velocity_score": 3.1310813217605485e-126,
+      "velocity_score": 4.1928626063229766e-168,
       "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
+      "source": "The Debrief",
       "source_url": "https://thedebrief.org/ualbany-project-x-how-a-team-of-new-york-physicists-is-launching-a-cutting-edge-investigation-into-aerial-mysteries/",
-      "is_human": true,
       "timestamp": "2025-12-02T15:12:30+00:00",
       "tags": [
-        "scientific",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.175
     },
     {
-      "id": "rss_bd6881ef33ae",
-      "niche": "sightings",
-      "headline": "Flights Grounded, Airport Shut Down Over UFO Sighting",
-      "summary": "<p>09/19/25 Update: After investigating, airport security determined the UFO was most likely an unauthorized drone. The airport resumed operations around 11 p.m. No similar incidents have occurred since. A UFO sighting allegedly grounded several flights at an airport in Turkey back in This seems to be getting a little out of hand, no?&#160; I mean, [&#8230;]</p>\n<p>The post <a href=\"https://www.vi",
-      "velocity_score": 5.170384964607239e-193,
+      "id": "rss_203ab5951bfb",
+      "niche": "congressional",
+      "headline": "35.13 - MU Podcast - The Hidden Timeline",
+      "summary": "Welcome back to MU! In this episode, we explore the idea that the timeline of history may not be as settled as we’ve been led to believe. From the mysterious concept of Tartaria to strange patterns in 19th century architecture, rapid technological leaps, world fairs, orphan trains, and the work of Nikola Tesla, we examine a collection of theories from Guy Anderson's Tesla & the Cabbage Patch Kids suggesting that pieces of the past may have been forgotten, reinterpreted, or quietly absorbed into ",
+      "velocity_score": 2.45382236376689e-21,
       "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/flights-grounded-airport-shut-down-over-ufo-sighting/",
-      "is_human": true,
-      "timestamp": "2025-09-19T16:04:05+00:00",
+      "source": "Mysterious Universe",
+      "source_url": "https://mysteriousuniverse.org/2026/04/35.13-MU-Podcast-The-Hidden-Timeline/",
+      "timestamp": "2026-04-03T13:08:00+00:00",
       "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
+        "related",
+        "congress",
+        "hearing"
+      ],
+      "composite_score": 0.175
     },
     {
-      "id": "rss_5b692fa46889",
-      "niche": "disclosure",
-      "headline": "The U.S. Military Shot a UFO With a Hellfire Missile. It Dodged It.",
-      "summary": "<p>The U.S. military apparently tried, and failed, to destroy a mysterious flying orb with a Hellfire missile. This bizarre tale comes to us via a congressional hearing held on September 9, where representatives and whistleblowers watched grainy black-and-white footage that looked like it could have been a clip from the film adaptation of Pong. The [&#8230;]</p>\n<p>The post <a href=\"https://www.vi",
-      "velocity_score": 1.6023598111318709e-196,
-      "signal_strength": 0.5,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/the-u-s-military-shot-a-ufo-with-a-hellfire-missile-it-dodged-it/",
-      "is_human": true,
-      "timestamp": "2025-09-15T18:48:05+00:00",
-      "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_2ee641c4003f",
-      "niche": "media_coverage",
-      "headline": "Mysterious Lights Caught on Trail Cam in Chile Wilderness. Is It Aliens?",
-      "summary": "<p>In the far south of Chile, where Patagonia folds into silence and ice, a camera trap set to watch cats caught something much stranger. At 12:22 a.m. on January 21, the device snapped three photos in two seconds. Instead of a puma or fox, it recorded blazing lights seemingly dropping out of the sky. The [&#8230;]</p>\n<p>The post <a href=\"https://www.vice.com/en/article/mysterious-lights-caught-o",
-      "velocity_score": 1.0798826982795774e-196,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/mysterious-lights-caught-on-trail-cam-in-chile-wilderness-is-it-aliens/",
-      "is_human": true,
-      "timestamp": "2025-09-15T14:14:45+00:00",
-      "tags": [
-        "media_coverage",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_3e94c0fce449",
-      "niche": "sightings",
-      "headline": "That Mysterious Comet Heading Toward Us Might Be an Alien Ship Sending Out Probes",
-      "summary": "<p>It seems that once a year, space throws a weird space rock at us that is either threatening to obliterate us or, in the case of 3I/ATLAS, exhibits some odd, inexplicable behavior. We are in the fun zone where laboratories across the world are formulating theories based on careful observation, while delightful kooks and cranks are [&#8230;]</p>\n<p>The post <a href=\"https://www.vice.com/en/articl",
-      "velocity_score": 3.022290475216619e-200,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/that-mysterious-comet-heading-toward-us-might-be-an-alien-ship-sending-out-probes/",
-      "is_human": true,
-      "timestamp": "2025-09-11T15:48:08+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_a90d535e9eee",
-      "niche": "disclosure",
-      "headline": "A Well Regulated UAP Industry: Why ‘The UAP Registration Act’ is a Better Path to Disclosure",
-      "summary": "In this op-ed, Sean Munger, an attorney and former Marine Corps intelligence analyst, introduces the Unidentified Anomalous Phenomena Registration Act (UAPRA).",
-      "velocity_score": 1e-323,
-      "signal_strength": 0.45,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/a-well-regulated-uap-industry-why-the-uap-registration-act-is-a-better-path-to-disclosure/",
-      "is_human": true,
-      "timestamp": "2025-04-27T19:55:58+00:00",
-      "tags": [
-        "disclosure",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_db6d3c341875",
-      "niche": "sightings",
-      "headline": "The FBI Confirms It Has a Secretive “UAP Working Group,” but Agents Now Worry Their Jobs Could Be in Jeopardy",
-      "summary": "A small group of agents within the Federal Bureau of Investigation (FBI) following up on reports of unidentified anomalous phenomena (UAP) are now facing a more immediate concern: job uncertainty.",
-      "velocity_score": 0.0,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/the-fbi-confirms-it-has-a-secretive-uap-working-group-but-agents-now-worry-their-jobs-could-be-in-jeopardy/",
-      "is_human": true,
-      "timestamp": "2025-02-03T22:58:32+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_319521d63ff7",
-      "niche": "sightings",
-      "headline": "Could an Alien Signal Reach Earth by 2029? Scientists Say It’s Still a Possibility",
-      "summary": "Predictions about when we might discover an alien signal from an intelligent civilization remain accurate, according to scientists.",
-      "velocity_score": 0.0,
-      "signal_strength": 0.35,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/could-an-alien-signal-reach-earth-by-2029-scientists-say-its-still-a-possibility/",
-      "is_human": true,
-      "timestamp": "2025-01-24T18:09:52+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_4aba911b21e9",
-      "niche": "sightings",
-      "headline": "WTF Is Going on With the Mysterious Connection Between UFOs and Water?",
-      "summary": "<p>The third episode of VICE Studios' Netflix docuseries \"Encounters\" explores sightings of UFOs and a claimed underwater base in Wales.</p>\n<p>The post <a href=\"https://www.vice.com/en/article/wtf-is-going-on-with-the-mysterious-connection-between-ufos-and-water/\">WTF Is Going on With the Mysterious Connection Between UFOs and Water?</a> appeared first on <a href=\"https://www.vice.com\">VICE</a>.<",
-      "velocity_score": 0.0,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/wtf-is-going-on-with-the-mysterious-connection-between-ufos-and-water/",
-      "is_human": true,
-      "timestamp": "2023-10-13T14:53:47+00:00",
-      "tags": [
-        "sightings",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_a393ac4c1f9a",
-      "niche": "military",
-      "headline": "Former Pentagon UFO Investigator Is Pissed Because Congress Believes In Conspiracy Theories",
-      "summary": "<p>Dr. Sean Kirkpatrick had a few choice words for the public on his way out the door of the Pentagon's All-domain Anomaly Resolution Office.</p>\n<p>The post <a href=\"https://www.vice.com/en/article/former-pentagon-ufo-investigator-is-pissed-because-congress-believes-in-conspiracy-theories/\">Former Pentagon UFO Investigator Is Pissed Because Congress Believes In Conspiracy Theories</a> appeared fi",
-      "velocity_score": 0.0,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/former-pentagon-ufo-investigator-is-pissed-because-congress-believes-in-conspiracy-theories/",
-      "is_human": true,
-      "timestamp": "2024-01-22T10:00:00+00:00",
-      "tags": [
-        "military",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_b76a2f2b5b44",
-      "niche": "military",
-      "headline": "Why Do UFO Sightings Keep Happening Near Nuclear Sites?",
-      "summary": "<p>From the Fukushima Daichi nuclear plant after a disaster to a U.S. missile base, UFOs have a concerning affinity for nuclear-based sites. </p>\n<p>The post <a href=\"https://www.vice.com/en/article/why-do-ufo-sightings-keep-happening-near-nuclear-sites/\">Why Do UFO Sightings Keep Happening Near Nuclear Sites?</a> appeared first on <a href=\"https://www.vice.com\">VICE</a>.</p>",
-      "velocity_score": 0.0,
-      "signal_strength": 0.4,
-      "mentions_last_hour": 50,
-      "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/why-do-ufo-sightings-keep-happening-near-nuclear-sites/",
-      "is_human": true,
-      "timestamp": "2023-10-20T16:01:08+00:00",
-      "tags": [
-        "military",
-        "uap",
-        "news"
-      ]
-    },
-    {
-      "id": "rss_bd80280abbf8",
+      "id": "rss_4ced5fa77691",
       "niche": "legislation",
-      "headline": "Canada’s UAP Challenges: Will the Government Act on the Sky Canada Project Report?",
-      "summary": "Member of Parliament Larry Maguire discusses the Sky Canada Project initiative examining unidentified aerial phenomena (UAP) in Canada.",
-      "velocity_score": 0.0,
-      "signal_strength": 0.4,
+      "headline": "35.12 - MU Podcast - Mysterious Creatures",
+      "summary": "Welcome to Mysterious Universe Season 35 episode number 12! Mysterious creatures and rumors of mysterious creatures have been passed down from times long lost, but where do they come from? What may be considered to be fantastically incredible creatures to us could simply be “the way” for other inhabitants of the realm that have experienced a variety of critters. Perhaps like seeing and disobliging a dragon the way one would have seen a squirrel.\n\nIn our Plus+ extension, we cover a classic metaph",
+      "velocity_score": 8.193472397183498e-30,
+      "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/canadas-uap-challenges-will-the-government-act-on-the-sky-canada-project-report/",
-      "is_human": true,
-      "timestamp": "2025-02-26T13:46:20+00:00",
+      "source": "Mysterious Universe",
+      "source_url": "https://mysteriousuniverse.org/2026/03/35.12-MU-Podcast-Mysterious-Creatures/",
+      "timestamp": "2026-03-27T12:09:00+00:00",
       "tags": [
-        "legislation",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "legislation"
+      ],
+      "composite_score": 0.175
     },
     {
-      "id": "rss_f3ed930abf29",
-      "niche": "whistleblower",
-      "headline": "Will the Declassification Task Force or President Trump Compel the DoD to Release its Trove of Unclassified UAP Videos?",
-      "summary": "Christopher Mellon offers perspectives on the need for reducing unnecessary secrecy regarding the management of unclassified U.S. government videos of unidentifed aerial phenomena (UAP).",
+      "id": "rss_6de183ca5bf4",
+      "niche": "podcasts",
+      "headline": "35.10 - MU Podcast - Jarring Death Rituals",
+      "summary": "Welcome to Mysterious Universe Season 35 Episode number 10! We are here to talk about some of the most jarring funeral ritual customs from around this freaky world. Featuring but not limited to mummy tupperware, the tribe that dresses up their dead to join them for dinner, hella devoted wives who light themselves ablaze to mourn the loss of their dead hubby-hubs, some super fun curses of course, and the possible burial plot of super-savior to some and homeboy to all, Jesus Christ. \n\nFor our Plus",
+      "velocity_score": 1.1181485824285524e-46,
+      "signal_strength": 0.35,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Mysterious Universe",
+      "source_url": "https://mysteriousuniverse.org/2026/03/35.10-MU-Podcast-Jarring-Death-Rituals/",
+      "timestamp": "2026-03-13T11:56:00+00:00",
+      "tags": [
+        "high_relevance",
+        "podcast"
+      ],
+      "composite_score": 0.175
+    },
+    {
+      "id": "rss_e178571dd04c",
+      "niche": "legislation",
+      "headline": "35.09 - MU Podcast - When Time Leaks",
+      "summary": "Thanks for joining us this week on MU! Today we offer another installment from Dirk Gillabel entitled Accidentally Viewing of Past Scenes. This continues on our investigations into odd moments when time doesn't behave like it's supposed to; from the legendary Oregon Vortex to being suddenly teleported from a bus into the Victorian era, Dirk has compiled many of these stories in an attempt to find the patterns that seem to permeate them. Are these hallucinations or is this a natural phenomenon th",
+      "velocity_score": 3.662386917604627e-55,
+      "signal_strength": 0.35,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Mysterious Universe",
+      "source_url": "https://mysteriousuniverse.org/2026/03/35.09-MU-Podcast-When-Time-Leaks/",
+      "timestamp": "2026-03-06T10:47:00+00:00",
+      "tags": [
+        "high_relevance",
+        "legislation"
+      ],
+      "composite_score": 0.175
+    },
+    {
+      "id": "rss_fb0696a1ba41",
+      "niche": "sightings",
+      "headline": "Geo-localization of sightings over Puglia, Italy By Edoardo Russo, MUFON Italian National Director",
+      "summary": "<p>Posted on February 8, 2026 by Edoardo Russo &#160; The Italian Center for UFO Studies is pleased to present the first example of geo-localization of the entire case history collection in an Italian region. &#160; Puglia has reached the finish line, putting online the entire regional catalog of sightings that Lello Cassano has built over nearly forty years of continuous effort, already published [&#8230;]</p>\n<p>The post <a href=\"https://mufon.com/2026/02/13/geo-localization-of-sightings-over-",
+      "velocity_score": 9.444753531939332e-81,
+      "signal_strength": 0.35,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "MUFON",
+      "source_url": "https://mufon.com/2026/02/13/geo-localization-of-sightings-over-puglia-italy-by-edoardo-russo-mufon-italian-national-director/",
+      "timestamp": "2026-02-13T04:39:17+00:00",
+      "tags": [
+        "high_relevance",
+        "sighting"
+      ],
+      "composite_score": 0.175
+    },
+    {
+      "id": "rss_8b94619d0dd9",
+      "niche": "sightings",
+      "headline": "The 1975 Lumberton UFO Wave: Police Across North Carolina Report a Silent V-Shaped Craft",
+      "summary": "In the early morning hours of April 3, 1975, shortly after a violent thunderstorm swept through southeastern North Carolina, police officers in the town of Lumberton began reporting something unusual in the sky.",
+      "velocity_score": 1.5288923457117148e-48,
+      "signal_strength": 0.35,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/the-1975-lumberton-ufo-wave-police-across-north-carolina-report-a-silent-v-shaped-craft/",
+      "timestamp": "2026-03-11T22:46:16+00:00",
+      "tags": [
+        "high_relevance",
+        "sighting"
+      ],
+      "composite_score": 0.175
+    },
+    {
+      "id": "rss_3a126cabbeb3",
+      "niche": "sightings",
+      "headline": "Huge Luminous Bar of Light Captured on Video Over Spokane Valley, Washington",
+      "summary": "“It was like a giant light bar,” reports a witness who recorded a video of a large luminous object floating across the night sky over Spokane Valley and submitted it via the Enigma UFO reporting app. “This thing flew right over top of us the best way that I can describe,” the witness continued. “The &#8230;",
       "velocity_score": 0.0,
       "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/will-the-declassification-task-force-or-president-trump-compel-dod-to-release-its-trove-of-unclassified-uap-videos/",
-      "is_human": true,
-      "timestamp": "2025-04-05T18:57:50+00:00",
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/huge-luminous-bar-of-light-captured-on-video-over-spokane-valley-washington/",
+      "timestamp": "2025-04-21T19:26:07+00:00",
       "tags": [
-        "whistleblower",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "sighting"
+      ],
+      "composite_score": 0.175
     },
     {
-      "id": "rss_da380a5e10f7",
-      "niche": "whistleblower",
-      "headline": "Closing UAP Information Gaps to Advance National Security: Some Suggestions for Congress and the New Administration",
-      "summary": "Christopher Mellon, who served two decades in the Intelligence Community, provides considerations for enhancing Congressional oversight and advancing our understanding of UAP.",
+      "id": "rss_e722fde9fdbb",
+      "niche": "scientific_papers",
+      "headline": "Open Minds UAP News: Where do we go from here?",
+      "summary": "In this episode we discuss the state of UAP research and the best path forward. We also cover the latest UAP headlines and look at some recent UAP videos. Open Minds UAP News podcast version: https://www.spreaker.com/episode/uap-where-do-we-go-from-here&#8211;65617481 Check out Alejandro&#8217;s articles on Den of Geek: https://www.denofgeek.com/author/alejandro-rojas/ JOIN Alejandro on PATREON and help sponsor the show: https://patreon.com/alejandrotrojas?utm_medium=unknown&#38;utm_source=join_",
       "velocity_score": 0.0,
       "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "The Debrief - UAP",
-      "source_url": "https://thedebrief.org/closing-uap-information-gaps-to-advance-national-security-some-suggestions-for-congress-and-the-new-administration/",
-      "is_human": true,
-      "timestamp": "2025-02-05T14:17:01+00:00",
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/open-minds-uap-news-where-do-we-go-from-here/",
+      "timestamp": "2025-04-21T19:12:17+00:00",
       "tags": [
-        "whistleblower",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.175
     },
     {
-      "id": "rss_1a3208beaf71",
-      "niche": "exopolitics",
-      "headline": "I Went Alien Hunting on Chile’s Mountainous ‘UFO Route’",
-      "summary": "<p>Chile's \"Ruta Ufológica,\" a hotspot for sightings and emerging tourist destination, is a microcosm of the global UFO craze. </p>\n<p>The post <a href=\"https://www.vice.com/en/article/i-went-alien-hunting-on-chile-ufo-route/\">I Went Alien Hunting on Chile&#8217;s Mountainous &#8216;UFO Route&#8217;</a> appeared first on <a href=\"https://www.vice.com\">VICE</a>.</p>",
+      "id": "rss_aa3fa2456693",
+      "niche": "scientific_papers",
+      "headline": "Open Minds UAP News: UAP Analysis and Science with Dr. Doug Buettner",
+      "summary": "In this episode we discuss UAP Analysis and Science with Dr. Doug Buettner, Deputy Chief Scientist at the Acquisition Innovation Research Center (AIRC). Dr. Buettner has recently joined the board of the Scientific Coalition for UAP Studies and has been analyzing cases, including the NYC case we recently reviewed on this show. We also cover &#8230;",
       "velocity_score": 0.0,
-      "signal_strength": 0.4,
+      "signal_strength": 0.35,
       "mentions_last_hour": 50,
       "mentions_previous_24h": 500,
-      "source": "VICE - Motherboard UAP",
-      "source_url": "https://www.vice.com/en/article/i-went-alien-hunting-on-chile-ufo-route/",
-      "is_human": true,
-      "timestamp": "2023-12-01T10:00:00+00:00",
+      "source": "OpenMinds TV",
+      "source_url": "https://openminds.tv/open-minds-uap-news-uap-analysis-and-science-with-dr-doug-buettneropen-minds-uap-news/",
+      "timestamp": "2024-06-14T22:59:03+00:00",
       "tags": [
-        "exopolitics",
-        "uap",
-        "news"
-      ]
+        "high_relevance",
+        "scientific"
+      ],
+      "composite_score": 0.175
+    },
+    {
+      "id": "rss_a478a30fd629",
+      "niche": "military_encounters",
+      "headline": "Ep. 2292 Vic Bongiorno: The Valentich UFO Case",
+      "summary": "<p>Tonight, Monday on FADE to BLACK: Pilot and author Vic Bongiorno investigates the 1978 disappearance of Frederick Valentich, who reported a UFO moments before vanishing. Exploring flight details, eyewitness accounts, and disputed explanations, Vic questions why the case—despite parallels to sightings like the Kaikoura Lights—remains dismissed and unresolved.</p> <p>Vic Bongiorno's aviation journey began in 1979 in Nairobi, Kenya, where he took his first flying lessons—an experience that spark",
+      "velocity_score": 1.0875812493079372e-24,
+      "signal_strength": 0.35,
+      "mentions_last_hour": 50,
+      "mentions_previous_24h": 500,
+      "source": "Fade to Black",
+      "source_url": "https://fadetoblack.libsyn.com/ep-2292-vic-bongiorno-the-valentich-ufo-case",
+      "timestamp": "2026-03-31T18:17:00+00:00",
+      "tags": [
+        "high_relevance",
+        "military"
+      ],
+      "composite_score": 0.175
     }
   ],
-  "fetched_at": "2026-04-20T15:15:05.405377+00:00",
-  "total_count": 33,
+  "fetched_at": "2026-04-20T16:01:07.738873+00:00",
+  "total_count": 35,
   "topic": "UFO/UAP/NHI - Non-Human Intelligence",
   "insights": {
-    "top_activity_niches": [
-      {
-        "niche": "sightings",
-        "count": 10
-      },
-      {
-        "niche": "legislation",
-        "count": 6
-      },
-      {
-        "niche": "disclosure",
-        "count": 6
-      },
-      {
-        "niche": "scientific",
-        "count": 3
-      },
-      {
-        "niche": "military",
-        "count": 3
-      }
+    "total_trends": 35,
+    "niches_covered": [
+      "congressional",
+      "disclosure",
+      "legislation",
+      "military_encounters",
+      "podcasts",
+      "scientific_papers",
+      "sightings",
+      "whistleblower",
+      "whistleblower_docs"
     ],
-    "signal_strength_by_niche": {
-      "legislation": 0.38,
-      "disclosure": 0.45,
-      "sightings": 0.38,
-      "scientific": 0.37,
-      "ancient_aliens": 0.35,
-      "military": 0.4,
-      "media_coverage": 0.4,
-      "whistleblower": 0.35,
-      "exopolitics": 0.4
+    "niche_distribution": {
+      "scientific_papers": 9,
+      "whistleblower_docs": 5,
+      "legislation": 5,
+      "disclosure": 4,
+      "sightings": 4,
+      "congressional": 3,
+      "podcasts": 2,
+      "military_encounters": 2,
+      "whistleblower": 1
     },
     "source_distribution": {
-      "Mysterious Universe": 10,
-      "The Debrief - UAP": 14,
-      "VICE - Motherboard UAP": 9
+      "OpenMinds TV": 8,
+      "The Debrief": 8,
+      "MUFON": 8,
+      "Mysterious Universe": 6,
+      "Fade to Black": 5
     },
-    "total_trends": 33,
-    "niches_covered": [
-      "ancient_aliens",
-      "disclosure",
-      "exopolitics",
-      "legislation",
-      "media_coverage",
-      "military",
-      "scientific",
-      "sightings",
-      "whistleblower"
-    ],
-    "monitoring_keywords": [
-      "uap",
-      "alien",
-      "bentwaters",
-      "ufo",
-      "orb",
-      "varginha",
-      "fravor",
-      "whistleblower",
-      "graves",
-      "all-domain anomaly",
-      "disclosure",
-      "roswell",
-      "aztec",
-      "rendlesham",
-      "non human",
-      "elizondo",
-      "uaps",
-      "roosevelt",
-      "luis elizondo",
-      "congressional hearing"
-    ]
+    "top_tags": {
+      "high_relevance": 33,
+      "related": 11,
+      "scientific": 9,
+      "documents": 5,
+      "legislation": 5,
+      "disclosure": 4,
+      "sighting": 4,
+      "congress": 3,
+      "podcast": 2,
+      "hearing": 2
+    }
   },
   "metadata": {
-    "version": "1.0",
-    "niches_covered": [
-      "ancient_aliens",
-      "disclosure",
-      "exopolitics",
-      "legislation",
-      "media_coverage",
-      "military",
-      "scientific",
-      "sightings",
-      "whistleblower"
-    ],
-    "sources_used": [
-      "Mysterious Universe",
-      "The Debrief - UAP",
-      "VICE - Motherboard UAP"
-    ],
-    "keywords_monitored": [
-      "uap",
-      "alien",
-      "bentwaters",
-      "ufo",
-      "orb",
-      "varginha",
-      "fravor",
-      "whistleblower",
-      "graves",
-      "all-domain anomaly",
-      "disclosure",
-      "roswell",
-      "aztec",
-      "rendlesham",
-      "non human",
-      "elizondo",
-      "uaps",
-      "roosevelt",
-      "luis elizondo",
-      "congressional hearing",
-      "reverse engineering",
-      "chilean navy",
-      "david grusch",
-      "cattle mutilation",
-      "belgian wave",
-      "ufos",
-      "dreamland",
-      "rubio",
-      "skinwalker ranch",
-      "mexican air force",
-      "tic tac",
-      "nhi",
-      "alex dietrich",
-      "biologics",
-      "area51",
-      "extraterrestrial",
-      "nimitz",
-      "omalley",
-      "aliens",
-      "grusch",
-      "s4 facility",
-      "kona blue",
-      "bradley ranch",
-      "schumer",
-      "unidentified aerial",
-      "orbs",
-      "pentagon uap",
-      "crash retrieval",
-      "rogue alien",
-      "aaro",
-      "psi phenomenon",
-      "go fast",
-      "aaro office",
-      "ryan graves",
-      "unidentified anomalous",
-      "chris mellon",
-      "gillibrand",
-      "non-human",
-      "triangle craft",
-      "steve justice",
-      "immaculate constellation",
-      "gimbal",
-      "area 51"
-    ]
+    "version": "2.1",
+    "status": "STABLE - Wide Signal Capture",
+    "sources_used": 5,
+    "keywords_monitored": 39
   }
 }
