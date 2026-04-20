@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DISCLOSURE WATCH — UAP Intelligence Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080c18;
+    --bg3: #0c1020;
+    --surface: #0f1526;
+    --surface2: #141c32;
+    --border: rgba(100,160,255,0.12);
+    --border-hot: rgba(100,160,255,0.3);
+    --accent: #4a9eff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b35;
+    --text: #c8d8f0;
+    --text-dim: #6b7fa0;
+    --text-bright: #e8f0ff;
+    --mono: 'Share Tech Mono', monospace;
+    --head: 'Barlow Condensed', sans-serif;
+    --body: 'Barlow', sans-serif;
+    --red: #ff4444;
+    --amber: #ffaa00;
+    --green: #00cc88;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(74,158,255,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,212,170,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SCANLINE EFFECT */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,8,16,0.95);
+    backdrop-filter: blur(12px);
+    padding: 0 2rem;
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 64px;
+  }
+
+  .logo-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    position: relative;
+  }
+
+  .logo-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    color: var(--text-bright);
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .header-status {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .status-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent2);
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .clock-display {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  /* TICKER */
+  .ticker-bar {
+    position: relative;
+    z-index: 9;
+    background: rgba(74,158,255,0.08);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    padding: 0 1rem;
+    white-space: nowrap;
+    background: rgba(74,158,255,0.15);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    z-index: 2;
+    position: relative;
+  }
+
+  .ticker-track {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: ticker-scroll 60s linear infinite;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .ticker-item {
+    padding: 0 2.5rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .ticker-item span {
+    color: var(--accent);
+    margin-right: 8px;
+  }
+
+  @keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* MAIN LAYOUT */
+  .main-wrap {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+  }
+
+  /* TOP METRICS */
+  .metrics-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric-cell {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+    position: relative;
+  }
+
+  .metric-cell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .metric-cell:hover::after { opacity: 1; }
+
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--text-bright);
+    line-height: 1;
+  }
+
+  .metric-value.green { color: var(--accent2); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-value.blue { color: var(--accent); }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* MAIN GRID */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
+
+  /* SECTION HEADERS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: var(--head);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-bright);
+  }
+
+  .section-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(74,158,255,0.1);
+    border: 1px solid rgba(74,158,255,0.2);
+    padding: 1px 7px;
+    border-radius: 2px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(74,158,255,0.06);
+  }
+
+  .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(74,158,255,0.12);
+  }
+
+  /* NEWS FEED */
+  .feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .feed-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    animation: fade-in 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feed-item:hover {
+    background: var(--surface2);
+    border-color: var(--border-hot);
+    border-left-color: var(--accent);
+  }
+
+  .feed-item.niche-disclosure { border-left-color: var(--accent); }
+  .feed-item.niche-sightings { border-left-color: var(--accent2); }
+  .feed-item.niche-legislation { border-left-color: var(--amber); }
+  .feed-item.niche-scientific { border-left-color: #9b59b6; }
+  .feed-item.niche-military { border-left-color: var(--red); }
+  .feed-item.niche-whistleblower { border-left-color: #e74c3c; }
+  .feed-item.niche-media_coverage { border-left-color: #1abc9c; }
+  .feed-item.niche-ancient_aliens { border-left-color: #f39c12; }
+  .feed-item.niche-exopolitics { border-left-color: #3498db; }
+
+  .item-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .item-niche {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+  }
+
+  .niche-disclosure .item-niche { background: rgba(74,158,255,0.15); color: var(--accent); border: 1px solid rgba(74,158,255,0.25); }
+  .niche-sightings .item-niche { background: rgba(0,212,170,0.12); color: var(--accent2); border: 1px solid rgba(0,212,170,0.25); }
+  .niche-legislation .item-niche { background: rgba(255,170,0,0.12); color: var(--amber); border: 1px solid rgba(255,170,0,0.25); }
+  .niche-scientific .item-niche { background: rgba(155,89,182,0.12); color: #c39bd3; border: 1px solid rgba(155,89,182,0.25); }
+  .niche-military .item-niche { background: rgba(255,68,68,0.1); color: #ff6666; border: 1px solid rgba(255,68,68,0.2); }
+  .niche-whistleblower .item-niche { background: rgba(231,76,60,0.1); color: #ff7675; border: 1px solid rgba(231,76,60,0.2); }
+  .niche-media_coverage .item-niche { background: rgba(26,188,156,0.1); color: #48c9b0; border: 1px solid rgba(26,188,156,0.2); }
+  .niche-ancient_aliens .item-niche { background: rgba(243,156,18,0.1); color: #f5b942; border: 1px solid rgba(243,156,18,0.2); }
+  .niche-exopolitics .item-niche { background: rgba(52,152,219,0.1); color: #5dade2; border: 1px solid rgba(52,152,219,0.2); }
+
+  .item-source {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .item-date {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  .item-signal {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .signal-bar {
+    display: flex;
+    gap: 2px;
+  }
+
+  .signal-bar span {
+    display: block;
+    width: 3px;
+    height: 8px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+
+  .signal-bar span.lit { background: var(--accent2); }
+
+  .item-headline {
+    font-family: var(--head);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--text-bright);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .feed-item:hover .item-headline {
+    color: #fff;
+  }
+
+  .item-summary {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .item-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .read-more {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .read-more:hover { color: #fff; }
+
+  .read-more::after {
+    content: ' →';
+  }
+
+  .velocity-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .velocity-hot { background: rgba(255,107,53,0.15); color: var(--accent3); border: 1px solid rgba(255,107,53,0.3); }
+  .velocity-warm { background: rgba(255,170,0,0.1); color: var(--amber); border: 1px solid rgba(255,170,0,0.2); }
+  .velocity-cool { background: rgba(74,158,255,0.08); color: var(--text-dim); border: 1px solid var(--border); }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1.25rem;
+  }
+
+  /* NICHE BREAKDOWN */
+  .niche-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .niche-row:last-child { border-bottom: none; }
+
+  .niche-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .niche-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .niche-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  .niche-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-bright);
+    width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* SOURCE LIST */
+  .source-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .source-item:last-child { border-bottom: none; }
+
+  .source-name {
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .source-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(74,158,255,0.1);
+    padding: 1px 8px;
+    border-radius: 2px;
+  }
+
+  /* SIGNAL STRENGTH */
+  .signal-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .signal-card-row:last-child { border-bottom: none; }
+
+  .signal-niche {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+
+  .signal-pct {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-bright);
+  }
+
+  .signal-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* FOOTER */
+  .feed-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* LOADING */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    gap: 1rem;
+  }
+
+  .loading-ring {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+
+  /* ERROR */
+  .error-state {
+    text-align: center;
+    padding: 3rem;
+    border: 1px solid rgba(255,68,68,0.2);
+    border-radius: 3px;
+    background: rgba(255,68,68,0.04);
+  }
+
+  .error-code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .error-msg {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* DECLASSIFIED STAMP */
+  .stamp {
+    display: inline-block;
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 2px solid rgba(0,212,170,0.3);
+    color: rgba(0,212,170,0.5);
+    padding: 2px 8px;
+    border-radius: 2px;
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-icon">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="16" stroke="rgba(74,158,255,0.4)" stroke-width="1"/>
+          <circle cx="18" cy="18" r="10" stroke="rgba(74,158,255,0.3)" stroke-width="0.5"/>
+          <ellipse cx="18" cy="18" rx="16" ry="5" stroke="rgba(74,158,255,0.25)" stroke-width="0.5"/>
+          <circle cx="18" cy="18" r="2.5" fill="#4a9eff"/>
+          <line x1="18" y1="2" x2="18" y2="8" stroke="rgba(74,158,255,0.6)" stroke-width="0.75"/>
+          <line x1="18" y1="28" x2="18" y2="34" stroke="rgba(74,158,255,0.6)" stroke-width="0.75"/>
+          <line x1="2" y1="18" x2="8" y2="18" stroke="rgba(74,158,255,0.6)" stroke-width="0.75"/>
+          <line x1="28" y1="18" x2="34" y2="18" stroke="rgba(74,158,255,0.6)" stroke-width="0.75"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Disclosure Watch</div>
+        <div class="logo-sub">UAP Intelligence Dashboard</div>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-live">
+        <div class="live-dot"></div>
+        <span>LIVE FEED</span>
+      </div>
+      <div class="clock-display" id="clock">--:--:-- UTC</div>
+      <div class="stamp">Declassified</div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker-bar">
+  <div class="ticker-label">SIGNALS</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" id="ticker-inner">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <!-- METRICS -->
+  <div class="metrics-bar" id="metrics-bar">
+    <div class="metric-cell">
+      <div class="metric-label">Total Signals</div>
+      <div class="metric-value blue" id="m-total">—</div>
+      <div class="metric-sub">monitored items</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">Top Category</div>
+      <div class="metric-value green" id="m-top-niche">—</div>
+      <div class="metric-sub" id="m-top-count">—</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">Avg. Signal Strength</div>
+      <div class="metric-value amber" id="m-signal">—</div>
+      <div class="metric-sub">across all niches</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">Sources Active</div>
+      <div class="metric-value blue" id="m-sources">—</div>
+      <div class="metric-sub">intelligence feeds</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">Niches Covered</div>
+      <div class="metric-value" id="m-niches">—</div>
+      <div class="metric-sub">topic categories</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">Last Updated</div>
+      <div class="metric-value" style="font-size:16px" id="m-updated">—</div>
+      <div class="metric-sub" id="m-updated-sub">—</div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- MAIN FEED -->
+    <div>
+      <div class="section-head">
+        <div class="section-title">Intelligence Feed</div>
+        <div class="section-count" id="feed-count">0</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="filters" id="filter-bar">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All Signals</button>
+      </div>
+
+      <div class="feed-list" id="feed-list">
+        <div class="loading-state">
+          <div class="loading-ring"></div>
+          <div class="loading-text">ACQUIRING SIGNAL...</div>
+        </div>
+      </div>
+
+      <div class="feed-footer" id="feed-footer"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <!-- ACTIVITY BY NICHE -->
+      <div class="sidebar-card">
+        <div class="section-head">
+          <div class="section-title">Activity by Niche</div>
+          <div class="section-line"></div>
+        </div>
+        <div id="niche-breakdown">
+          <div class="loading-text" style="padding: 1rem 0; text-align:center;">—</div>
+        </div>
+      </div>
+
+      <!-- SIGNAL STRENGTH -->
+      <div class="sidebar-card">
+        <div class="section-head">
+          <div class="section-title">Signal Strength</div>
+          <div class="section-line"></div>
+        </div>
+        <div id="signal-strength">
+          <div class="loading-text" style="padding: 1rem 0; text-align:center;">—</div>
+        </div>
+      </div>
+
+      <!-- SOURCES -->
+      <div class="sidebar-card">
+        <div class="section-head">
+          <div class="section-title">Intel Sources</div>
+          <div class="section-line"></div>
+        </div>
+        <div id="sources-list">
+          <div class="loading-text" style="padding: 1rem 0; text-align:center;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA_URL = 'https://nagoh.us/disclosure/data/uap_trends.json';
+
+let allTrends = [];
+let activeFilter = 'all';
+
+const NICHE_COLORS = {
+  disclosure: '#4a9eff',
+  sightings: '#00d4aa',
+  legislation: '#ffaa00',
+  scientific: '#9b59b6',
+  military: '#ff4444',
+  whistleblower: '#e74c3c',
+  media_coverage: '#1abc9c',
+  ancient_aliens: '#f39c12',
+  exopolitics: '#3498db'
+};
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days}d ago`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function signalBars(strength) {
+  const filled = Math.round(strength * 5);
+  let html = '<div class="signal-bar">';
+  for (let i = 0; i < 5; i++) {
+    html += `<span class="${i < filled ? 'lit' : ''}"></span>`;
+  }
+  return html + '</div>';
+}
+
+function velocityLabel(score) {
+  if (score > 1e-10) return '<span class="velocity-badge velocity-hot">HOT</span>';
+  if (score > 1e-50) return '<span class="velocity-badge velocity-warm">TRENDING</span>';
+  return '<span class="velocity-badge velocity-cool">ARCHIVAL</span>';
+}
+
+function renderItem(item, index) {
+  const nicheClass = `niche-${item.niche}`;
+  const delay = `animation-delay: ${index * 40}ms`;
+  return `
+    <div class="feed-item ${nicheClass}" style="${delay}" onclick="window.open('${item.source_url}', '_blank')">
+      <div class="item-meta">
+        <span class="item-niche">${item.niche.replace('_', ' ')}</span>
+        <span class="item-source">${item.source}</span>
+        ${velocityLabel(item.velocity_score)}
+        <span class="item-date">${formatDate(item.timestamp)}</span>
+      </div>
+      <div class="item-headline">${item.headline}</div>
+      <div class="item-summary">${item.summary ? item.summary.replace(/<[^>]+>/g, '').substring(0, 180) + '...' : ''}</div>
+      <div class="item-footer">
+        <a class="read-more" href="${item.source_url}" target="_blank" onclick="event.stopPropagation()">Read Full Report</a>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+          ${signalBars(item.signal_strength)}
+          <span style="font-family: var(--mono); font-size: 10px; color: var(--text-dim);">SIG ${Math.round(item.signal_strength * 100)}%</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderFeed() {
+  const filtered = activeFilter === 'all'
+    ? allTrends
+    : allTrends.filter(t => t.niche === activeFilter);
+
+  document.getElementById('feed-count').textContent = filtered.length;
+  document.getElementById('feed-list').innerHTML = filtered.map((item, i) => renderItem(item, i)).join('');
+}
+
+function setFilter(niche) {
+  activeFilter = niche;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === niche);
+  });
+  renderFeed();
+}
+
+function buildFilters(niches) {
+  const bar = document.getElementById('filter-bar');
+  bar.innerHTML = '<button class="filter-btn active" data-filter="all" onclick="setFilter(\'all\')">All Signals</button>';
+  niches.forEach(n => {
+    const color = NICHE_COLORS[n.niche] || '#4a9eff';
+    bar.innerHTML += `<button class="filter-btn" data-filter="${n.niche}" style="--niche-color: ${color}" onclick="setFilter('${n.niche}')">${n.niche.replace('_', ' ')} <span style="color: ${color}; margin-left: 4px;">${n.count}</span></button>`;
+  });
+}
+
+function buildNicheBreakdown(niches) {
+  const max = niches[0]?.count || 1;
+  document.getElementById('niche-breakdown').innerHTML = niches.map(n => {
+    const color = NICHE_COLORS[n.niche] || '#4a9eff';
+    const pct = (n.count / max * 100).toFixed(0);
+    return `
+      <div class="niche-row">
+        <span class="niche-name">${n.niche.replace('_', ' ')}</span>
+        <div class="niche-bar-track">
+          <div class="niche-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+        </div>
+        <span class="niche-count">${n.count}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildSignalStrength(byNiche) {
+  const entries = Object.entries(byNiche).sort((a, b) => b[1] - a[1]);
+  document.getElementById('signal-strength').innerHTML = entries.map(([niche, val]) => {
+    const color = NICHE_COLORS[niche] || '#4a9eff';
+    const pct = Math.round(val * 100);
+    return `
+      <div class="signal-card-row">
+        <div class="signal-indicator" style="background: ${color}; opacity: ${0.4 + val * 0.6};"></div>
+        <span class="signal-niche">${niche.replace('_', ' ')}</span>
+        <span class="signal-pct">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildSources(dist) {
+  document.getElementById('sources-list').innerHTML = Object.entries(dist)
+    .sort((a, b) => b[1] - a[1])
+    .map(([src, count]) => `
+      <div class="source-item">
+        <span class="source-name">${src}</span>
+        <span class="source-num">${count}</span>
+      </div>
+    `).join('');
+}
+
+function buildTicker(trends) {
+  const items = trends.slice(0, 10).map(t =>
+    `<span class="ticker-item"><span>▸</span>${t.headline.substring(0, 80)}${t.headline.length > 80 ? '...' : ''}</span>`
+  ).join('');
+  document.getElementById('ticker-inner').innerHTML = items + items;
+}
+
+function updateMetrics(data) {
+  const insights = data.insights;
+  document.getElementById('m-total').textContent = data.total_count;
+  document.getElementById('m-top-niche').textContent = insights.top_activity_niches[0]?.niche?.toUpperCase() || '—';
+  document.getElementById('m-top-count').textContent = `${insights.top_activity_niches[0]?.count || 0} articles`;
+
+  const avgSignal = Object.values(insights.signal_strength_by_niche);
+  const avg = avgSignal.reduce((a, b) => a + b, 0) / avgSignal.length;
+  document.getElementById('m-signal').textContent = Math.round(avg * 100) + '%';
+
+  document.getElementById('m-sources').textContent = Object.keys(insights.source_distribution).length;
+  document.getElementById('m-niches').textContent = insights.niches_covered.length;
+
+  const fetchedAt = new Date(data.fetched_at);
+  document.getElementById('m-updated').textContent = fetchedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  document.getElementById('m-updated-sub').textContent = fetchedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  document.getElementById('feed-footer').textContent =
+    `TOPIC: ${data.topic}  //  MONITORING ${data.metadata.keywords_monitored.length} KEYWORDS  //  FETCHED ${fetchedAt.toUTCString()}`;
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    allTrends = data.trends || [];
+    const insights = data.insights;
+
+    updateMetrics(data);
+    buildFilters(insights.top_activity_niches);
+    buildNicheBreakdown(insights.top_activity_niches);
+    buildSignalStrength(insights.signal_strength_by_niche);
+    buildSources(insights.source_distribution);
+    buildTicker(allTrends);
+    renderFeed();
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('feed-list').innerHTML = `
+      <div class="error-state">
+        <div class="error-code">SIGNAL LOST // ERR_${err.message.toUpperCase().replace(/\s/g, '_')}</div>
+        <div class="error-msg">Unable to acquire intelligence feed. Check network connection or CORS configuration.</div>
+      </div>
+    `;
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getUTCHours()).padStart(2, '0');
+  const m = String(now.getUTCMinutes()).padStart(2, '0');
+  const s = String(now.getUTCSeconds()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s} UTC`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+loadData();
+
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
