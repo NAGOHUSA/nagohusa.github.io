@@ -7,6 +7,7 @@ Simplified, reliable version that always produces valid JSON
 import json
 import random
 import time
+import sys
 from datetime import datetime, timezone
 from collections import defaultdict
 import requests
