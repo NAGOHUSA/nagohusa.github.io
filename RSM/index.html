@@ -264,6 +264,102 @@
     margin-bottom: 1.5rem;
   }
 
+  /* TILED EVENTS SECTION */
+  .tiled-events-section {
+    background: rgba(42,42,42,0.85);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid rgba(58,122,74,0.3);
+  }
+
+  .events-tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .event-tile {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(58,122,74,0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .event-tile:hover {
+    transform: translateY(-4px);
+    background: rgba(58,122,74,0.12);
+    border-color: var(--green-mid);
+  }
+
+  .event-tile.featured {
+    border-left: 4px solid var(--green-bright);
+  }
+
+  .event-tile-date {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .event-tile-title {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .event-tile-speaker {
+    font-size: 0.9rem;
+    color: var(--green-light);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .event-tile-details {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .event-tile-detail {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .event-tile-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(58,122,74,0.2);
+    color: var(--green-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+  }
+
+  .event-tile-desc {
+    font-size: 0.85rem;
+    color: var(--cream-dark);
+    line-height: 1.5;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
   /* DEVOTIONAL */
   .devotional-section {
     background: rgba(26,26,26,0.85);
@@ -485,7 +581,7 @@
     background: rgba(58,122,74,0.15);
   }
 
-  /* CALENDAR */
+  /* CALENDAR - Keeping for reference but making smaller */
   .calendar-section { 
     background: rgba(42,42,42,0.85);
     backdrop-filter: blur(4px);
@@ -887,6 +983,7 @@
     .about-pillars { grid-template-columns: 1fr; }
     .devotional-card { padding: 1.75rem; }
     .hero-title { font-size: clamp(4rem, 18vw, 7rem); }
+    .events-tiles-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -901,9 +998,10 @@
 <nav>
   <a class="nav-logo" href="#"><span>Rock</span> Solid Man</a>
   <ul class="nav-links">
+    <li><a href="#events-tiles">Upcoming Events</a></li>
     <li><a href="#devotional">Daily Word</a></li>
     <li><a href="#archive">Archive</a></li>
-    <li><a href="#events">Events</a></li>
+    <li><a href="#calendar">Calendar</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfZrcWD32suGBvaXFfeDqzBRkIzo-BHyivnxmI0cOZpd-Q5zg/viewform?usp=header" class="nav-cta">Volunteer</a></li>
   </ul>
@@ -920,11 +1018,22 @@
   </p>
   <div class="hero-actions">
     <a href="#about" class="btn-primary">Our Mission</a>
-    <a href="#events" class="btn-outline">View Events</a>
+    <a href="#events-tiles" class="btn-outline">View Events</a>
   </div>
   <div class="hero-scroll">
     <div class="scroll-line"></div>
     Scroll
+  </div>
+</section>
+
+<!-- TILED EVENTS SECTION (NEW - ABOVE DEVOTIONAL) -->
+<section class="tiled-events-section" id="events-tiles">
+  <div class="container">
+    <span class="section-label">Upcoming Gatherings</span>
+    <h2>JOIN US<br>THIS MONTH</h2>
+    <div id="events-tiles-container" class="events-tiles-grid">
+      <div class="devotional-loading">Loading events...</div>
+    </div>
   </div>
 </section>
 
@@ -957,11 +1066,11 @@
   </div>
 </section>
 
-<!-- EVENTS CALENDAR -->
-<section class="calendar-section" id="events">
+<!-- CALENDAR SECTION (renamed id) -->
+<section class="calendar-section" id="calendar">
   <div class="container">
-    <span class="section-label">Community Calendar</span>
-    <h2>UPCOMING<br>EVENTS</h2>
+    <span class="section-label">Event Calendar View</span>
+    <h2>MONTHLY<br>OVERVIEW</h2>
     <div class="calendar-grid">
       <div>
         <div class="calendar-widget">
@@ -985,7 +1094,7 @@
         </div>
       </div>
       <div class="events-sidebar">
-        <h3>WHAT'S<br>AHEAD</h3>
+        <h3>THIS MONTH</h3>
         <div id="events-list"></div>
         <a href="https://rocksolidman.org/events" class="btn-outline" style="font-size:0.78rem; padding: 0.6rem 1.4rem; margin-top:1rem; display:inline-block;">View All Events</a>
       </div>
@@ -1058,9 +1167,10 @@
     <div class="footer-col">
       <h4>Navigate</h4>
       <ul>
+        <li><a href="#events-tiles">Upcoming Events</a></li>
         <li><a href="#devotional">Daily Devotional</a></li>
         <li><a href="#archive">Archive</a></li>
-        <li><a href="#events">Events</a></li>
+        <li><a href="#calendar">Calendar</a></li>
         <li><a href="#about">About Us</a></li>
       </ul>
     </div>
@@ -1102,11 +1212,12 @@ async function loadCalendarEvents() {
     const data = await response.json();
     EVENTS = data.events;
     renderCalendar();
+    renderTiledEvents();
   } catch (error) {
     console.error('Error loading calendar events:', error);
-    // Fallback empty array if fetch fails
     EVENTS = [];
     renderCalendar();
+    renderTiledEvents();
   }
 }
 
@@ -1118,6 +1229,44 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// ========== TILED EVENTS RENDERING ==========
+function renderTiledEvents() {
+  const container = document.getElementById('events-tiles-container');
+  if (!container) return;
+  
+  if (!EVENTS || EVENTS.length === 0) {
+    container.innerHTML = '<div class="archive-loading">No upcoming events scheduled.</div>';
+    return;
+  }
+  
+  // Sort events by date
+  const sortedEvents = [...EVENTS].sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  
+  container.innerHTML = sortedEvents.map(event => {
+    const eventDate = new Date(event.date + 'T00:00:00');
+    const formattedDate = `${days[eventDate.getDay()]}, ${months[eventDate.getMonth()]} ${eventDate.getDate()}, ${eventDate.getFullYear()}`;
+    const displayTitle = event.speaker ? `${event.speaker}` : event.title;
+    const displaySubtitle = event.speaker ? event.topic || event.description : '';
+    const modalDesc = event.description || (event.speaker ? `Join us for a special evening with ${event.speaker}.` : "Monthly gathering of men for worship, a message, and fellowship.");
+    
+    return `
+      <div class="event-tile ${event.featured ? 'featured' : ''}" onclick="openEventModal(${event.id})">
+        <div class="event-tile-date">${formattedDate} • ${event.time}</div>
+        <div class="event-tile-title">${escapeHtml(displayTitle)}</div>
+        ${displaySubtitle ? `<div class="event-tile-speaker">${escapeHtml(displaySubtitle)}</div>` : ''}
+        <div class="event-tile-details">
+          <div class="event-tile-detail">📍 ${event.location}</div>
+        </div>
+        <span class="event-tile-badge">${event.badge}</span>
+        <div class="event-tile-desc">${escapeHtml(modalDesc.substring(0, 120))}${modalDesc.length > 120 ? '...' : ''}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 function parseMarkdownContent(markdown) {
@@ -1485,6 +1634,7 @@ function renderCalendar() {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   document.getElementById('cal-month-label').textContent = months[calDate.getMonth()] + ' ' + calDate.getFullYear();
   const grid = document.getElementById('cal-grid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   const year = calDate.getFullYear(), month = calDate.getMonth();
@@ -1549,6 +1699,8 @@ function renderEventsList() {
     .sort((a,b) => new Date(a.date) - new Date(b.date));
 
   const list = document.getElementById('events-list');
+  if (!list) return;
+  
   if (upcoming.length === 0) {
     list.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;">No events this month.</p>';
     return;
@@ -1571,7 +1723,7 @@ function renderEventsList() {
 function showDayEvents(year, month, day) {
   calDate = new Date(year, month, 1);
   renderCalendar();
-  document.getElementById('events').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('calendar').scrollIntoView({ behavior:'smooth' });
 }
 
 function openEventModal(id) {
@@ -1611,7 +1763,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadDevotion();
   loadArchive();
   
-  document.getElementById('load-more-btn').addEventListener('click', loadArchive);
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', loadArchive);
+  }
 });
 </script>
 </body>
