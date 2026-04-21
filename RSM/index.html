@@ -124,6 +124,15 @@
     padding: 6rem 2rem 4rem;
   }
 
+  .hero-logo {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s ease both;
+    filter: brightness(0) invert(1);
+  }
+
   .hero-texture {
     position: absolute;
     inset: 0;
@@ -984,6 +993,7 @@
     .devotional-card { padding: 1.75rem; }
     .hero-title { font-size: clamp(4rem, 18vw, 7rem); }
     .events-tiles-grid { grid-template-columns: 1fr; }
+    .hero-logo { max-width: 150px; }
   }
 </style>
 </head>
@@ -1010,6 +1020,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-texture"></div>
+  <img class="hero-logo" src="https://rocksolidman.org/wp-content/uploads/2023/08/logo-wh.png" alt="Rock Solid Man Logo">
   <p class="hero-eyebrow">Matthew 7:24</p>
   <h1 class="hero-title">ARE YOU<br>ON THE <em>ROCK?</em></h1>
   <p class="hero-verse">
