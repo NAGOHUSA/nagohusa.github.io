@@ -1,469 +1,769 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nagoh</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nagoh Lingo - Localize to Globalize</title>
+  <meta name="description" content="Get your app featured in Japan, Germany, and Brazil. Professional localization for App Store and Google Play." />
+  <meta name="keywords" content="app localization, ASO, app store optimization, google play localization, app translation, multilingual app, app store listing, google play listing, app marketing, app store SEO, app store keywords, localization services, app translation services, app store optimization services, google play optimization, app store listing optimization, google play store optimization, app metadata optimization, app store description, google play description, app title optimization, app subtitle optimization, app keyword research, app store ranking, google play ranking, app discoverability, global app launch, international app marketing, app localization services, professional app translation, app store expert, google play expert, ASO expert, app growth, app downloads, app installs, app store conversion, google play conversion, app store A/B testing, app store screenshots, app store video, app store ratings, app store reviews, google play ratings, google play reviews, app store algorithm, google play algorithm, app store updates, google play updates, app store trends, google play trends, app store categories, google play categories, app store competition, google play competition, app store intelligence, google play intelligence, app store analytics, google play analytics, app store insights, google play insights, app store best practices, google play best practices, app store guidelines, google play guidelines, app store requirements, google play requirements, app store submission, google play submission, app store approval, google play approval, app store optimization checklist, ASO checklist, app localization checklist, app translation checklist, app store optimization tools, ASO tools, app localization tools, app translation tools, app store optimization company, ASO company, app localization company, app translation company, app store optimization agency, ASO agency, app localization agency, app translation agency, app store optimization consultant, ASO consultant, app localization consultant, app translation consultant, app store optimization services, ASO services, app localization services, app translation services, app store optimization package, ASO package, app localization package, app translation package, app store optimization pricing, ASO pricing, app localization pricing, app translation pricing, app store optimization cost, ASO cost, app localization cost, app translation cost" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #0b0f1a;
-      --surface:  #101520;
-      --surface2: #161c2a;
-      --border:   rgba(255,255,255,0.07);
-      --border2:  rgba(255,255,255,0.12);
-      --text:     #e2e6f0;
-      --muted:    #5e6a82;
-      --soft:     #8a96aa;
-      --gold:     #e8b86d;
-      --gold-dim: rgba(232,184,109,0.12);
-      --serif:    'Fraunces', Georgia, serif;
-      --mono:     'Geist Mono', monospace;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--mono);
-      background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* NAV */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 28px 52px;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: rgba(11,15,26,0.9);
-      backdrop-filter: blur(12px);
-      z-index: 10;
-    }
-
-    .logo {
-      font-family: var(--serif);
-      font-size: 19px;
-      color: var(--text);
-      text-decoration: none;
-      letter-spacing: 0.01em;
-    }
-    .logo span { color: var(--gold); }
-
-    .nav-links { display: flex; gap: 28px; }
-    .nav-links a {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-
-    /* HERO */
-    .hero {
-      padding: 100px 52px 88px;
-      border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 7fr 5fr;
-      gap: 64px;
-      align-items: end;
-    }
-
-    .hero h1 {
-      font-family: var(--serif);
-      font-size: clamp(52px, 6.5vw, 88px);
-      font-weight: 300;
-      line-height: 1.02;
-      letter-spacing: -0.025em;
-    }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
-    .hero-right p {
-      font-size: 13px;
-      line-height: 1.8;
-      color: var(--soft);
-      font-weight: 300;
-      max-width: 300px;
-      margin-left: auto;
-    }
-
-    /* SECTION LABEL */
-    .s-label {
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 0 52px;
-      margin-bottom: 0;
-      padding-top: 64px;
-      padding-bottom: 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* TOOLS GRID — 2 big cards */
-    .tools {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tool {
-      padding: 56px 52px;
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      text-decoration: none;
-      color: var(--text);
-      transition: background 0.25s;
-      min-height: 420px;
-    }
-    .tool:last-child { border-right: none; }
-    .tool:hover { background: var(--surface); }
-
-    .tool-num {
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 40px;
-    }
-
-    .tool-title {
-      font-family: var(--serif);
-      font-size: clamp(34px, 3vw, 48px);
-      font-weight: 300;
-      line-height: 1.06;
-      letter-spacing: -0.02em;
-      margin-bottom: 18px;
-    }
-    .tool-title em { font-style: italic; color: var(--gold); }
-
-    .tool-desc {
-      font-size: 12px;
-      line-height: 1.75;
-      color: var(--soft);
-      font-weight: 300;
-      flex: 1;
-      max-width: 300px;
-    }
-
-    .tool-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 44px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-
-    .tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tag {
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border: 1px solid var(--border2);
-      padding: 3px 9px;
-      border-radius: 3px;
-    }
-
-    .arrow {
-      font-size: 22px;
-      color: var(--gold);
-      transition: transform 0.2s;
-    }
-    .tool:hover .arrow,
-    .app-row:hover .arrow { transform: translate(3px, -3px); }
-
-    /* APPS GRID */
-    .apps {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .app-row {
-      padding: 36px 32px;
-      border-right: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      transition: background 0.2s;
-    }
-    .app-row:last-child { border-right: none; }
-    .app-row:hover { background: var(--surface); }
-
-    .app-icon {
-      font-size: 26px;
-      line-height: 1;
-    }
-
-    .app-name {
-      font-family: var(--serif);
-      font-size: 20px;
-      font-weight: 300;
-      letter-spacing: -0.01em;
-    }
-    .app-name em { font-style: italic; color: var(--gold); }
-
-    .app-desc {
-      font-size: 11px;
-      line-height: 1.65;
-      color: var(--soft);
-      font-weight: 300;
-      flex: 1;
-    }
-
-    .app-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .app-tag {
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* BLOG */
-    .blog-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 40px 52px;
-      border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      transition: background 0.2s;
-      gap: 24px;
-    }
-    .blog-row:hover { background: var(--surface); }
-
-    .blog-left { display: flex; align-items: center; gap: 24px; }
-
-    .blog-label {
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .blog-title {
-      font-family: var(--serif);
-      font-size: clamp(22px, 2.5vw, 30px);
-      font-weight: 300;
-      letter-spacing: -0.01em;
-    }
-    .blog-title em { font-style: italic; color: var(--gold); }
-
-    .blog-desc {
-      font-size: 12px;
-      color: var(--soft);
-      font-weight: 300;
-      max-width: 360px;
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 36px 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .footer-copy {
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    .footer-links { display: flex; gap: 20px; }
-    .footer-links a {
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--soft); }
-
-    /* ANIMATE */
-    @keyframes up {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: none; }
-    }
-    .hero          { animation: up 0.5s 0.05s ease both; }
-    .tools         { animation: up 0.5s 0.15s ease both; }
-    .apps          { animation: up 0.5s 0.25s ease both; }
-    .blog-row      { animation: up 0.5s 0.3s ease both; }
-
-    /* MOBILE */
-    @media (max-width: 860px) {
-      nav { padding: 20px 24px; }
-      .nav-links { display: none; }
-      .hero { grid-template-columns: 1fr; padding: 64px 24px 48px; gap: 20px; }
-      .hero-right p { margin-left: 0; max-width: 100%; }
-      .s-label { padding: 40px 24px 20px; }
-      .tools { grid-template-columns: 1fr; }
-      .tool { padding: 44px 24px; border-right: none; min-height: auto; }
-      .apps { grid-template-columns: 1fr 1fr; }
-      .app-row { padding: 28px 20px; }
-      .app-row:nth-child(2) { border-right: none; }
-      .app-row:nth-child(3) { border-right: 1px solid var(--border); border-top: 1px solid var(--border); }
-      .app-row:nth-child(4) { border-right: none; border-top: 1px solid var(--border); }
-      .blog-row { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
-      footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
-    }
-
-    @media (max-width: 480px) {
-      .apps { grid-template-columns: 1fr; }
-      .app-row { border-right: none !important; border-top: 1px solid var(--border); }
-      .app-row:first-child { border-top: none; }
-    }
+    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%); }
+    .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1); }
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .market-tab { transition: all 0.2s ease; cursor: pointer; }
+    .market-tab.active { border-bottom: 3px solid #667eea; color: #667eea; font-weight: 600; }
   </style>
 </head>
-<body>
+<body class="antialiased">
 
-  <nav>
-    <a class="logo" href="/">Nagoh<span>.</span></a>
-    <div class="nav-links">
-      <a href="#tools">Tools</a>
-      <a href="#apps">Apps</a>
-      <a href="#blog">Blog</a>
-      <a href="/boost/">Boost</a>
-      <a href="mailto:hello@nagoh.us">Contact</a>
+  <!-- Navigation -->
+  <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center"><span class="text-white font-bold text-sm">GL</span></div>
+          <span class="font-semibold text-gray-800">Nagoh Lingo</span>
+        </a>
+        <div class="flex items-center gap-6">
+          <a href="#how-it-works" class="text-sm text-gray-600 hover:text-gray-900 transition">How It Works</a>
+          <a href="#pricing" class="text-sm text-gray-600 hover:text-gray-900 transition">Pricing</a>
+          <a href="#faq" class="text-sm text-gray-600 hover:text-gray-900 transition">FAQ</a>
+          <button onclick="scrollToAnalyzer()" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg transition-all">Start Now</button>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <header class="hero">
-    <h1>Built for<br><em>indie</em> iOS<br>developers.</h1>
-    <div class="hero-right">
-      <p>Tools, apps, and writing for independent developers who want to build and ship great iOS apps — without the overhead.</p>
+  <!-- Hero Section -->
+  <section class="max-w-6xl mx-auto px-6 py-16 text-center">
+    <div class="inline-flex items-center gap-2 bg-purple-50 px-4 py-2 rounded-full mb-6">
+      <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+      <span class="text-sm text-purple-700 font-medium">Trusted by 500+ app developers</span>
     </div>
-  </header>
+    <h1 class="text-5xl md:text-6xl font-bold mb-6">Take Your App <span class="gradient-text">Global</span></h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8">Professional localization for App Store & Google Play. Get your app featured in Japan, Germany, Brazil, and 20+ other markets.</p>
+    <div class="flex flex-wrap gap-4 justify-center mb-12">
+      <button onclick="scrollToAnalyzer()" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all">Localize My App →</button>
+      <button onclick="showSample()" class="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-full font-medium hover:border-purple-600 hover:text-purple-600 transition-all">View Sample Report</button>
+    </div>
+    <div class="flex flex-wrap justify-center gap-8 text-sm text-gray-500">
+      <div class="flex items-center gap-2">✓ Ready in Minutes!</div>
+      <div class="flex items-center gap-2">✓ Optimized for Apple & Google</div>
+      <div class="flex items-center gap-2">✓ 30-day guarantee</div>
+      <div class="flex items-center gap-2">✓ 20+ Languages Available</div>
+    </div>
+  </section>
 
-  <!-- TOOLS -->
-  <div class="s-label" id="tools">Tools</div>
-  <div class="tools">
-
-    <a class="tool" href="https://nagoh.us/buymyapp/" target="_blank">
-      <div class="tool-num">01 — Marketplace</div>
-      <div class="tool-title">iOS Source<br><em>Code</em></div>
-      <p class="tool-desc">Production-ready Xcode projects with instant private GitHub access. Pay once, clone forever. Learn from real apps or launch fast.</p>
-      <div class="tool-foot">
-        <div class="tags">
-          <span class="tag">Xcode</span>
-          <span class="tag">One-time</span>
-          <span class="tag">GitHub</span>
+  <!-- Sample Report Modal (Detailed Preview - Real Selling Point) -->
+  <div id="sampleModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4" onclick="closeSampleModal(event)">
+    <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+      <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+        <div>
+          <h3 class="text-xl font-bold">✨ Complete Localization Report Sample</h3>
+          <p class="text-sm text-gray-500">See exactly what you'll get for YOUR app (real example shown below)</p>
         </div>
-        <span class="arrow">↗</span>
+        <button onclick="closeSampleModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
       </div>
-    </a>
-
-    <a class="tool" href="https://nagoh.us/lingo/" target="_blank">
-      <div class="tool-num">02 — Localization</div>
-      <div class="tool-title">Nagoh<br><em>Lingo</em></div>
-      <p class="tool-desc">App Store localization for 20+ global markets. Optimized titles, subtitles, descriptions, and keywords — delivered in minutes.</p>
-      <div class="tool-foot">
-        <div class="tags">
-          <span class="tag">20+ Markets</span>
-          <span class="tag">ASO</span>
-          <span class="tag">Instant</span>
+      
+      <div class="p-6">
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-md">🎨</div>
+            <div>
+              <h4 class="text-xl font-bold">EchoDraw</h4>
+              <p class="text-gray-600">Drawing & Design App | 50,000+ downloads</p>
+              <div class="flex items-center gap-2 mt-1"><span class="text-yellow-400">★★★★★</span><span class="text-sm text-gray-500">4.8 (12,345 ratings)</span></div>
+            </div>
+          </div>
         </div>
-        <span class="arrow">↗</span>
+        
+        <div class="mb-8">
+          <h4 class="font-bold text-lg mb-3 flex items-center gap-2">📊 What You Get With Every Report</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div class="bg-green-50 p-3 rounded-lg text-center"><div class="text-2xl font-bold text-green-600">8+</div><div class="text-xs text-gray-600">Markets Included</div></div>
+            <div class="bg-blue-50 p-3 rounded-lg text-center"><div class="text-2xl font-bold text-blue-600">30+</div><div class="text-xs text-gray-600">Keywords per Market</div></div>
+            <div class="bg-purple-50 p-3 rounded-lg text-center"><div class="text-2xl font-bold text-purple-600">500+</div><div class="text-xs text-gray-600">Words per Description</div></div>
+            <div class="bg-orange-50 p-3 rounded-lg text-center"><div class="text-2xl font-bold text-orange-600">24h</div><div class="text-xs text-gray-600">Delivery Time</div></div>
+          </div>
+        </div>
+        
+        <div class="flex border-b mb-6 overflow-x-auto">
+          <div class="market-sample-tab active px-4 py-2 font-medium text-purple-600 border-b-2 border-purple-600 cursor-pointer whitespace-nowrap" data-market="japan">🇯🇵 Japan</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="germany">🇩🇪 Germany</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="brazil">🇧🇷 Brazil</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="france">🇫🇷 France</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="korea">🇰🇷 Korea</div>
+          <div class="market-sample-tab px-4 py-2 font-medium text-gray-500 cursor-pointer whitespace-nowrap" data-market="china">🇨🇳 China</div>
+        </div>
+        
+        <div id="sample-japan" class="market-sample-content">
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇯🇵 Japanese Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">High Opportunity Market</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><span class="text-xs text-green-600 font-medium">✓ 23/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">トレースアプリ EchoDraw</div></div><div class="mb-4"><div class="flex justify-between items-center mb-1"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><span class="text-xs text-green-600 font-medium">✓ 24/30 characters</span></div><div class="bg-gray-50 rounded-xl p-3 font-medium">写真を簡単にトレース描画</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords (10+ included)</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">トレース</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">描画</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">アート</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">デッサン</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">イラスト</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">練習</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+7 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description (500+ words)</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed max-h-80 overflow-y-auto"><div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines (optimized for the fold):</div><p class="mb-3 text-gray-700">EchoDrawは、お手持ちのデバイスをプロ仕様のトレースツールに変えるアプリです。カメラプレビューに画像を重ねて、リアルタイムで手元を見ながら描画できます。</p><p class="mb-2 text-gray-700">• ライブカメラプレビュー – 手とペンの動きをリアルタイムで確認</p><p class="mb-2 text-gray-700">• 画像オーバーレイ – 好きな画像を簡単に重ねてトレース</p><p class="mb-2 text-gray-700">• 初心者からプロまで – 絵の上達をサポートするツール</p><p class="text-gray-700">アーティスト、デザイナー、絵を上達させたい方すべてにおすすめのアプリです。</p></div></div>
+          </div>
+          <div class="mt-6 border-t pt-4"><div class="grid md:grid-cols-2 gap-4"><div class="bg-purple-50 p-4 rounded-lg"><div class="flex items-center gap-2 mb-2"><span class="text-lg">🎎</span><strong class="text-purple-800">Cultural Insights</strong></div><p class="text-sm text-gray-700">Japanese users value precision, quality, and aesthetics. Use polite language (keigo/です・ます調).</p></div><div class="bg-blue-50 p-4 rounded-lg"><div class="flex items-center gap-2 mb-2"><span class="text-lg">📈</span><strong class="text-blue-800">Market Opportunity</strong></div><p class="text-sm text-gray-700">Japan's mobile art app market grew 45% in 2024. High ARPU and strong engagement.</p></div></div></div>
+        </div>
+        
+        <div id="sample-germany" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-yellow-50 to-amber-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇩🇪 German Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">High Value Market</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw: Zeichnen lernen</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">zeichnen lernen</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">abpausen app</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">zeichen app</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+8 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines:</div><p>Verwandeln Sie Ihr Gerät in ein professionelles Abpaus-Werkzeug mit EchoDraw – die ultimative App für Künstler, Designer und alle, die ihre Zeichenfähigkeiten verbessern möchten.</p></div></div>
+          </div>
+        </div>
+        
+        <div id="sample-brazil" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇧🇷 Brazilian Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Fastest Growing</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="mb-4"><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw: Desenho por Câmera</div></div><div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">🎯 Top Keywords</label><div class="flex flex-wrap gap-2"><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">desenho</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">câmera</span><span class="bg-gray-100 px-3 py-1 rounded-full text-sm">aprender desenho</span><span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">+6 more</span></div></div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Optimized Description</label><div class="bg-gray-50 rounded-xl p-4 text-sm leading-relaxed"><div class="bg-yellow-50 p-2 rounded mb-3 text-xs font-medium text-yellow-700">🔍 First 3 lines:</div><p>Transforme seu celular na ferramenta perfeita para desenhar! Com o EchoDraw, você vira artista mesmo sem experiência!</p></div></div>
+          </div>
+        </div>
+        
+        <div id="sample-france" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇫🇷 French Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Premium Market</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">EchoDraw - Dessin par calque</div></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-400 mb-2 block">📝 Description Sample</label><div class="bg-gray-50 rounded-xl p-4 text-sm">Transformez votre appareil en outil de traçage professionnel avec EchoDraw – l'application ultime pour artistes.</div></div>
+          </div>
+        </div>
+        
+        <div id="sample-korea" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇰🇷 South Korean Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Tech-Savvy Market</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">에코드로우: 사진 따라그리기</div></div>
+            <div><div class="bg-gray-50 rounded-xl p-4 text-sm">South Korea has one of the highest smartphone penetration rates globally. K-pop and webtoon culture drives strong demand for drawing/art apps.</div></div>
+          </div>
+        </div>
+        
+        <div id="sample-china" class="market-sample-content hidden">
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg mb-4"><div class="flex justify-between items-center"><span class="font-bold text-lg">🇨🇳 Chinese Market Report</span><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Largest Market</span></div></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div><div class="bg-gray-50 rounded-xl p-3 font-bold text-lg border-l-4 border-purple-500">描图大师 - 实时相机描摹</div></div>
+            <div><div class="bg-gray-50 rounded-xl p-4 text-sm">China's mobile app market is the world's largest. Localization requires simplified Chinese characters and cultural adaptation.</div></div>
+          </div>
+        </div>
+        
+        <div class="mt-8 border-t pt-6">
+          <h4 class="font-bold text-lg mb-4">✅ What's Included In Your Report</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center p-3 bg-green-50 rounded-xl"><div class="text-2xl mb-1">📝</div><div class="font-semibold text-sm">Optimized Title</div><div class="text-xs text-gray-500">30 char limit</div></div>
+            <div class="text-center p-3 bg-blue-50 rounded-xl"><div class="text-2xl mb-1">📌</div><div class="font-semibold text-sm">Subtitle</div><div class="text-xs text-gray-500">30 char limit</div></div>
+            <div class="text-center p-3 bg-purple-50 rounded-xl"><div class="text-2xl mb-1">📄</div><div class="font-semibold text-sm">Full Description</div><div class="text-xs text-gray-500">500-800 words</div></div>
+            <div class="text-center p-3 bg-orange-50 rounded-xl"><div class="text-2xl mb-1">🔑</div><div class="font-semibold text-sm">Keyword Research</div><div class="text-xs text-gray-500">10-15 per market</div></div>
+            <div class="text-center p-3 bg-red-50 rounded-xl"><div class="text-2xl mb-1">🎎</div><div class="font-semibold text-sm">Cultural Analysis</div><div class="text-xs text-gray-500">Local preferences</div></div>
+            <div class="text-center p-3 bg-indigo-50 rounded-xl"><div class="text-2xl mb-1">📸</div><div class="font-semibold text-sm">Screenshot Tips</div><div class="text-xs text-gray-500">5+ suggestions</div></div>
+            <div class="text-center p-3 bg-pink-50 rounded-xl"><div class="text-2xl mb-1">📊</div><div class="font-semibold text-sm">Competitor Insights</div><div class="text-xs text-gray-500">Market positioning</div></div>
+            <div class="text-center p-3 bg-cyan-50 rounded-xl"><div class="text-2xl mb-1">⚡</div><div class="font-semibold text-sm">ASO Strategy</div><div class="text-xs text-gray-500">Ranking tips</div></div>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl">
+          <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">⭐</div><div><div class="font-bold text-sm">What developers say</div><div class="text-xs text-gray-600">"Increased our Japan downloads by 340% in 2 weeks!"</div></div></div>
+          <div class="flex justify-center gap-4 text-xs text-gray-600"><span>✓ Trusted by 500+ developers</span><span>✓ 4.9/5 rating</span><span>✓ 30-day guarantee</span></div>
+        </div>
+        
+        <div class="mt-6 text-center">
+          <button onclick="closeSampleModal(); scrollToAnalyzer();" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-medium hover:shadow-xl transition-all transform hover:scale-105">Get Your Complete Report Now →</button>
+          <p class="text-xs text-gray-500 mt-3">Your report will be customized for YOUR app, not a template! • Instant delivery</p>
+        </div>
       </div>
-    </a>
-
+    </div>
   </div>
 
-  <!-- APPS -->
-  <div class="s-label" id="apps">Apps</div>
-  <div class="apps">
-
-    <a class="app-row" href="https://apps.apple.com/app/id6752505171" target="_blank">
-      <div class="app-icon">✏️</div>
-      <div class="app-name">Echo<em>Draw</em></div>
-      <p class="app-desc">Live camera tracing and lightbox for artists. Overlay any image on your camera feed and trace in real time.</p>
-      <div class="app-foot">
-        <span class="app-tag">Drawing</span>
-        <span class="arrow" style="font-size:16px">↗</span>
-      </div>
-    </a>
-
-    <a class="app-row" href="https://nagohcreative.com" target="_blank">
-      <div class="app-icon">🏋️</div>
-      <div class="app-name">Coach<em>Deck</em></div>
-      <p class="app-desc">Client management for personal trainers. Offline-first, no subscription — your data stays on your device.</p>
-      <div class="app-foot">
-        <span class="app-tag">Fitness</span>
-        <span class="arrow" style="font-size:16px">↗</span>
-      </div>
-    </a>
-
-    <a class="app-row" href="https://nagoh.xyz" target="_blank">
-      <div class="app-icon">📊</div>
-      <div class="app-name"><em>NAGOH</em></div>
-      <p class="app-desc">Real-time App Store sales alerts via on-device push notifications. Private by design — zero data collection.</p>
-      <div class="app-foot">
-        <span class="app-tag">Dev Tools</span>
-        <span class="arrow" style="font-size:16px">↗</span>
-      </div>
-    </a>
-
-    <a class="app-row" href="https://OurNightSky.US" target="_blank">
-      <div class="app-icon">🔭</div>
-      <div class="app-name">Our<em>NightSky</em></div>
-      <p class="app-desc">Mission tracking and astronomy tools. Live telemetry, Artemis dashboards, and night sky exploration.</p>
-      <div class="app-foot">
-        <span class="app-tag">Space</span>
-        <span class="arrow" style="font-size:16px">↗</span>
-      </div>
-    </a>
-
-  </div>
-
-  <!-- BLOG -->
-  <div class="s-label" id="blog">Writing</div>
-  <a class="blog-row" href="https://nagohcreative.com" target="_blank">
-    <div class="blog-left">
-      <span class="blog-label">Nagoh Creative</span>
-      <div class="blog-title">Notes on building<br><em>indie iOS apps.</em></div>
+  <!-- How It Works -->
+  <section id="how-it-works" class="max-w-6xl mx-auto px-6 py-16">
+    <h2 class="text-3xl font-bold text-center mb-12">Simple 3-Step Process</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">1️⃣</div><h3 class="font-semibold mb-2">Share Your App Link</h3><p class="text-sm text-gray-600">Paste your App Store or Google Play URL</p></div>
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">2️⃣</div><h3 class="font-semibold mb-2">Choose Your Languages</h3><p class="text-sm text-gray-600">Select from 20+ markets</p></div>
+      <div class="text-center card-hover"><div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">3️⃣</div><h3 class="font-semibold mb-2">Download & Publish</h3><p class="text-sm text-gray-600">Get your optimized listing instantly</p></div>
     </div>
-    <p class="blog-desc">Code, process, and lessons from shipping real apps independently — published on Substack.</p>
-    <span class="arrow" style="font-size:26px; flex-shrink:0;">↗</span>
-  </a>
+  </section>
 
-  <footer>
-    <span class="footer-copy">© 2026 Nagoh · Made for indie iOS developers</span>
-    <div class="footer-links">
-      <a href="https://nagoh.us/buymyapp/" target="_blank">Marketplace</a>
-      <a href="https://nagoh.us/lingo/" target="_blank">Lingo</a>
-      <a href="https://nagoh.xyz" target="_blank">NAGOH App</a>
-      <a href="https://nagohcreative.com" target="_blank">Blog</a>
-      <a href="mailto:hello@nagoh.us">Contact</a>
+  <!-- App Analyzer -->
+  <section id="analyzer" class="max-w-4xl mx-auto px-6 py-16">
+    <div class="bg-white rounded-3xl shadow-xl p-8 fade-in">
+      <h2 class="text-2xl font-bold mb-2">Start Localizing Your App</h2>
+      <p class="text-gray-600 mb-6">Choose your platform and paste your app URL</p>
+      <div class="flex gap-3 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
+        <button id="platformAppStore" class="platform-btn px-6 py-2 rounded-lg font-medium transition-all bg-white shadow-sm">📱 App Store</button>
+        <button id="platformGooglePlay" class="platform-btn px-6 py-2 rounded-lg font-medium transition-all">▶️ Google Play</button>
+      </div>
+      <form id="lookupForm" class="flex flex-col sm:flex-row gap-3">
+        <input id="appUrlInput" type="url" placeholder="https://apps.apple.com/us/app/id123456789 or https://play.google.com/store/apps/details?id=com.example" required class="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500" />
+        <button type="submit" id="lookupBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg text-white font-medium rounded-xl px-6 py-3 text-sm whitespace-nowrap transition-all">
+          <span id="lookupBtnText">Analyze App →</span>
+          <svg id="lookupSpinner" class="w-4 h-4 spinner hidden inline-block ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </button>
+      </form>
+      <p id="lookupError" class="hidden mt-3 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2"></p>
     </div>
-  </footer>
+  </section>
 
+  <!-- App Preview -->
+  <section id="appPreview" class="hidden max-w-4xl mx-auto px-6 py-8 fade-in">
+    <div class="bg-white rounded-3xl shadow-xl p-8">
+      <div class="flex items-start gap-5">
+        <img id="appIcon" src="" alt="" class="w-20 h-20 rounded-2xl shadow-md" />
+        <div class="flex-1">
+          <div class="flex items-start justify-between flex-wrap gap-2">
+            <div><h2 id="appName" class="text-2xl font-bold"></h2><p id="appSubtitle" class="text-gray-500 text-sm mt-0.5"></p></div>
+            <span id="appPlatform" class="inline-block bg-gray-100 text-gray-600 text-xs font-medium rounded-full px-3 py-1"></span>
+          </div>
+          <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500"><span id="appDev"></span><span id="appRating"></span><span id="appCategory"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="marketsSection" class="hidden max-w-6xl mx-auto px-6 py-8 fade-in">
+    <div class="bg-white rounded-3xl shadow-xl p-8">
+      <h2 class="text-2xl font-bold mb-2">Choose Your Package</h2>
+      <p class="text-gray-600 mb-6">Select the markets that matter most for your app's growth</p>
+      
+      <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <!-- Single Market -->
+        <div class="border rounded-2xl p-6 text-center card-hover">
+          <div class="text-3xl mb-2">📱</div>
+          <h3 class="font-bold text-lg">Single Market</h3>
+          <div class="text-3xl font-bold my-3">$5</div>
+          <p class="text-sm text-gray-500 mb-4">Perfect for testing a new market</p>
+          <div class="mb-4">
+            <label class="text-xs font-semibold text-gray-600 block mb-2">Choose Language:</label>
+            <select id="singleMarketLanguage" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <option value="japan">🇯🇵 Japanese</option>
+              <option value="germany">🇩🇪 German</option>
+              <option value="brazil">🇧🇷 Portuguese (Brazil)</option>
+              <option value="france">🇫🇷 French</option>
+              <option value="spain">🇪🇸 Spanish</option>
+              <option value="italy">🇮🇹 Italian</option>
+              <option value="southkorea">🇰🇷 Korean</option>
+              <option value="china">🇨🇳 Chinese (Simplified)</option>
+            </select>
+          </div>
+          <ul class="text-sm text-left space-y-2 mb-6"><li class="flex items-center gap-2">✓ 1 market localization</li><li class="flex items-center gap-2">✓ Title & subtitle</li><li class="flex items-center gap-2">✓ Full description</li><li class="flex items-center gap-2">✓ Keyword suggestions</li></ul>
+          <button id="singleMarketBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
+        </div>
+        
+        <!-- 3 Markets Bundle -->
+        <div class="border-2 border-purple-600 rounded-2xl p-6 text-center relative card-hover shadow-lg">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs px-3 py-1 rounded-full">⭐ Most Popular</div>
+          <div class="text-3xl mb-2">🌍</div>
+          <h3 class="font-bold text-lg">3 Markets Bundle</h3>
+          <div class="text-4xl font-bold my-3 gradient-text">$12</div>
+          <p class="text-sm text-gray-500 mb-4">Japan, Germany, Brazil included</p>
+          <ul class="text-sm text-left space-y-2 mb-6"><li class="flex items-center gap-2">✓ 3 markets (Japan, Germany, Brazil)</li><li class="flex items-center gap-2">✓ Complete localization package</li><li class="flex items-center gap-2">✓ Market analysis included</li><li class="flex items-center gap-2">✓ Screenshot optimization tips</li></ul>
+          <button id="threeMarketBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
+        </div>
+        
+        <!-- Enterprise -->
+        <div class="border rounded-2xl p-6 text-center card-hover">
+          <div class="text-3xl mb-2">🏢</div>
+          <h3 class="font-bold text-lg">Enterprise</h3>
+          <div class="text-3xl font-bold my-3">$19.99</div>
+          <p class="text-sm text-gray-500 mb-4">10 languages + full ASO</p>
+          <ul class="text-sm text-left space-y-2 mb-6"><li class="flex items-center gap-2">✓ 10+ markets</li><li class="flex items-center gap-2">✓ Complete ASO audit</li><li class="flex items-center gap-2">✓ Competitor analysis</li><li class="flex items-center gap-2">✓ Priority support</li></ul>
+          <button id="enterpriseBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 font-medium hover:shadow-lg transition">Select →</button>
+        </div>
+      </div>
+      
+      <!-- Add-ons Section (shown when user wants to customize 3-market bundle) -->
+      <div id="languageAddons" class="border-t border-gray-100 pt-8 mt-8 hidden">
+        <h3 class="font-bold text-lg mb-4">➕ Customize Your 3-Market Bundle</h3>
+        <p class="text-sm text-gray-600 mb-4">Add more markets or change selection (additional markets $5 each)</p>
+        
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-gray-600 block mb-2">Base Markets (included in $12):</label>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇯🇵 Japan</span>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇩🇪 Germany</span>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">🇧🇷 Brazil</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="france" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇫🇷 France (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="spain" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇪🇸 Spain (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="italy" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇮🇹 Italy (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="southkorea" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇰🇷 South Korea (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="china" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇨🇳 China (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="mexico" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇲🇽 Mexico (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="australia" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇦🇺 Australia (+$5)</span></label>
+          <label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer hover:border-purple-500 transition"><input type="checkbox" value="uk" class="addon-checkbox w-4 h-4 text-purple-600"><span class="text-sm">🇬🇧 United Kingdom (+$5)</span></label>
+        </div>
+        
+        <div id="priceBreakdown" class="bg-gray-50 rounded-xl p-4 mb-4">
+          <div class="flex justify-between text-sm mb-2"><span>Base Package (3 markets)</span><span>$12</span></div>
+          <div id="addonsBreakdown" class="text-sm text-gray-600"></div>
+          <div class="border-t pt-2 mt-2 flex justify-between font-bold"><span>Total</span><span id="totalPrice">$12</span></div>
+        </div>
+        
+        <div class="flex gap-3">
+          <button id="cancelAddons" class="flex-1 border border-gray-300 text-gray-700 rounded-xl py-3 font-medium hover:bg-gray-50 transition">Cancel</button>
+          <button id="checkoutWithAddons" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl py-3 font-medium hover:shadow-lg transition">Checkout → <span id="checkoutTotal" class="font-bold">$12</span></button>
+        </div>
+      </div>
+      
+      <div class="mt-6 text-center"><p class="text-xs text-gray-500">✓ 30-day money-back guarantee • ✓ Secure payment via Stripe • ✓ Instant delivery</p></div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="resultsSection" class="hidden max-w-5xl mx-auto px-6 py-8 fade-in">
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div id="marketTabs" class="flex border-b bg-gray-50"></div>
+      <div class="p-8">
+        <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+          <div class="flex items-center gap-2"><span id="resultMarketFlag" class="text-3xl"></span><span id="resultMarketName" class="text-xl font-bold"></span></div>
+          <button id="downloadReportBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:shadow-lg transition"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Full Report</button>
+        </div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Title</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultTitle">Copy</button></div><div id="resultTitle" class="bg-gray-50 rounded-xl px-4 py-3 font-medium"></div><div id="resultTitleCount" class="text-right text-xs text-gray-400 mt-1"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Subtitle</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultSubtitle">Copy</button></div><div id="resultSubtitle" class="bg-gray-50 rounded-xl px-4 py-3"></div><div id="resultSubtitleCount" class="text-right text-xs text-gray-400 mt-1"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Optimized Description</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultDescription">Copy</button></div><div id="resultDescription" class="bg-gray-50 rounded-xl px-4 py-3 text-sm whitespace-pre-line max-h-64 overflow-y-auto"></div></div>
+        <div class="mb-6"><div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold uppercase text-gray-400">Keyword Suggestions</label><button class="copy-btn text-xs text-purple-600 font-medium" data-target="resultKeywords">Copy All</button></div><div id="keywordTags" class="flex flex-wrap gap-2"></div><div id="resultKeywords" class="hidden"></div><div id="keywordCharCount" class="text-xs text-gray-400 mt-2"></div></div>
+        <div id="insightsContainer" class="border-t pt-6 mt-6 hidden"><h4 class="font-semibold mb-3">📊 Market Insights</h4><div id="insightsContent" class="grid md:grid-cols-2 gap-4 text-sm"></div></div>
+        <div class="mt-8 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl text-center"><p class="text-sm font-medium">✨ Backed by our 30-day satisfaction guarantee ✨</p><p class="text-xs text-gray-500 mt-1">Not happy? Full refund, no questions asked.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="max-w-4xl mx-auto px-6 py-16">
+    <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">Which platforms do you support?</h3><p class="text-gray-600 text-sm">Both Apple App Store and Google Play Store.</p></div>
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">How long does delivery take?</h3><p class="text-gray-600 text-sm">Your language pack is available right away, processing time is less than a minute.</p></div>
+      <div class="bg-white rounded-xl p-6"><h3 class="font-semibold mb-2">What languages are available?</h3><p class="text-gray-600 text-sm">Japanese, German, Brazilian Portuguese, French, Spanish, Italian, Korean, Chinese, and 15+ more markets.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA Footer -->
+  <section class="bg-gradient-to-r from-purple-900 to-indigo-900 text-white py-16">
+    <div class="max-w-4xl mx-auto px-6 text-center"><h2 class="text-3xl font-bold mb-4">Ready to Go Global?</h2><p class="text-purple-200 mb-8">Join 500+ developers who've expanded their app's reach</p><button onclick="scrollToAnalyzer()" class="bg-white text-purple-700 px-8 py-3 rounded-full font-medium hover:shadow-xl transition">Start Now →</button></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12"><div class="max-w-6xl mx-auto px-6 text-center text-sm"><p>© 2026 Nagoh Lingo. Helping apps reach worldwide audiences.</p><div class="flex justify-center gap-6 mt-4"><a href="#" class="hover:text-white transition">Terms</a><a href="#" class="hover:text-white transition">Privacy</a><a href="#" class="hover:text-white transition">Contact</a></div></div></footer>
+
+  <script>
+    // Configuration
+    const API_BASE = 'https://seoapplisting.gregoryhogan.workers.dev';
+    
+    // Payment Links - DIRECT STRIPE LINKS
+    const PAYMENT_LINKS = {
+      single: 'https://buy.stripe.com/dRmeVdeBC9p6adv4841Fe00',
+      three: 'https://buy.stripe.com/8x2dR9eBC30Ibhz5c81Fe01',
+      enterprise: 'https://buy.stripe.com/fZu9AT79aeJq3P7gUQ1Fe02'
+    };
+    
+    // Language mapping
+    const LANGUAGE_MAP = {
+      japan: { market: 'Japan', locale: 'ja', flag: '🇯🇵' },
+      germany: { market: 'Germany', locale: 'de', flag: '🇩🇪' },
+      brazil: { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' },
+      france: { market: 'France', locale: 'fr', flag: '🇫🇷' },
+      spain: { market: 'Spain', locale: 'es', flag: '🇪🇸' },
+      italy: { market: 'Italy', locale: 'it', flag: '🇮🇹' },
+      southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷' },
+      china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳' }
+    };
+    
+    // Add-on markets data
+    const ADDON_MARKETS = {
+      france: { market: 'France', locale: 'fr', flag: '🇫🇷', price: 5 },
+      spain: { market: 'Spain', locale: 'es', flag: '🇪🇸', price: 5 },
+      italy: { market: 'Italy', locale: 'it', flag: '🇮🇹', price: 5 },
+      southkorea: { market: 'South Korea', locale: 'ko', flag: '🇰🇷', price: 5 },
+      china: { market: 'China', locale: 'zh-Hans', flag: '🇨🇳', price: 5 },
+      mexico: { market: 'Mexico', locale: 'es-MX', flag: '🇲🇽', price: 5 },
+      australia: { market: 'Australia', locale: 'en-AU', flag: '🇦🇺', price: 5 },
+      uk: { market: 'United Kingdom', locale: 'en-GB', flag: '🇬🇧', price: 5 }
+    };
+    
+    let currentPlatform = 'appstore';
+    let allReports = [];
+    let currentMetadata = null;
+    let selectedAddons = [];
+    
+    // State management
+    const State = {
+      _key: 'aso_optimizer_state',
+      save(data) { try { sessionStorage.setItem(this._key, JSON.stringify(data)); } catch {} },
+      load() { try { return JSON.parse(sessionStorage.getItem(this._key) || 'null'); } catch { return null; } },
+      clear() { try { sessionStorage.removeItem(this._key); } catch {} },
+    };
+    
+    const $ = id => document.getElementById(id);
+    const show = id => { const el = $(id); if (el) el.classList.remove('hidden'); };
+    const hide = id => { const el = $(id); if (el) el.classList.add('hidden'); };
+    const setText = (id, text) => { const el = $(id); if (el) el.textContent = text || ''; };
+    
+    function showToast(msg) { alert(msg); }
+    
+    // Global function for nav button
+    window.scrollToAnalyzer = () => { document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' }); };
+    window.startNow = () => { document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' }); };
+    
+    // Platform switching
+    document.getElementById('platformAppStore').addEventListener('click', () => {
+      currentPlatform = 'appstore';
+      document.getElementById('platformAppStore').classList.add('bg-white', 'shadow-sm');
+      document.getElementById('platformGooglePlay').classList.remove('bg-white', 'shadow-sm');
+      document.getElementById('appUrlInput').placeholder = 'https://apps.apple.com/us/app/id123456789';
+    });
+    
+    document.getElementById('platformGooglePlay').addEventListener('click', () => {
+      currentPlatform = 'googleplay';
+      document.getElementById('platformGooglePlay').classList.add('bg-white', 'shadow-sm');
+      document.getElementById('platformAppStore').classList.remove('bg-white', 'shadow-sm');
+      document.getElementById('appUrlInput').placeholder = 'https://play.google.com/store/apps/details?id=com.example';
+    });
+    
+    // Sample modal
+    window.showSample = () => {
+      document.getElementById('sampleModal').classList.add('flex');
+      document.getElementById('sampleModal').classList.remove('hidden');
+    };
+    
+    window.closeSampleModal = (event) => {
+      if (!event || event.target === document.getElementById('sampleModal')) {
+        document.getElementById('sampleModal').classList.add('hidden');
+        document.getElementById('sampleModal').classList.remove('flex');
+      }
+    };
+    
+    // Sample modal tabs
+    function initSampleModalTabs() {
+      const tabs = document.querySelectorAll('.market-sample-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const market = tab.dataset.market;
+          tabs.forEach(t => { t.classList.remove('active', 'text-purple-600', 'border-purple-600'); t.classList.add('text-gray-500'); });
+          tab.classList.add('active', 'text-purple-600', 'border-purple-600');
+          document.querySelectorAll('.market-sample-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(`sample-${market}`)?.classList.remove('hidden');
+        });
+      });
+    }
+    document.addEventListener('DOMContentLoaded', initSampleModalTabs);
+    
+    // API helper
+    async function apiPost(path, body) {
+      const res = await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      return json;
+    }
+    
+    // Copy functionality
+    document.addEventListener('click', async e => {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+      const targetId = btn.dataset.target;
+      const el = $(targetId);
+      if (!el) return;
+      const text = el.dataset.copyText || el.textContent.trim();
+      try { await navigator.clipboard.writeText(text); showToast('Copied to clipboard!'); } catch { alert('Copy manually'); }
+    });
+    
+    // Lookup form
+    document.getElementById('lookupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const url = document.getElementById('appUrlInput').value.trim();
+      if (!url) return;
+      
+      hide('lookupError');
+      hide('appPreview');
+      hide('marketsSection');
+      hide('resultsSection');
+      
+      const btn = document.getElementById('lookupBtn');
+      const spinner = document.getElementById('lookupSpinner');
+      const btnText = document.getElementById('lookupBtnText');
+      btn.disabled = true;
+      btnText.textContent = 'Analyzing...';
+      spinner.classList.remove('hidden');
+      
+      try {
+        const data = await apiPost('/api/lookup', { appUrl: url, platform: currentPlatform });
+        State.save({ metadata: data, appUrl: url });
+        
+        const iconEl = document.getElementById('appIcon');
+        if (iconEl) iconEl.src = data.iconUrl || 'https://via.placeholder.com/80';
+        setText('appName', data.name);
+        setText('appSubtitle', data.subtitle || '');
+        setText('appPlatform', currentPlatform === 'appstore' ? '📱 App Store' : '▶️ Google Play');
+        setText('appDev', data.developer ? `by ${data.developer}` : '');
+        setText('appRating', data.rating ? `★ ${data.rating.toFixed(1)}` : '');
+        setText('appCategory', data.primaryGenre || data.category || '');
+        
+        show('appPreview');
+        show('marketsSection');
+        
+      } catch (err) {
+        const errEl = document.getElementById('lookupError');
+        errEl.textContent = err.message || 'Something went wrong. Please try again.';
+        show('lookupError');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Analyze App →';
+        spinner.classList.add('hidden');
+      }
+    });
+    
+    // SINGLE MARKET - Direct to Stripe Payment Link
+    document.getElementById('singleMarketBtn')?.addEventListener('click', async () => {
+      const state = State.load();
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
+      const selectedLang = document.getElementById('singleMarketLanguage').value;
+      const langInfo = LANGUAGE_MAP[selectedLang];
+      State.save({ ...state, pendingPayment: true, packageType: 'single', marketsToGenerate: [langInfo], totalPrice: 5 });
+      window.location.href = PAYMENT_LINKS.single;
+    });
+    
+    // THREE MARKET BUNDLE - Show add-ons customization first
+    const threeMarketBtn = document.getElementById('threeMarketBtn');
+    if (threeMarketBtn) {
+      threeMarketBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAddonsSection(true);
+        document.getElementById('languageAddons')?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+    
+    // ENTERPRISE - Direct to Stripe Payment Link
+    document.getElementById('enterpriseBtn')?.addEventListener('click', async () => {
+      const state = State.load();
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
+      const enterpriseMarkets = Object.values(LANGUAGE_MAP).slice(0, 10);
+      State.save({ ...state, pendingPayment: true, packageType: 'enterprise', marketsToGenerate: enterpriseMarkets, totalPrice: 19.99 });
+      window.location.href = PAYMENT_LINKS.enterprise;
+    });
+    
+    // Add-ons functionality
+    function updatePriceBreakdown() {
+      const basePrice = 12;
+      const addonsPrice = selectedAddons.length * 5;
+      const total = basePrice + addonsPrice;
+      const totalPriceEl = document.getElementById('totalPrice');
+      const checkoutTotalEl = document.getElementById('checkoutTotal');
+      const addonsBreakdownEl = document.getElementById('addonsBreakdown');
+      if (totalPriceEl) totalPriceEl.textContent = `$${total}`;
+      if (checkoutTotalEl) checkoutTotalEl.textContent = `$${total}`;
+      if (addonsBreakdownEl) {
+        addonsBreakdownEl.innerHTML = selectedAddons.length > 0 ? `<div class="flex justify-between text-purple-600"><span>+ ${selectedAddons.length} additional market${selectedAddons.length > 1 ? 's' : ''}</span><span>+$${addonsPrice}</span></div>` : '';
+      }
+    }
+    
+    function toggleAddonsSection(show) {
+      const addonsSection = document.getElementById('languageAddons');
+      if (addonsSection) {
+        show ? addonsSection.classList.remove('hidden') : addonsSection.classList.add('hidden');
+      }
+    }
+    
+    function initAddonCheckboxes() {
+      document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+          if (e.target.checked) selectedAddons.push(e.target.value);
+          else selectedAddons = selectedAddons.filter(v => v !== e.target.value);
+          updatePriceBreakdown();
+        });
+      });
+    }
+    
+    // Cancel add-ons
+    document.getElementById('cancelAddons')?.addEventListener('click', () => {
+      toggleAddonsSection(false);
+      selectedAddons = [];
+      document.querySelectorAll('.addon-checkbox').forEach(cb => cb.checked = false);
+      updatePriceBreakdown();
+    });
+    
+    async function checkoutWithAddons() {
+      const state = State.load();
+      if (!state?.metadata) { showToast('Please analyze an app first'); return; }
+      const baseMarkets = [{ market: 'Japan', locale: 'ja', flag: '🇯🇵' }, { market: 'Germany', locale: 'de', flag: '🇩🇪' }, { market: 'Brazil', locale: 'pt-BR', flag: '🇧🇷' }];
+      const addonMarkets = selectedAddons.map(key => ADDON_MARKETS[key]);
+      const allMarkets = [...baseMarkets, ...addonMarkets];
+      const totalPrice = 12 + (selectedAddons.length * 5);
+      State.save({ ...state, pendingPayment: true, packageType: 'three_with_addons', marketsToGenerate: allMarkets, totalPrice: totalPrice });
+      try {
+        const response = await fetch(`${API_BASE}/api/create-checkout`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appName: state.metadata.name, amount: totalPrice, markets: allMarkets.map(m => m.market), successUrl: `${window.location.origin}${window.location.pathname}?session_id={CHECKOUT_SESSION_ID}&paid=true`, cancelUrl: `${window.location.origin}${window.location.pathname}?cancelled=true` })
+        });
+        const data = await response.json();
+        if (data.url) window.location.href = data.url;
+        else showToast('Error creating checkout session');
+      } catch (err) { showToast(`Checkout error: ${err.message}`); }
+    }
+    
+    document.getElementById('checkoutWithAddons')?.addEventListener('click', checkoutWithAddons);
+    initAddonCheckboxes();
+    
+    // Handle payment return
+    async function handlePaymentReturn() {
+      const params = new URLSearchParams(location.search);
+      const sessionId = params.get('session_id');
+      const cancelled = params.get('cancelled');
+      const paid = params.get('paid');
+      
+      if (cancelled) { history.replaceState({}, '', window.location.pathname); showToast('Checkout cancelled'); return; }
+      if (sessionId || paid === 'true') {
+        history.replaceState({}, '', window.location.pathname);
+        const state = State.load();
+        if (!state?.metadata || !state.pendingPayment) { showToast('Session expired. Please search again.'); return; }
+        
+        const unlockingDiv = document.createElement('div');
+        unlockingDiv.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center';
+        unlockingDiv.innerHTML = '<div class="bg-white rounded-2xl p-8 text-center"><div class="spinner w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4"></div><p class="text-gray-700">Generating your report...</p></div>';
+        document.body.appendChild(unlockingDiv);
+        
+        try {
+          const data = await apiPost('/api/optimize', { metadata: state.metadata, sessionId: sessionId || 'payment_completed', paymentVerified: true, selectedMarkets: state.marketsToGenerate });
+          unlockingDiv.remove();
+          if (!data.premium) { showToast('Payment verified but report unavailable. Please contact support.'); return; }
+          populateMultiMarketResults(data, state.metadata);
+          State.save({ ...state, pendingPayment: false });
+        } catch (err) { unlockingDiv.remove(); alert(`Error generating report: ${err.message}`); }
+      }
+    }
+    
+    function populateMultiMarketResults(data, metadata) {
+      currentMetadata = metadata;
+      allReports = data.reports || [];
+      if (allReports.length === 0) { showToast('No report data received'); return; }
+      createMarketTabs(allReports);
+      displayMarketReport(0);
+      show('resultsSection');
+      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function createMarketTabs(reports) {
+      const container = document.getElementById('marketTabs');
+      if (!container) return;
+      container.innerHTML = '';
+      reports.forEach((report, index) => {
+        const tab = document.createElement('button');
+        tab.className = `market-tab flex-1 py-3 text-sm font-medium ${index === 0 ? 'active' : ''}`;
+        tab.innerHTML = `${report.flag || '🌍'} ${report.market}`;
+        tab.onclick = () => {
+          document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          displayMarketReport(index);
+        };
+        container.appendChild(tab);
+      });
+    }
+    
+    function displayMarketReport(index) {
+      const report = allReports[index];
+      if (!report) return;
+      
+      setText('resultMarketFlag', report.flag || '🌍');
+      setText('resultMarketName', report.market || '');
+      
+      const titleText = report.title || '';
+      setText('resultTitle', titleText);
+      const titleEl = document.getElementById('resultTitle');
+      if (titleEl) titleEl.dataset.copyText = titleText;
+      setText('resultTitleCount', `${titleText.length}/30 characters`);
+      
+      const subtitleText = report.subtitle || '';
+      setText('resultSubtitle', subtitleText);
+      const subtitleEl = document.getElementById('resultSubtitle');
+      if (subtitleEl) subtitleEl.dataset.copyText = subtitleText;
+      setText('resultSubtitleCount', `${subtitleText.length}/30 characters`);
+      
+      const descText = report.description || '';
+      setText('resultDescription', descText);
+      const descEl = document.getElementById('resultDescription');
+      if (descEl) descEl.dataset.copyText = descText;
+      
+      const keywordsRaw = report.keywords || '';
+      const keywordList = keywordsRaw.split(/[,、，]/).map(k => k.trim()).filter(Boolean);
+      const tagsContainer = document.getElementById('keywordTags');
+      if (tagsContainer) {
+        tagsContainer.innerHTML = '';
+        keywordList.forEach(kw => {
+          const span = document.createElement('span');
+          span.className = 'bg-gray-100 text-gray-700 text-xs font-medium rounded-full px-3 py-1.5';
+          span.textContent = kw;
+          tagsContainer.appendChild(span);
+        });
+      }
+      
+      const resultKeywords = document.getElementById('resultKeywords');
+      if (resultKeywords) resultKeywords.dataset.copyText = keywordList.join(', ');
+      const charCount = keywordList.join(',').replace(/\s/g, '').length;
+      setText('keywordCharCount', `${charCount}/100 characters${charCount > 100 ? ' — exceeds limit' : ''}`);
+      
+      // Build comprehensive insights
+      const insightsContainer = document.getElementById('insightsContainer');
+      const insightsContent = document.getElementById('insightsContent');
+      let insightsHtml = '';
+      
+      if (report.market_analysis) {
+        insightsHtml += `<div class="bg-purple-50 p-4 rounded-lg"><div class="flex items-center gap-2 mb-2"><span class="text-lg">🎯</span><strong class="text-purple-800">Top Keywords</strong></div><div class="flex flex-wrap gap-1 mt-1">${(report.market_analysis.top_keywords || []).map(k => `<span class="text-xs bg-white px-2 py-1 rounded-full">${k}</span>`).join('')}</div><div class="mt-2 text-sm"><strong>Cultural Tips:</strong> ${report.market_analysis.cultural_considerations || 'N/A'}</div><div class="mt-1 text-sm"><strong>User Expectations:</strong> ${report.market_analysis.user_expectations || 'N/A'}</div><div class="mt-1 text-sm"><strong>Competitor Insights:</strong> ${report.market_analysis.competitor_insights || 'N/A'}</div></div>`;
+      }
+      
+      if (report.aso_recommendations) {
+        insightsHtml += `<div class="bg-blue-50 p-4 rounded-lg"><div class="flex items-center gap-2 mb-2"><span class="text-lg">📸</span><strong class="text-blue-800">Screenshot Optimization Tips</strong></div><ul class="text-sm space-y-1 list-disc pl-4">${(report.aso_recommendations.screenshot_text || []).map(t => `<li>${t}</li>`).join('')}</ul><div class="mt-2 text-sm"><strong>Visual Localization:</strong> ${report.aso_recommendations.visual_localization || 'N/A'}</div><div class="mt-1 text-sm"><strong>Pricing Strategy:</strong> ${report.aso_recommendations.pricing_strategy || 'N/A'}</div><div class="mt-1 text-sm"><strong>Launch Timing:</strong> ${report.aso_recommendations.launch_timing || 'N/A'}</div></div>`;
+      }
+      
+      if (report.performance_predictions) {
+        insightsHtml += `<div class="bg-green-50 p-4 rounded-lg"><div class="flex items-center gap-2 mb-2"><span class="text-lg">📈</span><strong class="text-green-800">Performance Predictions</strong></div><div class="text-sm"><strong>Keyword Ranking Potential:</strong> ${report.performance_predictions.keyword_ranking_potential || 'N/A'}</div><div class="mt-1 text-sm"><strong>Suggested Categories:</strong> ${(report.performance_predictions.suggested_categories || []).join(' → ') || 'N/A'}</div><div class="mt-1 text-sm"><strong>Age Rating Notes:</strong> ${report.performance_predictions.age_rating_notes || 'N/A'}</div></div>`;
+      }
+      
+      if (insightsContent && insightsHtml) {
+        insightsContent.innerHTML = insightsHtml;
+        insightsContainer.classList.remove('hidden');
+      } else if (insightsContainer) {
+        insightsContainer.classList.add('hidden');
+      }
+    }
+    
+    // Download report
+    document.getElementById('downloadReportBtn')?.addEventListener('click', () => {
+      if (!allReports.length || !currentMetadata) return;
+      let reportHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>App Localization Report - ${currentMetadata.name}</title><style>body{font-family:system-ui;max-width:800px;margin:0 auto;padding:40px 20px}h1{color:#667eea;border-bottom:2px solid #667eea;padding-bottom:10px}.market{background:#f5f5f5;padding:20px;border-radius:16px;margin:20px 0}.label{font-size:12px;font-weight:600;text-transform:uppercase;color:#666}.content{margin:8px 0 16px}.keyword{background:#e0e0e0;padding:4px 8px;border-radius:16px;display:inline-block;margin:4px}footer{margin-top:50px;text-align:center;font-size:12px;color:#999}</style></head><body><h1>🌍 App Localization Report</h1><p><strong>App:</strong> ${currentMetadata.name}<br><strong>Generated:</strong> ${new Date().toLocaleString()}</p>`;
+      allReports.forEach(report => {
+        reportHtml += `<div class="market"><h2>${report.flag} ${report.market}</h2><div><div class="label">Title</div><div class="content"><strong>${report.title || ''}</strong></div></div><div><div class="label">Subtitle</div><div class="content">${report.subtitle || ''}</div></div><div><div class="label">Description</div><div class="content">${report.description || ''}</div></div><div><div class="label">Keywords</div><div class="content">${(report.keywords || '').split(/[,、，]/).map(k => `<span class="keyword">${k.trim()}</span>`).join('')}</div></div></div>`;
+      });
+      reportHtml += `<footer>Generated by Nagoh Lingo • Ready for App Store & Google Play</footer></body></html>`;
+      const blob = new Blob([reportHtml], { type: 'text/html' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `App_Localization_${currentMetadata.name.replace(/[^a-z0-9]/gi, '_')}.html`;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('Report downloaded!');
+    });
+    
+    // Initialize
+    handlePaymentReturn();
+  </script>
 </body>
 </html>
