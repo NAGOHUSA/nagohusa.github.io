@@ -4,496 +4,625 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Robert Grissett</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IM+Fell+English:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --bg: #FBF7F0;
-  --ink: #1A1208;
-  --red: #D13B1E;
-  --yellow: #E8C832;
-  --blue: #1A3A8C;
-  --mid: #6B5A4E;
-  --light: #EDE6D8;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FDF8F2;
+  --ink:#1C1208;
+  --red:#D93F1F;
+  --yellow:#EAC92A;
+  --blue:#1E3F9E;
+  --mid:#7A6455;
+  --light:#F0E8D8;
+  --card:#FFFDF8;
+  --r-sm:16px;
+  --r-md:24px;
+  --r-lg:36px;
+  --r-xl:48px;
+  --ease:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-soft:cubic-bezier(0.25,0.46,0.45,0.94);
 }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'Space Mono', monospace;
-  overflow-x: hidden;
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Space Mono',monospace;
+  overflow-x:hidden;
 }
+
+/* ── CUSTOM CURSOR ── */
+#cur-dot{
+  position:fixed;width:8px;height:8px;
+  background:var(--red);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s var(--ease),height .2s var(--ease),background .2s;
+  mix-blend-mode:multiply;
+}
+#cur-ring{
+  position:fixed;width:40px;height:40px;
+  border:1.5px solid var(--red);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:all .35s var(--ease-soft);
+  mix-blend-mode:multiply;
+  opacity:.45;
+}
+body.cursor-hover #cur-dot{width:14px;height:14px}
+body.cursor-hover #cur-ring{width:56px;height:56px;opacity:.25}
 
 /* ── NAV ── */
-#nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 400;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0.9rem 2rem;
-  background: var(--bg);
-  border-bottom: 2px solid var(--ink);
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:.9rem 2rem;
+  display:flex;justify-content:space-between;align-items:center;
 }
-.nav-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.3rem; letter-spacing: 0.1em;
-  color: var(--ink); text-decoration: none;
+.nav-pill{
+  background:rgba(253,248,242,.88);
+  backdrop-filter:blur(14px);
+  border:1.5px solid rgba(28,18,8,.1);
+  border-radius:999px;
+  padding:.55rem 1.5rem;
+  display:flex;align-items:center;gap:2rem;
 }
-.nav-logo span { color: var(--red); }
-.nav-links { display: flex; gap: 1.5rem; list-style: none; }
-.nav-links a {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--mid); text-decoration: none; transition: color 0.15s;
+.nav-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.15rem;letter-spacing:.1em;
+  color:var(--ink);text-decoration:none;
 }
-.nav-links a:hover { color: var(--red); }
-.nav-hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
-.nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); transition: 0.2s; }
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mid);text-decoration:none;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--red)}
+.nav-hamburger{
+  display:none;background:none;border:none;cursor:pointer;
+  flex-direction:column;gap:5px;padding:.3rem;
+}
+.nav-hamburger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:.25s}
+.mobile-menu{
+  display:none;position:fixed;top:70px;left:1rem;right:1rem;z-index:499;
+  background:rgba(253,248,242,.97);backdrop-filter:blur(14px);
+  border:1.5px solid rgba(28,18,8,.1);border-radius:var(--r-lg);
+  padding:1.5rem 2rem;
+  flex-direction:column;gap:1.2rem;
+  animation:menuIn .3s var(--ease) both;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink);text-decoration:none;padding:.5rem 0;
+  border-bottom:1px solid rgba(28,18,8,.06);
+}
+@keyframes menuIn{
+  from{opacity:0;transform:translateY(-12px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
 
 /* ── HERO ── */
-#hero {
-  padding-top: 56px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100svh;
-  border-bottom: 2px solid var(--ink);
+#hero{
+  padding:calc(70px + 1.5rem) 1.5rem 2rem;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.5rem;
+  min-height:100svh;
+  align-items:stretch;
 }
-.hero-left {
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: 2.5rem 2rem;
-  border-right: 2px solid var(--ink);
+.hero-card{
+  background:var(--card);
+  border-radius:var(--r-xl);
+  border:1.5px solid rgba(28,18,8,.08);
+  padding:3rem 2.5rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  gap:2rem;
+  box-shadow:0 2px 24px rgba(28,18,8,.04);
+  animation:fadeUp .8s var(--ease-soft) both;
 }
-.hero-tag {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--red);
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(28px)}
+  to{opacity:1;transform:translateY(0)}
 }
-.hero-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(4.5rem, 9vw, 8rem);
-  line-height: 0.87; letter-spacing: 0.02em;
-  color: var(--ink);
+.hero-tag{
+  font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--red);
 }
-.hero-title .accent { color: var(--red); }
-.hero-quote {
-  font-family: 'IM Fell English', serif;
-  font-style: italic; font-size: clamp(0.85rem, 1.4vw, 1.05rem);
-  color: var(--mid); line-height: 1.7;
-  border-left: 3px solid var(--yellow);
-  padding-left: 1rem;
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,8.5vw,7.5rem);
+  line-height:.86;letter-spacing:.02em;
+  color:var(--ink);
 }
-.hero-cta {
-  display: inline-flex; align-items: center; gap: 0.8rem;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1rem; letter-spacing: 0.15em;
-  color: var(--bg); background: var(--ink);
-  padding: 0.75rem 1.8rem; text-decoration: none;
-  border: 2px solid var(--ink);
-  transition: background 0.2s, color 0.2s;
-  width: fit-content;
+.hero-title .accent{
+  display:block;color:var(--red);
+  animation:slideIn .9s var(--ease) .2s both;
 }
-.hero-cta:hover { background: var(--red); border-color: var(--red); }
+@keyframes slideIn{
+  from{opacity:0;transform:translateX(-20px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.hero-quote{
+  font-family:'IM Fell English',serif;
+  font-style:italic;
+  font-size:clamp(.85rem,1.3vw,1.05rem);
+  line-height:1.75;color:var(--mid);
+  border-left:3px solid var(--yellow);
+  padding-left:1rem;
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:.7rem;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.95rem;letter-spacing:.15em;
+  color:var(--bg);background:var(--ink);
+  padding:.8rem 1.8rem;text-decoration:none;
+  border-radius:999px;
+  transition:background .25s,transform .2s var(--ease),box-shadow .2s;
+  width:fit-content;
+  box-shadow:0 4px 16px rgba(28,18,8,.15);
+}
+.hero-cta:hover{
+  background:var(--red);
+  transform:scale(1.04) translateY(-1px);
+  box-shadow:0 8px 28px rgba(217,63,31,.3);
+}
 
-/* ── HERO IMAGE GRID — right column ── */
-.hero-right {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 2px;
-  background: var(--ink);
+/* hero image grid */
+.hero-imgs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:60% 40%;
+  gap:.75rem;
+  animation:fadeUp .8s var(--ease-soft) .15s both;
 }
-.hero-tile {
-  overflow: hidden; position: relative;
-  background: var(--light); cursor: pointer;
+.h-tile{
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  position:relative;cursor:pointer;
+  background:var(--light);
+  transition:transform .5s var(--ease),box-shadow .4s;
+  box-shadow:0 2px 12px rgba(28,18,8,.07);
 }
-.hero-tile img {
-  width: 100%; height: 100%;
-  object-fit: contain; display: block;
-  background: var(--light);
-  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+.h-tile:hover{
+  transform:scale(1.025) translateY(-3px);
+  box-shadow:0 12px 36px rgba(28,18,8,.14);
 }
-.hero-tile:hover img { transform: scale(1.05); }
-.hero-tile-label {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 0.4rem 0.6rem;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase;
-  color: rgba(255,255,255,0.9);
-  background: rgba(26,18,8,0.55);
-  opacity: 0; transition: opacity 0.2s;
+.h-tile img{
+  width:100%;height:100%;
+  object-fit:contain;display:block;
+  background:var(--light);
 }
-.hero-tile:hover .hero-tile-label { opacity: 1; }
-/* span first tile across both rows */
-.hero-tile.span2 { grid-row: 1 / 3; }
+.h-tile.big{grid-row:1/3}
+.h-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.8rem .9rem .7rem;
+  background:linear-gradient(transparent,rgba(28,18,8,.65));
+  font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.9);
+  opacity:0;
+  transition:opacity .25s;
+  border-radius:0 0 var(--r-lg) var(--r-lg);
+}
+.h-tile:hover .h-label{opacity:1}
 
 /* ── TICKER ── */
-.ticker {
-  background: var(--red);
-  padding: 0.55rem 0; overflow: hidden; white-space: nowrap;
-  border-bottom: 2px solid var(--ink);
+.ticker{
+  margin:1.5rem;
+  background:var(--red);
+  border-radius:var(--r-xl);
+  padding:.65rem 0;overflow:hidden;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(217,63,31,.2);
 }
-.ticker-inner {
-  display: inline-flex;
-  animation: tick 24s linear infinite;
+.ticker-track{
+  display:inline-flex;
+  animation:tick 26s linear infinite;
 }
-.ticker-inner span {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 0.95rem; letter-spacing: 0.15em;
-  color: var(--bg); padding: 0 2rem;
+.ticker-track span{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.95rem;letter-spacing:.15em;
+  color:var(--bg);padding:0 2rem;
 }
-.ticker-inner .dot { color: var(--yellow); padding: 0 0.3rem; }
-@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker-track .dot{color:var(--yellow);padding:0 .3rem}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ── GALLERY ── */
-#gallery { background: var(--bg); }
+#gallery{padding:0 1.5rem 2rem}
 
-.gallery-bar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.2rem 2rem;
-  border-bottom: 2px solid var(--ink);
-  background: var(--yellow);
+.section-label{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:1rem;
+  padding:0 .25rem;
 }
-.gallery-bar-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.8rem; letter-spacing: 0.08em; color: var(--ink);
+.section-label-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2.2rem;letter-spacing:.06em;color:var(--ink);
 }
-.gallery-bar-meta {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: rgba(26,18,8,0.5);
-}
-
-/* MOSAIC: 3-column CSS grid, images at natural size via auto rows */
-.mosaic {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  background: var(--ink);
-  border-bottom: 2px solid var(--ink);
-}
-.mosaic-item {
-  background: var(--light);
-  overflow: hidden; position: relative; cursor: pointer;
-}
-.mosaic-item img {
-  width: 100%; height: 100%;
-  object-fit: contain; display: block;
-  background: var(--light);
-  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
-  aspect-ratio: auto;
-}
-.mosaic-item:hover img { transform: scale(1.04); }
-
-/* let some items span for visual rhythm */
-.mosaic-item.wide { grid-column: span 2; }
-.mosaic-item.tall { grid-row: span 2; }
-
-.mosaic-caption {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 2rem 0.9rem 0.75rem;
-  background: linear-gradient(transparent, rgba(26,18,8,0.75));
-  opacity: 0; transition: opacity 0.25s;
-  pointer-events: none;
-}
-.mosaic-item:hover .mosaic-caption { opacity: 1; }
-.mosaic-caption-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--yellow); margin-bottom: 0.2rem;
-}
-.mosaic-caption-title {
-  font-family: 'IM Fell English', serif;
-  font-style: italic; font-size: 1rem; color: #fff;
-}
-.mosaic-expand {
-  position: absolute; top: 0.6rem; right: 0.6rem;
-  width: 26px; height: 26px;
-  border: 1.5px solid rgba(255,255,255,0.5);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; color: #fff;
-  opacity: 0; transition: opacity 0.2s, background 0.15s;
-  pointer-events: none;
-}
-.mosaic-item:hover .mosaic-expand { opacity: 1; }
-
-/* ── STATEMENT + BIO (side by side) ── */
-#info {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-bottom: 2px solid var(--ink);
+.section-label-title span{color:var(--red)}
+.section-label-meta{
+  font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mid);
 }
 
-/* Statement — yellow */
-.stmt {
-  background: var(--yellow);
-  padding: 3rem 2.5rem;
-  border-right: 2px solid var(--ink);
-  display: flex; flex-direction: column; gap: 1.5rem;
+/* masonry grid */
+.mosaic{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:.75rem;
 }
-.stmt-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(26,18,8,0.45);
+.m-item{
+  border-radius:var(--r-lg);
+  overflow:hidden;position:relative;
+  cursor:pointer;background:var(--light);
+  transition:transform .45s var(--ease),box-shadow .4s;
+  box-shadow:0 2px 10px rgba(28,18,8,.06);
 }
-.stmt-hed {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(3rem, 5vw, 4.5rem); line-height: 0.88;
-  letter-spacing: 0.02em; color: var(--ink);
+.m-item:hover{
+  transform:translateY(-5px) scale(1.015);
+  box-shadow:0 16px 40px rgba(28,18,8,.13);
 }
-.stmt-hed span { color: var(--red); }
-.stmt-pull {
-  font-family: 'IM Fell English', serif;
-  font-style: italic;
-  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
-  line-height: 1.7; color: rgba(26,18,8,0.75);
-  border-left: 3px solid var(--red); padding-left: 1rem;
+.m-item img{
+  width:100%;height:100%;
+  object-fit:contain;display:block;
+  background:var(--light);
+  transition:transform .6s var(--ease-soft);
 }
-.stmt-body {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.62rem; line-height: 1.95;
-  color: rgba(26,18,8,0.6);
+.m-item:hover img{transform:scale(1.04)}
+.m-item.wide{grid-column:span 2}
+.m-item.tall{grid-row:span 2}
+.m-cap{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:2.5rem 1rem .9rem;
+  background:linear-gradient(transparent,rgba(28,18,8,.72));
+  opacity:0;transition:opacity .3s;
+  border-radius:0 0 var(--r-lg) var(--r-lg);
 }
-.stmt-body p + p { margin-top: 0.9rem; }
-.stmt-sig {
-  font-family: 'IM Fell English', serif;
-  font-style: italic; font-size: 1.1rem;
-  color: var(--red);
+.m-item:hover .m-cap{opacity:1}
+.m-cap-num{
+  font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--yellow);margin-bottom:.2rem;
 }
+.m-cap-title{
+  font-family:'IM Fell English',serif;
+  font-style:italic;font-size:1rem;color:#fff;
+}
+.m-plus{
+  position:absolute;top:.7rem;right:.7rem;
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.85);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:var(--ink);
+  opacity:0;transition:opacity .25s,transform .25s var(--ease);
+  transform:scale(.7);
+}
+.m-item:hover .m-plus{opacity:1;transform:scale(1)}
 
-/* Bio — blue */
-.bio {
-  background: var(--blue);
-  color: #fff;
-  padding: 3rem 2.5rem;
-  display: flex; flex-direction: column; gap: 1.5rem;
+/* ── INFO (Statement + Bio) ── */
+#info{
+  padding:0 1.5rem 2rem;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:.75rem;
 }
-.bio-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+.info-card{
+  border-radius:var(--r-xl);
+  padding:3rem 2.5rem;
+  box-shadow:0 2px 16px rgba(28,18,8,.06);
 }
-.bio-hed {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(3rem, 5vw, 4.5rem); line-height: 0.88;
-  letter-spacing: 0.02em; color: #fff;
+.stmt-card{
+  background:var(--yellow);
+  border:1.5px solid rgba(28,18,8,.06);
 }
-.bio-hed span { color: var(--yellow); }
-.bio-text {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.62rem; line-height: 1.95;
-  color: rgba(255,255,255,0.6);
+.bio-card{
+  background:var(--blue);color:#fff;
+  border:1.5px solid rgba(28,18,8,.06);
 }
-.bio-text p + p { margin-top: 0.9rem; }
-.bio-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 1px; background: rgba(255,255,255,0.15);
-  margin-top: 0.5rem;
+.ic-label{
+  font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:1rem;
+  opacity:.5;
 }
-.bio-cell {
-  background: var(--blue); padding: 1rem 0.8rem;
+.ic-hed{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.8rem,4.5vw,4rem);
+  line-height:.88;letter-spacing:.02em;
+  margin-bottom:1.5rem;
 }
-.bio-cell-val {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.8rem; letter-spacing: 0.06em; color: var(--yellow);
+.stmt-card .ic-hed{color:var(--ink)}
+.stmt-card .ic-hed span{color:var(--red)}
+.bio-card .ic-hed{color:#fff}
+.bio-card .ic-hed span{color:var(--yellow)}
+.ic-pull{
+  font-family:'IM Fell English',serif;
+  font-style:italic;
+  font-size:clamp(.85rem,1.2vw,.98rem);
+  line-height:1.75;
+  border-left:3px solid var(--red);
+  padding-left:1rem;
+  margin-bottom:1.5rem;
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
 }
-.bio-cell-key {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+.stmt-card .ic-pull{color:rgba(28,18,8,.7)}
+.ic-body{
+  font-size:.6rem;line-height:2;
+  color:rgba(28,18,8,.6);
+}
+.bio-card .ic-body{color:rgba(255,255,255,.6)}
+.ic-body p+p{margin-top:.8rem}
+.ic-sig{
+  font-family:'IM Fell English',serif;
+  font-style:italic;font-size:1.05rem;
+  color:var(--red);margin-top:1.2rem;
+}
+.bio-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:.5rem;margin-top:1.5rem;
+}
+.bio-stat{
+  background:rgba(255,255,255,.07);
+  border-radius:var(--r-md);
+  padding:.9rem .8rem;
+  transition:background .2s;
+}
+.bio-stat:hover{background:rgba(255,255,255,.13)}
+.bio-stat-val{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.6rem;letter-spacing:.05em;color:var(--yellow);
+}
+.bio-stat-key{
+  font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-top:.15rem;
 }
 
 /* ── CONTACT ── */
-#contact {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  border-bottom: 2px solid var(--ink);
+#contact{padding:0 1.5rem 2rem;display:grid;grid-template-columns:1fr 1.5fr;gap:.75rem}
+.contact-card-left{
+  background:var(--red);color:#fff;
+  border-radius:var(--r-xl);
+  padding:3rem 2.5rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 4px 24px rgba(217,63,31,.2);
 }
-.contact-left {
-  background: var(--red);
-  padding: 3rem 2.5rem;
-  display: flex; flex-direction: column; justify-content: space-between;
-  border-right: 2px solid var(--ink);
+.contact-card-right{
+  background:var(--card);
+  border:1.5px solid rgba(28,18,8,.08);
+  border-radius:var(--r-xl);
+  padding:3rem 2.5rem;
+  box-shadow:0 2px 16px rgba(28,18,8,.05);
 }
-.contact-hed {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(3.5rem, 6vw, 5.5rem); line-height: 0.87;
-  letter-spacing: 0.02em; color: #fff;
+.c-hed{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3.2rem,5.5vw,5rem);
+  line-height:.87;letter-spacing:.02em;color:#fff;
 }
-.contact-hed span { color: var(--yellow); }
-.contact-details {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem; line-height: 2; letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.65);
+.c-hed span{color:var(--yellow)}
+.c-details{
+  font-size:.6rem;line-height:2.2;letter-spacing:.06em;
+  color:rgba(255,255,255,.6);
 }
-.contact-tags {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+.c-tags{
+  font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
 }
-
-.contact-right {
-  background: var(--bg);
-  padding: 3rem 2.5rem;
+.ff{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+.ff label{
+  font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mid);
 }
-.form-field {
-  display: flex; flex-direction: column; gap: 0.35rem;
-  margin-bottom: 1.1rem;
+.ff input,.ff select,.ff textarea{
+  background:var(--light);
+  border:1.5px solid rgba(28,18,8,.1);
+  border-radius:var(--r-md);
+  padding:.65rem 1rem;
+  font-family:'Space Mono',monospace;
+  font-size:.68rem;color:var(--ink);
+  outline:none;width:100%;appearance:none;
+  transition:border-color .2s,box-shadow .2s;
 }
-.form-field label {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--mid);
+.ff input:focus,.ff select:focus,.ff textarea:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(217,63,31,.1);
 }
-.form-field input,
-.form-field select,
-.form-field textarea {
-  background: var(--light);
-  border: 1.5px solid var(--ink);
-  padding: 0.65rem 0.8rem;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.68rem; color: var(--ink);
-  outline: none; transition: border-color 0.15s;
-  width: 100%; appearance: none; border-radius: 0;
+.ff input::placeholder,.ff textarea::placeholder{color:rgba(28,18,8,.25)}
+.ff select option{background:var(--bg)}
+.ff textarea{resize:vertical;min-height:110px}
+.f2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-btn{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:.15em;
+  background:var(--ink);color:var(--bg);
+  border:none;border-radius:999px;
+  padding:.8rem 2rem;cursor:pointer;
+  transition:background .2s,transform .2s var(--ease),box-shadow .2s;
+  margin-top:.3rem;
+  box-shadow:0 4px 14px rgba(28,18,8,.15);
 }
-.form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus { border-color: var(--red); }
-.form-field input::placeholder,
-.form-field textarea::placeholder { color: rgba(26,18,8,0.3); }
-.form-field select { cursor: pointer; }
-.form-field select option { background: var(--bg); }
-.form-field textarea { resize: vertical; min-height: 110px; }
-.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.form-btn {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.05rem; letter-spacing: 0.15em;
-  background: var(--ink); color: var(--bg);
-  border: 2px solid var(--ink); padding: 0.75rem 2rem;
-  cursor: pointer; transition: background 0.2s, color 0.2s;
-  margin-top: 0.3rem;
+.form-btn:hover{
+  background:var(--red);
+  transform:scale(1.04) translateY(-1px);
+  box-shadow:0 8px 24px rgba(217,63,31,.28);
 }
-.form-btn:hover { background: var(--red); border-color: var(--red); }
-.form-ok {
-  display: none; margin-top: 0.8rem;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.62rem; letter-spacing: 0.08em;
-  color: var(--blue); border-left: 3px solid var(--blue);
-  padding-left: 0.8rem;
+.form-ok{
+  display:none;margin-top:.8rem;
+  font-size:.62rem;letter-spacing:.08em;
+  color:var(--blue);
+  border-left:3px solid var(--blue);
+  padding-left:.8rem;
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
 }
 
 /* ── FOOTER ── */
-footer {
-  background: var(--ink);
-  padding: 1.2rem 2rem;
-  display: flex; justify-content: space-between; align-items: center;
+footer{
+  margin:0 1.5rem 1.5rem;
+  background:var(--ink);
+  border-radius:var(--r-xl);
+  padding:1.2rem 2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 4px 20px rgba(28,18,8,.12);
 }
-.footer-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 0.1em;
-  color: rgba(251,247,240,0.4); text-decoration: none;
+.footer-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:.1em;
+  color:rgba(253,248,242,.35);text-decoration:none;
 }
-.footer-logo span { color: var(--yellow); }
-.footer-links { display: flex; gap: 1.5rem; }
-.footer-links a {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: rgba(251,247,240,0.25); text-decoration: none; transition: color 0.15s;
+.footer-logo span{color:var(--yellow)}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{
+  font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(253,248,242,.2);text-decoration:none;transition:color .2s;
 }
-.footer-links a:hover { color: var(--yellow); }
+.footer-links a:hover{color:var(--yellow)}
 
 /* ── LIGHTBOX ── */
-#lb {
-  position: fixed; inset: 0; z-index: 900;
-  background: rgba(26,18,8,0.96);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+#lb{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(28,18,8,.95);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+  backdrop-filter:blur(8px);
 }
-#lb.open { opacity: 1; pointer-events: all; }
-#lb-img {
-  max-width: 92vw; max-height: 88vh;
-  object-fit: contain; display: block;
+#lb.open{opacity:1;pointer-events:all}
+#lb-wrap{
+  position:relative;
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  max-width:90vw;max-height:88vh;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+  transform:scale(.92);
+  transition:transform .35s var(--ease);
 }
-#lb-title {
-  position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-  font-family: 'IM Fell English', serif; font-style: italic;
-  font-size: 1rem; color: rgba(251,247,240,0.65);
-  white-space: nowrap;
+#lb.open #lb-wrap{transform:scale(1)}
+#lb-img{
+  max-width:88vw;max-height:85vh;
+  object-fit:contain;display:block;
 }
-#lb-close {
-  position: absolute; top: 1.2rem; right: 1.5rem;
-  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.12em;
-  color: rgba(251,247,240,0.4); background: none; border: none;
-  cursor: pointer; transition: color 0.15s;
+#lb-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:2rem 1.2rem .9rem;
+  background:linear-gradient(transparent,rgba(28,18,8,.8));
 }
-#lb-close:hover { color: var(--yellow); }
+#lb-title{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:1.05rem;color:rgba(253,248,242,.8);
+}
+#lb-close{
+  position:fixed;top:1.5rem;right:1.5rem;
+  background:rgba(253,248,242,.1);
+  border:1.5px solid rgba(253,248,242,.2);
+  border-radius:999px;
+  padding:.5rem 1rem;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.9rem;letter-spacing:.1em;
+  color:rgba(253,248,242,.6);
+  cursor:pointer;
+  transition:background .2s,color .2s;
+}
+#lb-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ── SCROLL REVEAL ── */
+.sr{
+  opacity:0;transform:translateY(32px);
+  transition:opacity .7s var(--ease-soft),transform .7s var(--ease-soft);
+}
+.sr.in{opacity:1;transform:translateY(0)}
+.sr-delay-1{transition-delay:.1s}
+.sr-delay-2{transition-delay:.2s}
+.sr-delay-3{transition-delay:.3s}
 
 /* ── MOBILE ── */
-@media (max-width: 700px) {
-  .nav-links { display: none; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 2px solid var(--ink); padding: 1rem 2rem; gap: 1.2rem; z-index: 300; }
-  .nav-links.open { display: flex; }
-  .nav-hamburger { display: flex; }
+@media(max-width:720px){
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
 
-  #hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { border-right: none; border-bottom: 2px solid var(--ink); padding: 2rem 1.5rem; gap: 1.2rem; }
-  .hero-right { grid-template-columns: 1fr 1fr; grid-template-rows: auto; height: 55vw; }
-  .hero-tile.span2 { grid-row: auto; grid-column: span 2; }
+  #hero{
+    grid-template-columns:1fr;
+    padding-top:calc(70px + 1rem);
+    gap:1rem;min-height:auto;
+  }
+  .hero-card{padding:2rem 1.5rem}
+  .hero-imgs{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto;
+    height:55vw;
+  }
+  .h-tile.big{grid-row:auto;grid-column:span 2}
 
-  .mosaic { grid-template-columns: 1fr 1fr; }
-  .mosaic-item.wide { grid-column: span 2; }
-  .mosaic-item.tall { grid-row: auto; }
+  .mosaic{grid-template-columns:1fr 1fr}
+  .m-item.wide{grid-column:span 2}
+  .m-item.tall{grid-row:auto}
 
-  #info { grid-template-columns: 1fr; }
-  .stmt { border-right: none; border-bottom: 2px solid var(--ink); }
+  #info{grid-template-columns:1fr}
+  .info-card{padding:2.5rem 1.5rem}
 
-  #contact { grid-template-columns: 1fr; }
-  .contact-left { border-right: none; border-bottom: 2px solid var(--ink); }
-  .form-2col { grid-template-columns: 1fr; gap: 0; }
+  #contact{grid-template-columns:1fr}
+  .contact-card-left,.contact-card-right{padding:2.5rem 1.5rem}
+  .f2col{grid-template-columns:1fr;gap:0}
 
-  footer { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
-  .footer-links { flex-wrap: wrap; gap: 1rem; }
+  footer{flex-direction:column;gap:.8rem;align-items:flex-start;border-radius:var(--r-lg)}
+  .footer-links{flex-wrap:wrap;gap:1rem}
+
+  .section-label{padding:0}
 }
 </style>
 </head>
 <body>
 
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
 <!-- NAV -->
 <nav id="nav">
-  <a href="#" class="nav-logo">Robert <span>Grissett</span></a>
-  <ul class="nav-links" id="navlinks">
-    <li><a href="#gallery" onclick="closeMenu()">Work</a></li>
-    <li><a href="#info" onclick="closeMenu()">Statement</a></li>
-    <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
-  </ul>
-  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="nav-pill">
+    <a href="#" class="nav-logo">Robert <span>Grissett</span></a>
+    <ul class="nav-links">
+      <li><a href="#gallery">Work</a></li>
+      <li><a href="#info">Statement</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hbg" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
+<div class="mobile-menu" id="mmenu">
+  <a href="#gallery" onclick="closeMenu()">Work</a>
+  <a href="#info" onclick="closeMenu()">Statement</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-left">
+  <div class="hero-card">
     <p class="hero-tag">Americus, Georgia — Visual Art — MFA 2025</p>
-    <h1 class="hero-title">Robert<br><span class="accent">Grissett</span></h1>
+    <h1 class="hero-title">
+      Robert<br>
+      <span class="accent">Grissett</span>
+    </h1>
     <p class="hero-quote">"The direction implied by beauty may be the element missing from much of contemporary art — a North Star guiding our making; an ought."</p>
     <a href="#gallery" class="hero-cta">View Work →</a>
   </div>
-  <div class="hero-right">
-    <div class="hero-tile span2" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
+
+  <div class="hero-imgs">
+    <div class="h-tile big" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
       <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit">
-      <div class="hero-tile-label">Double Double Slit</div>
+      <div class="h-label">Double Double Slit</div>
     </div>
-    <div class="hero-tile" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
+    <div class="h-tile" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
       <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune">
-      <div class="hero-tile-label">Blue Tune</div>
+      <div class="h-label">Blue Tune</div>
     </div>
-    <div class="hero-tile" onclick="openLB('https://robertgrissett.art/work/Sprinkles.jpeg','Sprinkles')">
-      <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles">
-      <div class="hero-tile-label">Sprinkles</div>
+    <div class="h-tile" onclick="openLB('https://robertgrissett.art/work/MicrowaveTwinkle.jpeg','Microwave Twinkle')">
+      <img src="https://robertgrissett.art/work/MicrowaveTwinkle.jpeg" alt="Microwave Twinkle">
+      <div class="h-label">Microwave Twinkle</div>
     </div>
   </div>
 </section>
 
 <!-- TICKER -->
 <div class="ticker">
-  <div class="ticker-inner">
+  <div class="ticker-track">
     <span>Robert Grissett</span><span class="dot">✦</span>
     <span>Americus Georgia</span><span class="dot">✦</span>
     <span>MFA 2025</span><span class="dot">✦</span>
@@ -501,6 +630,7 @@ footer {
     <span>Rich in Pattern</span><span class="dot">✦</span>
     <span>Beauty as Direction</span><span class="dot">✦</span>
     <span>Georgia to New York</span><span class="dot">✦</span>
+    <span>An Ought</span><span class="dot">✦</span>
     <span>Robert Grissett</span><span class="dot">✦</span>
     <span>Americus Georgia</span><span class="dot">✦</span>
     <span>MFA 2025</span><span class="dot">✦</span>
@@ -508,132 +638,118 @@ footer {
     <span>Rich in Pattern</span><span class="dot">✦</span>
     <span>Beauty as Direction</span><span class="dot">✦</span>
     <span>Georgia to New York</span><span class="dot">✦</span>
+    <span>An Ought</span><span class="dot">✦</span>
   </div>
 </div>
 
 <!-- GALLERY -->
 <section id="gallery">
-  <div class="gallery-bar">
-    <div class="gallery-bar-title">Selected Work</div>
-    <div class="gallery-bar-meta">11 pieces — tap to expand</div>
+  <div class="section-label sr">
+    <div class="section-label-title">Selected <span>Work</span></div>
+    <div class="section-label-meta">11 pieces — tap to expand</div>
   </div>
   <div class="mosaic">
-
-    <div class="mosaic-item wide" onclick="openLB('https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg','Party Squares — The Cosmic Cut')">
+    <div class="m-item wide sr sr-delay-1" onclick="openLB('https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg','Party Squares — The Cosmic Cut')">
       <img src="https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg" alt="Party Squares" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">01</div><div class="mosaic-caption-title">Party Squares — The Cosmic Cut</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">01</div><div class="m-cap-title">Party Squares — The Cosmic Cut</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item tall" onclick="openLB('https://robertgrissett.art/work/OchreChoker.jpeg','Ochre Choker')">
+    <div class="m-item tall sr sr-delay-2" onclick="openLB('https://robertgrissett.art/work/OchreChoker.jpeg','Ochre Choker')">
       <img src="https://robertgrissett.art/work/OchreChoker.jpeg" alt="Ochre Choker" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">02</div><div class="mosaic-caption-title">Ochre Choker</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">02</div><div class="m-cap-title">Ochre Choker</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/Fleshy Fruit.jpeg','Fleshy Fruit')">
+    <div class="m-item sr sr-delay-1" onclick="openLB('https://robertgrissett.art/work/Fleshy Fruit.jpeg','Fleshy Fruit')">
       <img src="https://robertgrissett.art/work/Fleshy Fruit.jpeg" alt="Fleshy Fruit" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">03</div><div class="mosaic-caption-title">Fleshy Fruit</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">03</div><div class="m-cap-title">Fleshy Fruit</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/Hashtag.jpeg','Hashtag')">
+    <div class="m-item sr sr-delay-2" onclick="openLB('https://robertgrissett.art/work/Hashtag.jpeg','Hashtag')">
       <img src="https://robertgrissett.art/work/Hashtag.jpeg" alt="Hashtag" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">04</div><div class="mosaic-caption-title">Hashtag</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">04</div><div class="m-cap-title">Hashtag</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item wide" onclick="openLB('https://robertgrissett.art/work/MicrowaveTwinkle.jpeg','Microwave Twinkle')">
+    <div class="m-item wide sr sr-delay-1" onclick="openLB('https://robertgrissett.art/work/MicrowaveTwinkle.jpeg','Microwave Twinkle')">
       <img src="https://robertgrissett.art/work/MicrowaveTwinkle.jpeg" alt="Microwave Twinkle" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">05</div><div class="mosaic-caption-title">Microwave Twinkle</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">05</div><div class="m-cap-title">Microwave Twinkle</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/Sprinkles.jpeg','Sprinkles')">
+    <div class="m-item sr sr-delay-2" onclick="openLB('https://robertgrissett.art/work/Sprinkles.jpeg','Sprinkles')">
       <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">06</div><div class="mosaic-caption-title">Sprinkles</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">06</div><div class="m-cap-title">Sprinkles</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item tall" onclick="openLB('https://robertgrissett.art/work/Spleener.jpeg','Spleener')">
+    <div class="m-item tall sr sr-delay-3" onclick="openLB('https://robertgrissett.art/work/Spleener.jpeg','Spleener')">
       <img src="https://robertgrissett.art/work/Spleener.jpeg" alt="Spleener" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">07</div><div class="mosaic-caption-title">Spleener</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">07</div><div class="m-cap-title">Spleener</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/SquarePound.jpeg','Square Pound')">
+    <div class="m-item sr sr-delay-1" onclick="openLB('https://robertgrissett.art/work/SquarePound.jpeg','Square Pound')">
       <img src="https://robertgrissett.art/work/SquarePound.jpeg" alt="Square Pound" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">08</div><div class="mosaic-caption-title">Square Pound</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">08</div><div class="m-cap-title">Square Pound</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
+    <div class="m-item sr sr-delay-2" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
       <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">09</div><div class="mosaic-caption-title">Blue Tune</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">09</div><div class="m-cap-title">Blue Tune</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item wide" onclick="openLB('https://robertgrissett.art/work/GhostGraham.jpeg','Ghost Graham')">
+    <div class="m-item wide sr sr-delay-1" onclick="openLB('https://robertgrissett.art/work/GhostGraham.jpeg','Ghost Graham')">
       <img src="https://robertgrissett.art/work/GhostGraham.jpeg" alt="Ghost Graham" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">10</div><div class="mosaic-caption-title">Ghost Graham</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">10</div><div class="m-cap-title">Ghost Graham</div></div>
+      <div class="m-plus">+</div>
     </div>
-
-    <div class="mosaic-item" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
+    <div class="m-item sr sr-delay-2" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
       <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit" loading="lazy">
-      <div class="mosaic-caption"><div class="mosaic-caption-num">11</div><div class="mosaic-caption-title">Double Double Slit</div></div>
-      <div class="mosaic-expand">+</div>
+      <div class="m-cap"><div class="m-cap-num">11</div><div class="m-cap-title">Double Double Slit</div></div>
+      <div class="m-plus">+</div>
     </div>
-
   </div>
 </section>
 
 <!-- STATEMENT + BIO -->
 <section id="info">
-  <div class="stmt">
-    <p class="stmt-label">Artist Statement</p>
-    <h2 class="stmt-hed">Beauty<br>as<br><span>Direction</span></h2>
-    <p class="stmt-pull">"Art, like the flower's sensuous detail, is extra — a North Star guiding our making; an ought."</p>
-    <div class="stmt-body">
-      <p>The extra things around me — earrings, architectural trim, kitsch, pottery, and toys — have only risen further to the surface of my perception and greatly influence these intentionally colorful, bold in shape, rich in pattern artifacts that are a bouquet of attempts at doing 'good' via art.</p>
-      <p>Several years ago, while working as a rural mailman, I came upon a flowering plant among the dust of the road — it had a quality that rose above mere survival and into another realm altogether. It was beautiful. That lack of necessity is the same quality distilled from art conceptually: its uselessness. Art, like the flower, is extra.</p>
+  <div class="info-card stmt-card sr">
+    <p class="ic-label">Artist Statement</p>
+    <h2 class="ic-hed">Beauty<br>as<br><span>Direction</span></h2>
+    <p class="ic-pull">"Art, like the flower's sensuous detail, is extra — a North Star guiding our making; an ought."</p>
+    <div class="ic-body">
+      <p>The extra things around me — earrings, architectural trim, kitsch, pottery, and toys — greatly influence these intentionally colorful, bold in shape, rich in pattern artifacts: a bouquet of attempts at doing 'good' via art.</p>
+      <p>Several years ago, while working as a rural mailman, I came upon a flowering plant that had a quality rising above mere survival and into another realm entirely. It was beautiful. Art shares that same unnecessary extra-ness — and beauty points the way.</p>
     </div>
-    <p class="stmt-sig">— Robert Grissett</p>
+    <p class="ic-sig">— Robert Grissett</p>
   </div>
-  <div class="bio">
-    <p class="bio-label">About the Artist</p>
-    <h2 class="bio-hed">Robert<br><span>Grissett</span></h2>
-    <div class="bio-text">
+  <div class="info-card bio-card sr sr-delay-1">
+    <p class="ic-label">About the Artist</p>
+    <h2 class="ic-hed">Robert<br><span>Grissett</span></h2>
+    <div class="ic-body">
       <p>An artist from Southwest Georgia living in Americus with his wife and four children. His journey began with flags, then graffiti, screen printing, and finally art school.</p>
       <p>He has shown work at local, regional, and national exhibitions from Georgia to New York.</p>
     </div>
     <div class="bio-grid">
-      <div class="bio-cell"><div class="bio-cell-val">BFA</div><div class="bio-cell-key">2011</div></div>
-      <div class="bio-cell"><div class="bio-cell-val">MFA</div><div class="bio-cell-key">2025</div></div>
-      <div class="bio-cell"><div class="bio-cell-val">4</div><div class="bio-cell-key">Children</div></div>
-      <div class="bio-cell"><div class="bio-cell-val">GA→NY</div><div class="bio-cell-key">Shows</div></div>
+      <div class="bio-stat"><div class="bio-stat-val">BFA</div><div class="bio-stat-key">2011</div></div>
+      <div class="bio-stat"><div class="bio-stat-val">MFA</div><div class="bio-stat-key">2025</div></div>
+      <div class="bio-stat"><div class="bio-stat-val">4</div><div class="bio-stat-key">Children</div></div>
+      <div class="bio-stat"><div class="bio-stat-val">GA→NY</div><div class="bio-stat-key">Shows</div></div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="contact-left">
-    <h2 class="contact-hed">Let's<br>Talk<br><span>Art</span></h2>
-    <div class="contact-details">
-      Americus, Georgia<br>
-      robertgrissett.art
-    </div>
-    <div class="contact-tags">Purchase · Exhibition · Commission · Press</div>
+  <div class="contact-card-left sr">
+    <h2 class="c-hed">Let's<br>Talk<br><span>Art</span></h2>
+    <div class="c-details">Americus, Georgia<br>robertgrissett.art</div>
+    <div class="c-tags">Purchase · Exhibition · Commission · Press</div>
   </div>
-  <div class="contact-right">
+  <div class="contact-card-right sr sr-delay-1">
     <form id="cform" onsubmit="handleForm(event)">
-      <div class="form-2col">
-        <div class="form-field"><label>First Name</label><input type="text" required placeholder="Jane"></div>
-        <div class="form-field"><label>Last Name</label><input type="text" required placeholder="Smith"></div>
+      <div class="f2col">
+        <div class="ff"><label>First Name</label><input type="text" required placeholder="Jane"></div>
+        <div class="ff"><label>Last Name</label><input type="text" required placeholder="Smith"></div>
       </div>
-      <div class="form-field"><label>Email</label><input type="email" required placeholder="jane@gallery.com"></div>
-      <div class="form-field">
+      <div class="ff"><label>Email</label><input type="email" required placeholder="jane@gallery.com"></div>
+      <div class="ff">
         <label>Subject</label>
         <select>
           <option value="">Select…</option>
@@ -644,7 +760,7 @@ footer {
           <option>General inquiry</option>
         </select>
       </div>
-      <div class="form-field"><label>Message</label><textarea required placeholder="Tell Robert about your interest…"></textarea></div>
+      <div class="ff"><label>Message</label><textarea required placeholder="Tell Robert about your interest…"></textarea></div>
       <button type="submit" class="form-btn" id="fbtn">Send Message</button>
       <div class="form-ok" id="fok">Message received — Robert will be in touch.</div>
     </form>
@@ -664,39 +780,54 @@ footer {
 <!-- LIGHTBOX -->
 <div id="lb" onclick="closeLB()">
   <button id="lb-close" onclick="closeLB()">Close ✕</button>
-  <img id="lb-img" src="" alt="">
-  <div id="lb-title"></div>
+  <div id="lb-wrap" onclick="e=>e.stopPropagation()">
+    <img id="lb-img" src="" alt="">
+    <div id="lb-bar"><div id="lb-title"></div></div>
+  </div>
 </div>
 
 <script>
-function openLB(src, title) {
-  document.getElementById('lb-img').src = src;
-  document.getElementById('lb-title').textContent = title || '';
+/* cursor */
+const dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+animRing();
+document.querySelectorAll('a,button,.m-item,.h-tile,.hero-cta').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
+});
+
+/* mobile menu */
+function toggleMenu(){document.getElementById('mmenu').classList.toggle('open')}
+function closeMenu(){document.getElementById('mmenu').classList.remove('open')}
+
+/* lightbox */
+function openLB(src,title){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lb-title').textContent=title||'';
   document.getElementById('lb').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
-function closeLB() {
+function closeLB(){
   document.getElementById('lb').classList.remove('open');
-  document.body.style.overflow = '';
+  document.body.style.overflow='';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB()});
 
-function toggleMenu() {
-  document.getElementById('navlinks').classList.toggle('open');
-}
-function closeMenu() {
-  document.getElementById('navlinks').classList.remove('open');
-}
-
-function handleForm(e) {
+/* form */
+function handleForm(e){
   e.preventDefault();
-  const btn = document.getElementById('fbtn');
-  btn.textContent = 'Sending…'; btn.disabled = true;
-  setTimeout(() => {
-    btn.style.display = 'none';
-    document.getElementById('fok').style.display = 'block';
-  }, 800);
+  const btn=document.getElementById('fbtn');
+  btn.textContent='Sending…';btn.disabled=true;
+  setTimeout(()=>{btn.style.display='none';document.getElementById('fok').style.display='block'},900);
 }
+
+/* scroll reveal */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');obs.unobserve(en.target)}});
+},{threshold:.07});
+document.querySelectorAll('.sr').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
