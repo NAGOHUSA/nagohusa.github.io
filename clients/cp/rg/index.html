@@ -3,638 +3,590 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robert Grissett | Art</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet">
-
+<title>Robert Grissett · Art</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #F5F0E8;
-    --ink: #1A1714;
-    --rust: #C4511F;
-    --gold: #D4A017;
-    --sage: #6B7C5E;
-    --dusty: #A89080;
-    --pale: #EDE8DC;
-    --rust-light: #F2D5C4;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--cream);
-    color: var(--ink);
-    font-family: 'Lora', Georgia, serif;
-    overflow-x: hidden;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.2rem 3rem;
-    background: var(--cream);
-    border-bottom: 1px solid rgba(26,23,20,0.15);
-    mix-blend-mode: normal;
-  }
-
-  .nav-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--ink);
-    text-decoration: none;
-    text-transform: uppercase;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink);
-    text-decoration: none;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-  }
-
-  .nav-links a:hover { opacity: 1; }
-
-  /* ── HERO ── */
-  .hero {
-    padding-top: 100px;
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-  }
-
-  .hero-left {
-    padding: 5rem 4rem 5rem 5rem;
-    position: relative;
-  }
-
-  .hero-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--rust);
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(3.5rem, 6vw, 5.5rem);
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    margin-bottom: 1rem;
-  }
-
-  .hero-title em {
-    font-style: italic;
-    color: var(--rust);
-  }
-
-  .hero-tagline {
-    font-family: 'Lora', serif;
-    font-size: 1.05rem;
-    font-style: italic;
-    color: var(--dusty);
-    line-height: 1.7;
-    margin: 1.5rem 0 2.5rem;
-    max-width: 380px;
-    border-left: 2px solid var(--gold);
-    padding-left: 1.2rem;
-  }
-
-  .hero-cta {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--cream);
-    background: var(--ink);
-    padding: 0.9rem 2rem;
-    text-decoration: none;
-    transition: background 0.25s;
-  }
-
-  .hero-cta:hover { background: var(--rust); }
-
-  .hero-right {
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(3, 1fr);
-    height: 100%;
-    gap: 3px;
-  }
-
-  .hero-grid-item {
-    overflow: hidden;
-    background: var(--pale);
-  }
-
-  .hero-grid-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s ease;
-    filter: saturate(0.95);
-  }
-
-  .hero-grid-item:hover img { transform: scale(1.04); }
-
-  .hero-grid-item:first-child {
-    grid-row: 1 / 3;
-  }
-
-  /* ── SECTION HEADS ── */
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 3rem;
-  }
-
-  .section-number {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--rust);
-    letter-spacing: 0.1em;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--ink);
-  }
-
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: rgba(26,23,20,0.15);
-    margin-left: 1rem;
-  }
-
-  /* ── WORK ── */
-  #work {
-    padding: 7rem 5rem;
-  }
-
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 3px;
-    margin-bottom: 3px;
-  }
-
-  .work-item {
-    overflow: hidden;
-    cursor: pointer;
-    background: var(--pale);
-    position: relative;
-  }
-
-  .work-item::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--ink);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .work-item:hover::after { opacity: 0.12; }
-
-  .work-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.5s ease;
-  }
-
-  .work-item:hover img { transform: scale(1.03); }
-
-  /* grid layout variants */
-  .w-wide { grid-column: span 8; }
-  .w-narrow { grid-column: span 4; }
-  .w-third { grid-column: span 4; }
-  .w-half { grid-column: span 6; }
-  .w-full { grid-column: span 12; }
-
-  .work-item-inner {
-    padding-top: 100%; /* square */
-    position: relative;
-  }
-
-  .work-item-inner img {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-  }
-
-  .work-tall { padding-top: 130%; }
-  .work-short { padding-top: 70%; }
-
-  /* ── STATEMENT ── */
-  #statement {
-    padding: 6rem 0;
-    background: var(--ink);
-    color: var(--cream);
-    position: relative;
-    overflow: hidden;
-  }
-
-  #statement::before {
-    content: '"';
-    position: absolute;
-    top: -0.2em;
-    left: 3rem;
-    font-family: 'Playfair Display', serif;
-    font-size: 30rem;
-    line-height: 1;
-    color: rgba(255,255,255,0.04);
-    pointer-events: none;
-  }
-
-  .statement-inner {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 0 5rem;
-    position: relative;
-  }
-
-  .statement-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 2.5rem;
-  }
-
-  .statement-text {
-    font-family: 'Lora', serif;
-    font-size: 1.2rem;
-    line-height: 1.9;
-    color: rgba(245,240,232,0.88);
-    margin-bottom: 2rem;
-  }
-
-  .statement-text + .statement-text {
-    margin-top: 0;
-  }
-
-  .statement-sig {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1.5rem;
-    color: var(--gold);
-    margin-top: 3rem;
-  }
-
-  /* ── BIO ── */
-  #bio {
-    padding: 7rem 5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: center;
-  }
-
-  .bio-portrait {
-    position: relative;
-  }
-
-  .bio-portrait img {
-    width: 100%;
-    display: block;
-    filter: sepia(0.15) contrast(1.05);
-  }
-
-  .bio-portrait-frame {
-    position: absolute;
-    top: 1.5rem; left: 1.5rem;
-    right: -1.5rem; bottom: -1.5rem;
-    border: 2px solid var(--gold);
-    z-index: -1;
-  }
-
-  .bio-content {}
-
-  .bio-text {
-    font-family: 'Lora', serif;
-    font-size: 1.05rem;
-    line-height: 1.9;
-    color: rgba(26,23,20,0.82);
-    margin-bottom: 1.5rem;
-  }
-
-  .bio-facts {
-    margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .bio-fact {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--dusty);
-    letter-spacing: 0.05em;
-  }
-
-  .bio-fact strong {
-    color: var(--ink);
-    font-weight: 500;
-    min-width: 3rem;
-  }
-
-  /* ── CONTACT ── */
-  #contact {
-    padding: 7rem 5rem;
-    background: var(--pale);
-  }
-
-  .contact-inner {
-    display: grid;
-    grid-template-columns: 1fr 1.4fr;
-    gap: 6rem;
-    align-items: start;
-  }
-
-  .contact-info h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--ink);
-  }
-
-  .contact-info p {
-    font-family: 'Lora', serif;
-    font-size: 1rem;
-    line-height: 1.8;
-    color: rgba(26,23,20,0.7);
-    margin-bottom: 2rem;
-  }
-
-  .contact-detail {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--ink);
-    margin-bottom: 0.8rem;
-    letter-spacing: 0.05em;
-  }
-
-  .contact-detail-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--rust);
-    flex-shrink: 0;
-  }
-
-  /* FORM */
-  .contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.2rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-group label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--dusty);
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    background: var(--cream);
-    border: 1px solid rgba(26,23,20,0.2);
-    padding: 0.85rem 1rem;
-    font-family: 'Lora', serif;
-    font-size: 0.95rem;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-    border-radius: 0;
-    width: 100%;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    border-color: var(--rust);
-  }
-
-  .form-group textarea {
-    resize: vertical;
-    min-height: 140px;
-    font-family: 'Lora', serif;
-  }
-
-  .form-group select {
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231A1714' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    padding-right: 2.5rem;
-  }
-
-  .form-submit {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--cream);
-    background: var(--ink);
-    border: none;
-    padding: 1rem 2.5rem;
-    cursor: pointer;
-    transition: background 0.25s;
-    align-self: flex-start;
-    margin-top: 0.5rem;
-  }
-
-  .form-submit:hover { background: var(--rust); }
-
-  .form-message {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    padding: 0.8rem 1rem;
-    display: none;
-    border-left: 3px solid var(--sage);
-    color: var(--ink);
-    background: rgba(107,124,94,0.1);
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 2.5rem 5rem;
-    border-top: 1px solid rgba(26,23,20,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .footer-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-
-  .footer-copy {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    color: var(--dusty);
-    text-transform: uppercase;
-  }
-
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(26,23,20,0.94);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-  }
-
-  .lightbox.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .lightbox img {
-    max-width: 85vw;
-    max-height: 85vh;
-    object-fit: contain;
-    display: block;
-  }
-
-  .lightbox-close {
-    position: absolute;
-    top: 2rem; right: 2.5rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(245,240,232,0.7);
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    transition: color 0.2s;
-  }
-
-  .lightbox-close:hover { color: var(--cream); }
-
-  /* ── DECORATIVE ── */
-  .ornament {
-    display: inline-block;
-    width: 40px;
-    height: 2px;
-    background: var(--gold);
-    margin: 0 0.8rem;
-    vertical-align: middle;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1.5rem; }
-
-    .hero {
-      grid-template-columns: 1fr;
-      min-height: auto;
-    }
-    .hero-left { padding: 3rem 1.5rem; }
-    .hero-right { height: 60vw; }
-
-    #work { padding: 4rem 1.5rem; }
-    .w-wide { grid-column: span 12; }
-    .w-narrow { grid-column: span 12; }
-    .w-third { grid-column: span 6; }
-    .w-half { grid-column: span 12; }
-
-    #bio {
-      grid-template-columns: 1fr;
-      gap: 3rem;
-      padding: 4rem 1.5rem;
-    }
-
-    #contact { padding: 4rem 1.5rem; }
-    .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .form-row { grid-template-columns: 1fr; }
-
-    footer { padding: 2rem 1.5rem; flex-direction: column; gap: 0.5rem; }
-    .statement-inner { padding: 0 1.5rem; }
-    #statement { padding: 4rem 0; }
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#18110C;
+  --cream:#F7F2EA;
+  --paper:#EDE7D8;
+  --rust:#B84B1A;
+  --gold:#C9921A;
+  --sage:#5E7055;
+  --dust:#8C7B6E;
+  --pale:#F2EBE0;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Cormorant Garamond',Georgia,serif;
+  cursor:none;
+}
+
+/* CURSOR */
+.cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--rust);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s,width 0.2s,height 0.2s;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid var(--rust);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.18s,width 0.25s,height 0.25s,opacity 0.2s;
+  opacity:0.5;
+}
+body:hover .cursor{opacity:1}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 4rem;
+  mix-blend-mode:multiply;
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:900;font-style:italic;
+  letter-spacing:0.02em;color:var(--ink);
+  text-decoration:none;
+}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  font-family:'DM Mono',monospace;font-size:0.64rem;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--ink);text-decoration:none;opacity:0.55;
+  transition:opacity 0.2s;
+}
+.nav-links a:hover{opacity:1}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:55% 45%;
+  overflow:hidden;
+}
+
+.hero-text-col{
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:7rem 3.5rem 5rem 4.5rem;
+  position:relative;
+  z-index:2;
+}
+
+.hero-tag{
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:1.8rem;
+}
+
+.hero-h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(4rem,7vw,7rem);
+  font-weight:900;line-height:0.88;
+  letter-spacing:-0.03em;color:var(--ink);
+}
+.hero-h1 em{
+  display:block;font-style:italic;
+  color:var(--rust);
+}
+
+.hero-rule{
+  width:60px;height:2px;background:var(--gold);
+  margin:2rem 0;
+}
+
+.hero-quote{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.12rem;font-style:italic;
+  line-height:1.75;color:var(--dust);
+  max-width:380px;margin-bottom:3rem;
+}
+
+.hero-cta{
+  display:inline-flex;align-items:center;gap:1rem;
+  font-family:'DM Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--cream);background:var(--ink);
+  padding:1rem 2rem;text-decoration:none;
+  transition:background 0.25s;width:fit-content;
+}
+.hero-cta:hover{background:var(--rust)}
+.hero-cta-arrow{font-size:1rem;letter-spacing:0}
+
+/* HERO IMAGE COLLAGE */
+.hero-collage{
+  position:relative;overflow:hidden;
+  background:var(--paper);
+}
+
+.collage-img{
+  position:absolute;overflow:hidden;
+  cursor:none;
+}
+.collage-img img{
+  width:100%;height:100%;object-fit:contain;
+  display:block;
+  transition:transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  background:var(--pale);
+}
+.collage-img:hover img{transform:scale(1.04)}
+
+/* positions — natural proportions via height, not square */
+.ci-1{top:3%;left:4%;width:55%;height:48%}
+.ci-2{top:10%;right:2%;width:40%;height:35%}
+.ci-3{bottom:22%;left:2%;width:38%;height:32%}
+.ci-4{bottom:4%;left:36%;width:55%;height:38%}
+
+.collage-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:0.5rem 0.75rem;
+  font-family:'DM Mono',monospace;font-size:0.58rem;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(255,255,255,0.85);
+  background:rgba(24,17,12,0.55);
+  opacity:0;transition:opacity 0.25s;
+}
+.collage-img:hover .collage-label{opacity:1}
+
+/* big decorative letter */
+.hero-deco{
+  position:absolute;
+  font-family:'Playfair Display',serif;
+  font-size:28vw;font-weight:900;font-style:italic;
+  line-height:1;
+  color:rgba(24,17,12,0.04);
+  bottom:-0.1em;right:-0.05em;
+  pointer-events:none;z-index:0;
+  user-select:none;
+}
+
+/* ── TICKER ── */
+.ticker-wrap{
+  background:var(--ink);overflow:hidden;
+  padding:0.75rem 0;white-space:nowrap;
+}
+.ticker-inner{
+  display:inline-flex;gap:0;
+  animation:ticker 28s linear infinite;
+}
+.ticker-item{
+  font-family:'DM Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(247,242,234,0.55);
+  padding:0 3rem;
+}
+.ticker-dot{color:var(--gold)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── GALLERY ── */
+#work{padding:6rem 4.5rem}
+
+.gallery-header{
+  display:grid;grid-template-columns:1fr auto;
+  align-items:end;margin-bottom:4rem;
+}
+.gallery-num{
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.2em;color:var(--rust);text-transform:uppercase;
+  margin-bottom:0.8rem;
+}
+.gallery-title{
+  font-family:'Playfair Display',serif;
+  font-size:3rem;font-weight:700;font-style:italic;
+  line-height:1;color:var(--ink);
+}
+.gallery-count{
+  font-family:'DM Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.12em;color:var(--dust);
+  text-transform:uppercase;padding-bottom:0.25rem;
+}
+
+/* MASONRY-STYLE NATURAL LAYOUT */
+/* Each artwork displayed at its true proportions — no crop, no square */
+.gallery-strip{
+  display:flex;flex-direction:column;gap:2px;
+  margin-bottom:2px;
+}
+.gallery-row{
+  display:flex;gap:2px;align-items:flex-start;
+}
+
+/* Individual artwork tiles */
+.art-tile{
+  position:relative;overflow:hidden;
+  flex-shrink:0;
+  cursor:none;
+  background:var(--paper);
+}
+.art-tile img{
+  display:block;width:100%;height:auto;
+  transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  vertical-align:bottom;
+}
+.art-tile:hover img{transform:scale(1.03)}
+
+/* Title overlay on hover */
+.art-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:1.5rem;
+  background:linear-gradient(to top, rgba(18,11,8,0.72) 0%, transparent 55%);
+  opacity:0;transition:opacity 0.3s;
+  pointer-events:none;
+}
+.art-tile:hover .art-overlay{opacity:1}
+.art-overlay-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;font-style:italic;
+  color:#fff;line-height:1.2;
+  transform:translateY(6px);transition:transform 0.3s;
+}
+.art-tile:hover .art-overlay-title{transform:translateY(0)}
+.art-overlay-year{
+  font-family:'DM Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.14em;color:rgba(255,255,255,0.65);
+  text-transform:uppercase;margin-top:0.3rem;
+}
+
+/* zoom icon */
+.art-zoom{
+  position:absolute;top:1rem;right:1rem;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(247,242,234,0.9);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 0.3s;
+  font-size:14px;color:var(--ink);
+  pointer-events:none;
+}
+.art-tile:hover .art-zoom{opacity:1}
+
+/* ── STATEMENT ── */
+#statement{
+  position:relative;
+  background:var(--ink);color:var(--cream);
+  overflow:hidden;
+}
+
+/* diagonal top cut */
+#statement::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:80px;
+  background:var(--cream);
+  clip-path:polygon(0 0,100% 0,100% 0,0 100%);
+}
+
+.statement-body{
+  padding:8rem 4.5rem 6rem;
+  display:grid;grid-template-columns:1fr 2fr;
+  gap:5rem;align-items:start;
+  position:relative;z-index:1;
+}
+
+.statement-left{}
+.statement-left-label{
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.5rem;
+  display:block;
+}
+.statement-left-num{
+  font-family:'Playfair Display',serif;
+  font-size:10rem;font-weight:900;font-style:italic;
+  line-height:0.85;color:rgba(247,242,234,0.06);
+  user-select:none;
+}
+
+.statement-right{}
+.statement-lede{
+  font-family:'Playfair Display',serif;
+  font-size:1.65rem;font-weight:400;font-style:italic;
+  line-height:1.5;color:rgba(247,242,234,0.95);
+  margin-bottom:2.5rem;
+  border-left:2px solid var(--gold);
+  padding-left:1.5rem;
+}
+.statement-para{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;line-height:1.9;
+  color:rgba(247,242,234,0.72);
+  margin-bottom:1.4rem;
+}
+.statement-sig{
+  font-family:'Playfair Display',serif;
+  font-style:italic;font-size:1.4rem;
+  color:var(--gold);margin-top:2.5rem;
+}
+
+/* BIG DECO QUOTE */
+.statement-bigquote{
+  font-family:'Playfair Display',serif;
+  font-size:20rem;font-weight:900;
+  line-height:0.8;color:rgba(247,242,234,0.03);
+  position:absolute;bottom:-0.1em;right:-0.05em;
+  pointer-events:none;user-select:none;
+}
+
+/* ── BIO ── */
+#bio{
+  padding:6rem 4.5rem;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:5rem;align-items:start;
+}
+
+.bio-left{}
+.bio-img-wrap{position:relative;display:inline-block;width:100%}
+.bio-img-wrap img{
+  width:100%;display:block;
+  filter:sepia(0.2) contrast(1.05);
+}
+/* double-border frame effect */
+.bio-frame-outer{
+  position:absolute;
+  top:1.2rem;left:1.2rem;right:-1.2rem;bottom:-1.2rem;
+  border:1.5px solid var(--gold);
+  z-index:-1;pointer-events:none;
+}
+.bio-frame-inner{
+  position:absolute;
+  top:0.4rem;left:0.4rem;right:-0.4rem;bottom:-0.4rem;
+  border:1px solid rgba(201,146,26,0.35);
+  z-index:-1;pointer-events:none;
+}
+
+.bio-right{}
+.bio-label{
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:0.8rem;
+}
+.bio-heading{
+  font-family:'Playfair Display',serif;
+  font-size:2.6rem;font-weight:700;
+  line-height:0.95;color:var(--ink);
+  margin-bottom:2rem;
+}
+.bio-heading em{font-style:italic;color:var(--rust)}
+.bio-para{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;line-height:1.85;
+  color:rgba(24,17,12,0.75);margin-bottom:1.2rem;
+}
+.bio-timeline{
+  margin-top:2.5rem;
+  border-top:1px solid rgba(24,17,12,0.12);
+  padding-top:1.5rem;
+  display:flex;flex-direction:column;gap:0.9rem;
+}
+.bio-tl-row{
+  display:grid;grid-template-columns:70px 1fr;
+  gap:1rem;align-items:baseline;
+}
+.bio-tl-year{
+  font-family:'DM Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.08em;color:var(--gold);
+}
+.bio-tl-event{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;color:var(--ink);
+}
+
+/* ── CONTACT ── */
+#contact{
+  background:var(--paper);
+  padding:6rem 4.5rem;
+  position:relative;overflow:hidden;
+}
+/* diagonal accent */
+#contact::after{
+  content:'';
+  position:absolute;
+  bottom:0;right:0;
+  width:35%;height:6px;
+  background:var(--rust);
+}
+
+.contact-grid{
+  display:grid;grid-template-columns:1fr 1.5fr;
+  gap:6rem;align-items:start;
+}
+
+.contact-left{}
+.contact-label{
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:0.8rem;
+}
+.contact-heading{
+  font-family:'Playfair Display',serif;
+  font-size:2.4rem;font-weight:700;font-style:italic;
+  line-height:1.05;color:var(--ink);margin-bottom:1.5rem;
+}
+.contact-desc{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;line-height:1.85;
+  color:rgba(24,17,12,0.7);margin-bottom:2rem;
+}
+.contact-info-row{
+  display:flex;align-items:center;gap:0.8rem;
+  margin-bottom:0.7rem;
+}
+.contact-info-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--rust);flex-shrink:0;
+}
+.contact-info-text{
+  font-family:'DM Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.06em;color:var(--ink);
+}
+
+/* FORM */
+.form{display:flex;flex-direction:column;gap:1rem}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{display:flex;flex-direction:column;gap:0.45rem}
+.field label{
+  font-family:'DM Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--dust);
+}
+.field input,
+.field select,
+.field textarea{
+  background:var(--cream);
+  border:1px solid rgba(24,17,12,0.18);
+  border-bottom:2px solid rgba(24,17,12,0.25);
+  padding:0.8rem 0.9rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;color:var(--ink);
+  outline:none;
+  transition:border-color 0.2s;
+  border-radius:0;width:100%;appearance:none;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--rust);
+  border-bottom-color:var(--rust);
+}
+.field textarea{resize:vertical;min-height:130px}
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238C7B6E'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 1rem center;
+  padding-right:2.5rem;cursor:pointer;
+}
+.form-btn{
+  align-self:flex-start;
+  font-family:'DM Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--cream);background:var(--ink);
+  border:none;padding:1rem 2.5rem;cursor:none;
+  transition:background 0.25s;margin-top:0.5rem;
+}
+.form-btn:hover{background:var(--rust)}
+.form-success{
+  display:none;
+  font-family:'DM Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.08em;color:var(--sage);
+  border-left:3px solid var(--sage);padding-left:1rem;
+  margin-top:0.5rem;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--ink);
+  padding:2rem 4.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo{
+  font-family:'Playfair Display',serif;
+  font-size:0.95rem;font-weight:900;font-style:italic;
+  color:rgba(247,242,234,0.85);text-decoration:none;
+}
+.footer-right{
+  display:flex;gap:2.5rem;align-items:center;
+}
+.footer-link{
+  font-family:'DM Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(247,242,234,0.4);text-decoration:none;
+  transition:color 0.2s;
+}
+.footer-link:hover{color:rgba(247,242,234,0.8)}
+.footer-copy{
+  font-family:'DM Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.1em;color:rgba(247,242,234,0.25);
+}
+
+/* ── LIGHTBOX ── */
+.lb{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(18,11,8,0.96);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s;
+}
+.lb.open{opacity:1;pointer-events:all}
+.lb img{
+  max-width:88vw;max-height:88vh;
+  object-fit:contain;display:block;
+}
+.lb-info{
+  position:absolute;bottom:2.5rem;left:50%;
+  transform:translateX(-50%);text-align:center;
+}
+.lb-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-style:italic;
+  color:rgba(247,242,234,0.9);
+}
+.lb-close{
+  position:absolute;top:2rem;right:2.5rem;
+  font-family:'DM Mono',monospace;font-size:0.62rem;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(247,242,234,0.5);
+  background:none;border:none;cursor:none;
+  transition:color 0.2s;padding:0.5rem;
+}
+.lb-close:hover{color:rgba(247,242,234,0.9)}
+
+/* SCROLL REVEAL */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{gap:1.2rem}
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-text-col{padding:6rem 1.5rem 3rem}
+  .hero-collage{height:70vw}
+  .ci-3,.ci-4{display:none}
+  #work{padding:4rem 1.5rem}
+  .gallery-row{flex-direction:column}
+  .art-tile{width:100%!important}
+  #statement .statement-body{grid-template-columns:1fr;padding:5rem 1.5rem 4rem;gap:2rem}
+  #bio{grid-template-columns:1fr;padding:4rem 1.5rem;gap:3rem}
+  #contact{padding:4rem 1.5rem}
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .form-2col{grid-template-columns:1fr}
+  footer{padding:2rem 1.5rem;flex-direction:column;gap:1rem;align-items:flex-start}
+}
 </style>
 </head>
-
 <body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
 
 <!-- NAV -->
 <nav>
@@ -649,110 +601,147 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-left">
-    <p class="hero-eyebrow">Americus, Georgia · Visual Art</p>
-    <h1 class="hero-title">Art as<br><em>North Star</em></h1>
-    <p class="hero-tagline">"The direction implied by beauty may be the element missing from much of contemporary art — an ought."</p>
-    <a href="#work" class="hero-cta">View Work</a>
+  <div class="hero-text-col">
+    <p class="hero-tag">Southwest Georgia · Visual Art · MFA</p>
+    <h1 class="hero-h1">
+      Bold<br>
+      in Shape<br>
+      <em>Rich in Pattern</em>
+    </h1>
+    <div class="hero-rule"></div>
+    <p class="hero-quote">"Art, like the flower's sensuous detail, is extra — a North Star guiding our making; an ought."</p>
+    <a href="#work" class="hero-cta">View Work <span class="hero-cta-arrow">→</span></a>
   </div>
-  <div class="hero-right">
-    <div class="hero-grid">
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit" loading="eager">
-      </div>
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/Fleshy Fruit.jpeg" alt="Fleshy Fruit" loading="eager">
-      </div>
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles" loading="eager">
-      </div>
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/MicrowaveTwinkle.jpeg" alt="Microwave Twinkle" loading="eager">
-      </div>
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune" loading="lazy">
-      </div>
-      <div class="hero-grid-item">
-        <img src="https://robertgrissett.art/work/OchreChoker.jpeg" alt="Ochre Choker" loading="lazy">
-      </div>
+
+  <div class="hero-collage">
+    <div class="hero-deco">G</div>
+
+    <div class="collage-img ci-1" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
+      <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit">
+      <div class="collage-label">Double Double Slit</div>
+    </div>
+    <div class="collage-img ci-2" onclick="openLB('https://robertgrissett.art/work/Sprinkles.jpeg','Sprinkles')">
+      <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles">
+      <div class="collage-label">Sprinkles</div>
+    </div>
+    <div class="collage-img ci-3" onclick="openLB('https://robertgrissett.art/work/OchreChoker.jpeg','Ochre Choker')">
+      <img src="https://robertgrissett.art/work/OchreChoker.jpeg" alt="Ochre Choker">
+      <div class="collage-label">Ochre Choker</div>
+    </div>
+    <div class="collage-img ci-4" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
+      <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune">
+      <div class="collage-label">Blue Tune</div>
     </div>
   </div>
 </section>
 
-<!-- WORK -->
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="tickerInner">
+    <span class="ticker-item">Robert Grissett <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Americus, Georgia <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">BFA 2011 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">MFA 2025 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Colorful · Bold · Patterned <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Beauty as Direction <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Georgia to New York <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Art as Extra <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Robert Grissett <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Americus, Georgia <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">BFA 2011 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">MFA 2025 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Colorful · Bold · Patterned <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Beauty as Direction <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Georgia to New York <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Art as Extra <span class="ticker-dot">✦</span></span>
+  </div>
+</div>
+
+<!-- GALLERY -->
 <section id="work">
-  <div class="section-head">
-    <span class="section-number">01</span>
-    <h2 class="section-title">Selected Work</h2>
-    <div class="section-line"></div>
+  <div class="gallery-header reveal">
+    <div>
+      <div class="gallery-num">01 / Selected Work</div>
+      <div class="gallery-title">The Work</div>
+    </div>
+    <div class="gallery-count">11 works</div>
   </div>
 
-  <div class="work-grid">
-    <div class="work-item w-wide" onclick="openLight(this)">
-      <div class="work-item-inner work-short">
-        <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit" loading="lazy">
+  <!-- Row 1: one wide, one narrower — natural heights -->
+  <div class="gallery-strip">
+    <div class="gallery-row">
+      <div class="art-tile reveal" style="flex:2.2" onclick="openLB('https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg','Party Squares — The Cosmic Cut')">
+        <img src="https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg" alt="Party Squares — The Cosmic Cut" loading="lazy">
+        <div class="art-overlay">
+          <div class="art-overlay-title">Party Squares — The Cosmic Cut</div>
+        </div>
+        <div class="art-zoom">+</div>
       </div>
-    </div>
-    <div class="work-item w-narrow" onclick="openLight(this)">
-      <div class="work-item-inner work-short">
+      <div class="art-tile reveal" style="flex:1" onclick="openLB('https://robertgrissett.art/work/Fleshy Fruit.jpeg','Fleshy Fruit')">
         <img src="https://robertgrissett.art/work/Fleshy Fruit.jpeg" alt="Fleshy Fruit" loading="lazy">
+        <div class="art-overlay">
+          <div class="art-overlay-title">Fleshy Fruit</div>
+        </div>
+        <div class="art-zoom">+</div>
       </div>
     </div>
-  </div>
 
-  <div class="work-grid">
-    <div class="work-item w-third" onclick="openLight(this)">
-      <div class="work-item-inner">
+    <!-- Row 2: three across -->
+    <div class="gallery-row">
+      <div class="art-tile reveal" style="flex:1" onclick="openLB('https://robertgrissett.art/work/Hashtag.jpeg','Hashtag')">
         <img src="https://robertgrissett.art/work/Hashtag.jpeg" alt="Hashtag" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Hashtag</div></div>
+        <div class="art-zoom">+</div>
       </div>
-    </div>
-    <div class="work-item w-third" onclick="openLight(this)">
-      <div class="work-item-inner">
-        <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles" loading="lazy">
-      </div>
-    </div>
-    <div class="work-item w-third" onclick="openLight(this)">
-      <div class="work-item-inner">
+      <div class="art-tile reveal" style="flex:1.3" onclick="openLB('https://robertgrissett.art/work/MicrowaveTwinkle.jpeg','Microwave Twinkle')">
         <img src="https://robertgrissett.art/work/MicrowaveTwinkle.jpeg" alt="Microwave Twinkle" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Microwave Twinkle</div></div>
+        <div class="art-zoom">+</div>
       </div>
-    </div>
-  </div>
-
-  <div class="work-grid">
-    <div class="work-item w-half" onclick="openLight(this)">
-      <div class="work-item-inner work-short">
-        <img src="https://robertgrissett.art/work/PartySquares-TheCosmicCut.jpeg" alt="Party Squares – The Cosmic Cut" loading="lazy">
-      </div>
-    </div>
-    <div class="work-item w-half" onclick="openLight(this)">
-      <div class="work-item-inner work-short">
-        <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune" loading="lazy">
-      </div>
-    </div>
-  </div>
-
-  <div class="work-grid">
-    <div class="work-item w-narrow" onclick="openLight(this)">
-      <div class="work-item-inner">
-        <img src="https://robertgrissett.art/work/OchreChoker.jpeg" alt="Ochre Choker" loading="lazy">
-      </div>
-    </div>
-    <div class="work-item w-narrow" onclick="openLight(this)">
-      <div class="work-item-inner">
+      <div class="art-tile reveal" style="flex:1" onclick="openLB('https://robertgrissett.art/work/Spleener.jpeg','Spleener')">
         <img src="https://robertgrissett.art/work/Spleener.jpeg" alt="Spleener" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Spleener</div></div>
+        <div class="art-zoom">+</div>
       </div>
     </div>
-    <div class="work-item w-narrow" onclick="openLight(this)">
-      <div class="work-item-inner">
-        <img src="https://robertgrissett.art/work/SquarePound.jpeg" alt="Square Pound" loading="lazy">
-      </div>
-    </div>
-  </div>
 
-  <div class="work-grid">
-    <div class="work-item w-full" onclick="openLight(this)">
-      <div class="work-item-inner" style="padding-top: 45%;">
+    <!-- Row 3: tall feature + two stacked -->
+    <div class="gallery-row" style="align-items:stretch">
+      <div class="art-tile reveal" style="flex:1.8" onclick="openLB('https://robertgrissett.art/work/Double Double Slit.jpeg','Double Double Slit')">
+        <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Double Double Slit" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Double Double Slit</div></div>
+        <div class="art-zoom">+</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+        <div class="art-tile reveal" onclick="openLB('https://robertgrissett.art/work/Sprinkles.jpeg','Sprinkles')">
+          <img src="https://robertgrissett.art/work/Sprinkles.jpeg" alt="Sprinkles" loading="lazy">
+          <div class="art-overlay"><div class="art-overlay-title">Sprinkles</div></div>
+          <div class="art-zoom">+</div>
+        </div>
+        <div class="art-tile reveal" onclick="openLB('https://robertgrissett.art/work/SquarePound.jpeg','Square Pound')">
+          <img src="https://robertgrissett.art/work/SquarePound.jpeg" alt="Square Pound" loading="lazy">
+          <div class="art-overlay"><div class="art-overlay-title">Square Pound</div></div>
+          <div class="art-zoom">+</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: two equal -->
+    <div class="gallery-row">
+      <div class="art-tile reveal" style="flex:1" onclick="openLB('https://robertgrissett.art/work/OchreChoker.jpeg','Ochre Choker')">
+        <img src="https://robertgrissett.art/work/OchreChoker.jpeg" alt="Ochre Choker" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Ochre Choker</div></div>
+        <div class="art-zoom">+</div>
+      </div>
+      <div class="art-tile reveal" style="flex:1" onclick="openLB('https://robertgrissett.art/work/BlueTune.jpeg','Blue Tune')">
+        <img src="https://robertgrissett.art/work/BlueTune.jpeg" alt="Blue Tune" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Blue Tune</div></div>
+        <div class="art-zoom">+</div>
+      </div>
+      <div class="art-tile reveal" style="flex:1.4" onclick="openLB('https://robertgrissett.art/work/GhostGraham.jpeg','Ghost Graham')">
         <img src="https://robertgrissett.art/work/GhostGraham.jpeg" alt="Ghost Graham" loading="lazy">
+        <div class="art-overlay"><div class="art-overlay-title">Ghost Graham</div></div>
+        <div class="art-zoom">+</div>
       </div>
     </div>
   </div>
@@ -760,152 +749,179 @@
 
 <!-- STATEMENT -->
 <section id="statement">
-  <div class="statement-inner">
-    <p class="statement-label">Artist Statement</p>
-    <p class="statement-text">The existential and directional implications of art in its relationship to beauty map well onto the moral and existential state that we find ourselves perpetually in. The extra things around me — earrings, architectural trim, kitsch, pottery, and toys — have only risen further to the surface of my perception and greatly influence these intentionally colorful, bold in shape, rich in pattern, undoubtable artifacts that are a bouquet of attempts at doing 'good' via art.</p>
-    <p class="statement-text">Several years ago, while working as a rural mailman, I came upon a flowering plant that grabbed my attention to such a degree that I paused my route and pulled over to see it in more detail. I had never been into horticulture, and still am not, but what struck me was how unnatural it seemed. Among the dust of the road and the stalks of dry grass, it had a quality that rose above the day-to-day survival of an organism and into another realm altogether. It was beautiful.</p>
-    <p class="statement-text">Arguably, the formal details of a flower have been selected by innumerable generations of pollinators through time. And this is mostly true. Yet, flowers are still pretty. Regardless of how flowers came to take their various forms, that they would become beautiful in any way is strange. There is clearly something extra about a flower — its shape, its color, its ornamentation more generally. These details indulge us unnecessarily.</p>
-    <p class="statement-text">This lack of necessity is familiar. It is the same quality that has been distilled from art conceptually, its uselessness. Art, like the flower's sensuous detail, is extra. This negation of utility is important in granting an artwork the ability to wear our existential shoes, but the quality that interests me the most is the direction implied by beauty. It may be the element missing from much of contemporary art — a North Star guiding our making; an ought.</p>
-    <p class="statement-sig">— Robert Grissett</p>
+  <div class="statement-bigquote">"</div>
+  <div class="statement-body">
+    <div class="statement-left reveal">
+      <span class="statement-left-label">02 / Artist Statement</span>
+      <div class="statement-left-num">02</div>
+    </div>
+    <div class="statement-right">
+      <p class="statement-lede reveal">"The direction implied by beauty may be the element missing from much of contemporary art — a North Star guiding our making; an ought."</p>
+      <p class="statement-para reveal">The existential and directional implications of art in its relationship to beauty map well onto the moral and existential state that we find ourselves perpetually in. The extra things around me — earrings, architectural trim, kitsch, pottery, and toys — have only risen further to the surface of my perception and greatly influence these intentionally colorful, bold in shape, rich in pattern, undoubtable artifacts that are a bouquet of attempts at doing 'good' via art.</p>
+      <p class="statement-para reveal">Several years ago, while working as a rural mailman, I came upon a flowering plant that grabbed my attention to such a degree that I paused my route and pulled over to see it in more detail. What struck me was how unnatural it seemed. Among the dust of the road and the stalks of dry grass, it had a quality that rose above the day-to-day survival of an organism and into another realm altogether. It was beautiful.</p>
+      <p class="statement-para reveal">Art, like the flower's sensuous detail, is extra. This negation of utility is important in granting an artwork the ability to wear our existential shoes, but the quality that interests me the most is the direction implied by beauty. It may be the element missing from much of contemporary art, a North Star guiding our making; an ought.</p>
+      <p class="statement-sig reveal">— Robert Grissett</p>
+    </div>
   </div>
 </section>
 
 <!-- BIO -->
 <section id="bio">
-  <div class="bio-portrait">
-    <img src="https://robertgrissett.art/work/Double Double Slit.jpeg" alt="Robert Grissett artwork" style="aspect-ratio:1/1; object-fit:cover;">
-    <div class="bio-portrait-frame"></div>
-  </div>
-  <div class="bio-content">
-    <div class="section-head" style="margin-bottom:2rem">
-      <span class="section-number">02</span>
-      <h2 class="section-title">About Robert</h2>
+  <div class="bio-left reveal">
+    <div class="bio-img-wrap">
+      <img src="https://robertgrissett.art/work/GhostGraham.jpeg" alt="Robert Grissett — work detail">
+      <div class="bio-frame-outer"></div>
+      <div class="bio-frame-inner"></div>
     </div>
-    <p class="bio-text">Robert Grissett is an artist from Southwest Georgia who lives with his wife and four children in Americus, Georgia. His artistic journey began with an interest in flags, then graffiti, from there screen printing, and finally art school.</p>
-    <p class="bio-text">In 2011 he received his BFA in visual art, and in 2025 he received his MFA. He has shown his work at local, regional, and national art exhibitions from Georgia to New York.</p>
-    <div class="bio-facts">
-      <div class="bio-fact"><strong>BFA</strong> Visual Art, 2011</div>
-      <div class="bio-fact"><strong>MFA</strong> 2025</div>
-      <div class="bio-fact"><strong>Based</strong> Americus, Georgia</div>
-      <div class="bio-fact"><strong>Shows</strong> Georgia to New York</div>
+  </div>
+  <div class="bio-right">
+    <p class="bio-label reveal">03 / About the Artist</p>
+    <h2 class="bio-heading reveal">Robert<br><em>Grissett</em></h2>
+    <p class="bio-para reveal">Robert Grissett is an artist from Southwest Georgia who lives with his wife and four children in Americus, Georgia. His artistic journey began with an interest in flags, then graffiti, from there screen printing, and finally art school.</p>
+    <p class="bio-para reveal">He has shown his work at local, regional, and national art exhibitions from Georgia to New York.</p>
+    <div class="bio-timeline">
+      <div class="bio-tl-row reveal">
+        <span class="bio-tl-year">Early</span>
+        <span class="bio-tl-event">Flags → Graffiti → Screen printing</span>
+      </div>
+      <div class="bio-tl-row reveal">
+        <span class="bio-tl-year">2011</span>
+        <span class="bio-tl-event">BFA in Visual Art</span>
+      </div>
+      <div class="bio-tl-row reveal">
+        <span class="bio-tl-year">2025</span>
+        <span class="bio-tl-event">MFA</span>
+      </div>
+      <div class="bio-tl-row reveal">
+        <span class="bio-tl-year">Ongoing</span>
+        <span class="bio-tl-event">Exhibitions — Georgia to New York</span>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="section-head">
-    <span class="section-number">03</span>
-    <h2 class="section-title">Get in Touch</h2>
-    <div class="section-line"></div>
-  </div>
-
-  <div class="contact-inner">
-    <div class="contact-info">
-      <h3>Inquiries welcome</h3>
-      <p>Interested in a work, an exhibition, or a collaboration? Robert welcomes correspondence from collectors, curators, and galleries.</p>
-      <div class="contact-detail">
-        <div class="contact-detail-dot"></div>
-        Americus, Georgia
+  <div class="contact-grid">
+    <div class="contact-left">
+      <p class="contact-label reveal">04 / Contact</p>
+      <h2 class="contact-heading reveal">Let's<br>Correspond</h2>
+      <p class="contact-desc reveal">Interested in a work, an exhibition, or a collaboration? Robert welcomes correspondence from collectors, curators, and galleries.</p>
+      <div class="contact-info-row reveal">
+        <div class="contact-info-dot"></div>
+        <span class="contact-info-text">Americus, Georgia</span>
       </div>
-      <div class="contact-detail">
-        <div class="contact-detail-dot"></div>
-        robertgrissett.art
+      <div class="contact-info-row reveal">
+        <div class="contact-info-dot"></div>
+        <span class="contact-info-text">robertgrissett.art</span>
       </div>
     </div>
-
-    <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="fname">First Name</label>
-          <input type="text" id="fname" name="fname" required placeholder="Jane">
+    <form class="form" id="cForm" onsubmit="submitForm(event)">
+      <div class="form-2col">
+        <div class="field">
+          <label for="fn">First Name</label>
+          <input type="text" id="fn" name="fn" required placeholder="Jane">
         </div>
-        <div class="form-group">
-          <label for="lname">Last Name</label>
-          <input type="text" id="lname" name="lname" required placeholder="Smith">
+        <div class="field">
+          <label for="ln">Last Name</label>
+          <input type="text" id="ln" name="ln" required placeholder="Smith">
         </div>
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required placeholder="jane@gallery.com">
+      <div class="field">
+        <label for="em">Email</label>
+        <input type="email" id="em" name="em" required placeholder="jane@gallery.com">
       </div>
-      <div class="form-group">
-        <label for="subject">Subject</label>
-        <select id="subject" name="subject">
+      <div class="field">
+        <label for="sub">Subject</label>
+        <select id="sub" name="sub">
           <option value="">Select a subject…</option>
-          <option value="purchase">Purchase inquiry</option>
-          <option value="exhibition">Exhibition / gallery</option>
-          <option value="commission">Commission</option>
-          <option value="press">Press / media</option>
-          <option value="other">General inquiry</option>
+          <option>Purchase inquiry</option>
+          <option>Exhibition / gallery</option>
+          <option>Commission</option>
+          <option>Press / media</option>
+          <option>General inquiry</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" required placeholder="Tell Robert about your interest in the work…"></textarea>
+      <div class="field">
+        <label for="msg">Message</label>
+        <textarea id="msg" name="msg" required placeholder="Tell Robert about your interest in the work…"></textarea>
       </div>
-      <button type="submit" class="form-submit">Send Message</button>
-      <div class="form-message" id="formMessage">Thank you — Robert will be in touch soon.</div>
+      <button type="submit" class="form-btn" id="fBtn">Send Message →</button>
+      <div class="form-success" id="fSuccess">Message sent — Robert will be in touch.</div>
     </form>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <span class="footer-name">Robert Grissett</span>
-  <span class="footer-copy">© 2025 · Americus, Georgia</span>
+  <a href="#" class="footer-logo">Robert Grissett</a>
+  <div class="footer-right">
+    <a href="#work" class="footer-link">Work</a>
+    <a href="#statement" class="footer-link">Statement</a>
+    <a href="#contact" class="footer-link">Contact</a>
+    <span class="footer-copy">© 2025</span>
+  </div>
 </footer>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLight()">
-  <button class="lightbox-close" onclick="closeLight()">Close ✕</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="lb" id="lb" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">Close ✕</button>
+  <img id="lb-img" src="" alt="">
+  <div class="lb-info"><div class="lb-title" id="lb-title"></div></div>
 </div>
 
 <script>
-function openLight(el) {
-  const img = el.querySelector('img');
-  document.getElementById('lightbox-img').src = img.src;
-  document.getElementById('lightbox-img').alt = img.alt;
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLight() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLight();
+// Custom cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';
+});
+document.querySelectorAll('a,button,.art-tile,.collage-img').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width='18px';cur.style.height='18px';
+    ring.style.width='52px';ring.style.height='52px';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width='10px';cur.style.height='10px';
+    ring.style.width='36px';ring.style.height='36px';
+  });
 });
 
-function handleSubmit(e) {
+// Lightbox
+function openLB(src,title){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lb-title').textContent=title||'';
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLB(){
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB()});
+
+// Form
+function submitForm(e){
   e.preventDefault();
-  const btn = e.target.querySelector('.form-submit');
-  btn.textContent = 'Sending…';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.style.display = 'none';
-    const msg = document.getElementById('formMessage');
-    msg.style.display = 'block';
-  }, 800);
+  const btn=document.getElementById('fBtn');
+  btn.textContent='Sending…';btn.disabled=true;
+  setTimeout(()=>{
+    btn.style.display='none';
+    document.getElementById('fSuccess').style.display='block';
+  },900);
 }
 
-// smooth fade-in on scroll
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      en.target.classList.add('visible');
+      obs.unobserve(en.target);
     }
   });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.work-item, .statement-text, .bio-text').forEach(el => {
-  el.style.cssText += 'opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease;';
-  observer.observe(el);
-});
+},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
