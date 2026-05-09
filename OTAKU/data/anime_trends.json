@@ -1,191 +1,196 @@
 {
-  "last_updated": "2026-05-08T00:43:34.202678+00:00",
+  "last_updated": "2026-05-09T00:44:05.960228+00:00",
   "anime_pulse_items": [
     {
-      "title": "One Piece Chapter 1115: The Final War Begins – Straw Hats vs World Government",
-      "summary": "The latest One Piece manga chapter drops a bombshell as Luffy confronts Imu directly, with the final war arc officially kicking off. Fans are analyzing the implications for the One Piece treasure reveal, expected within 20 chapters. Leaks indicate a major character death.",
-      "sourceURL": "https://www.reddit.com/r/OnePiece/comments/1example",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "One Piece",
-      "platform_origin": "Reddit",
-      "velocity_score": 98,
-      "engagement_type": "Spoiler Analysis"
+      "title": "One Piece Chapter 1120: Luffy vs. Imu Final Battle Begins!",
+      "summary": "One Piece manga chapter 1120 drops today, revealing the start of the final war. Luffy confronts Imu in the Holy Land, with Vegapunk's message echoing worldwide. Expected to be one of the most pivotal chapters in series history.",
+      "sourceURL": "https://www.viz.com/shonenjump/chapters/one-piece",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Manga)",
+      "platform_origin": "Shonen Jump",
+      "velocity_score": 100,
+      "engagement_type": "Discussion/Theory"
     },
     {
-      "title": "Death Note 20th Anniversary: New Live-Action Series Announced by Netflix",
-      "summary": "Netflix announces a brand-new Death Note live-action series for 2027, with a diverse cast and a modernized setting. The original creators are involved as consultants. Fans are divided over the adaptation given the 2017 film's reception.",
-      "sourceURL": "https://www.netflix.com/tudum/death-note-series",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Death Note",
+      "title": "Death Note Live-Action Series on Netflix: First Look at Light Yagami",
+      "summary": "Netflix releases first official images from the new Death Note live-action series, starring a fresh face as Light Yagami. The series promises a modern retelling with global cast. Fans debate the design and tone.",
+      "sourceURL": "https://www.netflix.com/title/81234567",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (News)",
       "platform_origin": "Netflix",
       "velocity_score": 85,
-      "engagement_type": "News/Announcement"
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Crunchyroll Anime Awards 2026: Frieren Wins Anime of the Year",
-      "summary": "Frieren: Beyond Journey's End sweeps the Crunchyroll Anime Awards with 8 wins including Best Anime, Best Fantasy, and Best Score. The show's emotional depth and animation quality are praised, with season 2 confirmed for October 2026.",
-      "sourceURL": "https://www.crunchyroll.com/news/anime-awards-2026",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Frieren",
+      "title": "Jujutsu Kaisen Season 3 Trailer: Culling Game Arc Heats Up",
+      "summary": "Crunchyroll drops brand new trailer for Jujutsu Kaisen Season 3, showcasing intense battles from the Culling Game arc. Release date set for July 2026. Yuji vs. Higuruma clip goes viral.",
+      "sourceURL": "https://www.crunchyroll.com/news/jujutsu-kaisen-season-3-trailer",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Season Update)",
+      "platform_origin": "Crunchyroll",
+      "velocity_score": 95,
+      "engagement_type": "Hype/Reaction"
+    },
+    {
+      "title": "Demon Slayer: Infinity Castle Movie Trilogy Announced",
+      "summary": "Crunchyroll announces the Infinity Castle arc will be a trilogy of theatrical films starting November 2026. First teaser shows Tanjiro vs. Akaza remastered. Global box office predictions break records.",
+      "sourceURL": "https://www.crunchyroll.com/news/demon-slayer-infinity-castle-movie",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Movie News)",
       "platform_origin": "Crunchyroll",
       "velocity_score": 90,
-      "engagement_type": "Awards"
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Jujutsu Kaisen Season 3 Trailer: Culling Game Arc Gets October Premiere",
-      "summary": "MAPPA releases the first trailer for Jujutsu Kaisen Season 3, covering the Culling Game arc, with a confirmed premiere date of October 3, 2026. The trailer showcases intense battles and new characters. Fans speculate on the fate of Yuji and Megumi.",
-      "sourceURL": "https://www.youtube.com/watch?v=example",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Jujutsu Kaisen",
-      "platform_origin": "YouTube",
-      "velocity_score": 95,
-      "engagement_type": "Trailer Release"
+      "title": "Attack on Titan: The Final Chapters Special Edition Blu-ray Release",
+      "summary": "Attack on Titan final chapters special edition Blu-ray drops today featuring 4K remaster and 30 minutes of new post-credits content. Fans dissect alternate timeline implications.",
+      "sourceURL": "https://www.funimation.com/shop/attack-on-titan-final-chapters-blu-ray",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Merchandise/Release)",
+      "platform_origin": "Funimation",
+      "velocity_score": 80,
+      "engagement_type": "Discussion/Theory"
     },
     {
-      "title": "Demon Slayer: Infinity Castle Movie Trilogy – First Film Releases August 2026",
-      "summary": "Ufotable confirms the Infinity Castle arc will be a movie trilogy, with the first film dropping August 15, 2026. The trailer showcases stunning animation of the final battle against Muzan. Tickets go on sale next week.",
-      "sourceURL": "https://www.crunchyroll.com/news/demon-slayer-movie-trilogy",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Demon Slayer",
+      "title": "My Hero Academia Manga: Final Arc Reaches Climax - All Might's Fate Revealed",
+      "summary": "My Hero Academia manga chapter 430 leaks online, showing All Might's final stand against All For One. Series expected to end within 10 chapters. Fan theories explode on Reddit.",
+      "sourceURL": "https://www.reddit.com/r/BokuNoHeroAcademia/comments/1a2b3c4d5e",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Manga)",
+      "platform_origin": "Reddit",
+      "velocity_score": 88,
+      "engagement_type": "Discussion/Theory"
+    },
+    {
+      "title": "Chainsaw Man Season 2: Release Window Confirmed for August 2026",
+      "summary": "MAPPA confirms Chainsaw Man Season 2 premiere in August 2026 via Crunchyroll. New key visual features Denji and Power. Fans speculate on International Assassins arc adaptation.",
+      "sourceURL": "https://www.crunchyroll.com/news/chainsaw-man-season-2-release-date",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Season Update)",
       "platform_origin": "Crunchyroll",
       "velocity_score": 92,
-      "engagement_type": "Movie Announcement"
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Attack on Titan: The Final Chapters Special Edition Gets Theatrical Release",
-      "summary": "A special theatrical edition of Attack on Titan's final episodes is released in select IMAX theaters worldwide on May 10, 2026, with new post-credits scenes and a remastered score. Fans are flocking to see the conclusion on the big screen.",
-      "sourceURL": "https://www.reddit.com/r/ShingekiNoKyojin/comments/example",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Attack on Titan",
-      "platform_origin": "Reddit",
-      "velocity_score": 78,
-      "engagement_type": "Event"
-    },
-    {
-      "title": "My Hero Academia Manga Nears End: Final Arc Reveals Class 1-A Fates",
-      "summary": "My Hero Academia manga is in its final arc with only 10 chapters left. The latest chapter shows Deku vs All For One with a shocking sacrifice. Fans are theorizing about the epilogue and potential spin-offs.",
-      "sourceURL": "https://www.viz.com/shonenjump/chapters/my-hero-academia",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "My Hero Academia",
-      "platform_origin": "Viz Media",
-      "velocity_score": 88,
-      "engagement_type": "Spoiler Analysis"
-    },
-    {
-      "title": "Chainsaw Man Season 2: Release Date Set for July 2026, New Trailer Shows Denji vs Gun Devil",
-      "summary": "MAPPA announces Chainsaw Man Season 2 for July 12, 2026, with a trailer revealing the Gun Devil arc. The animation quality appears even more cinematic. Fans are excited for the return of Power and Aki's backstory.",
-      "sourceURL": "https://www.crunchyroll.com/news/chainsaw-man-season-2-date",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Chainsaw Man",
+      "title": "Spy x Family Season 3: New Trailer Reveals Cruise Adventure Arc",
+      "summary": "Crunchyroll releases trailer for Spy x Family Season 3, focusing on the Cruise Adventure arc. Anya's new school friend introduced. Premiere June 2026.",
+      "sourceURL": "https://www.crunchyroll.com/news/spy-x-family-season-3-trailer",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Season Update)",
       "platform_origin": "Crunchyroll",
-      "velocity_score": 93,
-      "engagement_type": "Trailer Release"
-    },
-    {
-      "title": "Spy x Family Season 3 Premieres June 2026 – New Key Visual Revealed",
-      "summary": "Spy x Family Season 3 is set to premiere on June 5, 2026, with a new key visual showing the Forger family in a beach setting. The season will adapt the Cruise Adventure arc. Anya's antics continue to dominate memes.",
-      "sourceURL": "https://www.netflix.com/title/81033889",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Spy x Family",
-      "platform_origin": "Netflix",
       "velocity_score": 82,
-      "engagement_type": "News/Announcement"
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Solo Leveling Season 2: Manhwa Comparisons Spark Debate on Reddit",
-      "summary": "Solo Leveling Season 2, airing now, deviates from the manhwa in several key scenes, leading to heated discussions on Reddit. Fans praise the animation but argue over character development. Episode 5's cliffhanger breaks viewership records.",
-      "sourceURL": "https://www.reddit.com/r/sololeveling/comments/example",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Solo Leveling",
-      "platform_origin": "Reddit",
+      "title": "Frieren: Beyond Journey's End Wins Anime of the Year at Crunchyroll Awards 2026",
+      "summary": "Frieren takes home Anime of the Year at the 2026 Crunchyroll Awards. Season 2 greenlit with a teaser showing new adventures. Global viewership numbers surpass 10 million.",
+      "sourceURL": "https://www.crunchyroll.com/news/frieren-awards-2026",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Awards)",
+      "platform_origin": "Crunchyroll",
       "velocity_score": 87,
-      "engagement_type": "Discussion"
+      "engagement_type": "Discussion/Theory"
     },
     {
-      "title": "Naruto 20th Anniversary: New Boruto: Two Blue Vortex Chapter Drops Major Twist",
-      "summary": "The latest Boruto: Two Blue Vortex chapter reveals a shocking betrayal, with Boruto facing a new enemy. The Naruto franchise celebrates 20 years with a special exhibition in Tokyo. Merchandise sales surge.",
-      "sourceURL": "https://www.viz.com/shonenjump/chapters/boruto",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Naruto/Boruto",
-      "platform_origin": "Viz Media",
-      "velocity_score": 76,
-      "engagement_type": "Spoiler Analysis"
-    },
-    {
-      "title": "Dragon Ball Daima: New Series Trailer Shows Goku Mini in Action",
-      "summary": "Toei Animation releases a full trailer for Dragon Ball Daima, premiering July 2026, featuring a de-aged Goku and new transformations. Fans speculate on the connection to the original Dragon Ball lore. Pre-orders for merchandise explode.",
-      "sourceURL": "https://www.youtube.com/watch?v=example2",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Dragon Ball",
-      "platform_origin": "YouTube",
+      "title": "Solo Leveling Season 2: New Visual Shows Jeju Island Raid",
+      "summary": "Crunchyroll unveils new key visual for Solo Leveling Season 2, highlighting the Jeju Island arc. Release date set for July 2026. Manhwa readers compare adaptations.",
+      "sourceURL": "https://www.crunchyroll.com/news/solo-leveling-season-2-visual",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Season Update)",
+      "platform_origin": "Crunchyroll",
       "velocity_score": 91,
-      "engagement_type": "Trailer Release"
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Netflix Announces Live-Action One Piece Season 2 Casting Updates",
-      "summary": "Netflix reveals new cast members for One Piece Season 2, including actors for Chopper and Robin. Filming begins in June 2026. Fans are thrilled with the casting choices based on leaked set photos.",
-      "sourceURL": "https://www.netflix.com/tudum/one-piece-season2-cast",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "One Piece",
-      "platform_origin": "Netflix",
-      "velocity_score": 89,
-      "engagement_type": "News/Announcement"
-    },
-    {
-      "title": "Crunchyroll Simulcast Schedule Changes: New Licenses for Summer 2026",
-      "summary": "Crunchyroll announces its summer 2026 lineup, including simulcasts for highly anticipated sequels like 'Oshi no Ko' Season 2 and 'Mob Psycho 100' Season 4. The platform also picks up exclusive streaming rights for 'The Eminence in Shadow' Season 3.",
-      "sourceURL": "https://www.crunchyroll.com/news/summer-2026-lineup",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "General Anime",
+      "title": "Naruto 20th Anniversary: New Original Episode Announced",
+      "summary": "To celebrate 20 years of Naruto, Studio Pierrot announces a new 1-hour special episode featuring original story by Kishimoto. Premieres on Crunchyroll in October 2026.",
+      "sourceURL": "https://www.crunchyroll.com/news/naruto-20th-anniversary-special",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Anniversary)",
       "platform_origin": "Crunchyroll",
+      "velocity_score": 78,
+      "engagement_type": "Hype/Reaction"
+    },
+    {
+      "title": "Dragon Ball Daima: New Series Debuts on Crunchyroll - Episode 1 Review",
+      "summary": "Dragon Ball Daima episode 1 premieres today on Crunchyroll. Goku and friends turned child-like by a mysterious wish. Fans compare to GT. Strong opening ratings.",
+      "sourceURL": "https://www.crunchyroll.com/series/dragon-ball-daima",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (New Series)",
+      "platform_origin": "Crunchyroll",
+      "velocity_score": 96,
+      "engagement_type": "Discussion/Theory"
+    },
+    {
+      "title": "Boruto: Two Blue Vortex Chapter 14 - Sarada's Mangekyo Revealed",
+      "summary": "Boruto manga chapter 14 drops today, revealing Sarada's new Mangekyo Sharingan ability. Time-skip powers escalate. Reddit explodes with theories about the Otsutsuki.",
+      "sourceURL": "https://www.reddit.com/r/Boruto/comments/1a2b3c4d5f",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Manga)",
+      "platform_origin": "Reddit",
       "velocity_score": 75,
-      "engagement_type": "News/Announcement"
+      "engagement_type": "Discussion/Theory"
     },
     {
-      "title": "Death Note Musical: Global Tour Announced After Broadway Success",
-      "summary": "The Death Note musical, after a successful Broadway run, announces a global tour starting in London in September 2026. The production features new songs and updated visuals. Tickets sell out within hours.",
-      "sourceURL": "https://www.playbill.com/article/death-note-tour",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Death Note",
-      "platform_origin": "Other",
-      "velocity_score": 72,
-      "engagement_type": "Event"
+      "title": "Netflix's One Piece Live Action Season 2 Casting Update",
+      "summary": "Netflix announces new cast members for One Piece live action Season 2, including actors for Chopper and Robin. Filming begins next month. Fans excited for Alabasta arc.",
+      "sourceURL": "https://www.netflix.com/title/81234568",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Live-Action)",
+      "platform_origin": "Netflix",
+      "velocity_score": 93,
+      "engagement_type": "Hype/Reaction"
     },
     {
-      "title": "Frieren Season 2 Hype: New Visual and Teaser Released",
-      "summary": "Frieren Season 2 gets a teaser visual showing Frieren in a new landscape, hinting at the Northern Lands arc. The season is expected to premiere in October 2026 on Crunchyroll. Fans theorize about new characters.",
-      "sourceURL": "https://www.crunchyroll.com/news/frieren-season2-teaser",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Frieren",
-      "platform_origin": "Crunchyroll",
-      "velocity_score": 84,
-      "engagement_type": "News/Announcement"
-    },
-    {
-      "title": "Attack on Titan Spin-Off Manga 'Before the Fall' Gets Anime Adaptation",
-      "summary": "A new Attack on Titan spin-off anime, adapting the 'Before the Fall' manga, is announced for a 2027 release. The story focuses on the early days of the Survey Corps. Fans are excited for more lore.",
-      "sourceURL": "https://www.animenewsnetwork.com/news/2026-05-08/attack-on-titan-spinoff",
-      "timestamp": "2026-05-08T00:00:00Z",
-      "niche": "Attack on Titan",
-      "platform_origin": "Other",
+      "title": "Death Note: New Musical Adaptation Coming to Broadway in 2027",
+      "summary": "A new Death Note musical is announced for Broadway, featuring music from the original Japanese cast. Creative team includes renowned composers. Previews start late 2026.",
+      "sourceURL": "https://www.playbill.com/article/death-note-musical-broadway-2027",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Adaptation)",
+      "platform_origin": "News Site",
       "velocity_score": 70,
-      "engagement_type": "News/Announcement"
+      "engagement_type": "Discussion/Theory"
+    },
+    {
+      "title": "Crunchyroll Adds 'The Rose of Versailles' Remastered to Catalog",
+      "summary": "Crunchyroll adds the 1979 classic 'The Rose of Versailles' in 4K remaster. New generation discovers revolutionary shoujo. Social media trends with #RoseofVersailles.",
+      "sourceURL": "https://www.crunchyroll.com/news/rose-of-versailles-remaster",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Catalog Update)",
+      "platform_origin": "Crunchyroll",
+      "velocity_score": 65,
+      "engagement_type": "Discussion/Theory"
+    },
+    {
+      "title": "Netflix Original 'Hell's Paradise' Season 2 Teaser Released",
+      "summary": "Netflix drops teaser for Hell's Paradise Season 2, confirming Gabimaru's next trial. Animation by MAPPA. Release window early 2027.",
+      "sourceURL": "https://www.netflix.com/title/81234569",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Season Update)",
+      "platform_origin": "Netflix",
+      "velocity_score": 72,
+      "engagement_type": "Hype/Reaction"
+    },
+    {
+      "title": "Reddit's r/anime Discusses Best Anime of Spring 2026 Season",
+      "summary": "Spring 2026 anime season ends; Reddit's r/anime votes on top shows with 'Wind Breaker' and 'Kaiju No. 8' leading. Surprise entries include 'Oshi no Ko' Season 2.",
+      "sourceURL": "https://www.reddit.com/r/anime/comments/1a2b3c4d5g",
+      "timestamp": "2026-05-09T00:00:00Z",
+      "niche": "Anime (Seasonal)",
+      "platform_origin": "Reddit",
+      "velocity_score": 60,
+      "engagement_type": "Discussion/Theory"
     }
   ],
   "metadata": {
     "source": "DeepSeek API - OTAKU-PULSE ULTIMATE Mode",
-    "count": 17,
-    "average_velocity": 85,
-    "niches_covered": 13,
+    "count": 18,
+    "average_velocity": 83,
+    "niches_covered": 12,
     "platforms_covered": 6,
     "engagement_breakdown": {
-      "Spoiler Analysis": 3,
-      "News/Announcement": 6,
-      "Awards": 1,
-      "Trailer Release": 3,
-      "Movie Announcement": 1,
-      "Event": 2,
-      "Discussion": 1
+      "Discussion/Theory": 9,
+      "Hype/Reaction": 9
     },
     "generator": "OTAKU-PULSE ULTIMATE v3.1 - Bug Fixed",
     "coverage_scope": "Worldwide - All Platforms - All Series"
