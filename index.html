@@ -369,11 +369,36 @@
     .form-input:focus { border-color: var(--teal); }
 
     #card-element {
-      padding: 0.75rem; border: 1.5px solid var(--border2);
-      border-radius: 8px; background: #fff;
+      padding: 10px 12px; border: 1.5px solid var(--border2);
+      border-radius: 8px; background: #fff; min-height: 48px;
+      font-family: var(--sans); font-size: 0.95rem;
+      box-sizing: border-box;
     }
 
-    #card-element.StripeElement--focus { border-color: var(--teal); }
+    #card-element.StripeElement--focus { 
+      border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+    }
+
+    #card-element.StripeElement--invalid { border-color: var(--rose); }
+
+    .StripeElement {
+      box-sizing: border-box;
+      height: 48px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      background-color: white;
+      box-shadow: 0 1px 3px 0 #e6ebf1;
+      transition: box-shadow 150ms ease;
+    }
+
+    .StripeElement--focus {
+      box-shadow: 0 1px 3px 0 #cfd7df;
+      border-color: var(--teal);
+    }
+
+    .StripeElement--invalid {
+      border-color: #fa755a;
+    }
 
     .checkout-btn {
       width: 100%; padding: 1rem; background: var(--teal); color: #fff;
@@ -691,6 +716,7 @@
         <div class="form-group">
           <label class="form-label">Card Details</label>
           <div id="card-element"></div>
+          <div class="checkout-error" id="card-errors" style="margin-top: 0.5rem; min-height: 0;"></div>
         </div>
 
         <button type="submit" class="checkout-btn" id="checkoutBtn">Complete Order</button>
@@ -762,11 +788,55 @@ let selectedPrice = null;
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  // Initialize Stripe and card element
   if (STRIPE_PUBLISHABLE_KEY && STRIPE_PUBLISHABLE_KEY !== 'pk_test_your_key_here') {
-    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements();
-    cardElement = elements.create('card');
-    cardElement.mount('#card-element');
+    try {
+      stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+      const elements = stripe.elements({
+        fonts: [
+          {
+            family: "'DM Sans', sans-serif",
+            src: "url(https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap)"
+          }
+        ],
+        locale: 'en'
+      });
+
+      cardElement = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '15px',
+            color: '#3d2f24',
+            fontFamily: "'DM Sans', sans-serif",
+            '::placeholder': {
+              color: '#b5a090'
+            }
+          },
+          invalid: {
+            color: '#e8524a',
+            iconColor: '#e8524a'
+          }
+        }
+      });
+
+      // Mount card element
+      cardElement.mount('#card-element');
+
+      // Add event listeners for better UX
+      cardElement.addEventListener('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.textContent = '';
+        }
+      });
+    } catch (e) {
+      console.error('Stripe initialization error:', e);
+      document.getElementById('checkoutError').textContent = 'Payment system unavailable. Please try again.';
+    }
+  } else {
+    console.warn('Stripe key not configured');
   }
 });
 
