@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAGOH Hosting — Fully-Managed Website Hosting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/" async defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:    #fdf8f0;
+      --parchmt:  #f5ede0;
+      --warm:     #ede3d5;
+      --border:   #e0d4c4;
+      --border2:  #d4c4b0;
+      --muted:    #b5a090;
+      --dim:      #8a7868;
+      --sub:      #6b5e50;
+      --ink:      #3d2f24;
+      --deep:     #2a1f16;
+
+      --rose:     #e8524a;
+      --rose-lt:  #fce8e7;
+      --rose-md:  #f5c4c2;
+      --teal:     #2a9d8f;
+      --teal-lt:  #e0f5f3;
+      --teal-md:  #a0dcd6;
+      --gold:     #e9a028;
+      --gold-lt:  #fdf0d5;
+      --gold-md:  #f7d08a;
+
+      --sans:     'DM Sans', sans-serif;
+      --serif:    'Fraunces', serif;
+    }
+
+    html, body { height: 100%; overflow-x: hidden; background: var(--cream); }
+    body { color: var(--ink); font-family: var(--sans); line-height: 1.6; }
+
+    a { color: var(--teal); text-decoration: none; transition: all 0.2s; }
+    a:hover { color: #228b7e; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ── NAVIGATION ── */
+    .navbar {
+      background: var(--deep); border-bottom: 3px solid var(--rose);
+      padding: 1rem 0; position: sticky; top: 0; z-index: 100;
+    }
+
+    .navbar .container {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .nav-brand {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+      color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-brand em { color: var(--gold); font-style: italic; }
+
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+
+    .nav-cta { margin-left: auto; }
+
+    .btn {
+      display: inline-block; font-family: var(--sans); font-weight: 600;
+      padding: 0.75rem 1.5rem; border-radius: 10px; border: none;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+      font-size: 0.9rem; letter-spacing: 0.02em;
+    }
+
+    .btn-primary {
+      background: var(--teal); color: #fff;
+    }
+
+    .btn-primary:hover { background: #228b7e; box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3); }
+
+    .btn-outline {
+      background: transparent; color: var(--teal); border: 1.5px solid var(--teal);
+    }
+
+    .btn-outline:hover { background: var(--teal-lt); }
+
+    .btn-sm { padding: 0.5rem 1.2rem; font-size: 0.8rem; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--deep) 0%, #1a1410 100%);
+      color: #fff; padding: 5rem 0; position: relative; overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; opacity: 0.1;
+      background-image: radial-gradient(circle at 20% 50%, var(--teal) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, var(--gold) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 1; max-width: 650px;
+    }
+
+    .hero-badge {
+      display: inline-block; background: rgba(42, 157, 143, 0.2);
+      border: 1px solid var(--teal-md); color: #fff;
+      padding: 0.6rem 1.2rem; border-radius: 20px; font-size: 0.85rem;
+      margin-bottom: 1.5rem; font-weight: 500;
+    }
+
+    .hero-title {
+      font-family: var(--serif); font-size: 3.2rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+      padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat {
+      display: flex; flex-direction: column;
+    }
+
+    .stat-value {
+      font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
+      color: var(--gold);
+    }
+
+    .stat-label {
+      font-size: 0.8rem; color: rgba(255,255,255,0.6);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    /* ── FEATURES BAR ── */
+    .features-bar {
+      background: var(--parchmt); border-bottom: 1px solid var(--border);
+      padding: 2rem 0;
+    }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;
+    }
+
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+
+    .feature-icon {
+      font-size: 2rem; flex-shrink: 0;
+    }
+
+    .feature-text {
+      font-size: 0.95rem; font-weight: 500; color: var(--sub);
+    }
+
+    /* ── PRICING ── */
+    .pricing-section {
+      padding: 5rem 0;
+    }
+
+    .section-header {
+      text-align: center; margin-bottom: 4rem;
+    }
+
+    .section-label {
+      display: inline-block; font-size: 0.8rem; color: var(--teal);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--serif); font-size: 2.5rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1.1rem; color: var(--dim); max-width: 600px; margin: 0 auto;
+    }
+
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem; margin-bottom: 4rem;
+    }
+
+    .plan-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 2.5rem 2rem; position: relative;
+      transition: all 0.3s;
+    }
+
+    .plan-card:hover {
+      border-color: var(--teal); box-shadow: 0 12px 32px rgba(42, 157, 143, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .plan-card.featured {
+      border-color: var(--gold); background: linear-gradient(135deg, rgba(233, 160, 40, 0.05) 0%, rgba(42, 157, 143, 0.05) 100%);
+      position: relative; transform: scale(1.05);
+    }
+
+    .featured-badge {
+      position: absolute; top: -12px; left: 20px;
+      background: var(--gold); color: var(--deep);
+      padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .plan-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+    }
+
+    .plan-name {
+      font-family: var(--serif); font-size: 1.6rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.3rem;
+    }
+
+    .plan-tagline {
+      font-size: 0.9rem; color: var(--dim); margin-bottom: 1.5rem;
+    }
+
+    .plan-price {
+      display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 1.5rem;
+    }
+
+    .plan-price .currency {
+      font-size: 1.2rem; color: var(--dim);
+    }
+
+    .plan-price .amount {
+      font-family: var(--serif); font-size: 3rem; font-weight: 700;
+      color: var(--teal);
+    }
+
+    .plan-price .period {
+      font-size: 0.95rem; color: var(--dim);
+    }
+
+    .plan-features {
+      list-style: none; margin-bottom: 2rem;
+    }
+
+    .plan-features li {
+      padding: 0.75rem 0; font-size: 0.95rem; color: var(--sub);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plan-features li:last-child { border: none; }
+
+    .check {
+      color: var(--teal); font-weight: 700; margin-right: 0.5rem;
+    }
+
+    .plan-cta {
+      width: 100%; padding: 1rem; font-size: 0.95rem;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      padding: 5rem 0; background: var(--parchmt);
+    }
+
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem; margin-top: 3rem;
+    }
+
+    .step-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 2rem; text-align: center;
+    }
+
+    .step-number {
+      font-size: 3rem; margin-bottom: 1rem;
+    }
+
+    .step-title {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 600;
+      color: var(--ink); margin-bottom: 0.75rem;
+    }
+
+    .step-desc {
+      font-size: 0.95rem; color: var(--dim); line-height: 1.6;
+    }
+
+    /* ── CHECKOUT MODAL ── */
+    .checkout-wrap {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(45, 32, 22, 0.72);
+      display: none; align-items: center; justify-content: center;
+      padding: 1rem; backdrop-filter: blur(6px);
+    }
+
+    .checkout-wrap.show { display: flex; }
+
+    .checkout-modal {
+      background: #fff; border: 1px solid var(--border);
+      width: 100%; max-width: 500px;
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .checkout-header {
+      background: var(--deep); padding: 2rem;
+      text-align: center;
+    }
+
+    .checkout-title {
+      font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
+      color: #fff; margin-bottom: 0.5rem;
+    }
+
+    .checkout-subtitle {
+      font-size: 0.8rem; color: rgba(255,255,255,0.6); letter-spacing: 0.06em;
+    }
+
+    .checkout-body { padding: 2rem; }
+
+    .checkout-plan-summary {
+      background: var(--teal-lt); border: 1px solid var(--teal-md);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+
+    .summary-plan-name {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+      color: var(--teal); margin-bottom: 0.5rem;
+    }
+
+    .summary-price {
+      font-size: 1.1rem; color: var(--ink); font-weight: 600;
+    }
+
+    .form-group { margin-bottom: 1.5rem; }
+
+    .form-label {
+      display: block; font-size: 0.8rem; font-weight: 600; color: var(--dim);
+      letter-spacing: 0.05em; margin-bottom: 0.5rem; text-transform: uppercase;
+    }
+
+    .form-input {
+      width: 100%; padding: 0.75rem; border: 1.5px solid var(--border2);
+      font-family: var(--sans); font-size: 0.95rem; border-radius: 8px;
+      outline: none; transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: var(--teal); }
+
+    #card-element {
+      padding: 0.75rem; border: 1.5px solid var(--border2);
+      border-radius: 8px; background: #fff;
+    }
+
+    #card-element.StripeElement--focus { border-color: var(--teal); }
+
+    .checkout-btn {
+      width: 100%; padding: 1rem; background: var(--teal); color: #fff;
+      font-family: var(--sans); font-size: 0.95rem; font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+      margin-top: 1rem;
+    }
+
+    .checkout-btn:hover:not(:disabled) { background: #228b7e; }
+
+    .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .checkout-error {
+      color: var(--rose); font-size: 0.8rem; margin-top: 1rem; min-height: 1.2rem;
+    }
+
+    .checkout-close {
+      position: absolute; top: 1.5rem; right: 1.5rem; width: 32px; height: 32px;
+      background: transparent; border: none; font-size: 1.5rem; cursor: pointer;
+      color: rgba(255,255,255,0.6); transition: color 0.2s;
+    }
+
+    .checkout-close:hover { color: #fff; }
+
+    .success-notification {
+      position: fixed; top: 20px; right: 20px; z-index: 2000;
+      background: var(--teal); color: #fff; padding: 1rem 1.5rem;
+      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none; align-items: center; gap: 10px;
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .success-notification.show { display: flex; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--deep); color: #fff; padding: 3rem 0 1rem;
+      margin-top: 5rem; border-top: 1px solid var(--border);
+    }
+
+    .footer-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem; margin-bottom: 2rem;
+    }
+
+    .footer-col h4 {
+      font-size: 1rem; margin-bottom: 1rem; color: #fff;
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col li { margin-bottom: 0.75rem; }
+
+    .footer-col a {
+      color: rgba(255,255,255,0.7); transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: #fff; }
+
+    .footer-bottom {
+      text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.85rem; color: rgba(255,255,255,0.6);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-title { font-size: 2.2rem; }
+      .section-title { font-size: 2rem; }
+      .plan-card.featured { transform: scale(1); }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">
+      NAGOH<em>.</em>hosting
+    </a>
+    <div class="nav-links">
+      <a href="#pricing">Pricing</a>
+      <a href="#how">How It Works</a>
+      <a href="#features">Features</a>
+    </div>
+    <a href="#pricing" class="btn btn-primary btn-sm nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">✦ Fully managed • No tech required</div>
+
+      <h1 class="hero-title">
+        Professional Website<br>
+        <span class="gradient-text">Hosting Made Simple</span>
+      </h1>
+
+      <p class="hero-sub">
+        Get a custom, fully-managed website with your own domain and free SSL. We handle design, deployment, and updates. You focus on your business.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary">Choose Your Plan</a>
+        <a href="#how" class="btn btn-outline">Learn More</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">Uptime SLA</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">24h</span>
+          <span class="stat-label">Setup Start</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">Free</span>
+          <span class="stat-label">SSL & Domain</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES BAR -->
+<div class="features-bar" id="features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-text">Custom Domain Included</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-text">Free SSL Certificate</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-text">Professional Design</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-text">Global CDN Hosting</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛠</div>
+        <div class="feature-text">Ongoing Updates</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📞</div>
+        <div class="feature-text">24h Support</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING SECTION -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Pricing Plans</span>
+      <h2 class="section-title">Simple, Transparent Pricing</h2>
+      <p class="section-sub">
+        Pick the perfect plan for your business. All plans include custom domain, free SSL, and 24h support response.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- BASIC PLAN -->
+      <div class="plan-card">
+        <div class="plan-icon">⚡</div>
+        <div class="plan-name">Basic</div>
+        <div class="plan-tagline">Perfect for solo entrepreneurs</div>
+        <div class="plan-price">
+          <span class="currency">$</span><span class="amount">19</span><span class="period">/month</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Single-page website</li>
+          <li><span class="check">✓</span> Custom domain</li>
+          <li><span class="check">✓</span> Free SSL certificate</li>
+          <li><span class="check">✓</span> Mobile responsive</li>
+          <li><span class="check">✓</span> Contact form</li>
+          <li><span class="check">✓</span> Monthly updates</li>
+          <li><span class="check">✓</span> 24h support</li>
+        </ul>
+        <button class="btn btn-outline plan-cta" onclick="selectPlan('Basic', 19)">Choose Basic</button>
+      </div>
+
+      <!-- PRO PLAN (Featured) -->
+      <div class="plan-card featured">
+        <div class="featured-badge">⭐ Most Popular</div>
+        <div class="plan-icon">🚀</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-tagline">For growing businesses</div>
+        <div class="plan-price">
+          <span class="currency">$</span><span class="amount">49</span><span class="period">/month</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Up to 8-page website</li>
+          <li><span class="check">✓</span> Custom domain</li>
+          <li><span class="check">✓</span> Free SSL certificate</li>
+          <li><span class="check">✓</span> Mobile responsive</li>
+          <li><span class="check">✓</span> Contact form + blog</li>
+          <li><span class="check">✓</span> Weekly updates</li>
+          <li><span class="check">✓</span> Basic analytics</li>
+        </ul>
+        <button class="btn btn-primary plan-cta" onclick="selectPlan('Pro', 49)">Choose Pro</button>
+      </div>
+
+      <!-- BUSINESS PLAN -->
+      <div class="plan-card">
+        <div class="plan-icon">💼</div>
+        <div class="plan-name">Business</div>
+        <div class="plan-tagline">Full-featured enterprise</div>
+        <div class="plan-price">
+          <span class="currency">$</span><span class="amount">99</span><span class="period">/month</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Unlimited pages</li>
+          <li><span class="check">✓</span> Custom domain</li>
+          <li><span class="check">✓</span> Free SSL certificate</li>
+          <li><span class="check">✓</span> Mobile responsive</li>
+          <li><span class="check">✓</span> Blog + advanced forms</li>
+          <li><span class="check">✓</span> Unlimited updates</li>
+          <li><span class="check">✓</span> Full analytics suite</li>
+        </ul>
+        <button class="btn btn-outline plan-cta" onclick="selectPlan('Business', 99)">Choose Business</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">The Process</span>
+      <h2 class="section-title">From Signup to Live in Days</h2>
+      <p class="section-sub">We handle everything so you can focus on growing your business.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1️⃣</div>
+        <div class="step-title">Choose Your Plan</div>
+        <div class="step-desc">Select the plan that fits your business and provide your project details.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2️⃣</div>
+        <div class="step-title">We Design & Build</div>
+        <div class="step-desc">Our team creates your custom website with your domain and SSL setup.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3️⃣</div>
+        <div class="step-title">Review & Approve</div>
+        <div class="step-desc">You review your site and request changes until it's perfect.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">4️⃣</div>
+        <div class="step-title">Go Live & Grow</div>
+        <div class="step-desc">Your site goes live and we handle all updates and maintenance.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-wrap" id="checkoutWrap">
+  <div class="checkout-modal">
+    <button class="checkout-close" onclick="closeCheckout()">×</button>
+    <div class="checkout-header">
+      <div class="checkout-title">Get Started</div>
+      <div class="checkout-subtitle">Complete your hosting order</div>
+    </div>
+    <div class="checkout-body">
+      <div class="checkout-plan-summary">
+        <div class="summary-plan-name" id="planName">Pro Plan</div>
+        <div class="summary-price" id="planPrice">$49/month</div>
+      </div>
+
+      <form id="checkoutForm" onsubmit="handleCheckout(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="fullName" placeholder="John Smith" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="checkoutEmail" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input type="text" class="form-input" id="businessName" placeholder="Your Business Name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Domain Name</label>
+          <input type="text" class="form-input" id="domainName" placeholder="yourbusiness.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Project Brief</label>
+          <textarea class="form-input" id="projectBrief" rows="4" placeholder="Tell us about your business and website vision..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Card Details</label>
+          <div id="card-element"></div>
+        </div>
+
+        <button type="submit" class="checkout-btn" id="checkoutBtn">Complete Order</button>
+      </form>
+
+      <div class="checkout-error" id="checkoutError"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS NOTIFICATION -->
+<div class="success-notification" id="successNotification">
+  ✅ <span id="successMsg">Order placed successfully!</span>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="/" class="nav-brand" style="color: #fff;">
+          NAGOH<em>.</em>hosting
+        </a>
+        <p style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+          Fully-managed web hosting for businesses that want to focus on growth, not technology.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="/">Main Site</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/ai/">NAGOH AI</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Nagoh Creative. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const WORKER = 'https://nagohai.gregoryhogan.workers.dev';
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_your_key_here'; // Replace with actual key
+
+let stripe, cardElement;
+let selectedPlan = null;
+let selectedPrice = null;
+
+// Initialize Stripe
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  if (STRIPE_PUBLISHABLE_KEY && STRIPE_PUBLISHABLE_KEY !== 'pk_test_your_key_here') {
+    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    const elements = stripe.elements();
+    cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+  }
+});
+
+function selectPlan(planName, price) {
+  selectedPlan = planName;
+  selectedPrice = price;
+  
+  document.getElementById('planName').textContent = planName + ' Plan';
+  document.getElementById('planPrice').textContent = `$${price}/month`;
+  document.getElementById('checkoutWrap').classList.add('show');
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutWrap').classList.remove('show');
+  document.getElementById('checkoutError').textContent = '';
+  document.getElementById('checkoutForm').reset();
+}
+
+async function handleCheckout(e) {
+  e.preventDefault();
+  
+  const btn = document.getElementById('checkoutBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
+  document.getElementById('checkoutError').textContent = '';
+
+  try {
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('checkoutEmail').value.trim();
+    const businessName = document.getElementById('businessName').value.trim();
+    const domain = document.getElementById('domainName').value.trim();
+    const brief = document.getElementById('projectBrief').value.trim();
+
+    if (!fullName || !email || !businessName || !domain || !brief) {
+      throw new Error('All fields are required');
+    }
+
+    // Create payment method
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardElement,
+      billing_details: { email, name: fullName }
+    });
+
+    if (error) throw new Error(error.message);
+
+    // Submit to backend
+    const r = await fetch(`${WORKER}/hosting/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName,
+        email,
+        businessName,
+        domain,
+        brief,
+        plan: selectedPlan,
+        price: selectedPrice,
+        paymentMethodId: paymentMethod.id
+      })
+    });
+
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Order failed');
+
+    // Success
+    showSuccess('✅ Order placed! Check your email for next steps.');
+    closeCheckout();
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
+
+  } catch (err) {
+    document.getElementById('checkoutError').textContent = '❌ ' + (err.message || 'Payment failed');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Complete Order';
+  }
+}
+
+function showSuccess(msg) {
+  const notif = document.getElementById('successNotification');
+  document.getElementById('successMsg').textContent = msg;
+  notif.classList.add('show');
+  setTimeout(() => notif.classList.remove('show'), 4000);
+}
+</script>
+</body>
+</html>
