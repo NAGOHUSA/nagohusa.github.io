@@ -1122,90 +1122,124 @@ let slideIndex = 1;
 let slideTimer;
 let totalSlides = 0;
 
-// Dynamically load portfolio images from web URL
+// Dynamically load ALL .jpg images from portfolio folder
 function loadPortfolioImages() {
-  const portfolioUrl = 'https://nagoh.us/portfolio'; // Your hosted portfolio URL
-  const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+  const portfolioUrl = 'https://nagoh.us/portfolio';
   const slideshow = document.getElementById('portfolioSlideshow');
   const slideNav = document.getElementById('slideNav');
   
   if (!slideshow || !slideNav) return;
 
-  // List of image filenames to try (based on common naming)
-  const imagesToTry = [];
-  
-  // Try common naming patterns up to 20 images
-  for (let i = 1; i <= 20; i++) {
-    extensions.forEach(ext => {
-      imagesToTry.push(`${portfolioUrl}/website${i}.${ext}`);
-      imagesToTry.push(`${portfolioUrl}/portfolio${i}.${ext}`);
-      imagesToTry.push(`${portfolioUrl}/site${i}.${ext}`);
-      imagesToTry.push(`${portfolioUrl}/project${i}.${ext}`);
+  // Fetch directory listing or use a simple approach:
+  // Try to load images by common patterns, then add a directory listing approach
+  fetch(portfolioUrl + '/')
+    .then(response => response.text())
+    .then(html => {
+      // Parse HTML to find all .jpg files
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      // Get all links and filter for .jpg files
+      const links = Array.from(doc.querySelectorAll('a'))
+        .map(a => a.getAttribute('href'))
+        .filter(href => href && href.endsWith('.jpg'))
+        .map(href => portfolioUrl + '/' + href);
+
+      if (links.length > 0) {
+        loadImages(links);
+      } else {
+        // Fallback: try common naming patterns
+        loadImagesWithPatterns();
+      }
+    })
+    .catch(() => {
+      // If fetch fails, fallback to pattern matching
+      loadImagesWithPatterns();
     });
+
+  function loadImages(imageUrls) {
+    totalSlides = imageUrls.length;
+    slideshow.innerHTML = ''; // Clear placeholder
+    
+    // Create slides for each image
+    imageUrls.forEach((src, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'portfolio-slide fade';
+      slide.id = `slide${index + 1}`;
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Portfolio Website ${index + 1}`;
+      
+      slide.appendChild(img);
+      slideshow.appendChild(slide);
+    });
+    
+    // Create navigation dots
+    slideNav.innerHTML = '';
+    for (let i = 1; i <= imageUrls.length; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.onclick = () => currentSlide(i);
+      slideNav.appendChild(dot);
+    }
+    
+    // Start slideshow
+    showSlide(1);
   }
 
-  const loadedSrcs = new Set();
-
-  const checkImage = (src) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = src;
-    });
-  };
-
-  // Load images asynchronously
-  Promise.all(imagesToTry.map(async (src) => {
-    if (loadedSrcs.has(src)) return false;
-    const exists = await checkImage(src);
-    if (exists && !loadedSrcs.has(src)) {
-      loadedSrcs.add(src);
-      return src;
-    }
-    return false;
-  })).then((results) => {
-    const validImages = results.filter(Boolean);
+  function loadImagesWithPatterns() {
+    // Fallback: try common naming patterns and file numbers
+    const imagesToTry = [];
+    const extensions = ['jpg', 'jpeg'];
     
-    if (validImages.length > 0) {
-      totalSlides = validImages.length;
-      slideshow.innerHTML = ''; // Clear placeholder
-      
-      // Create slides for each image
-      validImages.forEach((src, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'portfolio-slide fade';
-        slide.id = `slide${index + 1}`;
-        
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `Portfolio Website ${index + 1}`;
-        
-        slide.appendChild(img);
-        slideshow.appendChild(slide);
+    // Try numbered patterns up to 20
+    for (let i = 1; i <= 20; i++) {
+      extensions.forEach(ext => {
+        imagesToTry.push(`${portfolioUrl}/website${i}.${ext}`);
+        imagesToTry.push(`${portfolioUrl}/portfolio${i}.${ext}`);
+        imagesToTry.push(`${portfolioUrl}/site${i}.${ext}`);
+        imagesToTry.push(`${portfolioUrl}/project${i}.${ext}`);
+        imagesToTry.push(`${portfolioUrl}/${i}.${ext}`);
       });
-      
-      // Create navigation dots
-      slideNav.innerHTML = '';
-      for (let i = 1; i <= validImages.length; i++) {
-        const dot = document.createElement('span');
-        dot.className = 'dot';
-        dot.onclick = () => currentSlide(i);
-        slideNav.appendChild(dot);
-      }
-      
-      // Start slideshow
-      showSlide(1);
-    } else {
-      // No images found, show placeholder
-      const placeholder = document.getElementById('placeholder');
-      if (placeholder) {
-        slideshow.innerHTML = '';
-        slideshow.appendChild(placeholder);
-        placeholder.classList.add('active');
-      }
     }
-  });
+
+    const loadedSrcs = new Set();
+
+    const checkImage = (src) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+      });
+    };
+
+    // Load images asynchronously
+    Promise.all(imagesToTry.map(async (src) => {
+      if (loadedSrcs.has(src)) return false;
+      const exists = await checkImage(src);
+      if (exists && !loadedSrcs.has(src)) {
+        loadedSrcs.add(src);
+        return src;
+      }
+      return false;
+    })).then((results) => {
+      const validImages = results.filter(Boolean);
+      
+      if (validImages.length > 0) {
+        loadImages(validImages);
+      } else {
+        // No images found, show placeholder
+        const placeholder = document.getElementById('placeholder');
+        if (placeholder) {
+          slideshow.innerHTML = '';
+          slideshow.appendChild(placeholder);
+          placeholder.classList.add('active');
+        }
+      }
+    });
+  }
 }
 
 function showSlide(n) {
