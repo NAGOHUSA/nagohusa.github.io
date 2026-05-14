@@ -1,1 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kingdom Cabinetry - Custom Cabinet Design & Installation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap');
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent-gold: #c9a961;
+            --dark-bg: #0f1117;
+            --glass-light: rgba(255, 255, 255, 0.1);
+            --glass-lighter: rgba(255, 255, 255, 0.15);
+            --text-light: #f5f5f5;
+            --text-muted: #b0b0b0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Sora', 'Poppins', sans-serif;
+            color: var(--text-light);
+            background: 
+                linear-gradient(135deg, #0f1117 0%, #1a1f2e 50%, #0f1117 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 90, 43, 0.03) 2px,
+                    rgba(139, 90, 43, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(139, 90, 43, 0.02) 1px,
+                    rgba(139, 90, 43, 0.02) 2px
+                );
+            background-attachment: fixed;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(201, 169, 97, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 90, 43, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(232, 192, 118, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: drift 25s ease-in-out infinite;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, 40px) scale(1.05); }
+        }
+
+        /* Wood grain texture overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" seed="2"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="15" yOffset="0"/></filter></defs><rect width="100" height="100" fill="none" filter="url(%23noise)"/></svg>');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        :root {
+            --accent-gold: #c9a961;
+            --accent-light: #e8c076;
+            --dark-bg: #0f1117;
+            --wood-dark: #3d2817;
+            --wood-medium: #6b4423;
+            --wood-light: #8b5a2b;
+            --glass-light: rgba(255, 255, 255, 0.1);
+            --glass-lighter: rgba(255, 255, 255, 0.15);
+            --text-light: #f5f5f5;
+            --text-muted: #b0b0b0;
+        }
+
+        /* ========== HEADER & NAVIGATION ========== */
+        header {
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.9) 0%, rgba(107, 68, 35, 0.8) 50%, rgba(61, 40, 23, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-light);
+            padding: 1.2rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(201, 169, 97, 0.3);
+            box-shadow: 0 8px 32px rgba(139, 90, 43, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 90, 43, 0.1) 2px,
+                    rgba(139, 90, 43, 0.1) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(139, 90, 43, 0.05) 1px,
+                    rgba(139, 90, 43, 0.05) 2px
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .header-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            filter: drop-shadow(0 0 15px rgba(201, 169, 97, 0.4)) brightness(1.15);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .logo-img:hover {
+            transform: scale(1.15) rotate(-8deg);
+            filter: drop-shadow(0 0 25px rgba(201, 169, 97, 0.7)) brightness(1.3);
+            animation: none;
+        }
+
+        .brand-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-gold) 50%, #d4a574 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(201, 169, 97, 0.3);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(201, 169, 97, 0.5)); }
+        }
+
+        nav {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.8px;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            position: relative;
+            font-weight: 500;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -8px;
+            left: 0;
+            background: linear-gradient(90deg, var(--accent-gold), #e8c076);
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        nav a:hover {
+            color: var(--accent-gold);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .phone-btn {
+            background: var(--glass-lighter);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(201, 169, 97, 0.3);
+            color: var(--accent-gold);
+            padding: 0.7rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .phone-btn:hover {
+            background: rgba(201, 169, 97, 0.15);
+            border-color: rgba(201, 169, 97, 0.6);
+            box-shadow: 0 8px 32px rgba(201, 169, 97, 0.15);
+            transform: translateY(-3px);
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 169, 97, 0.15) 0%, transparent 70%);
+            transform: translateX(-50%);
+            animation: pulse-glow 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e8c076 0%, var(--accent-gold) 30%, #d4a574 70%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideInDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+            text-shadow: 0 0 60px rgba(201, 169, 97, 0.3);
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px) scaleY(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scaleY(1);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, var(--accent-light), var(--accent-gold), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+            filter: drop-shadow(0 0 10px rgba(201, 169, 97, 0.2));
+        }
+
+        .hero-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(232, 192, 118, 0.2) 50%, rgba(201, 169, 97, 0.3) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(201, 169, 97, 0.6);
+            color: var(--accent-gold);
+            padding: 1.3rem 3.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 30px rgba(201, 169, 97, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+            z-index: 0;
+        }
+
+        .hero-cta:hover::before {
+            left: 100%;
+        }
+
+        .hero-cta:hover {
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.5) 0%, rgba(232, 192, 118, 0.4) 50%, rgba(201, 169, 97, 0.5) 100%);
+            border-color: rgba(232, 192, 118, 1);
+            box-shadow: 0 0 60px rgba(201, 169, 97, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-5px) scale(1.05);
+            color: #fff;
+        }
+
+        .hero-cta > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== ABOUT SECTION ========== */
+        .about {
+            background: linear-gradient(135deg, rgba(107, 68, 35, 0.2) 0%, rgba(61, 40, 23, 0.15) 50%, rgba(107, 68, 35, 0.2) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 4rem 2rem;
+            margin: 3rem auto;
+            border-radius: 30px;
+            border: 2px solid rgba(201, 169, 97, 0.25);
+            max-width: 1100px;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+            box-shadow: 0 8px 32px rgba(139, 90, 43, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 90, 43, 0.08) 2px,
+                    rgba(139, 90, 43, 0.08) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(139, 90, 43, 0.05) 1px,
+                    rgba(139, 90, 43, 0.05) 2px
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .about::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 192, 118, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .about-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #e8c076 0%, var(--accent-gold) 30%, #d4a574 70%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 1.5rem;
+            font-weight: 700;
+            animation: slideInDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            filter: drop-shadow(0 0 20px rgba(201, 169, 97, 0.2));
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), transparent);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: expandWidth 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+        }
+
+        @keyframes expandWidth {
+            from {
+                width: 0;
+            }
+            to {
+                width: 120px;
+            }
+        }
+
+        .about-content {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .about-content p {
+            margin-bottom: 1.8rem;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, var(--accent-light), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin-top: 3rem;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.15) 0%, rgba(107, 68, 35, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border: 2px solid rgba(201, 169, 97, 0.3);
+            border-radius: 20px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+        }
+
+        .feature-box:nth-child(1) { animation-delay: 0.2s; }
+        .feature-box:nth-child(2) { animation-delay: 0.3s; }
+        .feature-box:nth-child(3) { animation-delay: 0.4s; }
+        .feature-box:nth-child(4) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            animation: shimmerLine 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmerLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .feature-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 192, 118, 0.1), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .feature-box:hover::after {
+            left: 100%;
+        }
+
+        .feature-box:hover {
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.25) 0%, rgba(107, 68, 35, 0.15) 100%);
+            border-color: rgba(232, 192, 118, 0.6);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(201, 169, 97, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-box h3 {
+            background: linear-gradient(90deg, var(--accent-light), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ========== PORTFOLIO GALLERY ========== */
+        .gallery-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+        }
+
+        .gallery-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #e8c076 0%, var(--accent-gold) 30%, #d4a574 70%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 3.5rem;
+            position: relative;
+            padding-bottom: 1.5rem;
+            font-weight: 700;
+            animation: slideInDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            filter: drop-shadow(0 0 20px rgba(201, 169, 97, 0.2));
+        }
+
+        .gallery-title::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), transparent);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: expandWidth 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 25px;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(107, 68, 35, 0.3), rgba(61, 40, 23, 0.2));
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid rgba(201, 169, 97, 0.3);
+            box-shadow: 0 8px 32px rgba(139, 90, 43, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+        }
+
+        .gallery-item:nth-child(1) { animation-delay: 0.1s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.6s; }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 90, 43, 0.08) 2px,
+                    rgba(139, 90, 43, 0.08) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-15px) scale(1.03) rotateZ(-2deg);
+            box-shadow: 0 25px 60px rgba(201, 169, 97, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(232, 192, 118, 0.6);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 0;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.15) rotate(3deg);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.7) 0%, rgba(15, 17, 23, 0.85) 100%);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .overlay-text {
+            color: var(--accent-light);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 0 10px rgba(201, 169, 97, 0.5));
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-loading {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .gallery-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.05), rgba(201, 169, 97, 0.02));
+            border-radius: 25px;
+            border: 1.5px dashed rgba(201, 169, 97, 0.3);
+            grid-column: 1 / -1;
+        }
+
+        /* ========== LIGHTBOX MODAL ========== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.95), rgba(15, 17, 23, 0.97));
+            backdrop-filter: blur(15px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            animation: zoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            color: var(--accent-gold);
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.15), rgba(232, 192, 118, 0.1));
+            border: 2px solid rgba(201, 169, 97, 0.4);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox-close:hover {
+            transform: rotate(90deg) scale(1.2);
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(232, 192, 118, 0.2));
+            border-color: rgba(232, 192, 118, 0.8);
+            box-shadow: 0 0 30px rgba(201, 169, 97, 0.5);
+        }
+
+        /* ========== CONTACT SECTION ========== */
+        .contact {
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.2) 0%, rgba(107, 68, 35, 0.15) 50%, rgba(139, 90, 43, 0.2) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-light);
+            padding: 5rem 2rem;
+            text-align: center;
+            margin: 3rem auto;
+            border-radius: 30px;
+            border: 2px solid rgba(201, 169, 97, 0.25);
+            max-width: 1100px;
+            animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+            box-shadow: 0 8px 32px rgba(139, 90, 43, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 90, 43, 0.08) 2px,
+                    rgba(139, 90, 43, 0.08) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(139, 90, 43, 0.05) 1px,
+                    rgba(139, 90, 43, 0.05) 2px
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .contact::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 192, 118, 0.1) 0%, transparent 70%);
+            animation: pulse-glow 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .contact-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #e8c076 0%, var(--accent-gold) 50%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            animation: slideInDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        .contact-info {
+            font-size: 1.1rem;
+            line-height: 2;
+            margin: 2rem 0;
+            color: var(--text-muted);
+        }
+
+        .contact-info a {
+            background: linear-gradient(90deg, var(--accent-light), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .contact-info a:hover {
+            border-bottom-color: var(--accent-gold);
+            filter: brightness(1.3);
+            text-shadow: 0 0 20px rgba(201, 169, 97, 0.3);
+        }
+
+        .contact-phone {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e8c076 0%, var(--accent-gold) 50%, #d4a574 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 2rem 0;
+            letter-spacing: 2px;
+            animation: pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(201, 169, 97, 0.3));
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: linear-gradient(180deg, transparent, rgba(61, 40, 23, 0.6));
+            color: var(--text-muted);
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 2px solid rgba(201, 169, 97, 0.15);
+        }
+
+        footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            nav {
+                gap: 1.5rem;
+                font-size: 0.75rem;
+            }
+
+            .brand-text {
+                font-size: 1.1rem;
+                letter-spacing: 1px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .section-title,
+            .gallery-title,
+            .contact h2 {
+                font-size: 1.8rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .phone-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.75rem;
+            }
+
+            .about,
+            .contact {
+                margin: 2rem auto;
+                padding: 2.5rem 1.5rem;
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 0.5rem;
+                font-size: 0.7rem;
+                margin-left: 0;
+            }
+
+            .logo-img {
+                height: 35px;
+            }
+
+            .brand-text {
+                font-size: 0.95rem;
+            }
+
+            .hero {
+                padding: 3rem 1rem 2rem;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .about,
+            .contact {
+                margin: 1.5rem auto;
+                padding: 2rem 1.2rem;
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER & NAVIGATION -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="KCLOGO.jpg" alt="Kingdom Cabinetry Logo" class="logo-img">
+                <div class="brand-text">Kingdom Cabinetry</div>
+            </div>
+            <nav>
+                <a href="#about">About</a>
+                <a href="#portfolio">Portfolio</a>
+                <a href="#contact">Contact</a>
+                <button class="phone-btn" onclick="scrollToContact()">Call Now</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Custom Cabinetry Excellence</h1>
+        <p class="hero-subtitle">Design • Build • Install</p>
+        <a href="#contact" class="hero-cta">Get Your Quote Today</a>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about" id="about">
+        <div class="about-container">
+            <h2 class="section-title">About Kingdom Cabinetry</h2>
+            <div class="about-content">
+                <p>Kingdom Cabinetry brings quality craftsmanship and professional expertise to every project in the <span class="highlight">middle Georgia area</span>. Whether you're seeking bespoke custom cabinetry or ready-to-install solutions, we deliver excellence at every stage.</p>
+                
+                <p>With our comprehensive approach to cabinet design, build, and installation, we ensure your vision becomes reality. As a <span class="highlight">certified dealer of Northpoint and ProCraft</span>, we offer premium ready-to-install options alongside our full custom services—giving you flexibility and quality regardless of your project scope.</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-box">
+                    <h3>📐 Custom Design</h3>
+                    <p>Tailored cabinet solutions crafted specifically for your space and style preferences.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>🔨 Expert Build</h3>
+                    <p>Precision construction using quality materials and time-tested techniques.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>✓ Professional Installation</h3>
+                    <p>Expert installation ensuring perfect fit and finish for lasting beauty.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>🏢 Ready-To-Install</h3>
+                    <p>Certified dealer of Northpoint and ProCraft premium cabinetry options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTFOLIO GALLERY -->
+    <section class="gallery-section" id="portfolio">
+        <h2 class="gallery-title">Our Portfolio</h2>
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="gallery-loading">Loading portfolio...</div>
+        </div>
+    </section>
+
+    <!-- LIGHTBOX MODAL -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <img id="lightboxImg" src="" alt="">
+        </div>
+    </div>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact" id="contact">
+        <div class="contact-container">
+            <h2>Ready to Get Started?</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">Contact Kingdom Cabinetry today for ordering or to request a quote</p>
+            <div class="contact-phone">📞 Call for Your Free Quote</div>
+            <div class="contact-info">
+                <p><strong>Location:</strong> Warner Robins, GA</p>
+                <p><strong>Service Area:</strong> Middle Georgia Region</p>
+                <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.9;">
+                    Custom cabinet design, build & installation | Certified Northpoint & ProCraft Dealer
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2024 Kingdom Cabinetry. All rights reserved. Warner Robins, GA</p>
+    </footer>
+
+    <script>
+        // Load Portfolio Images from /portfolio/ folder
+        async function loadPortfolioImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            
+            try {
+                // Fetch the portfolio folder to list images
+                const response = await fetch('./portfolio/');
+                const html = await response.text();
+                
+                // Parse HTML to extract image filenames
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const links = doc.querySelectorAll('a');
+                
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                const images = [];
+                
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href) {
+                        const ext = href.split('.').pop().toLowerCase();
+                        if (imageExtensions.includes(ext) && !href.includes('..') && !href.includes('/')) {
+                            images.push(href);
+                        }
+                    }
+                });
+                
+                if (images.length === 0) {
+                    galleryGrid.innerHTML = `
+                        <div class="gallery-empty">
+                            <p>Portfolio images coming soon!</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>/portfolio/</strong> folder to display them here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Create gallery items
+                galleryGrid.innerHTML = '';
+                images.forEach((image, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="./portfolio/${image}" alt="Portfolio project ${index + 1}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <div class="overlay-text">View Project</div>
+                        </div>
+                    `;
+                    item.addEventListener('click', () => openLightbox(`./portfolio/${image}`));
+                    galleryGrid.appendChild(item);
+                });
+                
+            } catch (error) {
+                // If fetch fails (CORS or directory not accessible), show placeholder
+                galleryGrid.innerHTML = `
+                    <div class="gallery-empty">
+                        <p>Portfolio images coming soon!</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>/portfolio/</strong> folder in the same directory as this website.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Lightbox functionality
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = imageSrc;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+        }
+
+        // Close lightbox on background click
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox') {
+                closeLightbox();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Scroll to contact function
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize gallery on page load
+        window.addEventListener('load', loadPortfolioImages);
+    </script>
+</body>
+</html>
