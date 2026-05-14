@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NAGOH Hosting — Fully-Managed Website Hosting</title>
+  <title>NAGOH Hosting — Complete Website Package for Small Business</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://js.stripe.com/v3/" async defer></script>
@@ -103,7 +103,7 @@
     }
 
     .hero-content {
-      position: relative; z-index: 1; max-width: 650px;
+      position: relative; z-index: 1; max-width: 700px;
     }
 
     .hero-badge {
@@ -133,54 +133,13 @@
       display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;
     }
 
-    .hero-stats {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
-      padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);
+    /* ── MAIN OFFER ── */
+    .offer-section {
+      padding: 4rem 0;
     }
 
-    .stat {
-      display: flex; flex-direction: column;
-    }
-
-    .stat-value {
-      font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
-      color: var(--gold);
-    }
-
-    .stat-label {
-      font-size: 0.8rem; color: rgba(255,255,255,0.6);
-      text-transform: uppercase; letter-spacing: 0.05em;
-    }
-
-    /* ── FEATURES BAR ── */
-    .features-bar {
-      background: var(--parchmt); border-bottom: 1px solid var(--border);
-      padding: 2rem 0;
-    }
-
-    .features-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;
-    }
-
-    .feature-item {
-      display: flex; align-items: flex-start; gap: 1rem;
-    }
-
-    .feature-icon {
-      font-size: 2rem; flex-shrink: 0;
-    }
-
-    .feature-text {
-      font-size: 0.95rem; font-weight: 500; color: var(--sub);
-    }
-
-    /* ── PRICING ── */
-    .pricing-section {
-      padding: 5rem 0;
-    }
-
-    .section-header {
-      text-align: center; margin-bottom: 4rem;
+    .offer-header {
+      text-align: center; margin-bottom: 3rem;
     }
 
     .section-label {
@@ -198,109 +157,192 @@
       font-size: 1.1rem; color: var(--dim); max-width: 600px; margin: 0 auto;
     }
 
-    .pricing-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem; margin-bottom: 4rem;
+    .offer-card {
+      background: #fff; border: 2px solid var(--teal);
+      border-radius: 20px; padding: 3rem 2.5rem; margin-bottom: 3rem;
+      text-align: center; max-width: 700px; margin-left: auto; margin-right: auto;
     }
 
-    .plan-card {
-      background: #fff; border: 1.5px solid var(--border);
-      border-radius: 16px; padding: 2.5rem 2rem; position: relative;
-      transition: all 0.3s;
+    .offer-badge {
+      display: inline-block; background: var(--teal-lt);
+      color: var(--teal); padding: 0.5rem 1rem; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem;
     }
 
-    .plan-card:hover {
-      border-color: var(--teal); box-shadow: 0 12px 32px rgba(42, 157, 143, 0.15);
-      transform: translateY(-4px);
+    .offer-title {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 1rem;
     }
 
-    .plan-card.featured {
-      border-color: var(--gold); background: linear-gradient(135deg, rgba(233, 160, 40, 0.05) 0%, rgba(42, 157, 143, 0.05) 100%);
-      position: relative; transform: scale(1.05);
+    .offer-tagline {
+      font-size: 1rem; color: var(--dim); margin-bottom: 2rem;
+      line-height: 1.7;
     }
 
-    .featured-badge {
-      position: absolute; top: -12px; left: 20px;
-      background: var(--gold); color: var(--deep);
-      padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem;
-      font-weight: 700;
+    .pricing-breakdown {
+      background: var(--parchmt); border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem; margin-bottom: 2.5rem;
+      text-align: left;
     }
 
-    .plan-icon {
-      font-size: 2.5rem; margin-bottom: 1rem;
+    .breakdown-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; font-size: 0.95rem;
     }
 
-    .plan-name {
-      font-family: var(--serif); font-size: 1.6rem; font-weight: 700;
-      color: var(--ink); margin-bottom: 0.3rem;
+    .breakdown-row:not(:last-child) {
+      border-bottom: 1px solid var(--border2);
     }
 
-    .plan-tagline {
-      font-size: 0.9rem; color: var(--dim); margin-bottom: 1.5rem;
+    .breakdown-label {
+      color: var(--sub); font-weight: 500;
     }
 
-    .plan-price {
-      display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 1.5rem;
+    .breakdown-value {
+      color: var(--ink); font-weight: 600;
     }
 
-    .plan-price .currency {
-      font-size: 1.2rem; color: var(--dim);
+    .breakdown-row.total {
+      margin-top: 0.5rem; padding: 1rem 0;
+      border-top: 2px solid var(--border2);
+      font-size: 1.2rem;
     }
 
-    .plan-price .amount {
-      font-family: var(--serif); font-size: 3rem; font-weight: 700;
-      color: var(--teal);
+    .breakdown-row.total .breakdown-label {
+      color: var(--ink); font-weight: 700;
     }
 
-    .plan-price .period {
-      font-size: 0.95rem; color: var(--dim);
+    .breakdown-row.total .breakdown-value {
+      color: var(--teal); font-size: 1.4rem; font-family: var(--serif);
     }
 
-    .plan-features {
-      list-style: none; margin-bottom: 2rem;
+    .features-list {
+      list-style: none; text-align: left; margin-bottom: 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
     }
 
-    .plan-features li {
+    .features-list li {
       padding: 0.75rem 0; font-size: 0.95rem; color: var(--sub);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .features-list li:before {
+      content: "✓"; color: var(--teal); font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .btn-lg {
+      padding: 1.2rem 2.5rem; font-size: 1rem; width: 100%; max-width: 400px;
+    }
+
+    /* ── UPSELL SECTION ── */
+    .upsell-section {
+      background: var(--parchmt); padding: 3rem 0; margin: 4rem 0;
+      border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
-    .plan-features li:last-child { border: none; }
-
-    .check {
-      color: var(--teal); font-weight: 700; margin-right: 0.5rem;
+    .upsell-header {
+      text-align: center; margin-bottom: 3rem;
     }
 
-    .plan-cta {
-      width: 100%; padding: 1rem; font-size: 0.95rem;
-    }
-
-    /* ── HOW IT WORKS ── */
-    .how-section {
-      padding: 5rem 0; background: var(--parchmt);
-    }
-
-    .steps-grid {
+    .upsell-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .upsell-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 2rem; text-align: center;
+      transition: all 0.3s;
+    }
+
+    .upsell-card:hover {
+      border-color: var(--gold); box-shadow: 0 8px 24px rgba(233, 160, 40, 0.1);
+    }
+
+    .upsell-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+    }
+
+    .upsell-name {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.5rem;
+    }
+
+    .upsell-price {
+      font-size: 1.8rem; color: var(--gold); font-weight: 700;
+      margin-bottom: 1rem; font-family: var(--serif);
+    }
+
+    .upsell-desc {
+      font-size: 0.9rem; color: var(--dim); margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .upsell-btn {
+      width: 100%; padding: 0.8rem; background: var(--gold); color: var(--deep);
+      border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+      font-family: var(--sans); transition: all 0.2s;
+    }
+
+    .upsell-btn:hover { background: #d98a1f; }
+
+    /* ── WHAT'S INCLUDED ── */
+    .what-section {
+      padding: 4rem 0;
+    }
+
+    .what-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 2rem; margin-top: 3rem;
     }
 
-    .step-card {
-      background: #fff; border: 1px solid var(--border); border-radius: 14px;
-      padding: 2rem; text-align: center;
+    .what-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem; text-align: center;
     }
 
-    .step-number {
-      font-size: 3rem; margin-bottom: 1rem;
+    .what-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
     }
 
-    .step-title {
-      font-family: var(--serif); font-size: 1.3rem; font-weight: 600;
-      color: var(--ink); margin-bottom: 0.75rem;
+    .what-title {
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.5rem;
     }
 
-    .step-desc {
-      font-size: 0.95rem; color: var(--dim); line-height: 1.6;
+    .what-desc {
+      font-size: 0.9rem; color: var(--dim); line-height: 1.6;
+    }
+
+    /* ── TIMELINE / FAQ ── */
+    .timeline-section {
+      padding: 4rem 0; background: var(--parchmt);
+    }
+
+    .timeline-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem; margin-top: 3rem;
+    }
+
+    .timeline-step {
+      background: #fff; border-left: 4px solid var(--teal);
+      border-radius: 8px; padding: 1.5rem;
+    }
+
+    .timeline-step-num {
+      font-size: 2.2rem; color: var(--teal); font-weight: 700;
+      font-family: var(--serif); margin-bottom: 0.5rem;
+    }
+
+    .timeline-step-title {
+      font-size: 1rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-step-desc {
+      font-size: 0.85rem; color: var(--dim); line-height: 1.5;
     }
 
     /* ── CHECKOUT MODAL ── */
@@ -315,10 +357,10 @@
 
     .checkout-modal {
       background: #fff; border: 1px solid var(--border);
-      width: 100%; max-width: 500px;
+      width: 100%; max-width: 550px;
       border-radius: 20px; overflow: hidden;
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      animation: slideUp 0.3s ease;
+      animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;
     }
 
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -339,18 +381,55 @@
 
     .checkout-body { padding: 2rem; }
 
-    .checkout-plan-summary {
+    .checkout-summary {
       background: var(--teal-lt); border: 1px solid var(--teal-md);
       border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
     }
 
-    .summary-plan-name {
-      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
-      color: var(--teal); margin-bottom: 0.5rem;
+    .summary-line {
+      display: flex; justify-content: space-between; margin-bottom: 0.75rem;
+      font-size: 0.95rem;
     }
 
-    .summary-price {
-      font-size: 1.1rem; color: var(--ink); font-weight: 600;
+    .summary-line.total {
+      border-top: 2px solid var(--teal-md); padding-top: 1rem;
+      margin-top: 1rem; font-size: 1.1rem; font-weight: 700;
+    }
+
+    .summary-line.total span:last-child {
+      color: var(--teal); font-family: var(--serif);
+    }
+
+    .upsell-toggle {
+      background: var(--gold-lt); border: 1px solid var(--gold-md);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .upsell-toggle:hover { background: var(--gold); color: var(--deep); }
+
+    .upsell-toggle label {
+      display: flex; align-items: center; gap: 1rem; cursor: pointer;
+    }
+
+    .upsell-toggle input[type="checkbox"] {
+      width: 20px; height: 20px; cursor: pointer; accent-color: var(--teal);
+    }
+
+    .upsell-toggle-text {
+      text-align: left; flex: 1;
+    }
+
+    .upsell-toggle-title {
+      font-weight: 600; color: var(--ink); margin-bottom: 0.25rem;
+    }
+
+    .upsell-toggle-desc {
+      font-size: 0.85rem; color: var(--sub);
+    }
+
+    .upsell-toggle-price {
+      font-weight: 700; color: var(--deep); font-size: 1.1rem;
     }
 
     .form-group { margin-bottom: 1.5rem; }
@@ -380,25 +459,6 @@
     }
 
     #card-element.StripeElement--invalid { border-color: var(--rose); }
-
-    .StripeElement {
-      box-sizing: border-box;
-      height: 48px;
-      padding: 10px 12px;
-      border-radius: 4px;
-      background-color: white;
-      box-shadow: 0 1px 3px 0 #e6ebf1;
-      transition: box-shadow 150ms ease;
-    }
-
-    .StripeElement--focus {
-      box-shadow: 0 1px 3px 0 #cfd7df;
-      border-color: var(--teal);
-    }
-
-    .StripeElement--invalid {
-      border-color: #fa755a;
-    }
 
     .checkout-btn {
       width: 100%; padding: 1rem; background: var(--teal); color: #fff;
@@ -470,8 +530,7 @@
       .nav-links { display: none; }
       .hero-title { font-size: 2.2rem; }
       .section-title { font-size: 2rem; }
-      .plan-card.featured { transform: scale(1); }
-      .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .features-list { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -484,11 +543,11 @@
       NAGOH<em>.</em>hosting
     </a>
     <div class="nav-links">
-      <a href="#pricing">Pricing</a>
-      <a href="#how">How It Works</a>
-      <a href="#features">Features</a>
+      <a href="#offer">The Package</a>
+      <a href="#included">What's Included</a>
+      <a href="#timeline">Timeline</a>
     </div>
-    <a href="#pricing" class="btn btn-primary btn-sm nav-cta">Get Started</a>
+    <a href="#offer" class="btn btn-primary btn-sm nav-cta">Get Started</a>
   </div>
 </nav>
 
@@ -497,177 +556,208 @@
   <div class="hero-bg"></div>
   <div class="container">
     <div class="hero-content">
-      <div class="hero-badge">✦ Fully managed • No tech required</div>
+      <div class="hero-badge">✦ One price • Everything included • No surprises</div>
 
       <h1 class="hero-title">
-        Professional Website<br>
-        <span class="gradient-text">Hosting Made Simple</span>
+        Your Complete<br>
+        <span class="gradient-text">Website Solution</span>
       </h1>
 
       <p class="hero-sub">
-        Get a custom, fully-managed website with your own domain and free SSL. We handle design, deployment, and updates. You focus on your business.
+        Design, development, domain, SSL, and a full year of hosting — everything your small business needs in one package. No monthly fees. No hidden costs.
       </p>
 
       <div class="hero-actions">
-        <a href="#pricing" class="btn btn-primary">Choose Your Plan</a>
-        <a href="#how" class="btn btn-outline">Learn More</a>
-      </div>
-
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-value">100%</span>
-          <span class="stat-label">Uptime SLA</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">24h</span>
-          <span class="stat-label">Setup Start</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">Free</span>
-          <span class="stat-label">SSL & Domain</span>
-        </div>
+        <a href="#offer" class="btn btn-primary">See the Package</a>
+        <a href="#included" class="btn btn-outline">What's Inside</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES BAR -->
-<div class="features-bar" id="features">
+<!-- MAIN OFFER -->
+<section class="offer-section" id="offer">
   <div class="container">
-    <div class="features-grid">
-      <div class="feature-item">
-        <div class="feature-icon">🌐</div>
-        <div class="feature-text">Custom Domain Included</div>
+    <div class="offer-header">
+      <span class="section-label">One Simple Price</span>
+      <h2 class="section-title">NAGOH Complete</h2>
+      <p class="section-sub">Everything you need to launch a professional website and grow your business online.</p>
+    </div>
+
+    <div class="offer-card">
+      <div class="offer-badge">Complete Website Package</div>
+      <div class="offer-title">$1,400</div>
+      <p class="offer-tagline">One-time charge for design, build, domain setup, SSL, and 12 months of hosting.</p>
+
+      <div class="pricing-breakdown">
+        <div class="breakdown-row">
+          <span class="breakdown-label">Custom website design & build</span>
+          <span class="breakdown-value">$800</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Domain registration & setup</span>
+          <span class="breakdown-value">$150</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">SSL certificate (free, included)</span>
+          <span class="breakdown-value">$0</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">12 months of hosting</span>
+          <span class="breakdown-value">$450</span>
+        </div>
+        <div class="breakdown-row total">
+          <span class="breakdown-label">Year 1 Total</span>
+          <span class="breakdown-value">$1,400</span>
+        </div>
       </div>
-      <div class="feature-item">
-        <div class="feature-icon">🔒</div>
-        <div class="feature-text">Free SSL Certificate</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">🎨</div>
-        <div class="feature-text">Professional Design</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">🚀</div>
-        <div class="feature-text">Global CDN Hosting</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">🛠</div>
-        <div class="feature-text">Ongoing Updates</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">📞</div>
-        <div class="feature-text">24h Support</div>
-      </div>
+
+      <h3 style="font-family: var(--serif); font-size: 1.2rem; color: var(--ink); margin-bottom: 1.5rem; margin-top: 2rem;">What's included:</h3>
+      <ul class="features-list">
+        <li>Professional custom design</li>
+        <li>5 pages (customizable)</li>
+        <li>Mobile responsive</li>
+        <li>Contact form</li>
+        <li>Custom domain</li>
+        <li>Free SSL certificate</li>
+        <li>Email setup (basic)</li>
+        <li>24/7 technical support</li>
+      </ul>
+
+      <button class="btn btn-primary btn-lg" onclick="openCheckout()">Start Your Website</button>
     </div>
   </div>
-</div>
+</section>
 
-<!-- PRICING SECTION -->
-<section class="pricing-section" id="pricing">
+<!-- UPSELL SECTION -->
+<section class="upsell-section" id="upsells">
   <div class="container">
-    <div class="section-header">
-      <span class="section-label">Pricing Plans</span>
-      <h2 class="section-title">Simple, Transparent Pricing</h2>
-      <p class="section-sub">
-        Pick the perfect plan for your business. All plans include custom domain, free SSL, and 24h support response.
-      </p>
+    <div class="upsell-header">
+      <span class="section-label">Optional Extensions</span>
+      <h2 class="section-title">Extend Your Coverage</h2>
+      <p class="section-sub">Lock in additional years of hosting at a discount when you order now.</p>
     </div>
 
-    <div class="pricing-grid">
-      <!-- BASIC PLAN -->
-      <div class="plan-card">
-        <div class="plan-icon">⚡</div>
-        <div class="plan-name">Basic</div>
-        <div class="plan-tagline">Perfect for solo entrepreneurs</div>
-        <div class="plan-price">
-          <span class="currency">$</span><span class="amount">19</span><span class="period">/month</span>
-        </div>
-        <ul class="plan-features">
-          <li><span class="check">✓</span> Single-page website</li>
-          <li><span class="check">✓</span> Custom domain</li>
-          <li><span class="check">✓</span> Free SSL certificate</li>
-          <li><span class="check">✓</span> Mobile responsive</li>
-          <li><span class="check">✓</span> Contact form</li>
-          <li><span class="check">✓</span> Monthly updates</li>
-          <li><span class="check">✓</span> 24h support</li>
-        </ul>
-        <button class="btn btn-outline plan-cta" onclick="selectPlan('Basic', 19)">Choose Basic</button>
+    <div class="upsell-grid">
+      <div class="upsell-card">
+        <div class="upsell-icon">🔄</div>
+        <div class="upsell-name">Year 2 Extension</div>
+        <div class="upsell-price">$400</div>
+        <p class="upsell-desc">Add 12 months of hosting at the end of year 1. Lock it in now and save vs. renewing later.</p>
+        <button class="upsell-btn" onclick="addUpsell('year2', 400)">Add Year 2</button>
       </div>
 
-      <!-- PRO PLAN (Featured) -->
-      <div class="plan-card featured">
-        <div class="featured-badge">⭐ Most Popular</div>
-        <div class="plan-icon">🚀</div>
-        <div class="plan-name">Pro</div>
-        <div class="plan-tagline">For growing businesses</div>
-        <div class="plan-price">
-          <span class="currency">$</span><span class="amount">49</span><span class="period">/month</span>
-        </div>
-        <ul class="plan-features">
-          <li><span class="check">✓</span> Up to 8-page website</li>
-          <li><span class="check">✓</span> Custom domain</li>
-          <li><span class="check">✓</span> Free SSL certificate</li>
-          <li><span class="check">✓</span> Mobile responsive</li>
-          <li><span class="check">✓</span> Contact form + blog</li>
-          <li><span class="check">✓</span> Weekly updates</li>
-          <li><span class="check">✓</span> Basic analytics</li>
-        </ul>
-        <button class="btn btn-primary plan-cta" onclick="selectPlan('Pro', 49)">Choose Pro</button>
+      <div class="upsell-card">
+        <div class="upsell-icon">🎨</div>
+        <div class="upsell-name">Premium Updates</div>
+        <div class="upsell-price">$250</div>
+        <p class="upsell-desc">Monthly design refreshes, content updates, and feature additions during year 1.</p>
+        <button class="upsell-btn" onclick="addUpsell('updates', 250)">Add Premium Updates</button>
       </div>
 
-      <!-- BUSINESS PLAN -->
-      <div class="plan-card">
-        <div class="plan-icon">💼</div>
-        <div class="plan-name">Business</div>
-        <div class="plan-tagline">Full-featured enterprise</div>
-        <div class="plan-price">
-          <span class="currency">$</span><span class="amount">99</span><span class="period">/month</span>
-        </div>
-        <ul class="plan-features">
-          <li><span class="check">✓</span> Unlimited pages</li>
-          <li><span class="check">✓</span> Custom domain</li>
-          <li><span class="check">✓</span> Free SSL certificate</li>
-          <li><span class="check">✓</span> Mobile responsive</li>
-          <li><span class="check">✓</span> Blog + advanced forms</li>
-          <li><span class="check">✓</span> Unlimited updates</li>
-          <li><span class="check">✓</span> Full analytics suite</li>
-        </ul>
-        <button class="btn btn-outline plan-cta" onclick="selectPlan('Business', 99)">Choose Business</button>
+      <div class="upsell-card">
+        <div class="upsell-icon">📊</div>
+        <div class="upsell-name">Analytics & SEO</div>
+        <div class="upsell-price">$150</div>
+        <p class="upsell-desc">Basic SEO setup, monthly traffic reports, and search visibility optimization.</p>
+        <button class="upsell-btn" onclick="addUpsell('seo', 150)">Add Analytics</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="how-section" id="how">
+<!-- WHAT'S INCLUDED -->
+<section class="what-section" id="included">
   <div class="container">
-    <div class="section-header">
+    <div class="offer-header">
+      <span class="section-label">The Details</span>
+      <h2 class="section-title">Everything You Need</h2>
+    </div>
+
+    <div class="what-grid">
+      <div class="what-card">
+        <div class="what-icon">🎨</div>
+        <div class="what-title">Custom Design</div>
+        <div class="what-desc">We design a unique, professional site tailored to your brand. Unlimited revisions until you're happy.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">⚙️</div>
+        <div class="what-title">Technical Setup</div>
+        <div class="what-desc">Domain registration, SSL certificate, email forwarding, and all server configuration handled for you.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">📱</div>
+        <div class="what-title">Fully Responsive</div>
+        <div class="what-desc">Your site looks perfect on phones, tablets, and desktops. Fast loading, accessible, SEO-ready.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">🚀</div>
+        <div class="what-title">Year 1 Hosting</div>
+        <div class="what-desc">12 months of reliable, fully-managed hosting on a global CDN. 99.9% uptime guarantee.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">💬</div>
+        <div class="what-title">Support Included</div>
+        <div class="what-desc">24/7 email support. We handle all technical issues, updates, and maintenance.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">🔧</div>
+        <div class="what-title">Updates & Maintenance</div>
+        <div class="what-desc">Regular security patches, backups, and feature updates included. No surprise costs.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section" id="timeline">
+  <div class="container">
+    <div class="offer-header">
       <span class="section-label">The Process</span>
-      <h2 class="section-title">From Signup to Live in Days</h2>
-      <p class="section-sub">We handle everything so you can focus on growing your business.</p>
+      <h2 class="section-title">From Order to Live</h2>
+      <p class="section-sub">We move fast so you can start growing.</p>
     </div>
 
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">1️⃣</div>
-        <div class="step-title">Choose Your Plan</div>
-        <div class="step-desc">Select the plan that fits your business and provide your project details.</div>
+    <div class="timeline-grid">
+      <div class="timeline-step">
+        <div class="timeline-step-num">1</div>
+        <div class="timeline-step-title">Place Your Order</div>
+        <div class="timeline-step-desc">Complete checkout and tell us about your business, goals, and vision.</div>
       </div>
-      <div class="step-card">
-        <div class="step-number">2️⃣</div>
-        <div class="step-title">We Design & Build</div>
-        <div class="step-desc">Our team creates your custom website with your domain and SSL setup.</div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">2</div>
+        <div class="timeline-step-title">Discovery Call</div>
+        <div class="timeline-step-desc">We hop on a quick call to clarify details and review your preferences.</div>
       </div>
-      <div class="step-card">
-        <div class="step-number">3️⃣</div>
-        <div class="step-title">Review & Approve</div>
-        <div class="step-desc">You review your site and request changes until it's perfect.</div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">3</div>
+        <div class="timeline-step-title">Design Phase</div>
+        <div class="timeline-step-desc">Our team designs your site. You review and request changes—fully collaborative.</div>
       </div>
-      <div class="step-card">
-        <div class="step-number">4️⃣</div>
-        <div class="step-title">Go Live & Grow</div>
-        <div class="step-desc">Your site goes live and we handle all updates and maintenance.</div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">4</div>
+        <div class="timeline-step-title">Build & Deploy</div>
+        <div class="timeline-step-desc">We build it out and configure your domain, SSL, email, and hosting.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">5</div>
+        <div class="timeline-step-title">Launch</div>
+        <div class="timeline-step-desc">Your site goes live. We provide a 30-day support window for tweaks.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">6</div>
+        <div class="timeline-step-title">Ongoing Support</div>
+        <div class="timeline-step-desc">Year 1 hosting, updates, and support included. You focus on your business.</div>
       </div>
     </div>
   </div>
@@ -679,12 +769,63 @@
     <button class="checkout-close" onclick="closeCheckout()">×</button>
     <div class="checkout-header">
       <div class="checkout-title">Get Started</div>
-      <div class="checkout-subtitle">Complete your hosting order</div>
+      <div class="checkout-subtitle">NAGOH Complete Package</div>
     </div>
     <div class="checkout-body">
-      <div class="checkout-plan-summary">
-        <div class="summary-plan-name" id="planName">Pro Plan</div>
-        <div class="summary-price" id="planPrice">$49/month</div>
+      <div class="checkout-summary">
+        <div class="summary-line">
+          <span>NAGOH Complete</span>
+          <span>$1,400</span>
+        </div>
+        <div class="summary-line" id="year2Line" style="display: none;">
+          <span>Year 2 Extension</span>
+          <span>$400</span>
+        </div>
+        <div class="summary-line" id="updatesLine" style="display: none;">
+          <span>Premium Updates</span>
+          <span>$250</span>
+        </div>
+        <div class="summary-line" id="seoLine" style="display: none;">
+          <span>Analytics & SEO</span>
+          <span>$150</span>
+        </div>
+        <div class="summary-line total">
+          <span>Total</span>
+          <span id="totalPrice">$1,400</span>
+        </div>
+      </div>
+
+      <div class="upsell-toggle">
+        <label>
+          <input type="checkbox" id="year2Checkbox" onchange="updateCheckoutSummary()">
+          <div class="upsell-toggle-text">
+            <div class="upsell-toggle-title">Add Year 2 Extension</div>
+            <div class="upsell-toggle-desc">Lock in year 2 hosting now at $400 (saves you ~$50 vs. renewal rate)</div>
+          </div>
+          <div class="upsell-toggle-price">+$400</div>
+        </label>
+      </div>
+
+      <div class="upsell-toggle">
+        <label>
+          <input type="checkbox" id="updatesCheckbox" onchange="updateCheckoutSummary()">
+          <div class="upsell-toggle-text">
+            <div class="upsell-toggle-title">Premium Updates</div>
+            <div class="upsell-toggle-desc">Monthly content & feature updates throughout year 1</div>
+          </div>
+          <div class="upsell-toggle-price">+$250</div>
+        </label>
+      </div>
+
+      <div class="upsell-toggle">
+        <label>
+          <input type="checkbox" id="seoCheckbox" onchange="updateCheckoutSummary()">
+          <div class="upsell-toggle-text">
+            <div class="upsell-toggle-title">Analytics & SEO</div>
+            <div class="upsell-toggle-desc">Monthly traffic reports and search optimization</div>
+          </div>
+          <div class="upsell-toggle-price">+$150</div>
+        </label>
       </div>
 
       <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -704,13 +845,13 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Domain Name</label>
+          <label class="form-label">Preferred Domain</label>
           <input type="text" class="form-input" id="domainName" placeholder="yourbusiness.com" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Project Brief</label>
-          <textarea class="form-input" id="projectBrief" rows="4" placeholder="Tell us about your business and website vision..." required></textarea>
+          <label class="form-label">Tell us about your business</label>
+          <textarea class="form-input" id="projectBrief" rows="3" placeholder="What do you do? What's your vision for your website?" required></textarea>
         </div>
 
         <div class="form-group">
@@ -741,21 +882,21 @@
           NAGOH<em>.</em>hosting
         </a>
         <p style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
-          Fully-managed web hosting for businesses that want to focus on growth, not technology.
+          Complete website solutions for small businesses that want professional, hassle-free online presence.
         </p>
       </div>
       <div class="footer-col">
         <h4>Product</h4>
         <ul>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#how">How It Works</a></li>
-          <li><a href="/">Main Site</a></li>
+          <li><a href="#offer">The Package</a></li>
+          <li><a href="#included">What's Included</a></li>
+          <li><a href="#timeline">Timeline</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
         <ul>
-          <li><a href="/ai/">NAGOH AI</a></li>
+          <li><a href="/">Main Site</a></li>
           <li><a href="#">About Us</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
@@ -778,17 +919,18 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 const WORKER = 'https://nagohai.gregoryhogan.workers.dev';
-const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TK0JWGUbXtKf7F7FBt5ingZaPPj8oi6n7sk50AS4yWKkoISv6bJHXphJS5ygOX0QQScFuDUskZ6Uq0SCgwBVwnr00GVEiex2'; // Replace with actual key
+const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TK0JWGUbXtKf7F7FBt5ingZaPPj8oi6n7sk50AS4yWKkoISv6bJHXphJS5ygOX0QQScFuDUskZ6Uq0SCgwBVwnr00GVEiex2';
 
 let stripe, cardElement;
-let selectedPlan = null;
-let selectedPrice = null;
+let selectedUpsells = {
+  year2: false,
+  updates: false,
+  seo: false
+};
 
-// Initialize Stripe
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Initialize Stripe and card element
   if (STRIPE_PUBLISHABLE_KEY && STRIPE_PUBLISHABLE_KEY !== 'pk_test_your_key_here') {
     try {
       stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
@@ -819,10 +961,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // Mount card element
       cardElement.mount('#card-element');
 
-      // Add event listeners for better UX
       cardElement.addEventListener('change', function(event) {
         const displayError = document.getElementById('card-errors');
         if (event.error) {
@@ -835,17 +975,10 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Stripe initialization error:', e);
       document.getElementById('checkoutError').textContent = 'Payment system unavailable. Please try again.';
     }
-  } else {
-    console.warn('Stripe key not configured');
   }
 });
 
-function selectPlan(planName, price) {
-  selectedPlan = planName;
-  selectedPrice = price;
-  
-  document.getElementById('planName').textContent = planName + ' Plan';
-  document.getElementById('planPrice').textContent = `$${price}/month`;
+function openCheckout() {
   document.getElementById('checkoutWrap').classList.add('show');
 }
 
@@ -853,6 +986,33 @@ function closeCheckout() {
   document.getElementById('checkoutWrap').classList.remove('show');
   document.getElementById('checkoutError').textContent = '';
   document.getElementById('checkoutForm').reset();
+  document.getElementById('year2Checkbox').checked = false;
+  document.getElementById('updatesCheckbox').checked = false;
+  document.getElementById('seoCheckbox').checked = false;
+  updateCheckoutSummary();
+}
+
+function addUpsell(type, price) {
+  const checkbox = document.getElementById(type + 'Checkbox');
+  checkbox.checked = !checkbox.checked;
+  updateCheckoutSummary();
+}
+
+function updateCheckoutSummary() {
+  selectedUpsells.year2 = document.getElementById('year2Checkbox').checked;
+  selectedUpsells.updates = document.getElementById('updatesCheckbox').checked;
+  selectedUpsells.seo = document.getElementById('seoCheckbox').checked;
+
+  document.getElementById('year2Line').style.display = selectedUpsells.year2 ? 'flex' : 'none';
+  document.getElementById('updatesLine').style.display = selectedUpsells.updates ? 'flex' : 'none';
+  document.getElementById('seoLine').style.display = selectedUpsells.seo ? 'flex' : 'none';
+
+  let total = 1400;
+  if (selectedUpsells.year2) total += 400;
+  if (selectedUpsells.updates) total += 250;
+  if (selectedUpsells.seo) total += 150;
+
+  document.getElementById('totalPrice').textContent = '$' + total;
 }
 
 async function handleCheckout(e) {
@@ -874,7 +1034,6 @@ async function handleCheckout(e) {
       throw new Error('All fields are required');
     }
 
-    // Create payment method
     const { paymentMethod, error } = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement,
@@ -883,7 +1042,11 @@ async function handleCheckout(e) {
 
     if (error) throw new Error(error.message);
 
-    // Submit to backend
+    let total = 1400;
+    if (selectedUpsells.year2) total += 400;
+    if (selectedUpsells.updates) total += 250;
+    if (selectedUpsells.seo) total += 150;
+
     const r = await fetch(`${WORKER}/hosting/checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -893,8 +1056,9 @@ async function handleCheckout(e) {
         businessName,
         domain,
         brief,
-        plan: selectedPlan,
-        price: selectedPrice,
+        basePrice: 1400,
+        upsells: selectedUpsells,
+        total,
         paymentMethodId: paymentMethod.id
       })
     });
@@ -902,7 +1066,6 @@ async function handleCheckout(e) {
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Order failed');
 
-    // Success
     showSuccess('✅ Order placed! Check your email for next steps.');
     closeCheckout();
     setTimeout(() => {
