@@ -31,6 +31,8 @@
       --gold:     #e9a028;
       --gold-lt:  #fdf0d5;
       --gold-md:  #f7d08a;
+      --purple:   #9b6ba8;
+      --purple-lt: #f0e8f7;
 
       --sans:     'DM Sans', sans-serif;
       --serif:    'Fraunces', serif;
@@ -102,8 +104,17 @@
       pointer-events: none;
     }
 
+    .hero-wrapper {
+      position: relative; z-index: 1; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    }
+
     .hero-content {
-      position: relative; z-index: 1; max-width: 700px;
+      max-width: 700px;
+    }
+
+    .hero-visual {
+      position: relative; height: 400px; display: flex; align-items: center; justify-content: center;
     }
 
     .hero-badge {
@@ -131,6 +142,21 @@
 
     .hero-actions {
       display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;
+    }
+
+    /* Animated SVG illustration */
+    .hero-illustration {
+      width: 100%; max-width: 350px; height: auto;
+      filter: drop-shadow(0 10px 30px rgba(42, 157, 143, 0.15));
+    }
+
+    .float-animation {
+      animation: floatUpDown 4s ease-in-out infinite;
+    }
+
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
     }
 
     /* ── MAIN OFFER ── */
@@ -231,6 +257,28 @@
       flex-shrink: 0;
     }
 
+    .ai-feature {
+      background: var(--purple-lt); border: 1.5px solid var(--purple);
+      border-radius: 10px; padding: 1.5rem; margin: 2rem 0;
+      text-align: center;
+    }
+
+    .ai-feature-title {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+      color: var(--purple); margin-bottom: 0.5rem;
+    }
+
+    .ai-feature-desc {
+      color: var(--ink); font-size: 0.95rem; line-height: 1.6;
+    }
+
+    .ai-badge {
+      display: inline-block; background: var(--purple);
+      color: #fff; padding: 0.4rem 0.9rem; border-radius: 15px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 0.5rem;
+    }
+
     .btn-lg {
       padding: 1.2rem 2.5rem; font-size: 1rem; width: 100%; max-width: 400px;
     }
@@ -301,6 +349,12 @@
     .what-card {
       background: #fff; border: 1px solid var(--border);
       border-radius: 14px; padding: 2rem; text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .what-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
     .what-icon {
@@ -529,6 +583,8 @@
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .hero-title { font-size: 2.2rem; }
+      .hero-wrapper { grid-template-columns: 1fr; }
+      .hero-visual { height: 250px; }
       .section-title { font-size: 2rem; }
       .features-list { grid-template-columns: 1fr; }
     }
@@ -555,21 +611,85 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="container">
-    <div class="hero-content">
-      <div class="hero-badge">✦ One price • Everything included • No surprises</div>
+    <div class="hero-wrapper">
+      <div class="hero-content">
+        <div class="hero-badge">✦ One price • Everything included • No surprises</div>
 
-      <h1 class="hero-title">
-        Your Complete<br>
-        <span class="gradient-text">Website Solution</span>
-      </h1>
+        <h1 class="hero-title">
+          Your Complete<br>
+          <span class="gradient-text">Website Solution</span>
+        </h1>
 
-      <p class="hero-sub">
-        Design, development, domain, SSL, and a full year of hosting — everything your small business needs in one package. No monthly fees. No hidden costs.
-      </p>
+        <p class="hero-sub">
+          Design, development, domain, SSL, and a full year of hosting — everything your small business needs in one package. No monthly fees. No hidden costs.
+        </p>
 
-      <div class="hero-actions">
-        <a href="#offer" class="btn btn-primary">See the Package</a>
-        <a href="#included" class="btn btn-outline">What's Inside</a>
+        <div class="hero-actions">
+          <a href="#offer" class="btn btn-primary">See the Package</a>
+          <a href="#included" class="btn btn-outline">What's Inside</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <svg class="hero-illustration float-animation" viewBox="0 0 350 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background shapes -->
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#e9a028;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#2a9d8f;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2a9d8f;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#e8524a;stop-opacity:0.8" />
+            </linearGradient>
+          </defs>
+
+          <!-- Floating circles background -->
+          <circle cx="280" cy="80" r="45" fill="#e0f5f3" opacity="0.6"/>
+          <circle cx="100" cy="300" r="60" fill="#fdf0d5" opacity="0.5"/>
+
+          <!-- Server/hosting visual -->
+          <g>
+            <!-- Main server box -->
+            <rect x="80" y="100" width="190" height="180" rx="12" fill="url(#grad1)" stroke="#fff" stroke-width="2"/>
+            
+            <!-- Server sections -->
+            <rect x="95" y="120" width="160" height="35" rx="6" fill="#fff" opacity="0.9"/>
+            <rect x="95" y="165" width="160" height="35" rx="6" fill="#fff" opacity="0.85"/>
+            <rect x="95" y="210" width="160" height="35" rx="6" fill="#fff" opacity="0.8"/>
+            
+            <!-- Server indicators (lights) -->
+            <circle cx="110" cy="138" r="4" fill="#2a9d8f"/>
+            <circle cx="110" cy="183" r="4" fill="#e9a028"/>
+            <circle cx="110" cy="228" r="4" fill="#2a9d8f"/>
+            
+            <!-- Server text -->
+            <text x="175" y="140" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" fill="#3d2f24">HOSTING</text>
+            <text x="175" y="185" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" fill="#3d2f24">ACTIVE</text>
+            <text x="175" y="230" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" fill="#3d2f24">ONLINE</text>
+          </g>
+
+          <!-- Network/connection lines -->
+          <g stroke="#2a9d8f" stroke-width="1.5" opacity="0.6" stroke-dasharray="4,2">
+            <line x1="175" y1="100" x2="175" y2="50"/>
+            <line x1="175" y1="100" x2="120" y2="75"/>
+            <line x1="175" y1="100" x2="220" y2="70"/>
+          </g>
+
+          <!-- Connection nodes -->
+          <circle cx="175" cy="50" r="5" fill="#e9a028"/>
+          <circle cx="120" cy="75" r="5" fill="#e8524a"/>
+          <circle cx="220" cy="70" r="5" fill="#2a9d8f"/>
+
+          <!-- Website/browser icon -->
+          <g transform="translate(150, 320)">
+            <rect x="-25" y="0" width="50" height="40" rx="4" fill="url(#grad2)" stroke="#fff" stroke-width="1.5"/>
+            <rect x="-22" y="4" width="44" height="28" fill="#fff" opacity="0.9" rx="2"/>
+            <line x1="-22" y1="10" x2="22" y2="10" stroke="#2a9d8f" stroke-width="1"/>
+            <circle cx="-18" cy="20" r="2" fill="#2a9d8f"/>
+            <rect x="-14" y="18" width="20" height="4" fill="#2a9d8f" opacity="0.6"/>
+          </g>
+        </svg>
       </div>
     </div>
   </div>
@@ -623,6 +743,15 @@
         <li>Email setup (basic)</li>
         <li>24/7 technical support</li>
       </ul>
+
+      <!-- AI Service Highlight -->
+      <div class="ai-feature">
+        <div class="ai-badge">🤖 Included</div>
+        <div class="ai-feature-title">Unlimited AI.NAGOH.US Access</div>
+        <div class="ai-feature-desc">
+          Your customers get unlimited access to our powerful AI writing and content generation platform. Perfect for creating landing pages, product descriptions, blog posts, and more — included at no extra cost.
+        </div>
+      </div>
 
       <button class="btn btn-primary btn-lg" onclick="openCheckout()">Start Your Website</button>
     </div>
@@ -706,9 +835,9 @@
       </div>
 
       <div class="what-card">
-        <div class="what-icon">🔧</div>
-        <div class="what-title">Updates & Maintenance</div>
-        <div class="what-desc">Regular security patches, backups, and feature updates included. No surprise costs.</div>
+        <div class="what-icon">🤖</div>
+        <div class="what-title">AI Content Tools</div>
+        <div class="what-desc">Unlimited access to AI.NAGOH.US for creating high-quality content, landing pages, and marketing copy.</div>
       </div>
     </div>
   </div>
@@ -1066,7 +1195,7 @@ async function handleCheckout(e) {
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Order failed');
 
-    showSuccess('✅ Order placed! Check your email for next steps.');
+    showSuccess('✅ Order placed! Check your email for next steps. Your customers get unlimited access to AI.NAGOH.US!');
     closeCheckout();
     setTimeout(() => {
       window.location.href = '/';
