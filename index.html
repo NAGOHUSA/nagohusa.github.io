@@ -1122,29 +1122,28 @@ let slideIndex = 1;
 let slideTimer;
 let totalSlides = 0;
 
-// Dynamically load portfolio images from ./portfolio/ folder
+// Dynamically load portfolio images from web URL
 function loadPortfolioImages() {
-  const portfolioPath = './portfolio/';
+  const portfolioUrl = 'https://nagoh.us/portfolio'; // Your hosted portfolio URL
   const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
   const slideshow = document.getElementById('portfolioSlideshow');
   const slideNav = document.getElementById('slideNav');
   
   if (!slideshow || !slideNav) return;
 
-  // List of common image filenames to try
+  // List of image filenames to try (based on common naming)
   const imagesToTry = [];
   
-  // Try common naming patterns
+  // Try common naming patterns up to 20 images
   for (let i = 1; i <= 20; i++) {
     extensions.forEach(ext => {
-      imagesToTry.push(`${portfolioPath}website${i}.${ext}`);
-      imagesToTry.push(`${portfolioPath}portfolio${i}.${ext}`);
-      imagesToTry.push(`${portfolioPath}site${i}.${ext}`);
-      imagesToTry.push(`${portfolioPath}project${i}.${ext}`);
+      imagesToTry.push(`${portfolioUrl}/website${i}.${ext}`);
+      imagesToTry.push(`${portfolioUrl}/portfolio${i}.${ext}`);
+      imagesToTry.push(`${portfolioUrl}/site${i}.${ext}`);
+      imagesToTry.push(`${portfolioUrl}/project${i}.${ext}`);
     });
   }
 
-  let loadedCount = 0;
   const loadedSrcs = new Set();
 
   const checkImage = (src) => {
