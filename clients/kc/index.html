@@ -1067,7 +1067,7 @@
     <header>
         <div class="header-container">
             <div class="logo-section">
-                <img src="/images/KCLOGO.jpg" alt="Kingdom Cabinetry Logo" class="logo-img">
+                <img src="clients/kc/images/KCLOGO.jpg" alt="Kingdom Cabinetry Logo" class="logo-img">
                 <div class="brand-text">Kingdom Cabinetry</div>
             </div>
             <nav>
@@ -1161,7 +1161,7 @@
             
             try {
                 // Fetch the portfolio folder to list images
-                const response = await fetch('./portfolio/');
+                const response = await fetch('./clients/kc/portfolio/');
                 const html = await response.text();
                 
                 // Parse HTML to extract image filenames
@@ -1186,7 +1186,7 @@
                     galleryGrid.innerHTML = `
                         <div class="gallery-empty">
                             <p>Portfolio images coming soon!</p>
-                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>/portfolio/</strong> folder to display them here.</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>clients/kc/portfolio/</strong> folder to display them here.</p>
                         </div>
                     `;
                     return;
@@ -1198,12 +1198,12 @@
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
                     item.innerHTML = `
-                        <img src="./portfolio/${image}" alt="Portfolio project ${index + 1}" loading="lazy">
+                        <img src=".clients/kc/portfolio/${image}" alt="Portfolio project ${index + 1}" loading="lazy">
                         <div class="gallery-overlay">
                             <div class="overlay-text">View Project</div>
                         </div>
                     `;
-                    item.addEventListener('click', () => openLightbox(`./portfolio/${image}`));
+                    item.addEventListener('click', () => openLightbox(`./clients/kc/portfolio/${image}`));
                     galleryGrid.appendChild(item);
                 });
                 
@@ -1212,7 +1212,7 @@
                 galleryGrid.innerHTML = `
                     <div class="gallery-empty">
                         <p>Portfolio images coming soon!</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>/portfolio/</strong> folder in the same directory as this website.</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Place your cabinet photos in a <strong>clients/kc/portfolio/</strong> folder in the same directory as this website.</p>
                     </div>
                 `;
             }
