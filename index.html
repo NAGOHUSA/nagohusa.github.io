@@ -1,652 +1,1204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NAGOH AI — Your Small Business Assistant</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAGOH Hosting — Complete Website Package for Small Business</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --cream:    #fdf8f0;
-  --parchmt:  #f5ede0;
-  --warm:     #ede3d5;
-  --border:   #e0d4c4;
-  --border2:  #d4c4b0;
-  --muted:    #b5a090;
-  --dim:      #8a7868;
-  --sub:      #6b5e50;
-  --ink:      #3d2f24;
-  --deep:     #2a1f16;
-  --rose:     #e8524a;
-  --rose-lt:  #fce8e7;
-  --rose-md:  #f5c4c2;
-  --teal:     #2a9d8f;
-  --teal-lt:  #e0f5f3;
-  --teal-md:  #a0dcd6;
-  --gold:     #e9a028;
-  --gold-lt:  #fdf0d5;
-  --gold-md:  #f7d08a;
-  --sage:     #4a7c59;
-  --sage-lt:  #e8f4eb;
-  --sans:     'DM Sans', sans-serif;
-  --serif:    'Fraunces', serif;
-}
+    :root {
+      --cream:    #fdf8f0;
+      --parchmt:  #f5ede0;
+      --warm:     #ede3d5;
+      --border:   #e0d4c4;
+      --border2:  #d4c4b0;
+      --muted:    #b5a090;
+      --dim:      #8a7868;
+      --sub:      #6b5e50;
+      --ink:      #3d2f24;
+      --deep:     #2a1f16;
 
-html, body { height: 100%; overflow: hidden; background: var(--cream); }
-body { color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; }
+      --rose:     #e8524a;
+      --rose-lt:  #fce8e7;
+      --rose-md:  #f5c4c2;
+      --teal:     #2a9d8f;
+      --teal-lt:  #e0f5f3;
+      --teal-md:  #a0dcd6;
+      --gold:     #e9a028;
+      --gold-lt:  #fdf0d5;
+      --gold-md:  #f7d08a;
+      --purple:   #9b6ba8;
+      --purple-lt: #f0e8f7;
 
-.topbar {
-  height: 60px; display: flex; align-items: center;
-  padding: 0 1.5rem; gap: 1rem;
-  background: var(--deep); flex-shrink: 0;
-  position: relative; z-index: 100;
-  border-bottom: 3px solid var(--rose);
-}
-.wordmark { 
-  font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
-  color: #fff; letter-spacing: 0.02em;
-}
-.wordmark em { color: var(--gold); font-style: italic; }
-.tsep { flex: 1; }
-.tpill {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; color: rgba(255,255,255,0.65);
-}
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-.dot.on { background: var(--sage); }
-.dot.err { background: var(--rose); }
+      --sans:     'DM Sans', sans-serif;
+      --serif:    'Fraunces', serif;
+    }
 
-.tbtn {
-  font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
-  padding: 6px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.65); cursor: pointer; border-radius: 6px; transition: all 0.15s;
-}
-.tbtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    html, body { height: 100%; overflow-x: hidden; background: var(--cream); }
+    body { color: var(--ink); font-family: var(--sans); line-height: 1.6; }
 
-.tbal {
-  font-size: 0.72rem; color: var(--gold-md); font-weight: 500; letter-spacing: 0.04em;
-}
+    a { color: var(--teal); text-decoration: none; transition: all 0.2s; }
+    a:hover { color: #228b7e; }
 
-.shell { flex: 1; display: flex; overflow: hidden; }
-.chat-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--cream); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
 
-.msgs { flex: 1; overflow-y: auto; padding: 2rem 0 1rem; }
-.msgs::-webkit-scrollbar { width: 4px; }
-.msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    /* ── NAVIGATION ── */
+    .navbar {
+      background: var(--deep); border-bottom: 3px solid var(--rose);
+      padding: 1rem 0; position: sticky; top: 0; z-index: 100;
+    }
 
-.empty {
-  height: 100%; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; text-align: center; padding: 2rem;
-}
-.ehero { 
-  font-family: var(--serif); font-size: 2.6rem; font-weight: 500;
-  color: var(--ink); line-height: 1.2; margin-bottom: 0.4rem;
-}
-.ehero em { color: var(--teal); font-style: normal; }
+    .navbar .container {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem;
+    }
 
-.row {
-  display: flex; padding: 0.4rem 2rem; gap: 10px; max-width: 820px; margin: 0 auto; width: 100%;
-}
-.row.user { flex-direction: row-reverse; }
+    .nav-brand {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+      color: #fff; display: flex; align-items: center; gap: 8px;
+    }
 
-.ava {
-  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; flex-shrink: 0; margin-top: 3px; border-radius: 50%;
-}
-.ava.ai { background: var(--teal); color: #fff; font-family: var(--serif); font-weight: 700; }
-.ava.you { background: var(--warm); color: var(--dim); }
+    .nav-brand em { color: var(--gold); font-style: italic; }
 
-.bub {
-  max-width: 76%; font-size: 0.9rem; line-height: 1.75;
-  white-space: pre-wrap; word-break: break-word;
-  font-family: var(--sans); font-weight: 400; color: var(--ink);
-  padding: 0.75rem 1rem; border-radius: 4px;
-}
-.row.ai .bub { 
-  background: #fff; border: 1px solid var(--border); border-radius: 4px 14px 14px 14px;
-}
-.row.user .bub { 
-  background: var(--teal); color: #fff; border-radius: 14px 4px 14px 14px;
-}
-.bub.error { 
-  border: 1px solid var(--rose-md); background: var(--rose-lt); color: #b8392e;
-}
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
 
-.ibar { 
-  border-top: 1px solid var(--border); background: var(--parchmt); 
-  padding: 0.85rem 2rem; flex-shrink: 0;
-}
-.iinner { max-width: 820px; margin: 0 auto; display: flex; gap: 0.7rem; }
-.prompt {
-  flex: 1; background: #fff; border: 1.5px solid var(--border2);
-  color: var(--ink); font-family: var(--sans); font-size: 0.9rem;
-  padding: 0.7rem 1rem; resize: none; outline: none; min-height: 48px; max-height: 160px;
-  border-radius: 12px; transition: border-color 0.2s;
-}
-.prompt::placeholder { color: var(--muted); }
-.prompt:focus { border-color: var(--teal); }
-.send {
-  font-family: var(--sans); font-size: 0.78rem; font-weight: 600;
-  height: 48px; padding: 0 1.4rem;
-  background: var(--teal); border: none; color: #fff;
-  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-  border-radius: 12px;
-}
-.send:hover:not(:disabled) { background: #228b7e; }
-.send:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-cta { margin-left: auto; }
 
-.modal-wrap {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(45, 32, 22, 0.72);
-  display: flex; align-items: center; justify-content: center;
-  padding: 1rem; backdrop-filter: blur(6px);
-}
-.modal-wrap.hidden { display: none; }
-.modal {
-  background: #fff; border: 1px solid var(--border);
-  width: 100%; max-width: 450px;
-  border-radius: 20px; overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  max-height: 90vh; overflow-y: auto;
-}
+    .btn {
+      display: inline-block; font-family: var(--sans); font-weight: 600;
+      padding: 0.75rem 1.5rem; border-radius: 10px; border: none;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+      font-size: 0.9rem; letter-spacing: 0.02em;
+    }
 
-.modal-hero {
-  background: var(--deep); padding: 2rem 2rem 1.5rem;
-  text-align: center;
-}
-.modal-logo { 
-  font-family: var(--serif); font-size: 2rem; font-weight: 700; 
-  color: #fff; margin-bottom: 0.35rem;
-}
-.modal-logo em { color: var(--gold); font-style: italic; }
+    .btn-primary {
+      background: var(--teal); color: #fff;
+    }
 
-.modal-body { padding: 1.75rem 2rem 2rem; }
-.modal-title { 
-  font-family: var(--serif); font-size: 1.3rem; font-weight: 500; 
-  color: var(--ink); margin-bottom: 0.3rem; text-align: center;
-}
-.modal-sub { font-size: 0.75rem; color: var(--dim); line-height: 1.7; margin-bottom: 1.5rem; text-align: center; }
+    .btn-primary:hover { background: #228b7e; box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3); }
 
-.vprops { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
-.vprop { 
-  display: flex; align-items: center; gap: 10px;
-  background: var(--parchmt); border-radius: 10px; padding: 8px 12px;
-}
-.vp-icon { font-size: 1.1rem; }
-.vp-text { font-size: 0.72rem; color: var(--ink); font-weight: 500; }
+    .btn-outline {
+      background: transparent; color: var(--teal); border: 1.5px solid var(--teal);
+    }
 
-.google-btn-wrap {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-}
-.google-signin-btn {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 12px 20px;
-  background: #fff; border: 1.5px solid var(--border2);
-  border-radius: 12px; cursor: pointer; transition: all 0.15s;
-  font-family: var(--sans); font-size: 0.85rem; font-weight: 500;
-  color: var(--ink); justify-content: center;
-}
-.google-signin-btn:hover { border-color: var(--teal); background: var(--teal-lt); }
-.auth-loading { font-size: 0.78rem; color: var(--teal); display: none; text-align: center; padding: 8px 0; }
-.auth-err { font-size: 0.65rem; color: var(--rose); text-align: center; margin-top: 6px; }
+    .btn-outline:hover { background: var(--teal-lt); }
 
-.auth-divider {
-  display: flex; align-items: center; gap: 10px;
-  margin: 10px 0; color: var(--muted); font-size: 0.65rem;
-}
-.auth-divider::before, .auth-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-.guest-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 10px 20px;
-  background: transparent; border: 1.5px solid var(--border2);
-  border-radius: 12px; cursor: pointer; transition: all 0.15s;
-  font-family: var(--sans); font-size: 0.82rem; font-weight: 500;
-  color: var(--dim);
-}
-.guest-btn:hover { border-color: var(--muted); color: var(--ink); background: var(--parchmt); }
+    .btn-sm { padding: 0.5rem 1.2rem; font-size: 0.8rem; }
 
-.modal-foot {
-  padding: 0.75rem 2rem; border-top: 1px solid var(--border);
-  font-size: 0.62rem; color: var(--muted); text-align: center;
-}
-.modal-foot a { color: var(--teal); text-decoration: none; cursor: pointer; }
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--deep) 0%, #1a1410 100%);
+      color: #fff; padding: 5rem 0; position: relative; overflow: hidden;
+    }
 
-.pricing-tab {
-  flex: 1; padding: 1rem; background: none; border: none;
-  border-bottom: 2px solid transparent; color: var(--dim);
-  cursor: pointer; font-family: var(--sans); font-size: 0.75rem;
-  font-weight: 600; transition: all 0.2s; text-transform: uppercase;
-}
-.pricing-tab:hover { color: var(--ink); }
-.pricing-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .hero-bg {
+      position: absolute; inset: 0; opacity: 0.1;
+      background-image: radial-gradient(circle at 20% 50%, var(--teal) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, var(--gold) 0%, transparent 50%);
+      pointer-events: none;
+    }
 
-.sub-option {
-  background: #fff; border: 1.5px solid var(--border);
-  border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
-  cursor: pointer; transition: all 0.2s;
-}
-.sub-option:hover { border-color: var(--teal); }
-.sub-option.selected { border-color: var(--teal); background: var(--teal-lt); }
-.sub-name {
-  font-family: var(--serif); font-size: 1.1rem; font-weight: 600;
-  color: var(--ink); margin-bottom: 0.25rem;
-}
-.sub-price {
-  font-size: 1.4rem; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem;
-}
-.sub-desc {
-  font-size: 0.8rem; color: var(--dim); margin-bottom: 0.75rem; line-height: 1.5;
-}
+    .hero-wrapper {
+      position: relative; z-index: 1; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    }
 
-.pbtn {
-  display: block; width: 100%; font-family: var(--sans);
-  font-size: 0.78rem; font-weight: 600; padding: 0.85rem;
-  background: var(--teal); border: none; color: #fff;
-  cursor: pointer; transition: all 0.15s; border-radius: 12px;
-  margin-top: 1.5rem;
-}
-.pbtn:hover:not(:disabled) { background: #228b7e; }
+    .hero-content {
+      max-width: 700px;
+    }
 
-@media (max-width: 768px) {
-  .shell { flex-direction: column; }
-  .chat-col { width: 100%; }
-  .modal { max-width: 90vw; }
-  .bub { max-width: 92%; }
-}
+    .hero-visual {
+      position: relative; height: 400px; display: flex; align-items: center; justify-content: center;
+    }
 
-input, textarea, select { font-size: 16px !important; }
-</style>
+    .hero-badge {
+      display: inline-block; background: rgba(42, 157, 143, 0.2);
+      border: 1px solid var(--teal-md); color: #fff;
+      padding: 0.6rem 1.2rem; border-radius: 20px; font-size: 0.85rem;
+      margin-bottom: 1.5rem; font-weight: 500;
+    }
+
+    .hero-title {
+      font-family: var(--serif); font-size: 3.2rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;
+    }
+
+    /* Browser Frame & Portfolio Slideshow */
+    .browser-frame {
+      width: 100%; max-width: 380px; height: 420px;
+      background: #fff; border-radius: 14px;
+      overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      display: flex; flex-direction: column;
+    }
+
+    .browser-chrome {
+      background: #f5f5f5; border-bottom: 1px solid #e0e0e0;
+      padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .browser-buttons {
+      display: flex; gap: 0.5rem;
+    }
+
+    .browser-dot {
+      width: 11px; height: 11px; border-radius: 50%; cursor: pointer;
+    }
+
+    .browser-dot.red { background: #ff5f56; }
+    .browser-dot.yellow { background: #ffbd2e; }
+    .browser-dot.green { background: #27c93f; }
+
+    .browser-address-bar {
+      flex: 1; background: #fff; border: 1px solid #e0e0e0;
+      border-radius: 6px; padding: 0.5rem 0.75rem;
+      font-size: 0.8rem; color: var(--dim); margin-left: 0.5rem;
+    }
+
+    .browser-content {
+      flex: 1; overflow: hidden; background: #fff;
+    }
+
+    .portfolio-slideshow {
+      position: relative; width: 100%; height: 100%;
+    }
+
+    .portfolio-slide {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      opacity: 0; transition: opacity 0.6s ease-in-out;
+      display: flex; align-items: center; justify-content: center;
+      background: #f9f9f9;
+    }
+
+    .portfolio-slide.active {
+      opacity: 1; z-index: 1;
+    }
+
+    .portfolio-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .portfolio-slide.placeholder {
+      background: linear-gradient(135deg, var(--teal-lt) 0%, var(--purple-lt) 100%);
+    }
+
+    .placeholder-content {
+      text-align: center; color: var(--ink);
+    }
+
+    .placeholder-text {
+      font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .placeholder-sub {
+      font-size: 0.9rem; color: var(--dim);
+    }
+
+    .slide-nav {
+      display: flex; justify-content: center; gap: 0.5rem;
+      padding: 0.75rem; background: #f9f9f9; border-top: 1px solid #e0e0e0;
+    }
+
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #d0d0d0; cursor: pointer; transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: var(--teal); transform: scale(1.3);
+    }
+
+    .dot:hover {
+      background: var(--teal-md);
+    }
+
+    .fade {
+      animation: fade 0.6s ease-in-out;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .float-animation {
+      animation: floatUpDown 4s ease-in-out infinite;
+    }
+
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* ── MAIN OFFER ── */
+    .offer-section {
+      padding: 4rem 0;
+    }
+
+    .offer-header {
+      text-align: center; margin-bottom: 3rem;
+    }
+
+    .section-label {
+      display: inline-block; font-size: 0.8rem; color: var(--teal);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--serif); font-size: 2.5rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1.1rem; color: var(--dim); max-width: 600px; margin: 0 auto;
+    }
+
+    .offer-card {
+      background: #fff; border: 2px solid var(--teal);
+      border-radius: 20px; padding: 3rem 2.5rem; margin-bottom: 3rem;
+      text-align: center; max-width: 700px; margin-left: auto; margin-right: auto;
+    }
+
+    .offer-badge {
+      display: inline-block; background: var(--teal-lt);
+      color: var(--teal); padding: 0.5rem 1rem; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem;
+    }
+
+    .offer-title {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 1rem;
+    }
+
+    .offer-tagline {
+      font-size: 1rem; color: var(--dim); margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .pricing-breakdown {
+      background: var(--parchmt); border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem; margin-bottom: 2.5rem;
+      text-align: left;
+    }
+
+    .breakdown-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; font-size: 0.95rem;
+    }
+
+    .breakdown-row:not(:last-child) {
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .breakdown-label {
+      color: var(--sub); font-weight: 500;
+    }
+
+    .breakdown-value {
+      color: var(--ink); font-weight: 600;
+    }
+
+    .breakdown-row.total {
+      margin-top: 0.5rem; padding: 1rem 0;
+      border-top: 2px solid var(--border2);
+      font-size: 1.2rem;
+    }
+
+    .breakdown-row.total .breakdown-label {
+      color: var(--ink); font-weight: 700;
+    }
+
+    .breakdown-row.total .breakdown-value {
+      color: var(--teal); font-size: 1.4rem; font-family: var(--serif);
+    }
+
+    .features-list {
+      list-style: none; text-align: left; margin-bottom: 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+
+    .features-list li {
+      padding: 0.75rem 0; font-size: 0.95rem; color: var(--sub);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .features-list li:before {
+      content: "✓"; color: var(--teal); font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .ai-feature {
+      background: var(--purple-lt); border: 1.5px solid var(--purple);
+      border-radius: 10px; padding: 1.5rem; margin: 2rem 0;
+      text-align: center;
+    }
+
+    .ai-feature-title {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+      color: var(--purple); margin-bottom: 0.5rem;
+    }
+
+    .ai-feature-desc {
+      color: var(--ink); font-size: 0.95rem; line-height: 1.6;
+    }
+
+    .ai-badge {
+      display: inline-block; background: var(--purple);
+      color: #fff; padding: 0.4rem 0.9rem; border-radius: 15px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 0.5rem;
+    }
+
+    .btn-lg {
+      padding: 1.2rem 2.5rem; font-size: 1rem; width: 100%; max-width: 400px;
+    }
+
+    /* ── UPSELL SECTION ── */
+    .upsell-section {
+      background: var(--parchmt); padding: 3rem 0; margin: 4rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .upsell-header {
+      text-align: center; margin-bottom: 3rem;
+    }
+
+    .upsell-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .upsell-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 2rem; text-align: center;
+      transition: all 0.3s;
+    }
+
+    .upsell-card:hover {
+      border-color: var(--gold); box-shadow: 0 8px 24px rgba(233, 160, 40, 0.1);
+    }
+
+    .upsell-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+    }
+
+    .upsell-name {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.5rem;
+    }
+
+    .upsell-price {
+      font-size: 1.8rem; color: var(--gold); font-weight: 700;
+      margin-bottom: 1rem; font-family: var(--serif);
+    }
+
+    .upsell-desc {
+      font-size: 0.9rem; color: var(--dim); margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .upsell-btn {
+      width: 100%; padding: 0.8rem; background: var(--gold); color: var(--deep);
+      border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+      font-family: var(--sans); transition: all 0.2s;
+    }
+
+    .upsell-btn:hover { background: #d98a1f; }
+
+    /* ── WHAT'S INCLUDED ── */
+    .what-section {
+      padding: 4rem 0;
+    }
+
+    .what-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem; margin-top: 3rem;
+    }
+
+    .what-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem; text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .what-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .what-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+    }
+
+    .what-title {
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.5rem;
+    }
+
+    .what-desc {
+      font-size: 0.9rem; color: var(--dim); line-height: 1.6;
+    }
+
+    /* ── TIMELINE / FAQ ── */
+    .timeline-section {
+      padding: 4rem 0; background: var(--parchmt);
+    }
+
+    .timeline-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem; margin-top: 3rem;
+    }
+
+    .timeline-step {
+      background: #fff; border-left: 4px solid var(--teal);
+      border-radius: 8px; padding: 1.5rem;
+    }
+
+    .timeline-step-num {
+      font-size: 2.2rem; color: var(--teal); font-weight: 700;
+      font-family: var(--serif); margin-bottom: 0.5rem;
+    }
+
+    .timeline-step-title {
+      font-size: 1rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-step-desc {
+      font-size: 0.85rem; color: var(--dim); line-height: 1.5;
+    }
+
+    /* ── CONTACT MODAL ── */
+    .checkout-wrap {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(45, 32, 22, 0.72);
+      display: none; align-items: center; justify-content: center;
+      padding: 1rem; backdrop-filter: blur(6px);
+    }
+
+    .checkout-wrap.show { display: flex; }
+
+    .checkout-modal {
+      background: #fff; border: 1px solid var(--border);
+      width: 100%; max-width: 550px;
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;
+    }
+
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .checkout-header {
+      background: var(--deep); padding: 2rem;
+      text-align: center;
+    }
+
+    .checkout-title {
+      font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
+      color: #fff; margin-bottom: 0.5rem;
+    }
+
+    .checkout-subtitle {
+      font-size: 0.8rem; color: rgba(255,255,255,0.6); letter-spacing: 0.06em;
+    }
+
+    .checkout-body { padding: 2rem; }
+
+    .checkout-summary {
+      background: var(--teal-lt); border: 1px solid var(--teal-md);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+
+    .summary-line {
+      display: flex; justify-content: space-between; margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .summary-line.total {
+      border-top: 2px solid var(--teal-md); padding-top: 1rem;
+      margin-top: 1rem; font-size: 1.1rem; font-weight: 700;
+    }
+
+    .summary-line.total span:last-child {
+      color: var(--teal); font-family: var(--serif);
+    }
+
+    .upsell-toggle {
+      background: var(--gold-lt); border: 1px solid var(--gold-md);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .upsell-toggle:hover { background: var(--gold); color: var(--deep); }
+
+    .upsell-toggle label {
+      display: flex; align-items: center; gap: 1rem; cursor: pointer;
+    }
+
+    .upsell-toggle input[type="checkbox"] {
+      width: 20px; height: 20px; cursor: pointer; accent-color: var(--teal);
+    }
+
+    .upsell-toggle-text {
+      text-align: left; flex: 1;
+    }
+
+    .upsell-toggle-title {
+      font-weight: 600; color: var(--ink); margin-bottom: 0.25rem;
+    }
+
+    .upsell-toggle-desc {
+      font-size: 0.85rem; color: var(--sub);
+    }
+
+    .upsell-toggle-price {
+      font-weight: 700; color: var(--deep); font-size: 1.1rem;
+    }
+
+    .form-group { margin-bottom: 1.5rem; }
+
+    .form-label {
+      display: block; font-size: 0.8rem; font-weight: 600; color: var(--dim);
+      letter-spacing: 0.05em; margin-bottom: 0.5rem; text-transform: uppercase;
+    }
+
+    .form-input {
+      width: 100%; padding: 0.75rem; border: 1.5px solid var(--border2);
+      font-family: var(--sans); font-size: 0.95rem; border-radius: 8px;
+      outline: none; transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: var(--teal); }
+
+    #card-element {
+      padding: 10px 12px; border: 1.5px solid var(--border2);
+      border-radius: 8px; background: #fff; min-height: 48px;
+      font-family: var(--sans); font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    #card-element.StripeElement--focus { 
+      border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+    }
+
+    #card-element.StripeElement--invalid { border-color: var(--rose); }
+
+    .checkout-btn {
+      width: 100%; padding: 1rem; background: var(--teal); color: #fff;
+      font-family: var(--sans); font-size: 0.95rem; font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+      margin-top: 1rem;
+    }
+
+    .checkout-btn:hover:not(:disabled) { background: #228b7e; }
+
+    .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .checkout-error {
+      color: var(--rose); font-size: 0.8rem; margin-top: 1rem; min-height: 1.2rem;
+    }
+
+    .checkout-close {
+      position: absolute; top: 1.5rem; right: 1.5rem; width: 32px; height: 32px;
+      background: transparent; border: none; font-size: 1.5rem; cursor: pointer;
+      color: rgba(255,255,255,0.6); transition: color 0.2s;
+    }
+
+    .checkout-close:hover { color: #fff; }
+
+    .success-notification {
+      position: fixed; top: 20px; right: 20px; z-index: 2000;
+      background: var(--teal); color: #fff; padding: 1rem 1.5rem;
+      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none; align-items: center; gap: 10px;
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .success-notification.show { display: flex; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--deep); color: #fff; padding: 3rem 0 1rem;
+      margin-top: 5rem; border-top: 1px solid var(--border);
+    }
+
+    .footer-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem; margin-bottom: 2rem;
+    }
+
+    .footer-col h4 {
+      font-size: 1rem; margin-bottom: 1rem; color: #fff;
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col li { margin-bottom: 0.75rem; }
+
+    .footer-col a {
+      color: rgba(255,255,255,0.7); transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: #fff; }
+
+    .footer-bottom {
+      text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.85rem; color: rgba(255,255,255,0.6);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-title { font-size: 2.2rem; }
+      .hero-wrapper { grid-template-columns: 1fr; }
+      .hero-visual { height: 250px; }
+      .section-title { font-size: 2rem; }
+      .features-list { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── AUTH MODAL ── -->
-<div class="modal-wrap" id="modalWrap">
-  <div class="modal">
-    <div class="modal-hero">
-      <div class="modal-logo">NAGOH <em>AI</em></div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">
+      NAGOH<em>.</em>hosting
+    </a>
+    <div class="nav-links">
+      <a href="#offer">The Package</a>
+      <a href="#included">What's Included</a>
+      <a href="#timeline">Timeline</a>
     </div>
-    <div class="modal-body">
-      <div class="modal-title">Welcome! 👋</div>
-      <div class="modal-sub">Sign in with Google or continue as a guest. Upgrade anytime to unlock more tokens.</div>
-
-      <div class="vprops">
-        <div class="vprop"><div class="vp-icon">✍️</div><div class="vp-text">Professional messages instantly</div></div>
-        <div class="vprop"><div class="vp-icon">📱</div><div class="vp-text">Generate marketing content</div></div>
-        <div class="vprop"><div class="vp-icon">💌</div><div class="vp-text">Customer replies that convert</div></div>
-      </div>
-
-      <div class="google-btn-wrap">
-        <button class="google-signin-btn" id="googleSignInBtn" onclick="initiateGoogleSignIn()">
-          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-          </svg>
-          Continue with Google
-        </button>
-        <div class="auth-loading" id="authLoading">⏳ Signing in…</div>
-        <div class="auth-err" id="authErr"></div>
-
-        <div class="auth-divider">or</div>
-
-        <button class="guest-btn" onclick="continueAsGuest()">👤 Continue as Guest (1,000 tokens)</button>
-      </div>
-    </div>
-    <div class="modal-foot">ai.nagoh.us · <a onclick="showPricingModal()">subscription plans</a> · <a href="#">help</a></div>
+    <a href="#offer" class="btn btn-primary btn-sm nav-cta">Get Started</a>
   </div>
-</div>
+</nav>
 
-<!-- ── PRICING MODAL ── -->
-<div class="modal-wrap" id="pricingWrap" style="display:none;">
-  <div class="modal">
-    <div class="modal-hero">
-      <div class="modal-logo">NAGOH <em>Plans</em></div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-title">Choose Your Plan</div>
-      <div class="modal-sub">Monthly subscription with automatic monthly token refresh. Cancel anytime.</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-wrapper">
+      <div class="hero-content">
+        <div class="hero-badge">✦ One price • Everything included • No surprises</div>
 
-      <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem;">
-        <button class="pricing-tab active" onclick="switchPricingTab(0)">Monthly</button>
-        <button class="pricing-tab" onclick="switchPricingTab(1)">Yearly</button>
+        <h1 class="hero-title">
+          Your Complete<br>
+          <span class="gradient-text">Website Solution</span>
+        </h1>
+
+        <p class="hero-sub">
+          Design, development, domain, SSL, and a full year of hosting — everything your small business needs in one package. No monthly fees. No hidden costs.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#offer" class="btn btn-primary">See the Package</a>
+          <a href="#included" class="btn btn-outline">What's Inside</a>
+        </div>
       </div>
 
-      <div id="pricingMonthly">
-        <label class="sub-option" onclick="selectPlan('starter')">
-          <div>
-            <div class="sub-name">Starter</div>
-            <div class="sub-price">$9/mo</div>
-            <div class="sub-desc">10,000 tokens/month. Perfect for testing.</div>
+      <div class="hero-visual">
+        <!-- Browser Frame Portfolio Slideshow -->
+        <div class="browser-frame float-animation">
+          <div class="browser-chrome">
+            <div class="browser-buttons">
+              <span class="browser-dot red"></span>
+              <span class="browser-dot yellow"></span>
+              <span class="browser-dot green"></span>
+            </div>
+            <div class="browser-address-bar">example.com</div>
           </div>
-        </label>
-
-        <label class="sub-option selected" onclick="selectPlan('professional')">
-          <div>
-            <div class="sub-name">⭐ Professional</div>
-            <div class="sub-price">$29/mo</div>
-            <div class="sub-desc">50,000 tokens/month. Most popular for small businesses.</div>
+          <div class="browser-content">
+            <div class="portfolio-slideshow" id="portfolioSlideshow">
+              <!-- Slides are dynamically generated by JavaScript -->
+              <!-- Fallback placeholder if no images load -->
+              <div class="portfolio-slide fade placeholder" id="placeholder">
+                <div class="placeholder-content">
+                  <div class="placeholder-text">Portfolio Gallery</div>
+                  <div class="placeholder-sub">Add website screenshots to ./portfolio/</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </label>
-
-        <label class="sub-option" onclick="selectPlan('business')">
-          <div>
-            <div class="sub-name">Business</div>
-            <div class="sub-price">$79/mo</div>
-            <div class="sub-desc">150,000 tokens/month + team support.</div>
+          <div class="slide-nav" id="slideNav">
+            <!-- Navigation dots are dynamically generated by JavaScript -->
           </div>
-        </label>
-
-        <label class="sub-option" onclick="selectPlan('enterprise')">
-          <div>
-            <div class="sub-name">Enterprise</div>
-            <div class="sub-price">Custom</div>
-            <div class="sub-desc">500,000+ tokens/month + dedicated support.</div>
-          </div>
-        </label>
-      </div>
-
-      <div id="pricingYearly" style="display:none;">
-        <label class="sub-option" onclick="selectPlan('starter_yearly')">
-          <div>
-            <div class="sub-name">Starter</div>
-            <div class="sub-price">$89/yr</div>
-            <div class="sub-desc">Save $18/year. 10,000 tokens/month.</div>
-          </div>
-        </label>
-
-        <label class="sub-option selected" onclick="selectPlan('professional_yearly')">
-          <div>
-            <div class="sub-name">⭐ Professional</div>
-            <div class="sub-price">$290/yr</div>
-            <div class="sub-desc">Save $58/year. 50,000 tokens/month.</div>
-          </div>
-        </label>
-
-        <label class="sub-option" onclick="selectPlan('business_yearly')">
-          <div>
-            <div class="sub-name">Business</div>
-            <div class="sub-price">$790/yr</div>
-            <div class="sub-desc">Save $158/year. 150,000 tokens/month.</div>
-          </div>
-        </label>
-
-        <label class="sub-option" onclick="selectPlan('enterprise_yearly')">
-          <div>
-            <div class="sub-name">Enterprise</div>
-            <div class="sub-price">Custom</div>
-            <div class="sub-desc">500,000+ tokens/month + dedicated support.</div>
-          </div>
-        </label>
-      </div>
-
-      <button class="pbtn" onclick="startCheckout()">Get Started</button>
-      <div style="text-align:center;font-size:0.7rem;color:var(--muted);margin-top:1rem;">14-day free trial included with all plans</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── TOPBAR ── -->
-<div class="topbar">
-  <div class="wordmark">NAGOH <em>AI</em></div>
-  <div class="tsep"></div>
-  <div class="tbal" id="topBal">— tokens</div>
-  <div class="tpill">
-    <div class="dot on" id="led"></div>
-    <span id="sstr" style="font-size:0.68rem;">connecting…</span>
-  </div>
-  <button class="tbtn" onclick="signOut()">Sign out</button>
-</div>
-
-<!-- ── SHELL ── -->
-<div class="shell">
-  <div class="chat-col">
-    <div class="msgs" id="msgs">
-      <div class="empty" id="empty">
-        <div class="ehero">Your AI <em>business partner</em></div>
-      </div>
-    </div>
-
-    <div class="ibar">
-      <div class="iinner">
-        <textarea class="prompt" id="prompt" placeholder="Ask anything..." rows="1" onkeydown="onKey(event)"></textarea>
-        <button class="send" id="sendBtn" onclick="send()" disabled>Send</button>
+        </div>
       </div>
     </div>
   </div>
+</section>
+
+<!-- MAIN OFFER -->
+<section class="offer-section" id="offer">
+  <div class="container">
+    <div class="offer-header">
+      <span class="section-label">Ready to Get Started?</span>
+      <h2 class="section-title">Let's Build Your Website</h2>
+      <p class="section-sub">Contact us for a personalized quote tailored to your business needs.</p>
+    </div>
+
+    <div class="offer-card">
+      <div class="offer-badge">Website Package Inquiry</div>
+      <div class="offer-title">Get Your Custom Quote</div>
+      <p class="offer-tagline">Tell us about your business and we'll provide a personalized quote for your website.</p>
+
+      <h3 style="font-family: var(--serif); font-size: 1.2rem; color: var(--ink); margin-bottom: 1.5rem; margin-top: 2rem;">What's included in our package:</h3>
+      <ul class="features-list">
+        <li>Professional custom design</li>
+        <li>5 pages (customizable)</li>
+        <li>Mobile responsive</li>
+        <li>Contact form</li>
+        <li>Custom domain</li>
+        <li>Free SSL certificate</li>
+        <li>Email setup (basic)</li>
+        <li>24/7 technical support</li>
+      </ul>
+
+      <!-- AI Service Highlight -->
+      <div class="ai-feature">
+        <div class="ai-badge">🤖 Included</div>
+        <div class="ai-feature-title">Unlimited AI.NAGOH.US Access</div>
+        <div class="ai-feature-desc">
+          Run your business smarter with unlimited AI.NAGOH.US access. Write your own landing pages, product descriptions, email campaigns, and social posts in minutes. No copywriter needed. Everything you need to manage your brand voice and grow without hiring extra help.
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="openContactForm()">Request a Quote</button>
+    </div>
+  </div>
+</section>
+
+<!-- AI CONTENT TOOLS SECTION -->
+
+<!-- WHAT'S INCLUDED -->
+<section class="what-section" id="included">
+  <div class="container">
+    <div class="offer-header">
+      <span class="section-label">The Details</span>
+      <h2 class="section-title">Everything You Need</h2>
+    </div>
+
+    <div class="what-grid">
+      <div class="what-card">
+        <div class="what-icon">🎨</div>
+        <div class="what-title">Custom Design</div>
+        <div class="what-desc">We design a unique, professional site tailored to your brand. Unlimited revisions until you're happy.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">⚙️</div>
+        <div class="what-title">Technical Setup</div>
+        <div class="what-desc">Domain registration, SSL certificate, email forwarding, and all server configuration handled for you.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">📱</div>
+        <div class="what-title">Fully Responsive</div>
+        <div class="what-desc">Your site looks perfect on phones, tablets, and desktops. Fast loading, accessible, SEO-ready.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">🚀</div>
+        <div class="what-title">Year 1 Hosting</div>
+        <div class="what-desc">12 months of reliable, fully-managed hosting on a global CDN. 99.9% uptime guarantee.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">💬</div>
+        <div class="what-title">Support Included</div>
+        <div class="what-desc">24/7 email support. We handle all technical issues, updates, and maintenance.</div>
+      </div>
+
+      <div class="what-card">
+        <div class="what-icon">🤖</div>
+        <div class="what-title">AI Content Tools</div>
+        <div class="what-desc">Unlimited access to AI.NAGOH.US for creating high-quality content, landing pages, and marketing copy.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section" id="timeline">
+  <div class="container">
+    <div class="offer-header">
+      <span class="section-label">The Process</span>
+      <h2 class="section-title">From Order to Live</h2>
+      <p class="section-sub">We move fast so you can start growing.</p>
+    </div>
+
+    <div class="timeline-grid">
+      <div class="timeline-step">
+        <div class="timeline-step-num">1</div>
+        <div class="timeline-step-title">Place Your Order</div>
+        <div class="timeline-step-desc">Complete checkout and tell us about your business, goals, and vision.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">2</div>
+        <div class="timeline-step-title">Discovery Call</div>
+        <div class="timeline-step-desc">We hop on a quick call to clarify details and review your preferences.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">3</div>
+        <div class="timeline-step-title">Design Phase</div>
+        <div class="timeline-step-desc">Our team designs your site. You review and request changes—fully collaborative.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">4</div>
+        <div class="timeline-step-title">Build & Deploy</div>
+        <div class="timeline-step-desc">We build it out and configure your domain, SSL, email, and hosting.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">5</div>
+        <div class="timeline-step-title">Launch</div>
+        <div class="timeline-step-desc">Your site goes live. We provide a 30-day support window for tweaks.</div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="timeline-step-num">6</div>
+        <div class="timeline-step-title">Ongoing Support</div>
+        <div class="timeline-step-desc">Year 1 hosting, updates, and support included. You focus on your business.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT MODAL -->
+<div class="checkout-wrap" id="contactWrap">
+  <div class="checkout-modal">
+    <button class="checkout-close" onclick="closeContactForm()">×</button>
+    <div class="checkout-header">
+      <div class="checkout-title">Request a Quote</div>
+      <div class="checkout-subtitle">Tell us about your project</div>
+    </div>
+    <div class="checkout-body">
+      <form id="contactForm" onsubmit="handleContactSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="contactName" placeholder="John Smith" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="contactEmail" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input type="text" class="form-input" id="contactBusiness" placeholder="Your Business Name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Preferred Domain</label>
+          <input type="text" class="form-input" id="contactDomain" placeholder="yourbusiness.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tell us about your business</label>
+          <textarea class="form-input" id="contactMessage" rows="4" placeholder="What do you do? What's your vision for your website?" required></textarea>
+        </div>
+
+        <button type="submit" class="checkout-btn" id="contactBtn">Send Quote Request</button>
+      </form>
+
+      <div class="checkout-error" id="contactError"></div>
+    </div>
+  </div>
 </div>
+
+<!-- SUCCESS NOTIFICATION -->
+<div class="success-notification" id="successNotification">
+  ✅ <span id="successMsg">Quote request sent successfully!</span>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="/" class="nav-brand" style="color: #fff;">
+          NAGOH<em>.</em>hosting
+        </a>
+        <p style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+          Complete website solutions for small businesses that want professional, hassle-free online presence.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#offer">The Package</a></li>
+          <li><a href="#included">What's Included</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/">Main Site</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Nagoh Creative. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
 
 <script>
-const WORKER = 'https://nagohai.gregoryhogan.workers.dev';
-const GOOGLE_CLIENT_ID = '571680874030-4o2cr62ghese6d6r4e79m9gqj7vhsr9f.apps.googleusercontent.com';
+let slideIndex = 1;
+let slideTimer;
+let totalSlides = 0;
 
-let sessionToken = '';
-let currentUser = null;
-let balance = 0;
-let msgs = [];
-let busy = false;
-let selectedPlan = 'professional';
-
-window.onload = () => {
-  const saved = sessionStorage.getItem('nagoh_session') || localStorage.getItem('nagoh_session');
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      sessionToken = parsed.token;
-      currentUser = parsed.user;
-      balance = parsed.balance || 0;
-      hideAuthModal();
-      setBalUI(balance);
-      connect();
-    } catch { }
-  }
+// Dynamically load ALL .png images from portfolio folder
+function loadPortfolioImages() {
+  const portfolioUrl = 'https://nagoh.us/portfolio';
+  const slideshow = document.getElementById('portfolioSlideshow');
+  const slideNav = document.getElementById('slideNav');
   
-  if (typeof google !== 'undefined') {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredential,
-      auto_select: false,
+  if (!slideshow || !slideNav) return;
+
+  // Try to fetch directory listing first
+  fetch(portfolioUrl + '/')
+    .then(response => response.text())
+    .then(html => {
+      // Try to extract .png files from HTML directory listing
+      const pngRegex = /href=["']([^"']*\.png)["']/gi;
+      let match;
+      const foundPngs = [];
+      
+      while ((match = pngRegex.exec(html)) !== null) {
+        const filename = match[1];
+        // Handle relative vs absolute URLs
+        const fullUrl = filename.startsWith('http') 
+          ? filename 
+          : portfolioUrl + '/' + filename.split('/').pop();
+        foundPngs.push(fullUrl);
+      }
+
+      if (foundPngs.length > 0) {
+        displayImages(foundPngs);
+      } else {
+        // Fallback: try common file names and numbers
+        tryCommonFileNames();
+      }
+    })
+    .catch(() => {
+      // If fetch fails, try common file names
+      tryCommonFileNames();
+    });
+
+  function tryCommonFileNames() {
+    // Try files with various naming patterns
+    const checkPromises = [];
+    
+    // Try CLIENTS (n).png pattern (your current naming)
+    for (let i = 1; i <= 50; i++) {
+      const url = `${portfolioUrl}/CLIENTS%20(${i}).png`;
+      checkPromises.push(checkImageExists(url));
+    }
+    
+    // Try numbered files 1.png, 2.png, 3.png, etc.
+    for (let i = 1; i <= 50; i++) {
+      const url = `${portfolioUrl}/${i}.png`;
+      checkPromises.push(checkImageExists(url));
+    }
+
+    // Try common naming patterns
+    const patterns = ['website', 'portfolio', 'site', 'project', 'screenshot', 'design', 'client'];
+    for (let i = 1; i <= 20; i++) {
+      patterns.forEach(pattern => {
+        const url = `${portfolioUrl}/${pattern}${i}.png`;
+        checkPromises.push(checkImageExists(url));
+      });
+    }
+
+    Promise.all(checkPromises).then((results) => {
+      const validImages = results
+        .filter(r => r.exists)
+        .map(r => r.url);
+
+      if (validImages.length > 0) {
+        displayImages(validImages);
+      } else {
+        showPlaceholder();
+      }
     });
   }
-};
 
-function initiateGoogleSignIn() {
-  document.getElementById('authErr').textContent = '';
-  document.getElementById('authLoading').style.display = 'block';
-  if (typeof google !== 'undefined') google.accounts.id.prompt();
+  // Function to check if an image exists
+  function checkImageExists(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ url, exists: true });
+      img.onerror = () => resolve({ url, exists: false });
+      img.src = url;
+      // Timeout after 3 seconds
+      setTimeout(() => resolve({ url, exists: false }), 3000);
+    });
+  }
+
+  function displayImages(imageUrls) {
+    totalSlides = imageUrls.length;
+    slideshow.innerHTML = ''; // Clear placeholder
+    
+    // Create slides for each image
+    imageUrls.forEach((src, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'portfolio-slide fade';
+      slide.id = `slide${index + 1}`;
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Portfolio Website ${index + 1}`;
+      
+      slide.appendChild(img);
+      slideshow.appendChild(slide);
+    });
+    
+    // Create navigation dots
+    slideNav.innerHTML = '';
+    for (let i = 1; i <= imageUrls.length; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.onclick = () => currentSlide(i);
+      slideNav.appendChild(dot);
+    }
+    
+    // Start slideshow
+    showSlide(1);
+  }
+
+  function showPlaceholder() {
+    const placeholder = document.getElementById('placeholder');
+    if (placeholder) {
+      slideshow.innerHTML = '';
+      slideshow.appendChild(placeholder);
+      placeholder.classList.add('active');
+      totalSlides = 0;
+    }
+  }
 }
 
-async function handleGoogleCredential(response) {
-  if (!response?.credential) {
-    document.getElementById('authLoading').style.display = 'none';
-    document.getElementById('authErr').textContent = 'Sign-in cancelled.';
+function showSlide(n) {
+  clearTimeout(slideTimer);
+  
+  if (totalSlides === 0) return;
+  
+  if (n > totalSlides) { slideIndex = 1; }
+  if (n < 1) { slideIndex = totalSlides; }
+  
+  const slides = document.querySelectorAll('.portfolio-slide');
+  const dots = document.querySelectorAll('.slide-nav .dot');
+  
+  slides.forEach(slide => slide.classList.remove('active', 'fade'));
+  dots.forEach(dot => dot.classList.remove('active'));
+  
+  if (slides[slideIndex - 1]) {
+    slides[slideIndex - 1].classList.add('active', 'fade');
+  }
+  if (dots[slideIndex - 1]) {
+    dots[slideIndex - 1].classList.add('active');
+  }
+  
+  slideTimer = setTimeout(() => {
+    slideIndex++;
+    showSlide(slideIndex);
+  }, 5000);
+}
+
+function currentSlide(n) {
+  slideIndex = n;
+  showSlide(slideIndex);
+}
+
+// Start the slideshow when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('year').textContent = new Date().getFullYear();
+  setTimeout(() => loadPortfolioImages(), 500);
+});
+
+function openContactForm() {
+  document.getElementById('contactWrap').classList.add('show');
+}
+
+function closeContactForm() {
+  document.getElementById('contactWrap').classList.remove('show');
+  document.getElementById('contactError').textContent = '';
+  document.getElementById('contactForm').reset();
+}
+
+function handleContactSubmit(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const business = document.getElementById('contactBusiness').value.trim();
+  const domain = document.getElementById('contactDomain').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+
+  if (!name || !email || !business || !domain || !message) {
+    document.getElementById('contactError').textContent = '❌ All fields are required';
     return;
   }
+
+  const emailBody = `Name: ${name}%0AEmail: ${email}%0ABusiness: ${business}%0ADomain: ${domain}%0A%0AMessage:%0A${message}`;
+  const mailtoLink = `mailto:support@nagohcreative.com?subject=Website%20Quote%20Request%20from%20${encodeURIComponent(name)}&body=${emailBody}`;
   
-  document.getElementById('authLoading').style.display = 'block';
-  try {
-    const r = await fetch(`${WORKER}/v1/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_token: response.credential }),
-    });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.error || 'Auth failed');
-
-    sessionToken = d.session_token;
-    currentUser = d.user;
-    balance = d.token_balance;
-
-    const sessionData = { token: sessionToken, user: currentUser, balance };
-    sessionStorage.setItem('nagoh_session', JSON.stringify(sessionData));
-    localStorage.setItem('nagoh_session', JSON.stringify(sessionData));
-
-    setBalUI(balance);
-    hideAuthModal();
-    connect();
-  } catch (err) {
-    document.getElementById('authErr').textContent = err.message || 'Sign-in failed.';
-  } finally {
-    document.getElementById('authLoading').style.display = 'none';
-  }
-}
-
-async function continueAsGuest() {
-  document.getElementById('authLoading').style.display = 'block';
-  try {
-    const r = await fetch(`${WORKER}/v1/auth/guest`, { method: 'POST' });
-    const d = await r.json();
-    if (d?.session_token) {
-      sessionToken = d.session_token;
-      currentUser = d.user || { name: 'Guest' };
-      balance = d.token_balance;
-      
-      const sessionData = { token: sessionToken, user: currentUser, balance };
-      sessionStorage.setItem('nagoh_session', JSON.stringify(sessionData));
-      
-      setBalUI(balance);
-      hideAuthModal();
-      connect();
-    }
-  } catch (err) {
-    document.getElementById('authErr').textContent = 'Guest login failed.';
-  } finally {
-    document.getElementById('authLoading').style.display = 'none';
-  }
-}
-
-function signOut() {
-  if (!confirm('Sign out?')) return;
-  sessionToken = ''; currentUser = null;
-  sessionStorage.removeItem('nagoh_session');
-  localStorage.removeItem('nagoh_session');
-  location.reload();
-}
-
-function hideAuthModal() {
-  document.getElementById('modalWrap').classList.add('hidden');
-}
-
-function showPricingModal() {
-  document.getElementById('modalWrap').classList.add('hidden');
-  document.getElementById('pricingWrap').style.display = 'flex';
-}
-
-function switchPricingTab(idx) {
-  document.getElementById('pricingMonthly').style.display = idx === 0 ? 'block' : 'none';
-  document.getElementById('pricingYearly').style.display = idx === 1 ? 'block' : 'none';
-  document.querySelectorAll('.pricing-tab').forEach((t, i) => {
-    t.classList.toggle('active', i === idx);
-  });
-}
-
-function selectPlan(plan) {
-  selectedPlan = plan;
-  document.querySelectorAll('.sub-option').forEach(o => o.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-}
-
-function startCheckout() {
-  if (selectedPlan === 'enterprise' || selectedPlan === 'enterprise_yearly') {
-    alert('Please contact sales@nagoh.us for enterprise pricing');
-    return;
-  }
-  alert(`Starting ${selectedPlan} subscription. Redirect to Stripe coming soon.`);
-}
-
-async function connect() {
-  try {
-    const r = await fetch(`${WORKER}/v1/balance`, {
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
-    });
-    const d = await r.json();
-    if (!r.ok) throw new Error('Auth error');
-    balance = d.token_balance;
-    setBalUI(balance);
-    document.getElementById('sendBtn').disabled = false;
-  } catch {
-    document.getElementById('modalWrap').classList.remove('hidden');
-  }
-}
-
-function setBalUI(n) {
-  const fmt = n.toLocaleString();
-  document.getElementById('topBal').textContent = fmt + ' tokens';
-}
-
-async function send() {
-  const box = document.getElementById('prompt');
-  const text = box.value.trim();
-  if (!text || busy) return;
+  window.location.href = mailtoLink;
   
-  busy = true;
-  document.getElementById('sendBtn').disabled = true;
-  box.value = '';
-
-  addBubble('user', text);
-  msgs.push({ role: 'user', content: text });
-
-  try {
-    const r = await fetch(`${WORKER}/v1/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`,
-      },
-      body: JSON.stringify({ messages: msgs, model: 'deepseek-chat' }),
-    });
-    const data = await r.json();
-
-    if (!r.ok) {
-      addBubble('ai', data.error || 'Something went wrong.');
-      msgs.pop();
-    } else {
-      const reply = data.message.content;
-      msgs.push({ role: 'assistant', content: reply });
-      addBubble('ai', reply);
-      balance = data.nagoh.tokens_remaining;
-      setBalUI(balance);
-    }
-  } catch (e) {
-    addBubble('ai', 'Network error. Check your connection.');
-    msgs.pop();
-  }
-
-  busy = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('prompt').focus();
-}
-
-function addBubble(role, content) {
-  const c = document.getElementById('msgs');
-  const empty = document.getElementById('empty');
-  if (empty) empty.style.display = 'none';
+  showSuccess('✅ Opening your email client. Please send to complete the request.');
   
-  const r = document.createElement('div');
-  r.className = `row ${role}`;
-  r.innerHTML = `
-    <div class="ava ${role === 'user' ? 'you' : 'ai'}">${role === 'ai' ? 'N' : 'U'}</div>
-    <div><div class="bub">${escapeHtml(content)}</div></div>`;
-  c.appendChild(r);
-  c.scrollTop = c.scrollHeight;
+  setTimeout(() => {
+    closeContactForm();
+  }, 1500);
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function onKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    send();
-  }
+function showSuccess(msg) {
+  const notif = document.getElementById('successNotification');
+  document.getElementById('successMsg').textContent = msg;
+  notif.classList.add('show');
+  setTimeout(() => notif.classList.remove('show'), 5000);
 }
 </script>
 </body>
