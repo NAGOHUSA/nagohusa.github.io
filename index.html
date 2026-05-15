@@ -1122,7 +1122,7 @@ let slideIndex = 1;
 let slideTimer;
 let totalSlides = 0;
 
-// Dynamically load ALL .jpg images from portfolio folder
+// Dynamically load ALL .png images from portfolio folder
 function loadPortfolioImages() {
   const portfolioUrl = 'https://nagoh.us/portfolio';
   const slideshow = document.getElementById('portfolioSlideshow');
@@ -1130,34 +1130,87 @@ function loadPortfolioImages() {
   
   if (!slideshow || !slideNav) return;
 
-  // Fetch directory listing or use a simple approach:
-  // Try to load images by common patterns, then add a directory listing approach
+  // Try to fetch directory listing first
   fetch(portfolioUrl + '/')
     .then(response => response.text())
     .then(html => {
-      // Parse HTML to find all .jpg files
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
+      // Try to extract .png files from HTML directory listing
+      const pngRegex = /href=["']([^"']*\.png)["']/gi;
+      let match;
+      const foundPngs = [];
       
-      // Get all links and filter for .jpg files
-      const links = Array.from(doc.querySelectorAll('a'))
-        .map(a => a.getAttribute('href'))
-        .filter(href => href && href.endsWith('.jpg'))
-        .map(href => portfolioUrl + '/' + href);
+      while ((match = pngRegex.exec(html)) !== null) {
+        const filename = match[1];
+        // Handle relative vs absolute URLs
+        const fullUrl = filename.startsWith('http') 
+          ? filename 
+          : portfolioUrl + '/' + filename.split('/').pop();
+        foundPngs.push(fullUrl);
+      }
 
-      if (links.length > 0) {
-        loadImages(links);
+      if (foundPngs.length > 0) {
+        displayImages(foundPngs);
       } else {
-        // Fallback: try common naming patterns
-        loadImagesWithPatterns();
+        // Fallback: try common file names and numbers
+        tryCommonFileNames();
       }
     })
     .catch(() => {
-      // If fetch fails, fallback to pattern matching
-      loadImagesWithPatterns();
+      // If fetch fails, try common file names
+      tryCommonFileNames();
     });
 
-  function loadImages(imageUrls) {
+  function tryCommonFileNames() {
+    // Try files with various naming patterns
+    const checkPromises = [];
+    
+    // Try CLIENTS (n).png pattern (your current naming)
+    for (let i = 1; i <= 50; i++) {
+      const url = `${portfolioUrl}/CLIENTS%20(${i}).png`;
+      checkPromises.push(checkImageExists(url));
+    }
+    
+    // Try numbered files 1.png, 2.png, 3.png, etc.
+    for (let i = 1; i <= 50; i++) {
+      const url = `${portfolioUrl}/${i}.png`;
+      checkPromises.push(checkImageExists(url));
+    }
+
+    // Try common naming patterns
+    const patterns = ['website', 'portfolio', 'site', 'project', 'screenshot', 'design', 'client'];
+    for (let i = 1; i <= 20; i++) {
+      patterns.forEach(pattern => {
+        const url = `${portfolioUrl}/${pattern}${i}.png`;
+        checkPromises.push(checkImageExists(url));
+      });
+    }
+
+    Promise.all(checkPromises).then((results) => {
+      const validImages = results
+        .filter(r => r.exists)
+        .map(r => r.url);
+
+      if (validImages.length > 0) {
+        displayImages(validImages);
+      } else {
+        showPlaceholder();
+      }
+    });
+  }
+
+  // Function to check if an image exists
+  function checkImageExists(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ url, exists: true });
+      img.onerror = () => resolve({ url, exists: false });
+      img.src = url;
+      // Timeout after 3 seconds
+      setTimeout(() => resolve({ url, exists: false }), 3000);
+    });
+  }
+
+  function displayImages(imageUrls) {
     totalSlides = imageUrls.length;
     slideshow.innerHTML = ''; // Clear placeholder
     
@@ -1188,57 +1241,14 @@ function loadPortfolioImages() {
     showSlide(1);
   }
 
-  function loadImagesWithPatterns() {
-    // Fallback: try common naming patterns and file numbers
-    const imagesToTry = [];
-    const extensions = ['jpg', 'jpeg'];
-    
-    // Try numbered patterns up to 20
-    for (let i = 1; i <= 20; i++) {
-      extensions.forEach(ext => {
-        imagesToTry.push(`${portfolioUrl}/website${i}.${ext}`);
-        imagesToTry.push(`${portfolioUrl}/portfolio${i}.${ext}`);
-        imagesToTry.push(`${portfolioUrl}/site${i}.${ext}`);
-        imagesToTry.push(`${portfolioUrl}/project${i}.${ext}`);
-        imagesToTry.push(`${portfolioUrl}/${i}.${ext}`);
-      });
+  function showPlaceholder() {
+    const placeholder = document.getElementById('placeholder');
+    if (placeholder) {
+      slideshow.innerHTML = '';
+      slideshow.appendChild(placeholder);
+      placeholder.classList.add('active');
+      totalSlides = 0;
     }
-
-    const loadedSrcs = new Set();
-
-    const checkImage = (src) => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = src;
-      });
-    };
-
-    // Load images asynchronously
-    Promise.all(imagesToTry.map(async (src) => {
-      if (loadedSrcs.has(src)) return false;
-      const exists = await checkImage(src);
-      if (exists && !loadedSrcs.has(src)) {
-        loadedSrcs.add(src);
-        return src;
-      }
-      return false;
-    })).then((results) => {
-      const validImages = results.filter(Boolean);
-      
-      if (validImages.length > 0) {
-        loadImages(validImages);
-      } else {
-        // No images found, show placeholder
-        const placeholder = document.getElementById('placeholder');
-        if (placeholder) {
-          slideshow.innerHTML = '';
-          slideshow.appendChild(placeholder);
-          placeholder.classList.add('active');
-        }
-      }
-    });
   }
 }
 
