@@ -6,7 +6,7 @@
   <title>NAGOH Hosting — Complete Website Package for Small Business</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <title>NAGOH Hosting — Complete Website Package for Small Business</title>
+  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -1187,35 +1187,38 @@ async function handleContactSubmit(e) {
       throw new Error('All fields are required');
     }
 
-    // Send email to support@nagohcreative.com
-    const response = await fetch('https://formspree.io/f/xyzqwert', {
+    // Create mailto link as fallback and send via email service
+    const mailtoLink = `mailto:support@nagohcreative.com?subject=Website Quote Request from ${encodeURIComponent(name)}&body=${encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\nBusiness: ${business}\nDomain: ${domain}\n\nMessage:\n${message}`
+    )}`;
+
+    // Try sending via FormSubmit (free service)
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('business', business);
+    formData.append('domain', domain);
+    formData.append('message', message);
+    formData.append('_captcha', 'false');
+    formData.append('_next', window.location.href);
+
+    const response = await fetch('https://formsubmit.co/support@nagohcreative.com', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        business: business,
-        domain: domain,
-        message: message,
-        _replyto: email,
-        _cc: 'support@nagohcreative.com'
-      })
+      body: formData
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to send quote request');
+    if (response.ok) {
+      showSuccess('✅ Quote request sent! We\'ll contact you at ' + email);
+      closeContactForm();
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
+    } else {
+      throw new Error('Failed to send request');
     }
 
-    showSuccess('✅ Quote request sent! We\'ll be in touch at ' + email);
-    closeContactForm();
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 3000);
-
   } catch (err) {
-    document.getElementById('contactError').textContent = '❌ ' + (err.message || 'Failed to send request');
+    document.getElementById('contactError').textContent = '❌ ' + (err.message || 'Failed to send request. Please try emailing support@nagohcreative.com directly.');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Send Quote Request';
