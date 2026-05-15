@@ -6,8 +6,7 @@
   <title>NAGOH Hosting — Complete Website Package for Small Business</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://js.stripe.com/v3/" async defer></script>
-  <style>
+  <title>NAGOH Hosting — Complete Website Package for Small Business</title>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -760,40 +759,17 @@
 <section class="offer-section" id="offer">
   <div class="container">
     <div class="offer-header">
-      <span class="section-label">One Simple Price</span>
-      <h2 class="section-title">NAGOH Complete</h2>
-      <p class="section-sub">Everything you need to launch a professional website and grow your business online.</p>
+      <span class="section-label">Ready to Get Started?</span>
+      <h2 class="section-title">Let's Build Your Website</h2>
+      <p class="section-sub">Contact us for a personalized quote tailored to your business needs.</p>
     </div>
 
     <div class="offer-card">
-      <div class="offer-badge">Complete Website Package</div>
-      <div class="offer-title">$1,400</div>
-      <p class="offer-tagline">One-time charge for design, build, domain setup, SSL, and 12 months of hosting.</p>
+      <div class="offer-badge">Website Package Inquiry</div>
+      <div class="offer-title">Get Your Custom Quote</div>
+      <p class="offer-tagline">Tell us about your business and we'll provide a personalized quote for your website.</p>
 
-      <div class="pricing-breakdown">
-        <div class="breakdown-row">
-          <span class="breakdown-label">Custom website design & build</span>
-          <span class="breakdown-value">$800</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">Domain registration & setup</span>
-          <span class="breakdown-value">$150</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">SSL certificate (free, included)</span>
-          <span class="breakdown-value">$0</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">12 months of hosting</span>
-          <span class="breakdown-value">$450</span>
-        </div>
-        <div class="breakdown-row total">
-          <span class="breakdown-label">Year 1 Total</span>
-          <span class="breakdown-value">$1,400</span>
-        </div>
-      </div>
-
-      <h3 style="font-family: var(--serif); font-size: 1.2rem; color: var(--ink); margin-bottom: 1.5rem; margin-top: 2rem;">What's included:</h3>
+      <h3 style="font-family: var(--serif); font-size: 1.2rem; color: var(--ink); margin-bottom: 1.5rem; margin-top: 2rem;">What's included in our package:</h3>
       <ul class="features-list">
         <li>Professional custom design</li>
         <li>5 pages (customizable)</li>
@@ -810,51 +786,16 @@
         <div class="ai-badge">🤖 Included</div>
         <div class="ai-feature-title">Unlimited AI.NAGOH.US Access</div>
         <div class="ai-feature-desc">
-          Your customers get unlimited access to our powerful AI writing and content generation platform. Perfect for creating landing pages, product descriptions, blog posts, and more — included at no extra cost.
+          Run your business smarter with unlimited AI.NAGOH.US access. Write your own landing pages, product descriptions, email campaigns, and social posts in minutes. No copywriter needed. Everything you need to manage your brand voice and grow without hiring extra help.
         </div>
       </div>
 
-      <button class="btn btn-primary btn-lg" onclick="openCheckout()">Start Your Website</button>
+      <button class="btn btn-primary btn-lg" onclick="openContactForm()">Request a Quote</button>
     </div>
   </div>
 </section>
 
-<!-- UPSELL SECTION -->
-<section class="upsell-section" id="upsells">
-  <div class="container">
-    <div class="upsell-header">
-      <span class="section-label">Optional Extensions</span>
-      <h2 class="section-title">Extend Your Coverage</h2>
-      <p class="section-sub">Lock in additional years of hosting at a discount when you order now.</p>
-    </div>
-
-    <div class="upsell-grid">
-      <div class="upsell-card">
-        <div class="upsell-icon">🔄</div>
-        <div class="upsell-name">Year 2 Extension</div>
-        <div class="upsell-price">$400</div>
-        <p class="upsell-desc">Add 12 months of hosting at the end of year 1. Lock it in now and save vs. renewing later.</p>
-        <button class="upsell-btn" onclick="addUpsell('year2', 400)">Add Year 2</button>
-      </div>
-
-      <div class="upsell-card">
-        <div class="upsell-icon">🎨</div>
-        <div class="upsell-name">Premium Updates</div>
-        <div class="upsell-price">$250</div>
-        <p class="upsell-desc">Monthly design refreshes, content updates, and feature additions during year 1.</p>
-        <button class="upsell-btn" onclick="addUpsell('updates', 250)">Add Premium Updates</button>
-      </div>
-
-      <div class="upsell-card">
-        <div class="upsell-icon">📊</div>
-        <div class="upsell-name">Analytics & SEO</div>
-        <div class="upsell-price">$150</div>
-        <p class="upsell-desc">Basic SEO setup, monthly traffic reports, and search visibility optimization.</p>
-        <button class="upsell-btn" onclick="addUpsell('seo', 150)">Add Analytics</button>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- AI CONTENT TOOLS SECTION -->
 
 <!-- WHAT'S INCLUDED -->
 <section class="what-section" id="included">
@@ -953,114 +894,52 @@
   </div>
 </section>
 
-<!-- CHECKOUT MODAL -->
-<div class="checkout-wrap" id="checkoutWrap">
+<!-- CONTACT MODAL -->
+<div class="checkout-wrap" id="contactWrap">
   <div class="checkout-modal">
-    <button class="checkout-close" onclick="closeCheckout()">×</button>
+    <button class="checkout-close" onclick="closeContactForm()">×</button>
     <div class="checkout-header">
-      <div class="checkout-title">Get Started</div>
-      <div class="checkout-subtitle">NAGOH Complete Package</div>
+      <div class="checkout-title">Request a Quote</div>
+      <div class="checkout-subtitle">Tell us about your project</div>
     </div>
     <div class="checkout-body">
-      <div class="checkout-summary">
-        <div class="summary-line">
-          <span>NAGOH Complete</span>
-          <span>$1,400</span>
-        </div>
-        <div class="summary-line" id="year2Line" style="display: none;">
-          <span>Year 2 Extension</span>
-          <span>$400</span>
-        </div>
-        <div class="summary-line" id="updatesLine" style="display: none;">
-          <span>Premium Updates</span>
-          <span>$250</span>
-        </div>
-        <div class="summary-line" id="seoLine" style="display: none;">
-          <span>Analytics & SEO</span>
-          <span>$150</span>
-        </div>
-        <div class="summary-line total">
-          <span>Total</span>
-          <span id="totalPrice">$1,400</span>
-        </div>
-      </div>
-
-      <div class="upsell-toggle">
-        <label>
-          <input type="checkbox" id="year2Checkbox" onchange="updateCheckoutSummary()">
-          <div class="upsell-toggle-text">
-            <div class="upsell-toggle-title">Add Year 2 Extension</div>
-            <div class="upsell-toggle-desc">Lock in year 2 hosting now at $400 (saves you ~$50 vs. renewal rate)</div>
-          </div>
-          <div class="upsell-toggle-price">+$400</div>
-        </label>
-      </div>
-
-      <div class="upsell-toggle">
-        <label>
-          <input type="checkbox" id="updatesCheckbox" onchange="updateCheckoutSummary()">
-          <div class="upsell-toggle-text">
-            <div class="upsell-toggle-title">Premium Updates</div>
-            <div class="upsell-toggle-desc">Monthly content & feature updates throughout year 1</div>
-          </div>
-          <div class="upsell-toggle-price">+$250</div>
-        </label>
-      </div>
-
-      <div class="upsell-toggle">
-        <label>
-          <input type="checkbox" id="seoCheckbox" onchange="updateCheckoutSummary()">
-          <div class="upsell-toggle-text">
-            <div class="upsell-toggle-title">Analytics & SEO</div>
-            <div class="upsell-toggle-desc">Monthly traffic reports and search optimization</div>
-          </div>
-          <div class="upsell-toggle-price">+$150</div>
-        </label>
-      </div>
-
-      <form id="checkoutForm" onsubmit="handleCheckout(event)">
+      <form id="contactForm" onsubmit="handleContactSubmit(event)">
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input type="text" class="form-input" id="fullName" placeholder="John Smith" required>
+          <input type="text" class="form-input" id="contactName" placeholder="John Smith" required>
         </div>
 
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input type="email" class="form-input" id="checkoutEmail" placeholder="john@example.com" required>
+          <input type="email" class="form-input" id="contactEmail" placeholder="john@example.com" required>
         </div>
 
         <div class="form-group">
           <label class="form-label">Business Name</label>
-          <input type="text" class="form-input" id="businessName" placeholder="Your Business Name" required>
+          <input type="text" class="form-input" id="contactBusiness" placeholder="Your Business Name" required>
         </div>
 
         <div class="form-group">
           <label class="form-label">Preferred Domain</label>
-          <input type="text" class="form-input" id="domainName" placeholder="yourbusiness.com" required>
+          <input type="text" class="form-input" id="contactDomain" placeholder="yourbusiness.com" required>
         </div>
 
         <div class="form-group">
           <label class="form-label">Tell us about your business</label>
-          <textarea class="form-input" id="projectBrief" rows="3" placeholder="What do you do? What's your vision for your website?" required></textarea>
+          <textarea class="form-input" id="contactMessage" rows="4" placeholder="What do you do? What's your vision for your website?" required></textarea>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Card Details</label>
-          <div id="card-element"></div>
-          <div class="checkout-error" id="card-errors" style="margin-top: 0.5rem; min-height: 0;"></div>
-        </div>
-
-        <button type="submit" class="checkout-btn" id="checkoutBtn">Complete Order</button>
+        <button type="submit" class="checkout-btn" id="contactBtn">Send Quote Request</button>
       </form>
 
-      <div class="checkout-error" id="checkoutError"></div>
+      <div class="checkout-error" id="contactError"></div>
     </div>
   </div>
 </div>
 
 <!-- SUCCESS NOTIFICATION -->
 <div class="success-notification" id="successNotification">
-  ✅ <span id="successMsg">Order placed successfully!</span>
+  ✅ <span id="successMsg">Quote request sent successfully!</span>
 </div>
 
 <!-- FOOTER -->
@@ -1106,18 +985,7 @@
   </div>
 </footer>
 
-<script src="https://js.stripe.com/v3/"></script>
 <script>
-const WORKER = 'https://nagohai.gregoryhogan.workers.dev';
-const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TK0JWGUbXtKf7F7FBt5ingZaPPj8oi6n7sk50AS4yWKkoISv6bJHXphJS5ygOX0QQScFuDUskZ6Uq0SCgwBVwnr00GVEiex2';
-
-let stripe, cardElement;
-let selectedUpsells = {
-  year2: false,
-  updates: false,
-  seo: false
-};
-
 let slideIndex = 1;
 let slideTimer;
 let totalSlides = 0;
@@ -1288,153 +1156,69 @@ function currentSlide(n) {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
   setTimeout(() => loadPortfolioImages(), 500);
-
-  if (STRIPE_PUBLISHABLE_KEY && STRIPE_PUBLISHABLE_KEY !== 'pk_test_your_key_here') {
-    try {
-      stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-      const elements = stripe.elements({
-        fonts: [
-          {
-            family: "'DM Sans', sans-serif",
-            src: "url(https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap)"
-          }
-        ],
-        locale: 'en'
-      });
-
-      cardElement = elements.create('card', {
-        style: {
-          base: {
-            fontSize: '15px',
-            color: '#3d2f24',
-            fontFamily: "'DM Sans', sans-serif",
-            '::placeholder': {
-              color: '#b5a090'
-            }
-          },
-          invalid: {
-            color: '#e8524a',
-            iconColor: '#e8524a'
-          }
-        }
-      });
-
-      cardElement.mount('#card-element');
-
-      cardElement.addEventListener('change', function(event) {
-        const displayError = document.getElementById('card-errors');
-        if (event.error) {
-          displayError.textContent = event.error.message;
-        } else {
-          displayError.textContent = '';
-        }
-      });
-    } catch (e) {
-      console.error('Stripe initialization error:', e);
-      document.getElementById('checkoutError').textContent = 'Payment system unavailable. Please try again.';
-    }
-  }
 });
 
-function openCheckout() {
-  document.getElementById('checkoutWrap').classList.add('show');
+function openContactForm() {
+  document.getElementById('contactWrap').classList.add('show');
 }
 
-function closeCheckout() {
-  document.getElementById('checkoutWrap').classList.remove('show');
-  document.getElementById('checkoutError').textContent = '';
-  document.getElementById('checkoutForm').reset();
-  document.getElementById('year2Checkbox').checked = false;
-  document.getElementById('updatesCheckbox').checked = false;
-  document.getElementById('seoCheckbox').checked = false;
-  updateCheckoutSummary();
+function closeContactForm() {
+  document.getElementById('contactWrap').classList.remove('show');
+  document.getElementById('contactError').textContent = '';
+  document.getElementById('contactForm').reset();
 }
 
-function addUpsell(type, price) {
-  const checkbox = document.getElementById(type + 'Checkbox');
-  checkbox.checked = !checkbox.checked;
-  updateCheckoutSummary();
-}
-
-function updateCheckoutSummary() {
-  selectedUpsells.year2 = document.getElementById('year2Checkbox').checked;
-  selectedUpsells.updates = document.getElementById('updatesCheckbox').checked;
-  selectedUpsells.seo = document.getElementById('seoCheckbox').checked;
-
-  document.getElementById('year2Line').style.display = selectedUpsells.year2 ? 'flex' : 'none';
-  document.getElementById('updatesLine').style.display = selectedUpsells.updates ? 'flex' : 'none';
-  document.getElementById('seoLine').style.display = selectedUpsells.seo ? 'flex' : 'none';
-
-  let total = 1400;
-  if (selectedUpsells.year2) total += 400;
-  if (selectedUpsells.updates) total += 250;
-  if (selectedUpsells.seo) total += 150;
-
-  document.getElementById('totalPrice').textContent = '$' + total;
-}
-
-async function handleCheckout(e) {
+async function handleContactSubmit(e) {
   e.preventDefault();
   
-  const btn = document.getElementById('checkoutBtn');
+  const btn = document.getElementById('contactBtn');
   btn.disabled = true;
-  btn.textContent = 'Processing...';
-  document.getElementById('checkoutError').textContent = '';
+  btn.textContent = 'Sending...';
+  document.getElementById('contactError').textContent = '';
 
   try {
-    const fullName = document.getElementById('fullName').value.trim();
-    const email = document.getElementById('checkoutEmail').value.trim();
-    const businessName = document.getElementById('businessName').value.trim();
-    const domain = document.getElementById('domainName').value.trim();
-    const brief = document.getElementById('projectBrief').value.trim();
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const business = document.getElementById('contactBusiness').value.trim();
+    const domain = document.getElementById('contactDomain').value.trim();
+    const message = document.getElementById('contactMessage').value.trim();
 
-    if (!fullName || !email || !businessName || !domain || !brief) {
+    if (!name || !email || !business || !domain || !message) {
       throw new Error('All fields are required');
     }
 
-    const { paymentMethod, error } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardElement,
-      billing_details: { email, name: fullName }
-    });
-
-    if (error) throw new Error(error.message);
-
-    let total = 1400;
-    if (selectedUpsells.year2) total += 400;
-    if (selectedUpsells.updates) total += 250;
-    if (selectedUpsells.seo) total += 150;
-
-    const r = await fetch(`${WORKER}/hosting/checkout`, {
+    // Send email to support@nagohcreative.com
+    const response = await fetch('https://formspree.io/f/xyzqwert', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        fullName,
-        email,
-        businessName,
-        domain,
-        brief,
-        basePrice: 1400,
-        upsells: selectedUpsells,
-        total,
-        paymentMethodId: paymentMethod.id
+        name: name,
+        email: email,
+        business: business,
+        domain: domain,
+        message: message,
+        _replyto: email,
+        _cc: 'support@nagohcreative.com'
       })
     });
 
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Order failed');
+    if (!response.ok) {
+      throw new Error('Failed to send quote request');
+    }
 
-    showSuccess('✅ Order placed! Check your email for next steps. Your customers get unlimited access to AI.NAGOH.US!');
-    closeCheckout();
+    showSuccess('✅ Quote request sent! We\'ll be in touch at ' + email);
+    closeContactForm();
     setTimeout(() => {
       window.location.href = '/';
     }, 3000);
 
   } catch (err) {
-    document.getElementById('checkoutError').textContent = '❌ ' + (err.message || 'Payment failed');
+    document.getElementById('contactError').textContent = '❌ ' + (err.message || 'Failed to send request');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Complete Order';
+    btn.textContent = 'Send Quote Request';
   }
 }
 
